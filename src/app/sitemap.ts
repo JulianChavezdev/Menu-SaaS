@@ -1,0 +1,2 @@
+import type {MetadataRoute} from "next";import {createClient} from "@/lib/supabase/server";
+export default async function sitemap():Promise<MetadataRoute.Sitemap>{const base=process.env.NEXT_PUBLIC_APP_URL??"http://localhost:3000";const s=await createClient();const {data}=await s.from("restaurants").select("slug,updated_at").eq("is_published",true);return [{url:base,lastModified:new Date()},...(data??[]).map(r=>({url:`${base}/r/${r.slug}`,lastModified:r.updated_at}))]}
