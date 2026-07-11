@@ -1,0 +1,2 @@
+@tailwind base;@tailwind components;@tailwind utilities;
+*{box-sizing:border-box}body{margin:0;background:#090b18;color:#f8fafc;font-family:Arial,sans-serif}.glass{background:rgba(255,255,255,.15);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.25);box-shadow:0 8px 32px rgba(0,0,0,.2)}.focus:focus-visible{outline:3px solid #a5b4fc;outline-offset:3px}.snap{scroll-snap-type:y mandatory;height:100dvh;overflow-y:auto}.snap>section{scroll-snap-align:start;min-height:100dvh}
