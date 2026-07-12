@@ -1,0 +1,2 @@
+import {describe,expect,it} from "vitest";import {isValidSlug,slugify} from "../src/lib/slug";
+describe("restaurant slugs",()=>{it("normalizes spaces and accents",()=>expect(slugify("  Pizzería Roma  ")).toBe("pizzeria-roma"));it("removes unsafe characters",()=>expect(slugify("Café & Bar!!!")).toBe("cafe-bar"));it.each(["bistro-nube","cafe2","la-brasa-24"])("accepts %s",slug=>expect(isValidSlug(slug)).toBe(true));it.each(["Bistro","dos palabras","-inicio","final-",""])("rejects %s",slug=>expect(isValidSlug(slug)).toBe(false))})

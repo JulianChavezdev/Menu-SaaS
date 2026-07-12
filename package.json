@@ -2,7 +2,38 @@
   "name": "carta-video-saas",
   "version": "0.1.0",
   "private": true,
-  "scripts": { "dev": "node ./node_modules/next/dist/bin/next dev", "build": "node ./node_modules/next/dist/bin/next build", "start": "node ./node_modules/next/dist/bin/next start", "lint": "node ./node_modules/eslint/bin/eslint.js .", "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit" },
-  "dependencies": { "@supabase/ssr": "^0.5.2", "@supabase/supabase-js": "^2.49.1", "lucide-react": "^0.468.0", "next": "^15.1.6", "qrcode": "^1.5.4", "react": "^19.0.0", "react-dom": "^19.0.0", "react-hook-form": "^7.54.2", "sonner": "^1.7.2", "zod": "^3.24.1", "@hookform/resolvers": "^3.10.0" },
-  "devDependencies": { "@types/node": "^22.10.7", "@types/qrcode": "^1.5.5", "@types/react": "^19.0.3", "@types/react-dom": "^19.0.2", "autoprefixer": "^10.4.20", "eslint": "^9.18.0", "eslint-config-next": "^15.1.6", "postcss": "^8.5.1", "tailwindcss": "^3.4.17", "typescript": "^5.7.2" }
+  "scripts": {
+    "dev": "node ./node_modules/next/dist/bin/next dev",
+    "build": "node ./node_modules/next/dist/bin/next build",
+    "start": "node ./node_modules/next/dist/bin/next start",
+    "lint": "node ./node_modules/eslint/bin/eslint.js .",
+    "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.10.0",
+    "@supabase/ssr": "^0.5.2",
+    "@supabase/supabase-js": "^2.49.1",
+    "lucide-react": "^0.468.0",
+    "next": "^15.1.6",
+    "qrcode": "^1.5.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.54.2",
+    "sonner": "^1.7.2",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "^19.0.3",
+    "@types/react-dom": "^19.0.2",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.18.0",
+    "eslint-config-next": "^15.1.6",
+    "postcss": "^8.5.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2",
+    "vitest": "^4.1.10"
+  }
 }

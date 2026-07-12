@@ -1,0 +1,2 @@
+import {describe,expect,it} from "vitest";import {PLAN_LIMITS,canCreateProduct} from "../src/lib/plans";
+describe("Carta plan",()=>{it("allows products below the limit",()=>expect(canCreateProduct(99)).toBe(true));it("blocks the hundred-and-first product",()=>expect(canCreateProduct(PLAN_LIMITS.carta.products)).toBe(false));it("defines one restaurant",()=>expect(PLAN_LIMITS.carta.restaurants).toBe(1))})
