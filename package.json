@@ -8,7 +8,8 @@
     "start": "node ./node_modules/next/dist/bin/next start",
     "lint": "node ./node_modules/eslint/bin/eslint.js .",
     "typecheck": "node ./node_modules/typescript/bin/tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run tests --exclude tests/integration/**",
+    "test:integration": "vitest run tests/integration"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
