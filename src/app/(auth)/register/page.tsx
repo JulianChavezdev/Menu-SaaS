@@ -15,7 +15,7 @@ export default function Register() {
       email: String(f.get("email")),
       password: String(f.get("password")),
       options: {
-        emailRedirectTo: `${location.origin}/dashboard`,
+        emailRedirectTo: `${location.origin}/auth/callback?next=/dashboard`,
       },
     });
     setMessage(error ? error.message : "Revisa tu correo para confirmar la cuenta.");
