@@ -40,6 +40,16 @@ const checks=[
     migration:"202607130004_security_hardening.sql",
     run:()=>supabase.rpc("is_published_restaurant",{target:randomId}),
   },
+  {
+    migration:"202607130005_superadmin_access.sql",
+    run:async()=>{
+      const results=await Promise.all([
+        supabase.from("restaurants").select("access_suspended",{head:true}).limit(1),
+        supabase.from("superadmin_audit_log").select("id",{head:true}).limit(1),
+      ]);
+      return {error:results.find(result=>result.error)?.error??null};
+    },
+  },
 ];
 
 const pending=[];

@@ -23,7 +23,23 @@ Aplica en orden todos los archivos de `supabase/migrations`. Después comprueba 
 npm run check:db
 ```
 
-La comprobación es de solo lectura e indica por nombre cualquier migración pendiente. Las migraciones más recientes añaden traducciones, sincronización futura de Stripe y endurecimiento de RLS, límites de prueba y aislamiento entre restaurantes.
+La comprobación es de solo lectura e indica por nombre cualquier migración pendiente. Las migraciones más recientes añaden traducciones, sincronización futura de Stripe, endurecimiento de RLS, límites de prueba, aislamiento entre restaurantes y suspensión administrativa.
+
+## Plantillas
+
+La carta incluye siete estilos mobile-first con decoración SVG nativa: Cinemática y Brisa Mediterránea son gratuitos; Medianoche, Sakura, Taquería Solar, Bistró Art Déco y Neón Urbano requieren estado de suscripción `active`. Un restaurante sin acceso premium conserva sus datos y muestra automáticamente la plantilla gratuita predeterminada.
+
+## Superadmin
+
+El panel privado está en `/superadmin`. Configura al menos una allowlist exclusivamente del lado servidor:
+
+```env
+SUPERADMIN_EMAILS=tu-correo-de-acceso@ejemplo.com
+# Alternativa más estable: UUID de auth.users, admite varios separados por coma
+SUPERADMIN_USER_IDS=
+```
+
+El panel permite ver métricas globales, buscar restaurantes, editar configuración y carta como soporte, cambiar plan/publicación/plantilla, suspender o restaurar acceso y consultar el historial administrativo. Una suspensión bloquea las escrituras del cliente y retira la carta pública mediante RLS; las acciones del panel usan `SUPABASE_SERVICE_ROLE_KEY`, que nunca debe exponerse al navegador.
 
 ## Planes y pagos
 
