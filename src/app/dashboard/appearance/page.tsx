@@ -1,2 +1,16 @@
-import {activeRestaurant} from "@/lib/permissions";import {MediaUpload} from "@/components/dashboard/media-upload";import {AppearancePreferences} from "@/components/dashboard/appearance-preferences";import {BackButton} from "@/components/ui/back-button";
-export default async function Page(){const {restaurant}=await activeRestaurant();return <main className="mx-auto max-w-4xl p-4 md:p-6"><BackButton fallback="/dashboard"/><div className="my-6"><h1 className="text-2xl font-extrabold">Apariencia</h1><p className="mt-1 text-sm text-slate-400">Configura el logo y los controles visibles en la carta pública.</p></div><div className="grid gap-5 md:grid-cols-2"><MediaUpload restaurantId={restaurant.id} kind="logo" label="Logo del restaurante" currentUrl={restaurant.logo_url}/><AppearancePreferences enabled={Boolean(restaurant.language_switcher_enabled)}/></div></main>}
+import {activeRestaurant} from "@/lib/permissions";
+import {MediaUpload} from "@/components/dashboard/media-upload";
+import {AppearancePreferences} from "@/components/dashboard/appearance-preferences";
+import {BackButton} from "@/components/ui/back-button";
+
+export default async function Page(){
+  const {restaurant}=await activeRestaurant();
+  return <main className="mx-auto max-w-4xl p-4 md:p-6">
+    <BackButton fallback="/dashboard"/>
+    <div className="my-6"><h1 className="text-2xl font-extrabold">Apariencia</h1><p className="mt-1 text-sm text-slate-400">Configura el logo, la plantilla y los controles visibles en la carta pública.</p></div>
+    <div className="grid gap-5 md:grid-cols-2">
+      <MediaUpload restaurantId={restaurant.id} kind="logo" label="Logo del restaurante" currentUrl={restaurant.logo_url}/>
+      <AppearancePreferences enabled={Boolean(restaurant.language_switcher_enabled)} template={restaurant.menu_template}/>
+    </div>
+  </main>;
+}

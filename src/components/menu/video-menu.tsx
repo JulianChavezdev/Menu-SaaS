@@ -3,6 +3,7 @@
 import {useEffect,useRef,useState} from "react";
 import {ArrowLeft,Info,Languages,List,MapPin,Phone,Share2,Volume2,VolumeX,X} from "lucide-react";
 import type {Product,Restaurant} from "@/lib/types";
+import {resolveMenuTemplate} from "@/lib/menu-templates";
 
 const copy={
   es:{menu:"Carta",close:"Cerrar",share:"Compartir",info:"Restaurante",soundOn:"Activar sonido",soundOff:"Silenciar",website:"Visitar web",categories:"Categorías"},
@@ -17,6 +18,7 @@ export function VideoMenu({restaurant,products}:{restaurant:Restaurant;products:
   const[active,setActive]=useState(0);
   const[language,setLanguage]=useState<"es"|"en">(restaurant.locale.startsWith("en")?"en":"es");
   const text=copy[language];
+  const template=resolveMenuTemplate(restaurant.menu_template);
   const categories=[...new Map(products.map(product=>[product.categories?.name??text.menu,product])).entries()];
 
   useEffect(()=>{
@@ -41,7 +43,7 @@ export function VideoMenu({restaurant,products}:{restaurant:Restaurant;products:
   const go=(id:string)=>{document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"});setPanel(null)};
   const back=()=>history.length>1?history.back():location.assign("/");
 
-  return <main className="public-menu relative h-dvh overflow-y-auto bg-[#0b0b0a] text-white md:mx-auto md:max-w-[430px] md:border-x md:border-white/10 md:shadow-2xl">
+  return <main data-template={template.key} className="public-menu relative h-dvh snap-y snap-mandatory overflow-y-auto overscroll-y-contain scroll-smooth bg-[#0b0b0a] text-white md:mx-auto md:max-w-[430px] md:border-x md:border-white/10 md:shadow-2xl">
     <header className="pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-center justify-between bg-gradient-to-b from-black/85 via-black/45 to-transparent px-4 pb-10 pt-[max(1rem,env(safe-area-inset-top))]">
       <button aria-label="Volver" onClick={back} className="pointer-events-auto grid h-10 w-10 place-items-center rounded-full border border-white/15 bg-black/35 backdrop-blur-md"><ArrowLeft size={20}/></button>
       <div className="flex min-w-0 flex-1 justify-center px-3">
@@ -61,8 +63,8 @@ export function VideoMenu({restaurant,products}:{restaurant:Restaurant;products:
       </aside>
     </div>}
 
-    <div className="snap-y snap-mandatory">
-      {products.map((product,index)=><section ref={element=>{sectionRefs.current[index]=element}} data-index={index} id={`product-${product.id}`} key={product.id} className="relative isolate flex min-h-dvh snap-start items-end overflow-hidden px-5 pb-32 pt-28">
+    <div>
+      {products.map((product,index)=><section ref={element=>{sectionRefs.current[index]=element}} data-index={index} id={`product-${product.id}`} key={product.id} className="relative isolate flex h-dvh snap-start snap-always items-end overflow-hidden px-5 pb-32 pt-28">
         <div className="absolute inset-0 -z-20 bg-[#22221f]">{product.video_url?<video ref={element=>{videoRefs.current[index]=element}} src={product.video_url} poster={product.image_url??undefined} muted={muted} loop playsInline preload="metadata" className="h-full w-full object-cover"/>:<div className="h-full w-full bg-cover bg-center" style={{backgroundImage:product.image_url?`url(${product.image_url})`:undefined}}/>}</div>
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(0,0,0,.35)_0%,transparent_28%,transparent_47%,rgba(0,0,0,.92)_100%)]"/>
         <div className="w-full text-shadow-lg">
