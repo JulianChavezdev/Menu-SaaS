@@ -2,56 +2,55 @@
 
 SaaS multi-tenant para que restaurantes publiquen una carta vertical en vídeo. La URL pública es `/r/[slug]`; el panel, los datos y los archivos de cada negocio se separan por `restaurant_id`.
 
-## Arranque
+## Arranque local
 
 ```bash
 copy .env.example .env.local
 npm install
+npm run check:env
 npm run dev
 ```
 
-Configura Supabase y aplica todas las migraciones de `supabase/migrations`. Configura también las URLs de Auth (`http://localhost:3000` y la URL de producción) y el bucket `restaurant-media`.
+Configura en Supabase las Redirect URLs de Auth y el bucket público `restaurant-media`. Las políticas de Storage limitan las escrituras a miembros del restaurante.
 
-Variables básicas: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (solo servidor) y `NEXT_PUBLIC_APP_URL`.
+Variables obligatorias: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` —solo servidor— y `NEXT_PUBLIC_APP_URL`.
 
-## Suscripciones con Stripe
+## Base de datos
 
-El plan de prueba funciona sin Stripe. Para habilitar el Checkout del Plan Carta:
-
-1. Crea en Stripe un precio recurrente para el Plan Carta.
-2. Configura `STRIPE_SECRET_KEY` y `STRIPE_PLAN_PRICE_ID` en el servidor.
-3. Publica el endpoint `https://tu-dominio.com/api/stripe/webhook` en Stripe Workbench.
-4. Suscribe el endpoint a estos eventos:
-   - `checkout.session.completed`
-   - `customer.subscription.created`
-   - `customer.subscription.updated`
-   - `customer.subscription.deleted`
-   - `invoice.paid`
-   - `invoice.payment_failed`
-5. Copia el secreto del endpoint en `STRIPE_WEBHOOK_SECRET`.
-6. Aplica `202607130002_stripe_webhook_events.sql` antes de recibir eventos.
-
-Para pruebas locales puede utilizarse Stripe CLI:
+Aplica en orden todos los archivos de `supabase/migrations`. Después comprueba el esquema remoto:
 
 ```bash
-stripe listen --forward-to localhost:3000/api/stripe/webhook
+npm run check:db
 ```
 
-El Checkout se crea exclusivamente en servidor. El webhook verifica la firma sobre el cuerpo original, evita procesar dos veces el mismo evento y sincroniza `subscriptions` y `restaurants.subscription_status`. Solo el estado `active` concede las ventajas profesionales.
+La comprobación es de solo lectura e indica por nombre cualquier migración pendiente. Las migraciones más recientes añaden traducciones, sincronización futura de Stripe y endurecimiento de RLS, límites de prueba y aislamiento entre restaurantes.
+
+## Planes y pagos
+
+La beta funciona sin cobros: el plan de prueba admite hasta **3 productos y 5 categorías**. Esos límites se validan en servidor y en la base de datos.
+
+Stripe queda preparado para una fase posterior, pero el checkout permanece desactivado mientras no existan `STRIPE_SECRET_KEY` y `STRIPE_PLAN_PRICE_ID`. Cuando se active:
+
+1. Crea un precio recurrente en Stripe.
+2. Configura las variables Stripe de `.env.example`.
+3. Registra `/api/stripe/webhook` para los eventos documentados en el código.
+4. Configura `STRIPE_WEBHOOK_SECRET`.
+5. Verifica que `npm run check:db` no muestre migraciones pendientes.
 
 ## Seguridad
 
-Todas las tablas tienen RLS. Las lecturas públicas solo ven restaurantes publicados, categorías activas y productos disponibles. Las escrituras se validan por pertenencia a `restaurant_members`. Storage limita las rutas a miembros del restaurante (`restaurants/{restaurant_id}/...`). Nunca expongas la service role key ni las claves secretas de Stripe.
+- RLS oculta restaurantes no publicados, categorías inactivas y productos no disponibles.
+- Los roles se verifican en servidor y la pertenencia se valida por restaurante.
+- Los campos de propietario, plan y suscripción no pueden modificarse con un cliente autenticado.
+- Los límites de prueba y la relación producto-categoría se imponen en PostgreSQL.
+- Las rutas de vídeos y logos se validan en servidor; el cliente no decide la URL persistida.
+- Nunca publiques `.env.local` ni expongas `SUPABASE_SERVICE_ROLE_KEY` o secretos de Stripe.
 
-## Datos y pruebas
+Si una clave secreta se comparte fuera de un almacén seguro, rótala antes de producción.
 
-El modo sin variables ofrece una demo visual de **Bistro Nube** en `/r/bistro-nube`. Para datos persistentes, crea una cuenta, completa onboarding y carga tus datos en Supabase. `seed.sql` y `seed-demo.sql` son plantillas: reemplaza el `owner_id` por un UUID de `auth.users` antes de ejecutarlas.
+## Datos y demo
 
-Los recursos demo vienen de Unsplash y Cloudinary. La estructura recomendada para archivos propios es `restaurants/{restaurant_id}/products/{product_id}/video.mp4`.
-
-## Despliegue
-
-Despliega en Vercel, añade las variables de `.env.example`, aplica las migraciones y actualiza las Redirect URLs de Supabase. Después registra el webhook de producción en Stripe.
+Sin variables de Supabase, `/r/bistro-nube` utiliza una demo local con vídeos de Cloudinary y contenido español/inglés. Para datos persistentes, crea una cuenta y completa el onboarding.
 
 ## Comprobaciones
 
@@ -62,4 +61,11 @@ npm run test:e2e
 npm run lint
 npm run typecheck
 npm run build
+npm audit
 ```
+
+Las pruebas E2E y de integración necesitan credenciales de Supabase y todas las migraciones aplicadas.
+
+## Despliegue futuro
+
+Antes de Vercel: aplica migraciones, rota secretos compartidos, configura variables, actualiza Redirect URLs, ejecuta todas las comprobaciones y registra el webhook solo cuando se vayan a aceptar pagos.

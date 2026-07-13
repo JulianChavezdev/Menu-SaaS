@@ -46,6 +46,9 @@ test.describe("restaurant owner journey",()=>{
     await page.getByRole("link",{name:"Carta",exact:true}).click();
     await page.getByLabel("Nombre").fill("Producto E2E");
     await page.getByLabel("Descripción").fill("Producto creado mediante una prueba completa.");
+    await page.getByText("Traducción al inglés (opcional)").click();
+    await page.getByLabel("Nombre en inglés").fill("E2E Product");
+    await page.getByLabel("Descripción en inglés").fill("Product created by a complete end-to-end test.");
     await page.getByLabel("Precio (€)").fill("9.50");
     await page.getByLabel("Categoría").selectOption({label:"Entrantes"});
     await page.getByRole("button",{name:"Crear producto"}).click();
@@ -66,6 +69,8 @@ test.describe("restaurant owner journey",()=>{
     await expect(page.getByRole("button",{name:"Confirmar subida"})).toBeVisible();
     await page.getByRole("button",{name:"Confirmar subida"}).click();
     await expect(page.getByText("Archivo actual guardado. Puedes reemplazarlo.")).toBeVisible();
+    await page.getByLabel("Mostrar selector de idioma").check();
+    await page.getByRole("button",{name:"Guardar preferencias"}).click();
 
     await page.getByRole("link",{name:"Restaurante",exact:true}).click();
     await page.getByLabel("Publicar carta").check();
@@ -80,5 +85,8 @@ test.describe("restaurant owner journey",()=>{
     await expect(page.getByText("9,50 €")).toBeVisible();
     await expect(page.getByRole("img",{name:"Logo de Restaurante E2E"})).toBeVisible();
     await expect(page.getByRole("navigation",{name:"Controles de la carta"})).toBeVisible();
+    await page.getByRole("button",{name:"Cambiar a inglés"}).click();
+    await expect(page.getByRole("heading",{name:"E2E Product"})).toBeVisible();
+    await expect(page.getByText("Product created by a complete end-to-end test.")).toBeVisible();
   });
 });

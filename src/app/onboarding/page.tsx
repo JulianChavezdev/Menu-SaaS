@@ -65,21 +65,6 @@ export default function Onboarding() {
             />
           </label>
 
-          {/* Selector de color premium integrado */}
-          <div className="hidden">
-            <div className="flex flex-col">
-              <span className="text-sm font-medium text-slate-300">Color principal</span>
-              <span className="text-[11px] text-slate-500">Tono visual para la interfaz de tu menú.</span>
-            </div>
-            <div className="relative flex items-center justify-center h-10 w-10 shrink-0 overflow-hidden rounded-full border border-slate-700 bg-slate-800 transition-all hover:border-slate-500 focus-within:ring-2 focus-within:ring-violet-500/40">
-              <input 
-                name="primary_color" 
-                type="color" 
-                defaultValue="#7c3aed" 
-                className="absolute inset-0 h-[200%] w-[200%] -translate-x-1/4 -translate-y-1/4 cursor-pointer"
-              />
-            </div>
-          </div>
         </div>
 
         {/* Mensaje de Error */}

@@ -1,6 +1,6 @@
 "use client";
 
-import {useState} from "react";
+import {useEffect,useState} from "react";
 import Link from "next/link";
 import {Eye,Lock,X} from "lucide-react";
 import {toast} from "sonner";
@@ -35,6 +35,12 @@ export function AppearancePreferences({enabled,template,canUsePremium,restaurant
   const current=resolveMenuTemplate(template,canUsePremium);
   const[selected,setSelected]=useState<MenuTemplateKey>(current.key);
   const[preview,setPreview]=useState<MenuTemplateKey|null>(null);
+  useEffect(()=>{
+    if(!preview)return;
+    const closeOnEscape=(event:KeyboardEvent)=>{if(event.key==="Escape")setPreview(null)};
+    addEventListener("keydown",closeOnEscape);
+    return()=>removeEventListener("keydown",closeOnEscape);
+  },[preview]);
   return <>
     <form action={async form=>{try{await updateAppearancePreferences(form);toast.success("Preferencias guardadas")}catch(error){toast.error(error instanceof Error?error.message:"No se pudo guardar")}}} className="space-y-6 rounded-2xl border border-slate-800 bg-slate-950/40 p-5">
       <section>
