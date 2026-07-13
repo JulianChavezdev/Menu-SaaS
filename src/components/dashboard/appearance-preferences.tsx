@@ -1,6 +1,7 @@
 "use client";
 
 import {useState} from "react";
+import Link from "next/link";
 import {Eye,Lock,X} from "lucide-react";
 import {toast} from "sonner";
 import {updateAppearancePreferences} from "@/app/dashboard/actions";
@@ -45,7 +46,7 @@ export function AppearancePreferences({enabled,template,canUsePremium,restaurant
             <button type="button" onClick={()=>setPreview(item.key)} aria-label={`Vista previa de ${item.name}`} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 px-3 py-2 text-xs font-semibold hover:bg-white/10"><Eye size={15}/>Vista previa</button>
           </article>})}
         </div>
-        {!canUsePremium&&<p className="mt-3 text-xs text-slate-500">Puedes previsualizar las plantillas premium; se desbloquean al activar una suscripción.</p>}
+        {!canUsePremium&&<div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-400/15 bg-amber-400/[.06] p-3 text-xs text-slate-400"><span>Puedes previsualizar las plantillas premium antes de activarlas.</span><Link href="/dashboard/billing?from=templates" className="font-semibold text-amber-300 hover:text-amber-200">Ver Plan Carta →</Link></div>}
       </section>
       <section className="border-t border-white/10 pt-5"><h2 className="font-bold">Idiomas de la carta</h2><p className="mt-1 text-sm text-slate-400">Permite cambiar los controles públicos entre español e inglés.</p><label className="mt-4 flex items-center gap-3"><input name="language_switcher_enabled" type="checkbox" defaultChecked={enabled} className="h-5 w-5 accent-violet-500"/><span>Mostrar selector de idioma</span></label></section>
       <button className="w-full rounded-lg bg-violet-600 px-4 py-3 font-semibold">Guardar preferencias</button>

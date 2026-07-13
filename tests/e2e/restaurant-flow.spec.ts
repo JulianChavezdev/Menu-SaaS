@@ -57,6 +57,11 @@ test.describe("restaurant owner journey",()=>{
     await page.getByRole("button",{name:"Vista previa de Medianoche"}).click();
     await expect(page.getByRole("dialog",{name:"Vista previa de Medianoche"})).toBeVisible();
     await page.getByRole("button",{name:"Cerrar vista previa"}).click();
+    await page.getByRole("link",{name:"Ver Plan Carta"}).click();
+    await expect(page).toHaveURL(/\/dashboard\/billing\?from=templates/);
+    await expect(page.getByText("La plantilla Medianoche forma parte del Plan Carta.")).toBeVisible();
+    await page.getByRole("link",{name:"Apariencia",exact:true}).click();
+    await page.waitForLoadState("networkidle");
     await page.locator('input[accept="image/jpeg,image/png,image/webp"]').setInputFiles({name:"logo.png",mimeType:"image/png",buffer:tinyPng});
     await expect(page.getByRole("button",{name:"Confirmar subida"})).toBeVisible();
     await page.getByRole("button",{name:"Confirmar subida"}).click();
