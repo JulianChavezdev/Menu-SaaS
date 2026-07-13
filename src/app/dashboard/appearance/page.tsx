@@ -10,7 +10,7 @@ export default async function Page(){
     <div className="my-6"><h1 className="text-2xl font-extrabold">Apariencia</h1><p className="mt-1 text-sm text-slate-400">Configura el logo, la plantilla y los controles visibles en la carta pública.</p></div>
     <div className="grid gap-5 md:grid-cols-2">
       <MediaUpload restaurantId={restaurant.id} kind="logo" label="Logo del restaurante" currentUrl={restaurant.logo_url}/>
-      <AppearancePreferences enabled={Boolean(restaurant.language_switcher_enabled)} template={restaurant.menu_template}/>
+      <AppearancePreferences enabled={Boolean(restaurant.language_switcher_enabled)} template={restaurant.menu_template} canUsePremium={restaurant.subscription_status==="active"}/>
     </div>
   </main>;
 }

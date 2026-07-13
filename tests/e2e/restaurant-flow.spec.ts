@@ -53,6 +53,7 @@ test.describe("restaurant owner journey",()=>{
 
     await page.getByRole("link",{name:"Apariencia",exact:true}).click();
     await page.waitForLoadState("networkidle");
+    await expect(page.getByRole("radio",{name:"Seleccionar plantilla Medianoche"})).toBeDisabled();
     await page.locator('input[accept="image/jpeg,image/png,image/webp"]').setInputFiles({name:"logo.png",mimeType:"image/png",buffer:tinyPng});
     await expect(page.getByRole("button",{name:"Confirmar subida"})).toBeVisible();
     await page.getByRole("button",{name:"Confirmar subida"}).click();
