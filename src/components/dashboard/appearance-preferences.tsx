@@ -6,28 +6,33 @@ import {Eye,Lock,X} from "lucide-react";
 import {toast} from "sonner";
 import {updateAppearancePreferences} from "@/app/dashboard/actions";
 import {MENU_TEMPLATES,resolveMenuTemplate,type MenuTemplateKey} from "@/lib/menu-templates";
+import {ThemeVectors} from "@/components/menu/theme-vectors";
 
 type PreviewProduct={name:string;priceCents:number;videoUrl:string|null;category:string};
 type PreviewProps={kind:MenuTemplateKey;restaurantName:string;logoUrl:string|null;currency:string;product?:PreviewProduct;large?:boolean};
 
 function TemplatePreview({kind,restaurantName,logoUrl,currency,product,large=false}:PreviewProps){
-  const midnight=kind==="midnight";
+  const template=MENU_TEMPLATES[kind];
+  const {colors}=template;
+  const framed=template.layout==="framed";
+  const card=template.layout!=="fullscreen";
   const price=new Intl.NumberFormat("es-ES",{style:"currency",currency}).format((product?.priceCents??1290)/100);
-  return <div className={`relative isolate mx-auto w-full overflow-hidden bg-slate-900 text-white shadow-2xl ${large?"h-[min(70dvh,620px)] max-w-[350px] rounded-[32px]":"aspect-[9/12] rounded-2xl"}`}>
-    <div className={`absolute overflow-hidden ${midnight?"inset-2 bottom-14 rounded-[22px] border border-cyan-200/20":"inset-0"}`}>
+  return <div style={{background:colors.background}} className={`relative isolate mx-auto w-full overflow-hidden text-white shadow-2xl ${large?"h-[min(70dvh,620px)] max-w-[350px] rounded-[32px]":"aspect-[9/12] rounded-2xl"}`}>
+    <div style={{borderColor:colors.frame}} className={`absolute z-0 overflow-hidden ${framed?"inset-2 bottom-14 rounded-[22px] border":"inset-0"}`}>
       {product?.videoUrl
         ?<video src={product.videoUrl} muted loop autoPlay playsInline className="h-full w-full object-cover"/>
-        :<div className={`h-full w-full ${midnight?"bg-[radial-gradient(circle_at_65%_25%,#155e75,#0f172a_48%,#020617)]":"bg-[radial-gradient(circle_at_60%_25%,#a16207,#292524_46%,#09090b)]"}`}/>
+        :<div className="h-full w-full" style={{background:`radial-gradient(circle at 65% 25%,${colors.accent2}99,${colors.panel} 48%,${colors.background})`}}/>
       }
     </div>
-    <div className={`absolute ${midnight?"inset-2 bottom-14 rounded-[22px] bg-gradient-to-b from-slate-950/20 via-transparent to-slate-950/95":"inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/95"}`}/>
+    <div className={`absolute z-[1] ${framed?"inset-2 bottom-14 rounded-[22px]":"inset-0"}`} style={{background:`linear-gradient(to bottom,${colors.background}33,transparent 42%,${colors.background}f2)`}}/>
+    <ThemeVectors motif={template.motif} accent={colors.accent} accent2={colors.accent2} className="absolute inset-0 z-[2] h-full w-full"/>
     <div className="absolute left-3 right-3 top-3 z-10 flex h-8 items-center justify-center">{logoUrl?<span role="img" aria-label={`Logo de ${restaurantName}`} className="h-8 w-24 bg-contain bg-center bg-no-repeat drop-shadow-lg" style={{backgroundImage:`url(${logoUrl})`}}/>:<strong className={`${large?"text-base":"text-[10px]"} drop-shadow-lg`}>{restaurantName}</strong>}</div>
-    <div className={`absolute z-10 ${midnight?"bottom-16 left-4 right-4 rounded-2xl border border-white/10 bg-slate-950/65 p-3 backdrop-blur-md":"bottom-4 left-4 right-4"}`}>
-      <p className={`font-bold uppercase tracking-[.15em] ${large?"text-xs":"text-[7px]"} ${midnight?"text-cyan-200":"text-amber-200"}`}>{product?.category??"Especialidades"}</p>
+    <div style={card?{background:`${colors.panel}d9`,borderColor:colors.frame}:undefined} className={`absolute z-10 ${card?"bottom-16 left-4 right-4 rounded-2xl border p-3 backdrop-blur-md":"bottom-4 left-4 right-4"}`}>
+      <p style={{color:colors.accent}} className={`font-bold uppercase tracking-[.15em] ${large?"text-xs":"text-[7px]"}`}>{product?.category??"Especialidades"}</p>
       <p className={`mt-1 font-semibold leading-none ${large?"text-3xl":"text-base"}`}>{product?.name??"Producto destacado"}</p>
-      <p className={`mt-2 font-bold ${large?"text-xl":"text-xs"} ${midnight?"text-cyan-100":""}`}>{price}</p>
+      <p style={{color:colors.accent}} className={`mt-2 font-bold ${large?"text-xl":"text-xs"}`}>{price}</p>
     </div>
-    <div className={`absolute bottom-2 left-1/2 z-20 flex -translate-x-1/2 gap-3 rounded-xl border border-white/10 px-4 py-2 ${midnight?"bg-[#090e27]":"bg-[#171715]"}`}>{[0,1,2,3].map(item=><span key={item} className={`h-1.5 w-1.5 rounded-full ${midnight?"bg-cyan-200/70":"bg-white/60"}`}/>)}</div>
+    <div style={{background:colors.nav,borderColor:colors.frame}} className="absolute bottom-2 left-1/2 z-20 flex -translate-x-1/2 gap-3 rounded-xl border px-4 py-2">{[0,1,2,3].map(item=><span key={item} style={{background:item===0?colors.accent:"rgba(255,255,255,.55)"}} className="h-1.5 w-1.5 rounded-full"/>)}</div>
   </div>;
 }
 
