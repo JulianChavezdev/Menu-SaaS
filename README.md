@@ -47,6 +47,8 @@ Desde el detalle de cada restaurante, el superadmin puede descargar una copia JS
 
 El mismo panel permite validar y restaurar una copia JSON sobre su restaurante de origen. Antes de aplicar muestra los cambios, exige confirmar el slug y ejecuta la sustitución de configuración visible, categorías y productos de forma atómica. Conserva propietario, slug, miembros, cobros, plan, suspensión, analíticas y auditoría; los medios siguen siendo referencias externas y no se recuperan si el archivo original ya no existe.
 
+Supabase conserva además un historial privado y restituible: 14 copias diarias, 20 manuales y 10 creadas automáticamente antes de restaurar. La tarea programada se ejecuta a las 02:30 UTC, cada tipo elimina sus versiones más antiguas al superar su retención y ningún rol del navegador puede leer la tabla. El historial permite previsualizar, descargar y eliminar copias desde el detalle de superadmin.
+
 `SUPERADMIN_RESTAURANT_CAPACITY` controla la barra de planificación del superadmin. El valor inicial de 25 es un objetivo conservador para una beta con vídeos alojados en el plan gratuito; no bloquea altas. Debe ajustarse usando el consumo real de Storage, transferencia y base de datos, porque el número de restaurantes por sí solo no determina la carga.
 
 `SUPERADMIN_STORAGE_CAPACITY_GB` configura el límite de referencia de la barra de Storage. El panel mide los bytes y archivos reales del bucket, muestra visualizaciones de vídeos alojados y calcula una transferencia orientativa usando el tamaño medio de esos vídeos. La transferencia es una estimación y debe compararse con el panel de consumo del proveedor.

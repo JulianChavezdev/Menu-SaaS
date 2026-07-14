@@ -38,6 +38,8 @@ export async function POST(request:Request,{params}:{params:Promise<{id:string}>
   if(!preview.canApply)return response({error:preview.warnings.at(-1),preview},409);
   if(body.confirmation!==restaurant.slug)return response({error:`Escribe ${restaurant.slug} para confirmar la restauración.`},409);
 
+  const {error:backupError}=await admin.rpc("create_restaurant_backup",{target_restaurant:id,backup_reason:"pre_restore",actor_user:user.id});
+  if(backupError)return response({error:"No se pudo crear la copia de seguridad previa. La restauración fue cancelada."},503);
   const restoredRestaurant={...backup.restaurant,source_exported_at:backup.exportedAt};
   const {data,error:restoreError}=await admin.rpc("restore_restaurant_content",{target_restaurant:id,backup_restaurant:restoredRestaurant,backup_categories:backup.categories,backup_products:backup.products,actor_user:user.id});
   if(restoreError)return response({error:"No se pudo aplicar la copia. No se ha modificado ningún dato."},409);

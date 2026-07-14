@@ -83,6 +83,10 @@ const checks=[
       return {error:error?.code==="P0002"?null:(error??new Error("Restore validation did not run"))};
     },
   },
+  {
+    migration:"202607140007_automatic_restaurant_backups.sql",
+    run:()=>supabase.from("restaurant_backups").select("id",{head:true}).limit(1),
+  },
 ];
 
 const pending=[];

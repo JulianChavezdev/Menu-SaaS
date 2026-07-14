@@ -49,6 +49,12 @@ test.describe("superadmin restaurant exports",()=>{
     await expect(page).toHaveURL(/\/(dashboard|onboarding)$/,{timeout:30_000});
     await page.goto(`/superadmin/restaurants/${restaurantId}`);
     await expect(page.getByRole("heading",{name:"Export E2E"})).toBeVisible();
+    await page.getByRole("button",{name:"Crear punto ahora"}).click();
+    await expect(page.getByText("Historial privado")).toBeVisible();
+    await expect.poll(async()=>{
+      const manualBackups=await admin!.from("restaurant_backups").select("id").eq("restaurant_id",restaurantId).eq("reason","manual");
+      return manualBackups.data?.length;
+    }).toBe(1);
 
     const jsonDownloadPromise=page.waitForEvent("download");
     await page.getByRole("link",{name:"Copia completa JSON"}).click();
@@ -82,5 +88,7 @@ test.describe("superadmin restaurant exports",()=>{
     }).toBe("Tarta exportada");
     const audit=await admin!.from("superadmin_audit_log").select("action").eq("restaurant_id",restaurantId).eq("action","restaurant.backup_restored").single();
     expect(audit.error).toBeNull();
+    const safetyBackups=await admin!.from("restaurant_backups").select("reason").eq("restaurant_id",restaurantId).eq("reason","pre_restore");
+    expect(safetyBackups.data).toHaveLength(1);
   });
 });

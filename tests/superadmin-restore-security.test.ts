@@ -15,6 +15,7 @@ describe("superadmin backup restoration",()=>{
 
   it("requires an exact slug confirmation and uses one atomic RPC",()=>{
     expect(route).toContain("body.confirmation!==restaurant.slug");
+    expect(route).toContain('backup_reason:"pre_restore"');
     expect(route).toContain('admin.rpc("restore_restaurant_content"');
     expect(migration).toContain("for update");
     expect(migration).toContain("Service role required");
