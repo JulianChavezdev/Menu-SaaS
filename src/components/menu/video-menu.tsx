@@ -21,7 +21,7 @@ function sendAnalytics(payload:AnalyticsEvent){
   void fetch("/api/analytics",{method:"POST",headers:{"Content-Type":"application/json"},body,keepalive:true}).catch(()=>undefined);
 }
 
-export function VideoMenu({restaurant,products}:{restaurant:Restaurant;products:Product[]}){
+export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restaurant:Restaurant;products:Product[];analyticsEnabled?:boolean}){
   const videoRefs=useRef<(HTMLVideoElement|null)[]>([]);
   const sectionRefs=useRef<(HTMLElement|null)[]>([]);
   const trackedMenu=useRef(false);
@@ -68,13 +68,13 @@ export function VideoMenu({restaurant,products}:{restaurant:Restaurant;products:
 
   useEffect(()=>{const query=matchMedia("(prefers-reduced-motion: reduce)");const update=()=>{setReducedMotion(query.matches);if(query.matches){playingIndex.current=null;videoRefs.current.forEach(video=>{if(video){video.pause();video.currentTime=0}})}};update();query.addEventListener("change",update);return()=>query.removeEventListener("change",update)},[]);
   useEffect(()=>{if(!panel)return;const closeOnEscape=(event:KeyboardEvent)=>{if(event.key==="Escape")setPanel(null)};addEventListener("keydown",closeOnEscape);return()=>removeEventListener("keydown",closeOnEscape)},[panel]);
-  useEffect(()=>{if(trackedMenu.current)return;trackedMenu.current=true;sendAnalytics({restaurantId:restaurant.id,event:"menu_view",locale:language})},[restaurant.id,language]);
-  useEffect(()=>{const product=products[active];if(!product||seenProducts.current.has(product.id))return;seenProducts.current.add(product.id);sendAnalytics({restaurantId:restaurant.id,productId:product.id,event:"product_view",locale:language})},[active,language,products,restaurant.id]);
+  useEffect(()=>{if(!analyticsEnabled||trackedMenu.current)return;trackedMenu.current=true;sendAnalytics({restaurantId:restaurant.id,event:"menu_view",locale:language})},[analyticsEnabled,restaurant.id,language]);
+  useEffect(()=>{if(!analyticsEnabled)return;const product=products[active];if(!product||seenProducts.current.has(product.id))return;seenProducts.current.add(product.id);sendAnalytics({restaurantId:restaurant.id,productId:product.id,event:"product_view",locale:language})},[active,analyticsEnabled,language,products,restaurant.id]);
   useEffect(()=>{document.documentElement.lang=language;return()=>{document.documentElement.lang="es"}},[language]);
   useEffect(()=>{setCart(parseCart(localStorage.getItem(cartKey)));setCartReady(true)},[cartKey]);
   useEffect(()=>{if(cartReady)localStorage.setItem(cartKey,JSON.stringify(cart))},[cart,cartKey,cartReady]);
 
-  const share=async()=>{let completed=false;try{await navigator.share({title:restaurant.name,url:location.href});completed=true}catch{try{await navigator.clipboard.writeText(location.href);completed=true}catch{completed=false}}if(completed)sendAnalytics({restaurantId:restaurant.id,event:"share",locale:language})};
+  const share=async()=>{let completed=false;try{await navigator.share({title:restaurant.name,url:location.href});completed=true}catch{try{await navigator.clipboard.writeText(location.href);completed=true}catch{completed=false}}if(completed&&analyticsEnabled)sendAnalytics({restaurantId:restaurant.id,event:"share",locale:language})};
   const go=(id:string)=>{document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"});setPanel(null)};
   const back=()=>history.length>1?history.back():location.assign("/");
   const manualPlaybackStarted=(index:number)=>{playingIndex.current=index;setPlaybackBlocked(current=>{if(!current.has(index))return current;const next=new Set(current);next.delete(index);return next})};
@@ -102,7 +102,7 @@ export function VideoMenu({restaurant,products}:{restaurant:Restaurant;products:
           </article>)}</div>}
           {cartDetails.length>0&&<div className="sticky bottom-0 mt-4 border-t border-white/15 bg-[var(--theme-panel)] pt-4"><div className="flex items-center justify-between text-lg"><span>{text.total}</span><strong style={{color:colors.accent}}>{currency.format(cartTotal/100)}</strong></div><p className="mt-2 text-xs leading-relaxed text-white/55">{text.saved}</p></div>}
         </div>
-        :<div className="mt-5 space-y-4 overflow-y-auto text-sm leading-relaxed text-white/70">{restaurantDescription&&<p>{restaurantDescription}</p>}{restaurant.address&&<p className="flex gap-3"><MapPin style={{color:colors.accent}} className="mt-0.5 shrink-0" size={18}/><span>{restaurant.address}</span></p>}{restaurant.phone&&<a className="flex gap-3 text-white" href={`tel:${restaurant.phone}`} onClick={()=>sendAnalytics({restaurantId:restaurant.id,event:"contact_click",locale:language})}><Phone style={{color:colors.accent}} className="shrink-0" size={18}/>{restaurant.phone}</a>}<div className="flex flex-wrap gap-2">{restaurant.instagram_url&&<a className="rounded-full border border-white/15 px-4 py-2" target="_blank" rel="noreferrer" href={restaurant.instagram_url} onClick={()=>sendAnalytics({restaurantId:restaurant.id,event:"contact_click",locale:language})}>Instagram</a>}{restaurant.website_url&&<a className="rounded-full border border-white/15 px-4 py-2" target="_blank" rel="noreferrer" href={restaurant.website_url} onClick={()=>sendAnalytics({restaurantId:restaurant.id,event:"contact_click",locale:language})}>{text.website}</a>}</div></div>}
+        :<div className="mt-5 space-y-4 overflow-y-auto text-sm leading-relaxed text-white/70">{restaurantDescription&&<p>{restaurantDescription}</p>}{restaurant.address&&<p className="flex gap-3"><MapPin style={{color:colors.accent}} className="mt-0.5 shrink-0" size={18}/><span>{restaurant.address}</span></p>}{restaurant.phone&&<a className="flex gap-3 text-white" href={`tel:${restaurant.phone}`} onClick={()=>analyticsEnabled&&sendAnalytics({restaurantId:restaurant.id,event:"contact_click",locale:language})}><Phone style={{color:colors.accent}} className="shrink-0" size={18}/>{restaurant.phone}</a>}<div className="flex flex-wrap gap-2">{restaurant.instagram_url&&<a className="rounded-full border border-white/15 px-4 py-2" target="_blank" rel="noreferrer" href={restaurant.instagram_url} onClick={()=>analyticsEnabled&&sendAnalytics({restaurantId:restaurant.id,event:"contact_click",locale:language})}>Instagram</a>}{restaurant.website_url&&<a className="rounded-full border border-white/15 px-4 py-2" target="_blank" rel="noreferrer" href={restaurant.website_url} onClick={()=>analyticsEnabled&&sendAnalytics({restaurantId:restaurant.id,event:"contact_click",locale:language})}>{text.website}</a>}</div></div>}
       </aside>
     </div>}
 

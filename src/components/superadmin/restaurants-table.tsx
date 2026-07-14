@@ -2,7 +2,7 @@
 
 import {useMemo,useState} from "react";
 import Link from "next/link";
-import {Search} from "lucide-react";
+import {ExternalLink,Search} from "lucide-react";
 import type {ManualBillingState} from "@/lib/manual-billing";
 
 export type ManagedRestaurant={id:string;name:string;slug:string;isPublished:boolean;isSuspended:boolean;status:string;template:string;products:number;categories:number;members:number;createdAt:string;paymentProvider:string|null;periodEnd:string|null;billingState:ManualBillingState};
@@ -17,7 +17,10 @@ export function RestaurantsTable({restaurants}:{restaurants:ManagedRestaurant[]}
       <div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><h2 className="truncate font-bold">{item.name}</h2>{item.isSuspended?<span className="rounded-full bg-red-500/15 px-2 py-1 text-[10px] font-bold uppercase text-red-300">Suspendido</span>:<span className={`rounded-full px-2 py-1 text-[10px] font-bold uppercase ${item.isPublished?"bg-emerald-500/15 text-emerald-300":"bg-amber-500/15 text-amber-300"}`}>{item.isPublished?"Publicado":"Borrador"}</span>}</div><p className="mt-1 truncate text-xs text-slate-500">/{item.slug} · {new Intl.DateTimeFormat("es-ES",{dateStyle:"medium"}).format(new Date(item.createdAt))}</p></div>
       <Stat label="Productos" value={item.products}/><Stat label="Categorías" value={item.categories}/><Stat label="Miembros" value={item.members}/>
       <div><p className="text-xs text-slate-500">Suscripción</p><p className="mt-1 text-sm font-semibold capitalize">{item.status}</p><BillingLabel state={item.billingState} provider={item.paymentProvider} periodEnd={item.periodEnd}/></div>
-      <Link href={`/superadmin/restaurants/${item.id}`} className="rounded-xl bg-violet-600 px-4 py-2 text-center text-sm font-semibold hover:bg-violet-500">Gestionar</Link>
+      <div className="grid grid-cols-2 gap-2">
+        <Link href={`/superadmin-preview/${item.id}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-white/15 px-3 py-2 text-center text-sm font-semibold hover:bg-white/10"><ExternalLink size={15}/>Ver carta</Link>
+        <Link href={`/superadmin/restaurants/${item.id}`} className="whitespace-nowrap rounded-xl bg-violet-600 px-4 py-2 text-center text-sm font-semibold hover:bg-violet-500">Gestionar</Link>
+      </div>
     </article>)}{!visible.length&&<p className="p-8 text-center text-sm text-slate-500">No hay restaurantes con este filtro.</p>}</div>
   </section>;
 }
