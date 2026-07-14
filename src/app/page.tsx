@@ -1,4 +1,5 @@
 import Link from "next/link";
+import {LandingPreviewVideo} from "@/components/marketing/landing-preview-video";
 
 export default function Home() {
   return (
@@ -47,14 +48,7 @@ export default function Home() {
             {/* Pantalla interna simulada */}
             <div className="relative h-full w-full overflow-hidden rounded-[2rem] bg-slate-900 flex flex-col justify-end px-5 pb-6 pt-4">
               {/* Etiqueta de vídeo nativa integrada */}
-              <video
-                className="absolute inset-0 h-full w-full object-cover z-0"
-                autoPlay
-                muted
-                loop
-                playsInline
-                src="https://res.cloudinary.com/det6jfwzx/video/upload/v1783700256/Generame_un_video_de_una_hambu_oo9gur.mp4" 
-              />
+              <LandingPreviewVideo/>
 
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent z-10 pointer-events-none" />
               

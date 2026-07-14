@@ -10,15 +10,19 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [pending, setPending] = useState(false);
   const router = useRouter();
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if(pending)return;
+    setPending(true);
+    setError("");
     const { error } = await createClient().auth.signInWithPassword({
       email,
       password,
     });
-    if (error) setError(error.message);
+    if (error){setError(error.message);setPending(false)}
     else router.push("/dashboard");
   }
 
@@ -29,7 +33,8 @@ export default function Login() {
       <div className="absolute bottom-1/4 right-1/3 -z-10 h-80 w-80 rounded-full bg-violet-500/10 blur-[150px]" />
 
       <form 
-        onSubmit={submit} 
+        onSubmit={submit}
+        aria-busy={pending}
         className="relative w-full max-w-md rounded-[2rem] border border-slate-800 bg-slate-950/60 p-8 shadow-2xl shadow-violet-950/10 backdrop-blur-xl ring-1 ring-white/5"
       >
         {/* Cabecera del formulario */}
@@ -52,6 +57,7 @@ export default function Login() {
             <input 
               required 
               type="email" 
+              autoComplete="email"
               value={email} 
               onChange={e => setEmail(e.target.value)} 
               placeholder="tu@restaurante.com"
@@ -64,6 +70,7 @@ export default function Login() {
             <PasswordInput 
               id="login-password"
               required 
+              autoComplete="current-password"
               value={password} 
               onChange={e => setPassword(e.target.value)} 
               placeholder="••••••••"
@@ -80,8 +87,8 @@ export default function Login() {
         )}
 
         {/* Botón de Acción Principal */}
-        <button className="mt-6 w-full rounded-xl bg-violet-600 py-3.5 font-semibold text-white shadow-lg shadow-violet-600/20 transition-all duration-200 hover:bg-violet-500 hover:shadow-violet-500/30 focus:outline-none focus:ring-2 focus:ring-violet-500/50">
-          Entrar al panel
+        <button disabled={pending} className="mt-6 w-full rounded-xl bg-violet-600 py-3.5 font-semibold text-white shadow-lg shadow-violet-600/20 transition-all duration-200 hover:bg-violet-500 hover:shadow-violet-500/30 focus:outline-none focus:ring-2 focus:ring-violet-500/50 disabled:cursor-wait disabled:opacity-60">
+          {pending?"Accediendo…":"Entrar al panel"}
         </button>
 
         {/* Links Inferiores */}

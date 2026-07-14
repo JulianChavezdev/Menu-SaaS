@@ -57,13 +57,15 @@ export function VideoMenu({restaurant,products}:{restaurant:Restaurant;products:
 
   useEffect(()=>{if(trackedMenu.current)return;trackedMenu.current=true;sendAnalytics({restaurantId:restaurant.id,event:"menu_view",locale:language})},[restaurant.id,language]);
   useEffect(()=>{const product=products[active];if(!product||seenProducts.current.has(product.id))return;seenProducts.current.add(product.id);sendAnalytics({restaurantId:restaurant.id,productId:product.id,event:"product_view",locale:language})},[active,language,products,restaurant.id]);
+  useEffect(()=>{document.documentElement.lang=language;return()=>{document.documentElement.lang="es"}},[language]);
 
   const share=async()=>{let completed=false;try{await navigator.share({title:restaurant.name,url:location.href});completed=true}catch{try{await navigator.clipboard.writeText(location.href);completed=true}catch{completed=false}}if(completed)sendAnalytics({restaurantId:restaurant.id,event:"share",locale:language})};
   const go=(id:string)=>{document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"});setPanel(null)};
   const back=()=>history.length>1?history.back():location.assign("/");
   const manualPlaybackStarted=(index:number)=>{playingIndex.current=index;setPlaybackBlocked(current=>{if(!current.has(index))return current;const next=new Set(current);next.delete(index);return next})};
 
-  return <main data-template={template.key} style={themeStyle} className="public-menu relative h-dvh snap-y snap-mandatory overflow-y-auto overscroll-y-contain scroll-smooth bg-[var(--theme-bg)] text-white md:mx-auto md:max-w-[430px] md:border-x md:border-white/10 md:shadow-2xl">
+  return <main aria-label={`Carta de ${restaurant.name}`} data-template={template.key} style={themeStyle} className="public-menu relative h-dvh snap-y snap-mandatory overflow-y-auto overscroll-y-contain scroll-smooth bg-[var(--theme-bg)] text-white md:mx-auto md:max-w-[430px] md:border-x md:border-white/10 md:shadow-2xl">
+    <h1 className="sr-only">{restaurant.name}: carta en vídeo</h1>
     <header style={{background:`linear-gradient(to bottom,${colors.background}f2,${colors.background}a8,transparent)`}} className="pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-center justify-between px-4 pb-10 pt-[max(1rem,env(safe-area-inset-top))]">
       <button aria-label="Volver" onClick={back} className="pointer-events-auto grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-black/30 backdrop-blur-md"><ArrowLeft size={20}/></button>
       <div className="flex min-w-0 flex-1 justify-center px-3">{restaurant.logo_url?<span role="img" aria-label={`Logo de ${restaurant.name}`} className="h-12 w-32 bg-contain bg-center bg-no-repeat drop-shadow-[0_2px_8px_rgba(0,0,0,.9)]" style={{backgroundImage:`url(${restaurant.logo_url})`}}/>:<strong className="truncate text-lg tracking-tight drop-shadow-lg">{restaurant.name}</strong>}</div>
@@ -85,7 +87,7 @@ export function VideoMenu({restaurant,products}:{restaurant:Restaurant;products:
       <ThemeVectors motif={template.motif} accent={colors.accent} accent2={colors.accent2} className="absolute inset-0 z-[2] h-full w-full"/>
       <div data-product-details style={card?{background:`${colors.panel}d9`,borderColor:colors.frame}:undefined} className={`relative z-10 w-full max-h-[34dvh] overflow-hidden text-shadow-lg ${card?"mb-1 rounded-[22px] border p-4 shadow-2xl backdrop-blur-xl":""}`}>
         <div className="mb-2 flex min-w-0 items-center gap-2"><span style={{color:colors.accent,borderColor:colors.frame,background:`${colors.panel}b8`}} className="max-w-[65%] truncate rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-[.15em] backdrop-blur-md">{translatedField(product.categories??{},"name",language,product.categories?.name)}</span>{product.is_featured&&<span className="truncate text-[11px] font-medium text-white/70">★ {text.featured}</span>}</div>
-        <h1 className="line-clamp-2 max-w-[340px] text-[clamp(1.55rem,7vw,2.25rem)] font-semibold leading-[1.02] tracking-[-.035em]">{translatedField(product,"name",language,product.name)}</h1>
+        <h2 className="line-clamp-2 max-w-[340px] text-[clamp(1.55rem,7vw,2.25rem)] font-semibold leading-[1.02] tracking-[-.035em]">{translatedField(product,"name",language,product.name)}</h2>
         {translatedField(product,"description",language,product.description)&&<p className="mt-2 line-clamp-2 max-w-[350px] text-[13px] leading-[1.45] text-white/75">{translatedField(product,"description",language,product.description)}</p>}
         <div className="mt-3"><strong style={{color:colors.accent}} className="text-xl font-semibold tabular-nums">{new Intl.NumberFormat(language==="es"?"es-ES":"en-US",{style:"currency",currency:restaurant.currency}).format(product.price_cents/100)}</strong></div>
       </div>

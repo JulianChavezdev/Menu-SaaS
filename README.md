@@ -11,7 +11,7 @@ npm run check:env
 npm run dev
 ```
 
-Configura en Supabase las Redirect URLs de Auth y el bucket público `restaurant-media`. Las políticas de Storage limitan las escrituras a miembros del restaurante.
+Configura en Supabase las Redirect URLs de Auth y el bucket público `restaurant-media`. Las políticas de Storage limitan las escrituras a miembros del restaurante, validan las rutas exactas de logos y vídeos y rechazan archivos mayores de 50 MB o con formatos no permitidos.
 
 Variables obligatorias: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` —solo servidor— y `NEXT_PUBLIC_APP_URL`.
 
@@ -77,6 +77,7 @@ El escaparate persistente incluye cinco restaurantes aislados, logos SVG y víde
 ```bash
 npm run seed:showcase
 npm run check:showcase
+npm run check:media
 ```
 
 ## Analíticas privadas
@@ -96,6 +97,8 @@ npm audit
 ```
 
 Las pruebas E2E y de integración necesitan credenciales de Supabase y todas las migraciones aplicadas.
+
+Antes de un despliegue ejecuta además `npm run check:release`. Esta comprobación exige el dominio HTTPS definitivo, una allowlist de superadmin, migraciones completas, demo íntegra, vídeos disponibles y una configuración de Stripe completa o totalmente desactivada.
 
 ## Despliegue futuro
 

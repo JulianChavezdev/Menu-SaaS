@@ -68,6 +68,10 @@ const checks=[
       return {error:error?.code==="22023"?null:(error??new Error("Analytics validation did not run"))};
     },
   },
+  {
+    migration:"202607140004_storage_upload_hardening.sql",
+    run:()=>supabase.rpc("can_manage_restaurant_media",{object_name:"invalid"}),
+  },
 ];
 
 const pending=[];
