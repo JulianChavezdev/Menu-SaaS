@@ -17,7 +17,8 @@
     "check:showcase": "node scripts/seed-showcase.mjs --verify",
     "check:media": "node scripts/check-showcase-media.mjs",
     "check:release": "node scripts/check-env.mjs --production && node scripts/check-db.mjs && node scripts/seed-showcase.mjs --verify && node scripts/check-showcase-media.mjs",
-    "check:deployment": "node scripts/check-deployment.mjs"
+    "check:deployment": "node scripts/check-deployment.mjs",
+    "cleanup:media": "node scripts/cleanup-orphan-media.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

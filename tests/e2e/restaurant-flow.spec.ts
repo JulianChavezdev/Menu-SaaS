@@ -21,7 +21,13 @@ test.describe("restaurant owner journey",()=>{
   test.afterAll(async()=>{
     if(!admin||!userId)return;
     const {data:restaurants}=await admin.from("restaurants").select("id").eq("owner_id",userId);
-    for(const restaurant of restaurants??[])await admin.from("restaurants").delete().eq("id",restaurant.id);
+    for(const restaurant of restaurants??[]){
+      const prefix=`restaurants/${restaurant.id}/branding`;
+      const {data:logos}=await admin.storage.from("restaurant-media").list(prefix,{limit:100});
+      const paths=(logos??[]).filter(item=>item.id).map(item=>`${prefix}/${item.name}`);
+      if(paths.length)await admin.storage.from("restaurant-media").remove(paths);
+      await admin.from("restaurants").delete().eq("id",restaurant.id);
+    }
     await admin.auth.admin.deleteUser(userId);
   });
 

@@ -49,6 +49,8 @@ El panel permite ver métricas globales, buscar restaurantes, editar configuraci
 
 El superadmin también construye un historial de altas de seis meses y proyecta cuándo se alcanzará el objetivo usando la media móvil de los últimos 90 días. La proyección se recalcula con los datos existentes y no requiere tareas programadas ni guarda información adicional.
 
+La sustitución de un logo elimina el archivo anterior. Para auditar Storage manualmente, `npm run cleanup:media` simula la limpieza de archivos sin referencia; solo `npm run cleanup:media -- --apply` los elimina. El flujo E2E también retira sus propios archivos temporales.
+
 ## Planes y pagos
 
 La beta funciona sin cobros: el plan de prueba admite hasta **3 productos y 5 categorías**. Esos límites se validan en servidor y en la base de datos.
