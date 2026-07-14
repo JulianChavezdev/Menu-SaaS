@@ -6,7 +6,7 @@ import {recordPaymentReminder} from "@/app/superadmin/actions";
 
 export function PaymentReminder({restaurantId,restaurantName,phone,email,periodEnd}:{restaurantId:string;restaurantName:string;phone:string|null;email:string|null;periodEnd:string}){
   const date=new Intl.DateTimeFormat("es-ES",{dateStyle:"long"}).format(new Date(periodEnd));
-  const message=`Hola, ${restaurantName}. Te recordamos que la suscripción de tu carta vence el ${date}. Cuando realices el Bizum, envíanos el justificante para mantener activo el servicio. Gracias.`;
+  const message=`Hola, ${restaurantName}. Te recordamos que la suscripción de tu carta vence el ${date}. Cuando realices el pago, envíanos el justificante para mantener activo el servicio. Gracias.`;
   const track=async(channel:"copy"|"whatsapp"|"email")=>{const form=new FormData();form.set("restaurant_id",restaurantId);form.set("channel",channel);form.set("period_end",periodEnd);await recordPaymentReminder(form)};
   const safeTrack=(channel:"whatsapp"|"email")=>void track(channel).catch(()=>toast.error("No se pudo registrar el aviso"));
   const copy=async()=>{try{await navigator.clipboard.writeText(message);await track("copy");toast.success("Aviso copiado")}catch{toast.error("No se pudo copiar el aviso")}};

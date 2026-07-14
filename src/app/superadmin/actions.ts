@@ -8,6 +8,7 @@ import {requireSuperadmin} from "@/lib/superadmin";
 
 const uuid=z.string().uuid();
 const status=z.enum(["trialing","active","past_due","canceled"]);
+const paymentMethod=z.enum(["bizum","cash","bank_transfer","other"]);
 const restaurantInput=z.object({
   restaurant_id:uuid,name:z.string().trim().min(2).max(80),slug:z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   description:z.string().trim().max(500),email:z.string().trim().max(200),phone:z.string().trim().max(60),address:z.string().trim().max(250),
@@ -22,15 +23,15 @@ async function audit(admin:Awaited<ReturnType<typeof requireSuperadmin>>["admin"
 function refresh(restaurantId:string,slug?:string){revalidatePath("/superadmin");revalidatePath(`/superadmin/restaurants/${restaurantId}`);revalidatePath("/dashboard/billing");if(slug)revalidatePath(`/r/${slug}`)}
 
 export async function recordManualPayment(form:FormData){
-  const parsed=z.object({restaurant_id:uuid,amount:z.coerce.number().positive().max(100000),currency:z.enum(["EUR","USD","GBP","MXN"]),paid_at:z.string().regex(/^\d{4}-\d{2}-\d{2}$/),period_end:z.string().regex(/^\d{4}-\d{2}-\d{2}$/),reference:z.string().trim().max(100),notes:z.string().trim().max(500)}).safeParse(Object.fromEntries(form));
+  const parsed=z.object({restaurant_id:uuid,method:paymentMethod,amount:z.coerce.number().positive().max(100000),currency:z.enum(["EUR","USD","GBP","MXN"]),paid_at:z.string().regex(/^\d{4}-\d{2}-\d{2}$/),period_end:z.string().regex(/^\d{4}-\d{2}-\d{2}$/),reference:z.string().trim().max(100),notes:z.string().trim().max(500)}).safeParse(Object.fromEntries(form));
   if(!parsed.success)throw new Error("Revisa los datos del pago.");
   const paidAt=new Date(`${parsed.data.paid_at}T12:00:00.000Z`);
   const periodEnd=new Date(`${parsed.data.period_end}T23:59:59.999Z`);
   if(periodEnd<paidAt)throw new Error("El acceso no puede vencer antes del pago.");
   const {admin,user}=await requireSuperadmin();
-  const {error}=await admin.rpc("record_manual_payment",{target_restaurant:parsed.data.restaurant_id,payment_amount_cents:Math.round(parsed.data.amount*100),payment_currency:parsed.data.currency,payment_method:"bizum",payment_paid_at:paidAt.toISOString(),payment_period_end:periodEnd.toISOString(),payment_reference:parsed.data.reference,payment_notes:parsed.data.notes,actor_user:user.id});
+  const {error}=await admin.rpc("record_manual_payment",{target_restaurant:parsed.data.restaurant_id,payment_amount_cents:Math.round(parsed.data.amount*100),payment_currency:parsed.data.currency,payment_method:parsed.data.method,payment_paid_at:paidAt.toISOString(),payment_period_end:periodEnd.toISOString(),payment_reference:parsed.data.reference,payment_notes:parsed.data.notes,actor_user:user.id});
   if(error)throw new Error(error.message);
-  await audit(admin,user.id,parsed.data.restaurant_id,"payment.manual_recorded",{amount_cents:Math.round(parsed.data.amount*100),currency:parsed.data.currency,method:"bizum",period_end:periodEnd.toISOString(),reference:parsed.data.reference||null});
+  await audit(admin,user.id,parsed.data.restaurant_id,"payment.manual_recorded",{amount_cents:Math.round(parsed.data.amount*100),currency:parsed.data.currency,method:parsed.data.method,period_end:periodEnd.toISOString(),reference:parsed.data.reference||null});
   refresh(parsed.data.restaurant_id);
   redirect(`/superadmin/restaurants/${parsed.data.restaurant_id}?payment=recorded`);
 }

@@ -1,7 +1,7 @@
 import {readFileSync} from "node:fs";
 import {describe,expect,it} from "vitest";
 
-type Showcase={restaurants:Array<{slug:string;logoUrl:string;template:string;categories:Array<{slug:string}>;products:Array<{name:string;category:string;videoUrl:string}>}>};
+type Showcase={restaurants:Array<{slug:string;logoUrl:string;template:string;categories:Array<{slug:string}>;products:Array<{name:string;category:string;videoUrl:string;videoSourceUrl:string}>}>};
 const showcase=JSON.parse(readFileSync("supabase/showcase-data.json","utf8")) as Showcase;
 
 describe("showcase multi-restaurante",()=>{
@@ -20,7 +20,8 @@ describe("showcase multi-restaurante",()=>{
       expect(restaurant.products).toHaveLength(3);
       for(const product of restaurant.products){
         expect(categories.has(product.category)).toBe(true);
-        expect(product.videoUrl).toMatch(/^https:\/\/res\.cloudinary\.com\//);
+        expect(product.videoUrl).toMatch(/^https:\/\/videos\.pexels\.com\/video-files\//);
+        expect(product.videoSourceUrl).toMatch(/^https:\/\/www\.pexels\.com\/video\//);
       }
     }
   });
