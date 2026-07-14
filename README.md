@@ -45,6 +45,8 @@ El panel permite ver métricas globales, buscar restaurantes, editar configuraci
 
 La beta funciona sin cobros: el plan de prueba admite hasta **3 productos y 5 categorías**. Esos límites se validan en servidor y en la base de datos.
 
+Mientras Stripe permanezca desactivado, el superadmin puede registrar pagos recibidos por Bizum. Cada registro conserva importe, fecha, referencia, nota interna y vencimiento; la confirmación activa el Plan Carta y restaura una cuenta suspendida. El restaurante ve que su suscripción es manual y nunca se inicia un cobro automático.
+
 Stripe queda preparado para una fase posterior, pero el checkout permanece desactivado mientras no existan `STRIPE_SECRET_KEY` y `STRIPE_PLAN_PRICE_ID`. Cuando se active:
 
 1. Crea un precio recurrente en Stripe.

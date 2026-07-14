@@ -50,6 +50,10 @@ const checks=[
       return {error:results.find(result=>result.error)?.error??null};
     },
   },
+  {
+    migration:"202607140001_manual_payments.sql",
+    run:()=>supabase.from("manual_payments").select("id",{head:true}).limit(1),
+  },
 ];
 
 const pending=[];

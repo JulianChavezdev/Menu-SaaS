@@ -9,7 +9,7 @@ export default async function Page({searchParams}:{searchParams:Promise<{from?:s
   const {from,checkout}=await searchParams;
   const {supabase,restaurant}=await activeRestaurant();
   const[{data:subscription},{count:products},{count:categories}]=await Promise.all([
-    supabase.from("subscriptions").select("plan,status,current_period_end").eq("restaurant_id",restaurant.id).maybeSingle(),
+    supabase.from("subscriptions").select("plan,status,provider,current_period_end").eq("restaurant_id",restaurant.id).maybeSingle(),
     supabase.from("products").select("id",{count:"exact",head:true}).eq("restaurant_id",restaurant.id),
     supabase.from("categories").select("id",{count:"exact",head:true}).eq("restaurant_id",restaurant.id),
   ]);
@@ -20,7 +20,8 @@ export default async function Page({searchParams}:{searchParams:Promise<{from?:s
   const checkoutReady=checkoutIsConfigured(process.env.STRIPE_SECRET_KEY,process.env.STRIPE_PLAN_PRICE_ID);
   return <main className="mx-auto max-w-5xl p-4 md:p-6">
     <div className="border-b border-slate-800 pb-4"><BackButton fallback="/dashboard"/><h1 className="mt-4 text-2xl font-extrabold">Suscripción</h1><p className="mt-1 text-sm text-slate-400">Gestiona los límites y las funciones premium de tu restaurante.</p></div>
-    {from==="templates"&&!active&&<div className="mt-5 rounded-2xl border border-amber-400/25 bg-amber-400/10 p-4 text-sm text-amber-100"><strong>La plantilla Medianoche forma parte del Plan Carta.</strong><span className="mt-1 block text-amber-100/70">Activa el plan para seleccionarla y mantenerla publicada.</span></div>}
+    {from==="templates"&&!active&&<div className="mt-5 rounded-2xl border border-amber-400/25 bg-amber-400/10 p-4 text-sm text-amber-100"><strong>Las plantillas premium forman parte del Plan Carta.</strong><span className="mt-1 block text-amber-100/70">Activa el plan para seleccionarlas y mantenerlas publicadas.</span></div>}
+    {subscription?.provider==="manual"&&active&&<div className="mt-5 rounded-2xl border border-emerald-400/25 bg-emerald-400/10 p-4 text-sm text-emerald-100"><strong>Suscripción gestionada manualmente.</strong><span className="mt-1 block text-emerald-100/70">Tu pago ha sido confirmado y no se realizará ningún cobro automático.</span></div>}
     {checkout==="success"&&<div className="mt-5 rounded-2xl border border-emerald-400/25 bg-emerald-400/10 p-4 text-sm text-emerald-100"><strong>Checkout completado.</strong><span className="mt-1 block text-emerald-100/70">Estamos verificando la suscripción con Stripe.</span></div>}
     {checkout==="canceled"&&<div className="mt-5 rounded-2xl border border-slate-600 bg-slate-800/50 p-4 text-sm text-slate-300">El pago se canceló y no se realizó ningún cambio.</div>}
     <div className="mt-6 grid gap-5 lg:grid-cols-[1fr_1.1fr]">

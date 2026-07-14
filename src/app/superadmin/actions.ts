@@ -19,7 +19,21 @@ async function audit(admin:Awaited<ReturnType<typeof requireSuperadmin>>["admin"
   await admin.from("superadmin_audit_log").insert({actor_user_id:actorUserId,restaurant_id:restaurantId,action,details}).throwOnError();
 }
 
-function refresh(restaurantId:string,slug?:string){revalidatePath("/superadmin");revalidatePath(`/superadmin/restaurants/${restaurantId}`);if(slug)revalidatePath(`/r/${slug}`)}
+function refresh(restaurantId:string,slug?:string){revalidatePath("/superadmin");revalidatePath(`/superadmin/restaurants/${restaurantId}`);revalidatePath("/dashboard/billing");if(slug)revalidatePath(`/r/${slug}`)}
+
+export async function recordManualPayment(form:FormData){
+  const parsed=z.object({restaurant_id:uuid,amount:z.coerce.number().positive().max(100000),currency:z.enum(["EUR","USD","GBP","MXN"]),paid_at:z.string().regex(/^\d{4}-\d{2}-\d{2}$/),period_end:z.string().regex(/^\d{4}-\d{2}-\d{2}$/),reference:z.string().trim().max(100),notes:z.string().trim().max(500)}).safeParse(Object.fromEntries(form));
+  if(!parsed.success)throw new Error("Revisa los datos del pago.");
+  const paidAt=new Date(`${parsed.data.paid_at}T12:00:00.000Z`);
+  const periodEnd=new Date(`${parsed.data.period_end}T23:59:59.999Z`);
+  if(periodEnd<paidAt)throw new Error("El acceso no puede vencer antes del pago.");
+  const {admin,user}=await requireSuperadmin();
+  const {error}=await admin.rpc("record_manual_payment",{target_restaurant:parsed.data.restaurant_id,payment_amount_cents:Math.round(parsed.data.amount*100),payment_currency:parsed.data.currency,payment_method:"bizum",payment_paid_at:paidAt.toISOString(),payment_period_end:periodEnd.toISOString(),payment_reference:parsed.data.reference,payment_notes:parsed.data.notes,actor_user:user.id});
+  if(error)throw new Error(error.message);
+  await audit(admin,user.id,parsed.data.restaurant_id,"payment.manual_recorded",{amount_cents:Math.round(parsed.data.amount*100),currency:parsed.data.currency,method:"bizum",period_end:periodEnd.toISOString(),reference:parsed.data.reference||null});
+  refresh(parsed.data.restaurant_id);
+  redirect(`/superadmin/restaurants/${parsed.data.restaurant_id}?payment=recorded`);
+}
 
 export async function updateManagedRestaurant(form:FormData){
   const parsed=restaurantInput.safeParse(Object.fromEntries(form));
