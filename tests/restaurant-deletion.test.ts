@@ -19,5 +19,8 @@ describe("eliminación protegida de restaurantes",()=>{
     expect(action).toContain("restaurant.deletion_backup_created");
     expect(action.indexOf("restaurant.deletion_backup_created")).toBeLessThan(action.indexOf('from("restaurants").delete()'));
     expect(action).toContain("path.startsWith(prefix)");
+    expect(action).toContain("memberships:memberships??[]");
+    expect(action).toContain("media_files_retained");
+    expect(action).not.toContain('storage.from("restaurant-media").remove');
   });
 });

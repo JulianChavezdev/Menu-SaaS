@@ -8,6 +8,6 @@ describe("cabecera mobile-first del superadmin",()=>{
     expect(layout).toContain("overflow-x-hidden");
     expect(layout).toContain("flex-col gap-2");
     expect(layout).toContain("sm:flex-row");
-    expect(layout).toContain("grid grid-cols-3");
+    expect(layout).toContain("grid grid-cols-4");
   });
 });

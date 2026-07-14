@@ -37,11 +37,14 @@ function logoPath(urlValue){
 
 const root=await listAll("restaurants");
 const restaurantFolders=root.filter(item=>!item.id&&/^[0-9a-f-]{36}$/i.test(item.name)).map(item=>item.name);
-const [{data:restaurants,error:restaurantError},{data:products,error:productError}]=await Promise.all([admin.from("restaurants").select("logo_url"),admin.from("products").select("video_path,image_path")]);
-if(restaurantError||productError)throw restaurantError??productError;
+const trashCutoff=new Date(Date.now()-30*24*60*60*1000).toISOString();
+const [{data:restaurants,error:restaurantError},{data:products,error:productError},{data:trashBackups,error:trashError}]=await Promise.all([admin.from("restaurants").select("logo_url"),admin.from("products").select("video_path,image_path"),admin.from("superadmin_audit_log").select("details").eq("action","restaurant.deletion_backup_created").gte("created_at",trashCutoff)]);
+if(restaurantError||productError||trashError)throw restaurantError??productError??trashError;
+const retainedTrashPaths=(trashBackups??[]).flatMap(item=>{const paths=item.details?.backup?.media_paths;return Array.isArray(paths)?paths.filter(path=>typeof path==="string"):[]});
 const referenced=new Set([
   ...(restaurants??[]).map(item=>logoPath(item.logo_url)),
   ...(products??[]).flatMap(item=>[item.video_path,item.image_path]),
+  ...retainedTrashPaths,
 ].filter(Boolean));
 const allFiles=(await Promise.all(restaurantFolders.map(id=>collectFiles(`restaurants/${id}`)))).flat();
 const orphanFiles=allFiles.filter(file=>!referenced.has(file.path));
