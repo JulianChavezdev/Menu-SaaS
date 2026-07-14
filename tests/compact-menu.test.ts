@@ -10,6 +10,9 @@ describe("ficha compacta de producto",()=>{
     expect(menu).toContain("max-h-[34dvh]");
     expect(menu).toContain("line-clamp-2");
     expect(menu).not.toContain("text-[clamp(2rem,9vw,3rem)]");
+    expect(menu).toContain("<details");
+    expect(menu).toContain('setPanel("cart")');
+    expect(menu).not.toContain("card?");
   });
 
   it("mantiene compacta la vista previa de las plantillas",()=>{

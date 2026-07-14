@@ -2,6 +2,7 @@ import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
 import {createClient} from "@/lib/supabase/server";
 import {canCreateCategory,canCreateProduct,planForStatus} from "@/lib/plans";
+import {isSuperadminUser} from "@/lib/superadmin-identity";
 
 type Restaurant={id:string;name:string;slug:string;is_published:boolean;subscription_status:"trialing"|"active"|"past_due"|"canceled";access_suspended?:boolean;suspension_reason?:string|null;suspended_at?:string|null;language_switcher_enabled?:boolean;menu_template?:string;primary_color:string;secondary_color:string;description:string|null;translations?:Record<string,{name?:string;description?:string}>|null;phone:string|null;email:string|null;address:string|null;instagram_url:string|null;website_url:string|null;logo_url:string|null;cover_url:string|null;currency:string;locale:string;timezone:string};
 type Membership={restaurant_id:string;role:string;restaurants:unknown};
@@ -25,7 +26,7 @@ export async function activeRestaurant(){
   }
   if(!member)redirect("/onboarding");
   const restaurant=restaurantOf(member);
-  if(restaurant.access_suspended)redirect("/suspended");
+  if(restaurant.access_suspended)redirect(isSuperadminUser(user)?"/superadmin":"/suspended");
   return {supabase,user,member,restaurant};
 }
 

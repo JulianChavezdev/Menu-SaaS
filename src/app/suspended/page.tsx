@@ -2,6 +2,7 @@ import {redirect} from "next/navigation";
 import {Ban} from "lucide-react";
 import {createClient} from "@/lib/supabase/server";
 import {SignOut} from "@/components/dashboard/sign-out";
+import {isSuperadminUser} from "@/lib/superadmin-identity";
 
 export const metadata={title:"Acceso suspendido",robots:{index:false,follow:false}};
 
@@ -9,6 +10,7 @@ export default async function SuspendedPage(){
   const supabase=await createClient();
   const {data:{user}}=await supabase.auth.getUser();
   if(!user)redirect("/login");
+  if(isSuperadminUser(user))redirect("/superadmin");
   const {data}=await supabase.from("restaurant_members").select("restaurants(name,access_suspended,suspension_reason)").eq("user_id",user.id);
   const restaurant=(data??[]).map(item=>item.restaurants as unknown as {name:string;access_suspended:boolean;suspension_reason:string|null}).find(item=>item?.access_suspended);
   if(!restaurant)redirect("/dashboard");

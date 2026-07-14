@@ -43,4 +43,23 @@ test.describe("public menu responsive contract",()=>{
     await expect(page.getByRole("button",{name:"Cambiar a inglés"})).toHaveCount(0);
     await expect(page.getByRole("navigation",{name:"Controles de la carta"})).toBeVisible();
   });
+
+  test("keeps a local cart with quantities and product notes",async({page})=>{
+    await page.setViewportSize({width:390,height:844});
+    await page.goto("/r/bistro-nube",{waitUntil:"domcontentloaded"});
+
+    const burger=page.locator("section").filter({has:page.getByRole("heading",{name:"Hamburguesa Nebulosa",exact:true})});
+    await burger.getByRole("button",{name:"Añadir",exact:true}).click();
+    await expect(page.getByRole("button",{name:"Carrito: 1"})).toBeVisible();
+    await page.getByRole("button",{name:"Carrito: 1"}).click();
+    await expect(page.getByRole("heading",{name:"Carrito · 1"})).toBeVisible();
+    await page.getByPlaceholder("Añade o quita ingredientes").fill("Sin cebolla, añade queso");
+    await expect(page.getByText("Guardado en este dispositivo. No se envía a cocina.")).toBeVisible();
+
+    await page.reload({waitUntil:"domcontentloaded"});
+    await page.getByRole("button",{name:"Carrito: 1"}).click();
+    await expect(page.getByPlaceholder("Añade o quita ingredientes")).toHaveValue("Sin cebolla, añade queso");
+    await page.getByRole("button",{name:"Añadir una unidad de Hamburguesa Nebulosa"}).click();
+    await expect(page.getByRole("heading",{name:"Carrito · 2"})).toBeVisible();
+  });
 });
