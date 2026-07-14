@@ -13,7 +13,7 @@ export async function GET(request:Request,{params}:{params:Promise<{id:string}>}
   if(!UUID.test(id))return NextResponse.json({error:"Invalid restaurant"},{status:400,headers:privateHeaders});
   const format=new URL(request.url).searchParams.get("format")==="csv"?"csv":"json";
   const {admin,user}=context;
-  const[{data:restaurant,error},{data:categories},{data:products},{data:members},{data:subscription},{data:payments},{data:analytics},{data:audit}]=await Promise.all([
+  const[{data:restaurant,error},{data:categories,error:categoriesError},{data:products,error:productsError},{data:members,error:membersError},{data:subscription,error:subscriptionError},{data:payments,error:paymentsError},{data:analytics,error:analyticsError},{data:audit,error:auditError}]=await Promise.all([
     admin.from("restaurants").select("*").eq("id",id).maybeSingle(),
     admin.from("categories").select("*").eq("restaurant_id",id).order("sort_order"),
     admin.from("products").select("*,categories(name)").eq("restaurant_id",id).order("sort_order"),
@@ -24,6 +24,7 @@ export async function GET(request:Request,{params}:{params:Promise<{id:string}>}
     admin.from("superadmin_audit_log").select("id,actor_user_id,action,details,created_at").eq("restaurant_id",id).order("created_at"),
   ]);
   if(error||!restaurant)return NextResponse.json({error:"Restaurant not found"},{status:404,headers:privateHeaders});
+  if(categoriesError||productsError||membersError||subscriptionError||paymentsError||analyticsError||auditError)return NextResponse.json({error:"Backup unavailable"},{status:503,headers:privateHeaders});
   const identities=await Promise.all((members??[]).map(async member=>{const result=await admin.auth.admin.getUserById(member.user_id);return{...member,email:result.data.user?.email??null}}));
   const owner=await admin.auth.admin.getUserById(restaurant.owner_id);
   const filename=safeExportName(restaurant.slug);

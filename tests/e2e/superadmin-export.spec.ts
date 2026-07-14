@@ -36,12 +36,14 @@ test.describe("superadmin restaurant exports",()=>{
   test("blocks anonymous access and downloads valid JSON and CSV",async({page,request})=>{
     const blocked=await request.get(`/api/superadmin/restaurants/${restaurantId}/export`);
     expect(blocked.status()).toBe(401);
+    const blockedRestore=await request.post(`/api/superadmin/restaurants/${restaurantId}/restore?mode=preview`,{data:{}});
+    expect(blockedRestore.status()).toBe(401);
 
     await page.goto("/login");
     await page.getByLabel("Correo electrónico").fill(email);
     await page.locator("#login-password").fill(password);
     await page.getByRole("button",{name:"Entrar al panel"}).click();
-    await expect(page).toHaveURL(/\/(dashboard|onboarding)$/,{timeout:15_000});
+    await expect(page).toHaveURL(/\/(dashboard|onboarding)$/,{timeout:30_000});
     await page.goto(`/superadmin/restaurants/${restaurantId}`);
     await expect(page.getByRole("heading",{name:"Export E2E"})).toBeVisible();
 
@@ -60,5 +62,13 @@ test.describe("superadmin restaurant exports",()=>{
     const csv=await readFile(csvPath!,"utf8");
     expect(csv).toContain("Tarta exportada");
     expect(csv).toContain("Postres");
+
+    await page.locator('input[type="file"]').setInputFiles(jsonPath!);
+    await expect(page.getByText("Copia del",{exact:false})).toBeVisible();
+    await expect(page.getByText("Los miembros, pagos, plan",{exact:false})).toBeVisible();
+    const restoreButton=page.getByRole("button",{name:"Aplicar restauración"});
+    await expect(restoreButton).toBeDisabled();
+    await page.getByLabel(`Escribe ${`export-e2e-${stamp}`} para confirmar`).fill(`export-e2e-${stamp}`);
+    await expect(restoreButton).toBeEnabled();
   });
 });

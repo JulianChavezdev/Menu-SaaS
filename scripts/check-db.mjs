@@ -76,6 +76,13 @@ const checks=[
     migration:"202607140005_platform_resource_metrics.sql",
     run:()=>supabase.rpc("get_platform_resource_metrics"),
   },
+  {
+    migration:"202607140006_restaurant_backup_restore.sql",
+    run:async()=>{
+      const {error}=await supabase.rpc("restore_restaurant_content",{target_restaurant:randomId,backup_restaurant:{},backup_categories:[],backup_products:[],actor_user:randomId});
+      return {error:error?.code==="P0002"?null:(error??new Error("Restore validation did not run"))};
+    },
+  },
 ];
 
 const pending=[];
