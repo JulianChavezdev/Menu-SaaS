@@ -23,7 +23,7 @@ const checks=[
   },
   {
     migration:"202607130002_stripe_webhook_events.sql",
-    run:()=>supabase.from("stripe_webhook_events").select("id",{head:true}).limit(1),
+    run:()=>supabase.from("stripe_webhook_events").select("event_id",{head:true}).limit(1),
   },
   {
     migration:"202607130003_content_translations.sql",
