@@ -11,6 +11,7 @@ const stamp=`${Date.now()}-${crypto.randomUUID()}`;
 const admin=enabled?createClient(url!,serviceKey!,{auth:{persistSession:false,autoRefreshToken:false}}):null;
 let userId="";
 let restaurantId="";
+let productId="";
 
 test.describe("superadmin restaurant exports",()=>{
   test.skip(!enabled,"Supabase server credentials are required");
@@ -27,8 +28,10 @@ test.describe("superadmin restaurant exports",()=>{
     if(category.error)throw category.error;
     const product=await admin!.from("products").insert({restaurant_id:restaurantId,category_id:category.data.id,name:"Tarta exportada",description:"Respaldo verificable",price_cents:650}).select("id").single();
     if(product.error)throw product.error;
+    productId=product.data.id;
   });
   test.afterAll(async()=>{
+    if(restaurantId)await admin!.from("superadmin_audit_log").delete().eq("restaurant_id",restaurantId);
     if(restaurantId)await admin!.from("restaurants").delete().eq("id",restaurantId);
     if(userId)await admin!.auth.admin.deleteUser(userId);
   });
@@ -70,5 +73,14 @@ test.describe("superadmin restaurant exports",()=>{
     await expect(restoreButton).toBeDisabled();
     await page.getByLabel(`Escribe ${`export-e2e-${stamp}`} para confirmar`).fill(`export-e2e-${stamp}`);
     await expect(restoreButton).toBeEnabled();
+    const changed=await admin!.from("products").update({name:"Tarta modificada"}).eq("id",productId);
+    if(changed.error)throw changed.error;
+    await restoreButton.click();
+    await expect.poll(async()=>{
+      const result=await admin!.from("products").select("name").eq("id",productId).single();
+      return result.data?.name;
+    }).toBe("Tarta exportada");
+    const audit=await admin!.from("superadmin_audit_log").select("action").eq("restaurant_id",restaurantId).eq("action","restaurant.backup_restored").single();
+    expect(audit.error).toBeNull();
   });
 });
