@@ -4,3 +4,6 @@ node_modules
 *.tsbuildinfo
 playwright-report
 test-results
+
+.vercel
+.env*
