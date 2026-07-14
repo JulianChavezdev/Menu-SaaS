@@ -26,6 +26,10 @@ if(process.env.SUPERADMIN_RESTAURANT_CAPACITY){
   const capacity=Number(process.env.SUPERADMIN_RESTAURANT_CAPACITY);
   if(!Number.isInteger(capacity)||capacity<1||capacity>100_000)errors.push("SUPERADMIN_RESTAURANT_CAPACITY debe ser un entero entre 1 y 100000.");
 }
+if(process.env.SUPERADMIN_STORAGE_CAPACITY_GB){
+  const storageCapacity=Number(process.env.SUPERADMIN_STORAGE_CAPACITY_GB);
+  if(!Number.isFinite(storageCapacity)||storageCapacity<=0||storageCapacity>1_000_000)errors.push("SUPERADMIN_STORAGE_CAPACITY_GB debe ser un número mayor que 0 y menor o igual a 1000000.");
+}
 
 const stripe=["STRIPE_SECRET_KEY","STRIPE_WEBHOOK_SECRET","NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY","STRIPE_PLAN_PRICE_ID"];
 const stripeConfigured=stripe.filter(name=>Boolean(process.env[name]));

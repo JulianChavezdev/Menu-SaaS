@@ -72,6 +72,10 @@ const checks=[
     migration:"202607140004_storage_upload_hardening.sql",
     run:()=>supabase.rpc("can_manage_restaurant_media",{object_name:"invalid"}),
   },
+  {
+    migration:"202607140005_platform_resource_metrics.sql",
+    run:()=>supabase.rpc("get_platform_resource_metrics"),
+  },
 ];
 
 const pending=[];

@@ -29,6 +29,11 @@ describe("release readiness",()=>{
     expect(envCheck).toContain("capacity>100_000");
   });
 
+  it("validates the configured Storage capacity",()=>{
+    expect(envCheck).toContain("SUPERADMIN_STORAGE_CAPACITY_GB");
+    expect(envCheck).toContain("storageCapacity>1_000_000");
+  });
+
   it("rejects partially configured Stripe",()=>{
     expect(envCheck).toContain("La configuración de Stripe está incompleta");
   });
