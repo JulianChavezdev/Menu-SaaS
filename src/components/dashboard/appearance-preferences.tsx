@@ -28,9 +28,9 @@ function TemplatePreview({kind,restaurantName,logoUrl,currency,product,large=fal
     <ThemeVectors motif={template.motif} accent={colors.accent} accent2={colors.accent2} className="absolute inset-0 z-[2] h-full w-full"/>
     <div className="absolute left-3 right-3 top-3 z-10 flex h-8 items-center justify-center">{logoUrl?<span role="img" aria-label={`Logo de ${restaurantName}`} className="h-8 w-24 bg-contain bg-center bg-no-repeat drop-shadow-lg" style={{backgroundImage:`url(${logoUrl})`}}/>:<strong className={`${large?"text-base":"text-[10px]"} drop-shadow-lg`}>{restaurantName}</strong>}</div>
     <div style={card?{background:`${colors.panel}d9`,borderColor:colors.frame}:undefined} className={`absolute z-10 ${card?"bottom-16 left-4 right-4 rounded-2xl border p-3 backdrop-blur-md":"bottom-4 left-4 right-4"}`}>
-      <p style={{color:colors.accent}} className={`font-bold uppercase tracking-[.15em] ${large?"text-xs":"text-[7px]"}`}>{product?.category??"Especialidades"}</p>
-      <p className={`mt-1 font-semibold leading-none ${large?"text-3xl":"text-base"}`}>{product?.name??"Producto destacado"}</p>
-      <p style={{color:colors.accent}} className={`mt-2 font-bold ${large?"text-xl":"text-xs"}`}>{price}</p>
+      <p style={{color:colors.accent}} className={`truncate font-bold uppercase tracking-[.15em] ${large?"text-[10px]":"text-[7px]"}`}>{product?.category??"Especialidades"}</p>
+      <p className={`mt-1 line-clamp-2 font-semibold leading-none ${large?"text-2xl":"text-sm"}`}>{product?.name??"Producto destacado"}</p>
+      <p style={{color:colors.accent}} className={`mt-2 font-bold ${large?"text-lg":"text-xs"}`}>{price}</p>
     </div>
     <div style={{background:colors.nav,borderColor:colors.frame}} className="absolute bottom-2 left-1/2 z-20 flex -translate-x-1/2 gap-3 rounded-xl border px-4 py-2">{[0,1,2,3].map(item=><span key={item} style={{background:item===0?colors.accent:"rgba(255,255,255,.55)"}} className="h-1.5 w-1.5 rounded-full"/>)}</div>
   </div>;

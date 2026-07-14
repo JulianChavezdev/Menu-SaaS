@@ -45,7 +45,7 @@ El panel permite ver métricas globales, buscar restaurantes, editar configuraci
 
 La beta funciona sin cobros: el plan de prueba admite hasta **3 productos y 5 categorías**. Esos límites se validan en servidor y en la base de datos.
 
-Mientras Stripe permanezca desactivado, el superadmin puede registrar pagos recibidos por Bizum. Cada registro conserva importe, fecha, referencia, nota interna y vencimiento; la confirmación activa el Plan Carta y restaura una cuenta suspendida. El restaurante ve que su suscripción es manual y nunca se inicia un cobro automático.
+Mientras Stripe permanezca desactivado, el superadmin puede registrar pagos manuales por Bizum, efectivo, transferencia bancaria u otro método. Cada registro conserva método, importe, fecha, referencia, nota interna y vencimiento; la confirmación activa el Plan Carta y restaura una cuenta suspendida. El restaurante ve que su suscripción es manual y nunca se inicia un cobro automático.
 
 El control de vencimientos es deliberadamente manual: permite aplicar de 0 a 30 días de cortesía, marcar pagos pendientes sin bloquear el panel y ejecutar la suspensión solo tras una segunda confirmación. Los avisos se preparan para copiar, WhatsApp o correo, pero nunca se envían automáticamente; cada preparación queda auditada.
 
@@ -70,7 +70,14 @@ Si una clave secreta se comparte fuera de un almacén seguro, rótala antes de p
 
 ## Datos y demo
 
-Sin variables de Supabase, `/r/bistro-nube` utiliza una demo local con vídeos de Cloudinary y contenido español/inglés. Para datos persistentes, crea una cuenta y completa el onboarding.
+Sin variables de Supabase, `/r/bistro-nube` utiliza una demo local con vídeos gastronómicos de Pexels y contenido español/inglés. Para datos persistentes, crea una cuenta y completa el onboarding.
+
+El escaparate persistente incluye cinco restaurantes aislados, logos SVG y vídeos relacionados con cada producto. Sus páginas de procedencia quedan guardadas junto a los datos declarativos. Puede regenerarse y comprobarse de forma segura con:
+
+```bash
+npm run seed:showcase
+npm run check:showcase
+```
 
 ## Analíticas privadas
 

@@ -80,11 +80,14 @@ test.describe("restaurant owner journey",()=>{
       return data?.is_published;
     }).toBe(true);
 
+    await page.setViewportSize({width:390,height:844});
     await page.goto(`/r/${slug}`);
     await expect(page.getByRole("heading",{name:"Producto E2E"})).toBeVisible();
     await expect(page.getByText("9,50 €")).toBeVisible();
     await expect(page.getByRole("img",{name:"Logo de Restaurante E2E"})).toBeVisible();
     await expect(page.getByRole("navigation",{name:"Controles de la carta"})).toBeVisible();
+    const detailsBox=await page.locator("[data-product-details]").boundingBox();
+    expect(detailsBox?.height??844).toBeLessThan(844*.35);
     await page.getByRole("button",{name:"Cambiar a inglés"}).click();
     await expect(page.getByRole("heading",{name:"E2E Product"})).toBeVisible();
     await expect(page.getByText("Product created by a complete end-to-end test.")).toBeVisible();
