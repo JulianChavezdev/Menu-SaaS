@@ -12,7 +12,9 @@
     "test:integration": "vitest run tests/integration",
     "test:e2e": "playwright test",
     "check:env": "node scripts/check-env.mjs",
-    "check:db": "node scripts/check-db.mjs"
+    "check:db": "node scripts/check-db.mjs",
+    "seed:showcase": "node scripts/seed-showcase.mjs --apply",
+    "check:showcase": "node scripts/seed-showcase.mjs --verify"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 100" role="img" aria-labelledby="title">
+  <title id="title">Sushi Yume</title>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 50c19-25 45-25 65 0-20 25-46 25-65 0Z" stroke="#fff" stroke-width="4"/>
+    <path d="m77 50 17-16v32L77 50ZM36 50c9-9 18-9 27 0-9 9-18 9-27 0Z" stroke="#fbcfe8" stroke-width="4"/>
+  </g>
+  <text x="112" y="43" fill="#fff" font-family="Arial,sans-serif" font-size="20" font-weight="700" letter-spacing="6">SUSHI</text>
+  <text x="112" y="76" fill="#fbcfe8" font-family="Georgia,serif" font-size="34" font-weight="700" letter-spacing="7">YUME</text>
+</svg>

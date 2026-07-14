@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 100" role="img" aria-labelledby="title">
+  <title id="title">Café Central</title>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 37h57v25c0 15-13 23-28 23S18 77 18 62V37Z" stroke="#fff" stroke-width="5"/>
+    <path d="M75 44h7c16 0 15 23 0 23h-7M34 26c-7-8 6-11 0-19M55 26c-7-8 6-11 0-19" stroke="#f5d78e" stroke-width="4"/>
+  </g>
+  <text x="105" y="45" fill="#f5d78e" font-family="Georgia,serif" font-size="25" font-weight="700" letter-spacing="5">CAFÉ</text>
+  <path d="M105 54h172" stroke="#fff" stroke-width="2"/>
+  <text x="105" y="80" fill="#fff" font-family="Arial,sans-serif" font-size="20" font-weight="700" letter-spacing="5">CENTRAL</text>
+</svg>

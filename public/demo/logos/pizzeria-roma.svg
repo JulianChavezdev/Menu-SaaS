@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 100" role="img" aria-labelledby="title">
+  <title id="title">Pizzería Roma</title>
+  <g transform="translate(15 10)">
+    <circle cx="40" cy="40" r="35" fill="none" stroke="#fff" stroke-width="4"/>
+    <path d="M40 13 20 64h40L40 13Z" fill="none" stroke="#fb7185" stroke-width="4" stroke-linejoin="round"/>
+    <circle cx="36" cy="37" r="4" fill="#fff"/><circle cx="47" cy="49" r="4" fill="#fff"/>
+  </g>
+  <text x="102" y="45" fill="#fff" font-family="Georgia,serif" font-size="22" font-weight="700" letter-spacing="2">PIZZERÍA</text>
+  <text x="102" y="76" fill="#7dd3fc" font-family="Georgia,serif" font-size="31" font-weight="700" letter-spacing="6">ROMA</text>
+</svg>
