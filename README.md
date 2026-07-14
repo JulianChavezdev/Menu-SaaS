@@ -47,6 +47,8 @@ El panel permite ver métricas globales, buscar restaurantes, editar configuraci
 
 `SUPERADMIN_STORAGE_CAPACITY_GB` configura el límite de referencia de la barra de Storage. El panel mide los bytes y archivos reales del bucket, muestra visualizaciones de vídeos alojados y calcula una transferencia orientativa usando el tamaño medio de esos vídeos. La transferencia es una estimación y debe compararse con el panel de consumo del proveedor.
 
+El superadmin también construye un historial de altas de seis meses y proyecta cuándo se alcanzará el objetivo usando la media móvil de los últimos 90 días. La proyección se recalcula con los datos existentes y no requiere tareas programadas ni guarda información adicional.
+
 ## Planes y pagos
 
 La beta funciona sin cobros: el plan de prueba admite hasta **3 productos y 5 categorías**. Esos límites se validan en servidor y en la base de datos.
