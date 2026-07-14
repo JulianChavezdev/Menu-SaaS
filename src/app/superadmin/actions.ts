@@ -35,6 +35,26 @@ export async function recordManualPayment(form:FormData){
   redirect(`/superadmin/restaurants/${parsed.data.restaurant_id}?payment=recorded`);
 }
 
+export async function processManualExpirations(form:FormData){
+  const parsed=z.object({grace_days:z.coerce.number().int().min(0).max(30),operation:z.enum(["mark","suspend"])}).safeParse(Object.fromEntries(form));
+  if(!parsed.success)throw new Error("Revisa los días de cortesía.");
+  const suspend=parsed.data.operation==="suspend";
+  if(suspend&&form.get("confirm_suspension")!=="yes")throw new Error("Confirma la suspensión de las cuentas vencidas.");
+  const {admin,user}=await requireSuperadmin();
+  const {data,error}=await admin.rpc("process_manual_expirations",{grace_days:parsed.data.grace_days,suspend_access:suspend,actor_user:user.id});
+  if(error)throw new Error(error.message);
+  revalidatePath("/superadmin");revalidatePath("/dashboard");revalidatePath("/dashboard/billing");
+  redirect(`/superadmin?expiration=${suspend?"suspended":"marked"}&processed=${Number(data??0)}`);
+}
+
+export async function recordPaymentReminder(form:FormData){
+  const parsed=z.object({restaurant_id:uuid,channel:z.enum(["copy","whatsapp","email"]),period_end:z.string().datetime()}).safeParse(Object.fromEntries(form));
+  if(!parsed.success)throw new Error("Aviso de pago no válido.");
+  const {admin,user}=await requireSuperadmin();
+  await audit(admin,user.id,parsed.data.restaurant_id,"payment.reminder_prepared",{channel:parsed.data.channel,period_end:parsed.data.period_end});
+  revalidatePath(`/superadmin/restaurants/${parsed.data.restaurant_id}`);
+}
+
 export async function updateManagedRestaurant(form:FormData){
   const parsed=restaurantInput.safeParse(Object.fromEntries(form));
   if(!parsed.success)throw new Error("Revisa los datos del restaurante.");

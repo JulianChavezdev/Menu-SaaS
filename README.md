@@ -47,6 +47,8 @@ La beta funciona sin cobros: el plan de prueba admite hasta **3 productos y 5 ca
 
 Mientras Stripe permanezca desactivado, el superadmin puede registrar pagos recibidos por Bizum. Cada registro conserva importe, fecha, referencia, nota interna y vencimiento; la confirmación activa el Plan Carta y restaura una cuenta suspendida. El restaurante ve que su suscripción es manual y nunca se inicia un cobro automático.
 
+El control de vencimientos es deliberadamente manual: permite aplicar de 0 a 30 días de cortesía, marcar pagos pendientes sin bloquear el panel y ejecutar la suspensión solo tras una segunda confirmación. Los avisos se preparan para copiar, WhatsApp o correo, pero nunca se envían automáticamente; cada preparación queda auditada.
+
 Stripe queda preparado para una fase posterior, pero el checkout permanece desactivado mientras no existan `STRIPE_SECRET_KEY` y `STRIPE_PLAN_PRICE_ID`. Cuando se active:
 
 1. Crea un precio recurrente en Stripe.

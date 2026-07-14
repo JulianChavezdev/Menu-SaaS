@@ -54,6 +54,13 @@ const checks=[
     migration:"202607140001_manual_payments.sql",
     run:()=>supabase.from("manual_payments").select("id",{head:true}).limit(1),
   },
+  {
+    migration:"202607140002_manual_expiration_operations.sql",
+    run:async()=>{
+      const {error}=await supabase.rpc("process_manual_expirations",{grace_days:-1,suspend_access:false,actor_user:randomId});
+      return {error:error?.code==="22023"?null:(error??new Error("Expiration validation did not run"))};
+    },
+  },
 ];
 
 const pending=[];
