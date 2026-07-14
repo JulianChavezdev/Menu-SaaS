@@ -1,2 +1,3 @@
-import { createBrowserClient } from "@supabase/ssr";
-export const createClient=()=>createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL||"https://placeholder.supabase.co",process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY||"placeholder");
+import {createBrowserClient} from "@supabase/ssr";
+import {getSupabasePublicKey,getSupabaseUrl} from "@/lib/supabase/env";
+export const createClient=()=>createBrowserClient(getSupabaseUrl()||"https://placeholder.supabase.co",getSupabasePublicKey()||"placeholder");

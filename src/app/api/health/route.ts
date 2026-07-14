@@ -1,12 +1,13 @@
 import {NextResponse} from "next/server";
 import {createClient} from "@supabase/supabase-js";
+import {getSupabasePublicKey,getSupabaseUrl} from "@/lib/supabase/env";
 
 export const dynamic="force-dynamic";
 const DATABASE_TIMEOUT_MS=3_000;
 
 export async function GET(){
-  const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const url=getSupabaseUrl();
+  const key=getSupabasePublicKey();
   const checks={environment:Boolean(url&&key&&process.env.NEXT_PUBLIC_APP_URL),database:false};
 
   if(url&&key){

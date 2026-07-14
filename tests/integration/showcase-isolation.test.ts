@@ -5,7 +5,7 @@ import {describe,expect,it} from "vitest";
 
 config({path:".env.local",quiet:true});
 const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
-const publicKey=process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const publicKey=process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY??process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const suite=url&&publicKey?describe:describe.skip;
 const showcase=JSON.parse(readFileSync("supabase/showcase-data.json","utf8")) as {restaurants:Array<{slug:string;products:Array<{name:string}>}>};
 

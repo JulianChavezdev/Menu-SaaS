@@ -1,6 +1,7 @@
 import {NextResponse} from "next/server";
 import {createClient} from "@supabase/supabase-js";
 import {invoiceSubscriptionId,mapStripeSubscriptionStatus,stripeId,stripePeriodEnd,verifyStripeSignature,type LocalSubscriptionStatus} from "@/lib/stripe-webhook";
+import {getSupabaseSecretKey} from "@/lib/supabase/admin-env";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
@@ -10,7 +11,7 @@ type StripeEvent={id:string;type:string;data:{object:Record<string,unknown>}};
 export async function POST(request:Request){
   const secret=process.env.STRIPE_WEBHOOK_SECRET;
   const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey=process.env.SUPABASE_SERVICE_ROLE_KEY;
+  const serviceKey=getSupabaseSecretKey();
   if(!secret||!url||!serviceKey)return NextResponse.json({error:"Webhook no configurado"},{status:503});
   const payload=await request.text();
   const signature=request.headers.get("stripe-signature");

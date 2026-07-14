@@ -4,7 +4,7 @@ import {describe,expect,it} from "vitest";
 
 config({path:".env.local",quiet:true});
 const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
-const serviceKey=process.env.SUPABASE_SERVICE_ROLE_KEY;
+const serviceKey=process.env.SUPABASE_SECRET_KEY??process.env.SUPABASE_SERVICE_ROLE_KEY;
 const suite=url&&serviceKey?describe:describe.skip;
 
 suite("manual expiration lifecycle",()=>{

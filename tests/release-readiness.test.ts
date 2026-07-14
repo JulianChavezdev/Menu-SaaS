@@ -17,6 +17,13 @@ describe("release readiness",()=>{
     expect(packageJson.scripts["check:release"]).toContain("--production");
   });
 
+  it("supports current Supabase keys and legacy aliases",()=>{
+    expect(envCheck).toContain("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY");
+    expect(envCheck).toContain("SUPABASE_SECRET_KEY");
+    expect(envCheck).toContain("NEXT_PUBLIC_SUPABASE_ANON_KEY");
+    expect(envCheck).toContain("SUPABASE_SERVICE_ROLE_KEY");
+  });
+
   it("rejects partially configured Stripe",()=>{
     expect(envCheck).toContain("La configuración de Stripe está incompleta");
   });

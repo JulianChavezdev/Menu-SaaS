@@ -13,7 +13,7 @@ npm run dev
 
 Configura en Supabase las Redirect URLs de Auth y el bucket público `restaurant-media`. Las políticas de Storage limitan las escrituras a miembros del restaurante, validan las rutas exactas de logos y vídeos y rechazan archivos mayores de 50 MB o con formatos no permitidos.
 
-Variables obligatorias: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` —solo servidor— y `NEXT_PUBLIC_APP_URL`.
+Variables obligatorias: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY` —solo servidor— y `NEXT_PUBLIC_APP_URL`. Los alias antiguos `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY` siguen admitidos durante la transición.
 
 ## Base de datos
 
@@ -39,7 +39,7 @@ SUPERADMIN_EMAILS=tu-correo-de-acceso@ejemplo.com
 SUPERADMIN_USER_IDS=
 ```
 
-El panel permite ver métricas globales, buscar restaurantes, editar configuración y carta como soporte, cambiar plan/publicación/plantilla, suspender o restaurar acceso y consultar el historial administrativo. Una suspensión bloquea las escrituras del cliente y retira la carta pública mediante RLS; las acciones del panel usan `SUPABASE_SERVICE_ROLE_KEY`, que nunca debe exponerse al navegador.
+El panel permite ver métricas globales, buscar restaurantes, editar configuración y carta como soporte, cambiar plan/publicación/plantilla, suspender o restaurar acceso y consultar el historial administrativo. Una suspensión bloquea las escrituras del cliente y retira la carta pública mediante RLS; las acciones del panel usan `SUPABASE_SECRET_KEY`, que nunca debe exponerse al navegador.
 
 ## Planes y pagos
 
@@ -64,7 +64,7 @@ Stripe queda preparado para una fase posterior, pero el checkout permanece desac
 - Los campos de propietario, plan y suscripción no pueden modificarse con un cliente autenticado.
 - Los límites de prueba y la relación producto-categoría se imponen en PostgreSQL.
 - Las rutas de vídeos y logos se validan en servidor; el cliente no decide la URL persistida.
-- Nunca publiques `.env.local` ni expongas `SUPABASE_SERVICE_ROLE_KEY` o secretos de Stripe.
+- Nunca publiques `.env.local` ni expongas `SUPABASE_SECRET_KEY`, su alias heredado `SUPABASE_SERVICE_ROLE_KEY` o secretos de Stripe.
 
 Si una clave secreta se comparte fuera de un almacén seguro, rótala antes de producción.
 
@@ -99,6 +99,14 @@ npm audit
 Las pruebas E2E y de integración necesitan credenciales de Supabase y todas las migraciones aplicadas.
 
 Antes de un despliegue ejecuta además `npm run check:release`. Esta comprobación exige el dominio HTTPS definitivo, una allowlist de superadmin, migraciones completas, demo íntegra, vídeos disponibles y una configuración de Stripe completa o totalmente desactivada.
+
+Tras desplegar, valida el dominio público sin usar credenciales:
+
+```bash
+npm run check:deployment -- https://tu-dominio.com
+```
+
+La comprobación visita salud, portada, carta demo, manifest, robots y sitemap, y confirma las cabeceras de seguridad esenciales.
 
 ## Despliegue futuro
 

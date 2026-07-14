@@ -2,7 +2,7 @@ import {createClient} from "@supabase/supabase-js";
 import {expect,test} from "@playwright/test";
 
 const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
-const serviceKey=process.env.SUPABASE_SERVICE_ROLE_KEY;
+const serviceKey=process.env.SUPABASE_SECRET_KEY??process.env.SUPABASE_SERVICE_ROLE_KEY;
 const enabled=Boolean(url&&serviceKey);
 const email=`e2e-${Date.now()}@carta-video.local`;
 const password=`Test-${crypto.randomUUID()}!`;
