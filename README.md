@@ -37,9 +37,12 @@ El panel privado está en `/superadmin`. Configura al menos una allowlist exclus
 SUPERADMIN_EMAILS=tu-correo-de-acceso@ejemplo.com
 # Alternativa más estable: UUID de auth.users, admite varios separados por coma
 SUPERADMIN_USER_IDS=
+SUPERADMIN_RESTAURANT_CAPACITY=25
 ```
 
 El panel permite ver métricas globales, buscar restaurantes, editar configuración y carta como soporte, cambiar plan/publicación/plantilla, suspender o restaurar acceso y consultar el historial administrativo. Una suspensión bloquea las escrituras del cliente y retira la carta pública mediante RLS; las acciones del panel usan `SUPABASE_SECRET_KEY`, que nunca debe exponerse al navegador.
+
+`SUPERADMIN_RESTAURANT_CAPACITY` controla la barra de planificación del superadmin. El valor inicial de 25 es un objetivo conservador para una beta con vídeos alojados en el plan gratuito; no bloquea altas. Debe ajustarse usando el consumo real de Storage, transferencia y base de datos, porque el número de restaurantes por sí solo no determina la carga.
 
 ## Planes y pagos
 

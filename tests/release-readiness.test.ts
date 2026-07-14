@@ -24,6 +24,11 @@ describe("release readiness",()=>{
     expect(envCheck).toContain("SUPABASE_SERVICE_ROLE_KEY");
   });
 
+  it("validates the configurable restaurant capacity",()=>{
+    expect(envCheck).toContain("SUPERADMIN_RESTAURANT_CAPACITY");
+    expect(envCheck).toContain("capacity>100_000");
+  });
+
   it("rejects partially configured Stripe",()=>{
     expect(envCheck).toContain("La configuración de Stripe está incompleta");
   });
