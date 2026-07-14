@@ -43,6 +43,8 @@ SUPERADMIN_STORAGE_CAPACITY_GB=1
 
 El panel permite ver métricas globales, buscar restaurantes, editar configuración y carta como soporte, cambiar plan/publicación/plantilla, suspender o restaurar acceso y consultar el historial administrativo. Una suspensión bloquea las escrituras del cliente y retira la carta pública mediante RLS; las acciones del panel usan `SUPABASE_SECRET_KEY`, que nunca debe exponerse al navegador.
 
+Desde el detalle de cada restaurante, el superadmin puede descargar una copia JSON versionada con configuración, carta, equipo, suscripción, pagos, analíticas agregadas y auditoría, además de un CSV de productos. Las descargas requieren una sesión superadmin, no se cachean y conservan las rutas de medios sin duplicar los archivos binarios.
+
 `SUPERADMIN_RESTAURANT_CAPACITY` controla la barra de planificación del superadmin. El valor inicial de 25 es un objetivo conservador para una beta con vídeos alojados en el plan gratuito; no bloquea altas. Debe ajustarse usando el consumo real de Storage, transferencia y base de datos, porque el número de restaurantes por sí solo no determina la carga.
 
 `SUPERADMIN_STORAGE_CAPACITY_GB` configura el límite de referencia de la barra de Storage. El panel mide los bytes y archivos reales del bucket, muestra visualizaciones de vídeos alojados y calcula una transferencia orientativa usando el tamaño medio de esos vídeos. La transferencia es una estimación y debe compararse con el panel de consumo del proveedor.

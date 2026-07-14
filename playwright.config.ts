@@ -1,2 +1,2 @@
-import {defineConfig,devices} from "@playwright/test";import dotenv from "dotenv";dotenv.config({path:".env.local"});
+import {defineConfig,devices} from "@playwright/test";import dotenv from "dotenv";dotenv.config({path:".env.local"});process.env.SUPERADMIN_EMAILS=[process.env.SUPERADMIN_EMAILS,"e2e-export-admin@carta-video.local"].filter(Boolean).join(",");
 export default defineConfig({testDir:"./tests/e2e",fullyParallel:false,workers:1,timeout:45_000,retries:0,reporter:"list",use:{baseURL:"http://localhost:3000",trace:"retain-on-failure",screenshot:"only-on-failure"},webServer:{command:"npm run dev",url:"http://localhost:3000",reuseExistingServer:true,timeout:120_000},projects:[{name:"chromium",use:{...devices["Desktop Chrome"]}}]})
