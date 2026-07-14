@@ -61,6 +61,13 @@ const checks=[
       return {error:error?.code==="22023"?null:(error??new Error("Expiration validation did not run"))};
     },
   },
+  {
+    migration:"202607140003_privacy_safe_analytics.sql",
+    run:async()=>{
+      const {error}=await supabase.rpc("record_menu_analytics_event",{target_restaurant:randomId,target_product:null,target_event:"invalid",target_locale:"es"});
+      return {error:error?.code==="22023"?null:(error??new Error("Analytics validation did not run"))};
+    },
+  },
 ];
 
 const pending=[];

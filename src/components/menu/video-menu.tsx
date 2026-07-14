@@ -6,15 +6,24 @@ import type {Product,Restaurant} from "@/lib/types";
 import {resolveMenuTemplate} from "@/lib/menu-templates";
 import {translatedField} from "@/lib/translations";
 import {ThemeVectors} from "@/components/menu/theme-vectors";
+import type {AnalyticsEvent} from "@/lib/analytics";
 
 const copy={
   es:{menu:"Carta",close:"Cerrar",share:"Compartir",info:"Restaurante",soundOn:"Activar sonido",soundOff:"Silenciar",website:"Visitar web",categories:"Categorías",featured:"Destacado"},
   en:{menu:"Menu",close:"Close",share:"Share",info:"Restaurant",soundOn:"Turn sound on",soundOff:"Mute",website:"Visit website",categories:"Categories",featured:"Featured"},
 } as const;
 
+function sendAnalytics(payload:AnalyticsEvent){
+  const body=JSON.stringify(payload);
+  if(typeof navigator.sendBeacon==="function"&&navigator.sendBeacon("/api/analytics",new Blob([body],{type:"application/json"})))return;
+  void fetch("/api/analytics",{method:"POST",headers:{"Content-Type":"application/json"},body,keepalive:true}).catch(()=>undefined);
+}
+
 export function VideoMenu({restaurant,products}:{restaurant:Restaurant;products:Product[]}){
   const videoRefs=useRef<(HTMLVideoElement|null)[]>([]);
   const sectionRefs=useRef<(HTMLElement|null)[]>([]);
+  const trackedMenu=useRef(false);
+  const seenProducts=useRef(new Set<string>());
   const[muted,setMuted]=useState(true);
   const[panel,setPanel]=useState<"menu"|"info"|null>(null);
   const[active,setActive]=useState(0);
@@ -39,7 +48,10 @@ export function VideoMenu({restaurant,products}:{restaurant:Restaurant;products:
 
   useEffect(()=>{if(!panel)return;const closeOnEscape=(event:KeyboardEvent)=>{if(event.key==="Escape")setPanel(null)};addEventListener("keydown",closeOnEscape);return()=>removeEventListener("keydown",closeOnEscape)},[panel]);
 
-  const share=async()=>{try{await navigator.share({title:restaurant.name,url:location.href})}catch{await navigator.clipboard.writeText(location.href)}};
+  useEffect(()=>{if(trackedMenu.current)return;trackedMenu.current=true;sendAnalytics({restaurantId:restaurant.id,event:"menu_view",locale:language})},[restaurant.id,language]);
+  useEffect(()=>{const product=products[active];if(!product||seenProducts.current.has(product.id))return;seenProducts.current.add(product.id);sendAnalytics({restaurantId:restaurant.id,productId:product.id,event:"product_view",locale:language})},[active,language,products,restaurant.id]);
+
+  const share=async()=>{let completed=false;try{await navigator.share({title:restaurant.name,url:location.href});completed=true}catch{try{await navigator.clipboard.writeText(location.href);completed=true}catch{completed=false}}if(completed)sendAnalytics({restaurantId:restaurant.id,event:"share",locale:language})};
   const go=(id:string)=>{document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"});setPanel(null)};
   const back=()=>history.length>1?history.back():location.assign("/");
 
@@ -55,7 +67,7 @@ export function VideoMenu({restaurant,products}:{restaurant:Restaurant;products:
     {panel&&<div className="fixed inset-0 z-50 mx-auto flex max-w-[430px] items-end bg-black/65 p-3 backdrop-blur-sm" onClick={()=>setPanel(null)}>
       <aside aria-label={panel==="menu"?text.categories:text.info} style={{background:colors.panel,borderColor:colors.frame}} className="w-full rounded-[28px] border p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-2xl" onClick={event=>event.stopPropagation()}>
         <div className="flex items-center justify-between"><div><p style={{color:colors.accent}} className="text-xs font-bold uppercase tracking-[.2em]">{restaurant.name}</p><h2 className="mt-1 text-2xl font-semibold">{panel==="menu"?text.categories:text.info}</h2></div><button aria-label={text.close} onClick={()=>setPanel(null)} className="grid h-10 w-10 place-items-center rounded-full bg-white/10"><X size={20}/></button></div>
-        {panel==="menu"?<nav className="mt-5 grid gap-2">{categories.map(([name,product])=><button key={name} onClick={()=>go(`product-${product.id}`)} className="flex items-center rounded-2xl border border-white/10 bg-white/[.04] px-4 py-3 text-left transition hover:bg-white/10"><span className="font-medium">{name}</span></button>)}</nav>:<div className="mt-5 space-y-4 text-sm leading-relaxed text-white/70">{restaurantDescription&&<p>{restaurantDescription}</p>}{restaurant.address&&<p className="flex gap-3"><MapPin style={{color:colors.accent}} className="mt-0.5 shrink-0" size={18}/><span>{restaurant.address}</span></p>}{restaurant.phone&&<a className="flex gap-3 text-white" href={`tel:${restaurant.phone}`}><Phone style={{color:colors.accent}} className="shrink-0" size={18}/>{restaurant.phone}</a>}<div className="flex flex-wrap gap-2">{restaurant.instagram_url&&<a className="rounded-full border border-white/15 px-4 py-2" target="_blank" rel="noreferrer" href={restaurant.instagram_url}>Instagram</a>}{restaurant.website_url&&<a className="rounded-full border border-white/15 px-4 py-2" target="_blank" rel="noreferrer" href={restaurant.website_url}>{text.website}</a>}</div></div>}
+        {panel==="menu"?<nav className="mt-5 grid gap-2">{categories.map(([name,product])=><button key={name} onClick={()=>go(`product-${product.id}`)} className="flex items-center rounded-2xl border border-white/10 bg-white/[.04] px-4 py-3 text-left transition hover:bg-white/10"><span className="font-medium">{name}</span></button>)}</nav>:<div className="mt-5 space-y-4 text-sm leading-relaxed text-white/70">{restaurantDescription&&<p>{restaurantDescription}</p>}{restaurant.address&&<p className="flex gap-3"><MapPin style={{color:colors.accent}} className="mt-0.5 shrink-0" size={18}/><span>{restaurant.address}</span></p>}{restaurant.phone&&<a className="flex gap-3 text-white" href={`tel:${restaurant.phone}`} onClick={()=>sendAnalytics({restaurantId:restaurant.id,event:"contact_click",locale:language})}><Phone style={{color:colors.accent}} className="shrink-0" size={18}/>{restaurant.phone}</a>}<div className="flex flex-wrap gap-2">{restaurant.instagram_url&&<a className="rounded-full border border-white/15 px-4 py-2" target="_blank" rel="noreferrer" href={restaurant.instagram_url} onClick={()=>sendAnalytics({restaurantId:restaurant.id,event:"contact_click",locale:language})}>Instagram</a>}{restaurant.website_url&&<a className="rounded-full border border-white/15 px-4 py-2" target="_blank" rel="noreferrer" href={restaurant.website_url} onClick={()=>sendAnalytics({restaurantId:restaurant.id,event:"contact_click",locale:language})}>{text.website}</a>}</div></div>}
       </aside>
     </div>}
 

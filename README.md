@@ -72,6 +72,10 @@ Si una clave secreta se comparte fuera de un almacén seguro, rótala antes de p
 
 Sin variables de Supabase, `/r/bistro-nube` utiliza una demo local con vídeos de Cloudinary y contenido español/inglés. Para datos persistentes, crea una cuenta y completa el onboarding.
 
+## Analíticas privadas
+
+La carta registra únicamente contadores diarios agregados: visitas, productos vistos, compartidos y clics de contacto. No existen eventos individuales ni se almacenan IP, cookies, agentes de usuario, dispositivos o identificadores de visitante. Cada restaurante solo puede leer sus propios agregados mediante RLS; la escritura pública pasa por una función limitada que valida que la carta y el producto estén publicados.
+
 ## Comprobaciones
 
 ```bash
