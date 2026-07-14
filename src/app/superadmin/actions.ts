@@ -5,6 +5,8 @@ import {redirect} from "next/navigation";
 import {z} from "zod";
 import {isMenuTemplateKey} from "@/lib/menu-templates";
 import {requireSuperadmin} from "@/lib/superadmin";
+import {matchesRestaurantDeletion} from "@/lib/restaurant-deletion";
+import {storagePathFromPublicUrl} from "@/lib/media";
 
 const uuid=z.string().uuid();
 const status=z.enum(["trialing","active","past_due","canceled"]);
@@ -21,6 +23,32 @@ async function audit(admin:Awaited<ReturnType<typeof requireSuperadmin>>["admin"
 }
 
 function refresh(restaurantId:string,slug?:string){revalidatePath("/superadmin");revalidatePath(`/superadmin/restaurants/${restaurantId}`);revalidatePath("/dashboard/billing");if(slug)revalidatePath(`/r/${slug}`)}
+
+export async function deleteRestaurant(form:FormData){
+  const parsed=z.object({restaurant_id:uuid,security_email:z.string().trim().email().max(200),confirmation:z.string().max(200),acknowledge:z.literal("yes")}).safeParse(Object.fromEntries(form));
+  if(!parsed.success)throw new Error("La confirmación de eliminación no es válida.");
+  const {admin,user}=await requireSuperadmin();
+  const[{data:restaurant,error},{data:categories,error:categoryError},{data:products,error:productError}]=await Promise.all([
+    admin.from("restaurants").select("*").eq("id",parsed.data.restaurant_id).maybeSingle(),
+    admin.from("categories").select("*").eq("restaurant_id",parsed.data.restaurant_id).order("sort_order"),
+    admin.from("products").select("*").eq("restaurant_id",parsed.data.restaurant_id).order("sort_order"),
+  ]);
+  if(error||categoryError||productError)throw new Error(error?.message??categoryError?.message??productError?.message);
+  if(!restaurant)throw new Error("El restaurante ya no existe.");
+  if(!user.email||!matchesRestaurantDeletion({slug:restaurant.slug,typedPhrase:parsed.data.confirmation,expectedEmail:user.email,typedEmail:parsed.data.security_email,acknowledged:true}))throw new Error("El correo o la frase de confirmación no coinciden.");
+  const deletedAt=new Date().toISOString();
+  await admin.from("superadmin_audit_log").insert({actor_user_id:user.id,restaurant_id:restaurant.id,action:"restaurant.deletion_backup_created",details:{deleted_at:deletedAt,restaurant_name:restaurant.name,slug:restaurant.slug,backup:{format:"carta-video.deleted-restaurant",version:1,restaurant,categories:categories??[],products:products??[]}}}).throwOnError();
+  await admin.from("restaurants").delete().eq("id",restaurant.id).throwOnError();
+  const logoPath=storagePathFromPublicUrl(restaurant.logo_url,"restaurant-media");
+  const prefix=`restaurants/${restaurant.id}/`;
+  const mediaPaths=[logoPath,...(products??[]).flatMap(product=>[product.video_path,product.image_path])].filter((path):path is string=>typeof path==="string"&&path.startsWith(prefix)&&!path.split("/").includes(".."));
+  const uniquePaths=[...new Set(mediaPaths)];
+  let mediaCleanupError:string|null=null;
+  for(let index=0;index<uniquePaths.length;index+=100){const {error:removeError}=await admin.storage.from("restaurant-media").remove(uniquePaths.slice(index,index+100));if(removeError){mediaCleanupError=removeError.message;break}}
+  await admin.from("superadmin_audit_log").insert({actor_user_id:user.id,restaurant_id:null,action:"restaurant.deleted",details:{deleted_at:deletedAt,deleted_restaurant_id:restaurant.id,restaurant_name:restaurant.name,slug:restaurant.slug,media_files_removed:mediaCleanupError?0:uniquePaths.length,media_cleanup_error:mediaCleanupError}});
+  revalidatePath("/superadmin");revalidatePath(`/r/${restaurant.slug}`);
+  redirect("/superadmin");
+}
 
 export async function recordManualPayment(form:FormData){
   const parsed=z.object({restaurant_id:uuid,method:paymentMethod,amount:z.coerce.number().positive().max(100000),currency:z.enum(["EUR","USD","GBP","MXN"]),paid_at:z.string().regex(/^\d{4}-\d{2}-\d{2}$/),period_end:z.string().regex(/^\d{4}-\d{2}-\d{2}$/),reference:z.string().trim().max(100),notes:z.string().trim().max(500)}).safeParse(Object.fromEntries(form));
