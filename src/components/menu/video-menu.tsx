@@ -7,6 +7,7 @@ import {resolveMenuTemplate} from "@/lib/menu-templates";
 import {translatedField} from "@/lib/translations";
 import {ThemeVectors} from "@/components/menu/theme-vectors";
 import type {AnalyticsEvent} from "@/lib/analytics";
+import {ProductMedia} from "@/components/menu/product-media";
 
 const copy={
   es:{menu:"Carta",close:"Cerrar",share:"Compartir",info:"Restaurante",soundOn:"Activar sonido",soundOff:"Silenciar",website:"Visitar web",categories:"Categorías",featured:"Destacado"},
@@ -24,9 +25,12 @@ export function VideoMenu({restaurant,products}:{restaurant:Restaurant;products:
   const sectionRefs=useRef<(HTMLElement|null)[]>([]);
   const trackedMenu=useRef(false);
   const seenProducts=useRef(new Set<string>());
+  const playingIndex=useRef<number|null>(null);
   const[muted,setMuted]=useState(true);
   const[panel,setPanel]=useState<"menu"|"info"|null>(null);
   const[active,setActive]=useState(0);
+  const[reducedMotion,setReducedMotion]=useState(false);
+  const[playbackBlocked,setPlaybackBlocked]=useState<Set<number>>(()=>new Set());
   const[language,setLanguage]=useState<"es"|"en">(restaurant.locale.startsWith("en")?"en":"es");
   const text=copy[language];
   const template=resolveMenuTemplate(restaurant.menu_template,restaurant.subscription_status==="active");
@@ -40,11 +44,14 @@ export function VideoMenu({restaurant,products}:{restaurant:Restaurant;products:
   useEffect(()=>{
     const sectionObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting&&entry.intersectionRatio>.55)setActive(Number((entry.target as HTMLElement).dataset.index??0))}),{threshold:[.55]});
     sectionRefs.current.forEach(section=>section&&sectionObserver.observe(section));
-    if(matchMedia("(prefers-reduced-motion: reduce)").matches)return()=>sectionObserver.disconnect();
-    const videoObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{const video=entry.target as HTMLVideoElement;if(entry.isIntersecting&&entry.intersectionRatio>.7){videoRefs.current.forEach(other=>{if(other&&other!==video){other.pause();other.currentTime=0}});void video.play().catch(()=>undefined)}else video.pause()}),{threshold:[.7]});
-    videoRefs.current.forEach(video=>video&&videoObserver.observe(video));
-    return()=>{sectionObserver.disconnect();videoObserver.disconnect()};
+    const motionPreference=matchMedia("(prefers-reduced-motion: reduce)");
+    const videoObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{const video=entry.target as HTMLVideoElement;const index=Number(video.dataset.videoIndex);if(entry.isIntersecting&&entry.intersectionRatio>.7){if(motionPreference.matches){video.pause();video.currentTime=0;return}if(playingIndex.current===index)return;videoRefs.current.forEach(other=>{if(other&&other!==video){other.pause();other.currentTime=0}});video.currentTime=0;playingIndex.current=index;void video.play().then(()=>setPlaybackBlocked(current=>{if(!current.has(index))return current;const next=new Set(current);next.delete(index);return next})).catch(()=>{if(playingIndex.current===index)setPlaybackBlocked(current=>new Set(current).add(index))})}else{video.pause();video.currentTime=0;if(playingIndex.current===index)playingIndex.current=null}}),{threshold:[.7]});
+    const observedVideos=videoRefs.current.filter((video):video is HTMLVideoElement=>Boolean(video));
+    observedVideos.forEach(video=>videoObserver.observe(video));
+    return()=>{sectionObserver.disconnect();videoObserver.disconnect();playingIndex.current=null;observedVideos.forEach(video=>{video.pause();video.currentTime=0})};
   },[products]);
+
+  useEffect(()=>{const query=matchMedia("(prefers-reduced-motion: reduce)");const update=()=>{setReducedMotion(query.matches);if(query.matches){playingIndex.current=null;videoRefs.current.forEach(video=>{if(video){video.pause();video.currentTime=0}})}};update();query.addEventListener("change",update);return()=>query.removeEventListener("change",update)},[]);
 
   useEffect(()=>{if(!panel)return;const closeOnEscape=(event:KeyboardEvent)=>{if(event.key==="Escape")setPanel(null)};addEventListener("keydown",closeOnEscape);return()=>removeEventListener("keydown",closeOnEscape)},[panel]);
 
@@ -54,6 +61,7 @@ export function VideoMenu({restaurant,products}:{restaurant:Restaurant;products:
   const share=async()=>{let completed=false;try{await navigator.share({title:restaurant.name,url:location.href});completed=true}catch{try{await navigator.clipboard.writeText(location.href);completed=true}catch{completed=false}}if(completed)sendAnalytics({restaurantId:restaurant.id,event:"share",locale:language})};
   const go=(id:string)=>{document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"});setPanel(null)};
   const back=()=>history.length>1?history.back():location.assign("/");
+  const manualPlaybackStarted=(index:number)=>{playingIndex.current=index;setPlaybackBlocked(current=>{if(!current.has(index))return current;const next=new Set(current);next.delete(index);return next})};
 
   return <main data-template={template.key} style={themeStyle} className="public-menu relative h-dvh snap-y snap-mandatory overflow-y-auto overscroll-y-contain scroll-smooth bg-[var(--theme-bg)] text-white md:mx-auto md:max-w-[430px] md:border-x md:border-white/10 md:shadow-2xl">
     <header style={{background:`linear-gradient(to bottom,${colors.background}f2,${colors.background}a8,transparent)`}} className="pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-center justify-between px-4 pb-10 pt-[max(1rem,env(safe-area-inset-top))]">
@@ -72,7 +80,7 @@ export function VideoMenu({restaurant,products}:{restaurant:Restaurant;products:
     </div>}
 
     <div>{products.map((product,index)=><section ref={element=>{sectionRefs.current[index]=element}} data-index={index} id={`product-${product.id}`} key={product.id} className="relative isolate flex h-dvh snap-start snap-always items-end overflow-hidden bg-[var(--theme-bg)] px-5 pb-32 pt-28">
-      <div style={{borderColor:colors.frame}} className={`absolute z-0 overflow-hidden bg-[#22221f] ${framed?"inset-3 bottom-24 rounded-[32px] border shadow-2xl":"inset-0"}`}>{product.video_url?<video ref={element=>{videoRefs.current[index]=element}} src={product.video_url} poster={product.image_url??undefined} muted={muted} loop playsInline preload={index===0?"metadata":"none"} className="h-full w-full object-cover"/>:<div className="h-full w-full bg-cover bg-center" style={{backgroundImage:product.image_url?`url(${product.image_url})`:undefined}}/>}</div>
+      <div style={{borderColor:colors.frame}} className={`absolute z-0 overflow-hidden bg-[#22221f] ${framed?"inset-3 bottom-24 rounded-[32px] border shadow-2xl":"inset-0"}`}><ProductMedia index={index} name={product.name} src={product.video_url} poster={product.image_url} muted={muted} preload={index<=active+1?"metadata":"none"} active={index===active} reducedMotion={reducedMotion} playbackBlocked={playbackBlocked.has(index)} setVideoRef={element=>{videoRefs.current[index]=element}} onManualPlay={()=>manualPlaybackStarted(index)}/></div>
       <div className={`absolute z-[1] ${framed?"inset-3 bottom-24 rounded-[32px]":"inset-0"}`} style={{background:`linear-gradient(180deg,${colors.background}66 0%,transparent 32%,transparent 45%,${colors.background}f2 100%)`}}/>
       <ThemeVectors motif={template.motif} accent={colors.accent} accent2={colors.accent2} className="absolute inset-0 z-[2] h-full w-full"/>
       <div style={card?{background:`${colors.panel}d9`,borderColor:colors.frame}:undefined} className={`relative z-10 w-full text-shadow-lg ${card?"mb-1 rounded-3xl border p-5 shadow-2xl backdrop-blur-xl":""}`}>

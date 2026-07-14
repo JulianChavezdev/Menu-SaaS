@@ -35,7 +35,7 @@ test.describe("restaurant owner journey",()=>{
     await page.getByRole("button",{name:"Ocultar clave"}).click();
     await expect(page.locator("#login-password")).toHaveAttribute("type","password");
     await page.getByRole("button",{name:"Entrar al panel"}).click();
-    await expect(page).not.toHaveURL(/\/login$/);
+    await expect(page).toHaveURL(/\/(dashboard|onboarding)$/,{timeout:15_000});
 
     await page.goto("/onboarding");
     await page.getByLabel("Nombre").fill("Restaurante E2E");
@@ -44,8 +44,8 @@ test.describe("restaurant owner journey",()=>{
     await expect(page).toHaveURL(/\/dashboard$/);
 
     await page.getByRole("link",{name:"Carta",exact:true}).click();
-    await page.getByLabel("Nombre").fill("Producto E2E");
-    await page.getByLabel("Descripción").fill("Producto creado mediante una prueba completa.");
+    await page.getByLabel("Nombre",{exact:true}).fill("Producto E2E");
+    await page.getByLabel("Descripción",{exact:true}).fill("Producto creado mediante una prueba completa.");
     await page.getByText("Traducción al inglés (opcional)").click();
     await page.getByLabel("Nombre en inglés").fill("E2E Product");
     await page.getByLabel("Descripción en inglés").fill("Product created by a complete end-to-end test.");
@@ -62,7 +62,7 @@ test.describe("restaurant owner journey",()=>{
     await page.getByRole("button",{name:"Cerrar vista previa"}).click();
     await page.getByRole("link",{name:"Ver Plan Carta"}).click();
     await expect(page).toHaveURL(/\/dashboard\/billing\?from=templates/);
-    await expect(page.getByText("La plantilla Medianoche forma parte del Plan Carta.")).toBeVisible();
+    await expect(page.getByText("Las plantillas premium forman parte del Plan Carta.")).toBeVisible();
     await page.getByRole("link",{name:"Apariencia",exact:true}).click();
     await page.waitForLoadState("networkidle");
     await page.locator('input[accept="image/jpeg,image/png,image/webp"]').setInputFiles({name:"logo.png",mimeType:"image/png",buffer:tinyPng});
