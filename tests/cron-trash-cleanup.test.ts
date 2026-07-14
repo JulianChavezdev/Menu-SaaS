@@ -26,4 +26,10 @@ describe("purga programada de papelera",()=>{
   it("se programa una vez al día en producción",()=>{
     expect(vercel.crons).toEqual([{path:"/api/cron/trash-cleanup",schedule:"15 3 * * *"}]);
   });
+
+  it("registra cada ejecución para mostrar su estado al superadmin",()=>{
+    expect(route).toContain("platform.trash_cleanup_completed");
+    expect(route).toContain("platform.trash_cleanup_failed");
+    expect(route).toContain("duration_ms");
+  });
 });
