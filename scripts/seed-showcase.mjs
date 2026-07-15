@@ -37,8 +37,30 @@ async function inspect(ownerId){
   return restaurants??[];
 }
 
+async function inspectLegacy(ownerId){
+  const legacySlugs=data.legacyDemoSlugs??[];
+  if(!legacySlugs.length)return[];
+  const {data:restaurants,error}=await admin.from("restaurants").select("id,owner_id,name,slug,categories(count),products(count)").in("slug",legacySlugs).order("slug");
+  if(error)throw error;
+  const collision=restaurants?.find(item=>item.owner_id!==ownerId);
+  if(collision)throw new Error(`El slug ${collision.slug} pertenece a otro usuario; no se modificó nada.`);
+  return restaurants??[];
+}
+
+async function backupLegacyRestaurants(legacy){
+  if(!legacy.length)return null;
+  const ids=legacy.map(item=>item.id);
+  const [restaurants,categories,products,memberships,subscriptions,payments]=await Promise.all([
+    admin.from("restaurants").select("*").in("id",ids),admin.from("categories").select("*").in("restaurant_id",ids),admin.from("products").select("*").in("restaurant_id",ids),admin.from("restaurant_members").select("*").in("restaurant_id",ids),admin.from("subscriptions").select("*").in("restaurant_id",ids),admin.from("manual_payments").select("*").in("restaurant_id",ids),
+  ]);
+  const failed=[restaurants,categories,products,memberships,subscriptions,payments].find(result=>result.error);if(failed?.error)throw failed.error;
+  const {data:backup,error}=await admin.from("superadmin_audit_log").insert({actor_user_id:null,restaurant_id:null,action:"showcase.consolidation_backup_created",details:{format:"carta-video.showcase-consolidation",version:1,target_slug:data.restaurants[0]?.slug,restaurants:restaurants.data??[],categories:categories.data??[],products:products.data??[],memberships:memberships.data??[],subscriptions:subscriptions.data??[],payments:payments.data??[]}}).select("id").single();
+  if(error)throw error;return backup.id;
+}
+
 async function seed(ownerId){
   await inspect(ownerId);
+  const legacy=await inspectLegacy(ownerId);const backupAuditId=await backupLegacyRestaurants(legacy);
   for(const restaurant of data.restaurants){
     const values={owner_id:ownerId,name:restaurant.name,slug:restaurant.slug,description:restaurant.description,logo_url:restaurant.logoUrl,cover_url:null,primary_color:"#111827",secondary_color:"#f8fafc",currency:"EUR",locale:"es-ES",timezone:"Europe/Madrid",is_published:true,plan:"carta",subscription_status:"active",language_switcher_enabled:restaurant.languageSwitcherEnabled,menu_template:restaurant.template,access_suspended:false,suspension_reason:null,suspended_at:null};
     const {data:saved,error}=await admin.from("restaurants").upsert(values,{onConflict:"slug"}).select("id").single();
@@ -54,13 +76,19 @@ async function seed(ownerId){
     if(products.some(product=>!product.category_id))throw new Error(`Categoría desconocida en ${restaurant.slug}.`);
     await admin.from("products").insert(products).throwOnError();
   }
+  if(legacy.length){
+    const {error}=await admin.from("restaurants").delete().eq("owner_id",ownerId).in("id",legacy.map(item=>item.id));
+    if(error)throw error;
+    await admin.from("superadmin_audit_log").insert({actor_user_id:null,restaurant_id:null,action:"showcase.restaurants_consolidated",details:{target_slug:data.restaurants[0]?.slug,backup_audit_id:backupAuditId,deleted_restaurants:legacy.map(item=>({id:item.id,slug:item.slug,name:item.name,categories:item.categories?.[0]?.count??0,products:item.products?.[0]?.count??0}))}}).throwOnError();
+  }
 }
 
 const owner=await findOwner();
 if(apply)await seed(owner.id);
 const rows=await inspect(owner.id);
+const legacyRows=await inspectLegacy(owner.id);
 const expected=new Map(data.restaurants.map(item=>[item.slug,item]));
-let complete=rows.length===expected.size&&rows.every(row=>expected.get(row.slug)?.template===row.menu_template&&row.is_published&&row.categories?.[0]?.count===3&&row.products?.[0]?.count===3);
+let complete=legacyRows.length===0&&rows.length===expected.size&&rows.every(row=>{const item=expected.get(row.slug);return item?.template===row.menu_template&&row.is_published&&row.categories?.[0]?.count===item.categories.length&&row.products?.[0]?.count===item.products.length});
 for(const row of rows){
   const {data:products,error}=await anonymous.from("products").select("name,restaurant_id").eq("restaurant_id",row.id).order("sort_order");
   if(error)throw error;
@@ -69,4 +97,5 @@ for(const row of rows){
 }
 console.table(rows.map(row=>({slug:row.slug,template:row.menu_template,categories:row.categories?.[0]?.count??0,products:row.products?.[0]?.count??0,published:row.is_published})));
 if(!complete)throw new Error(apply?"El escaparate no quedó completo.":"El escaparate todavía no está sembrado. Ejecuta npm run seed:showcase.");
-console.log(`${apply?"Seed aplicado":"Verificación correcta"}: 5 restaurantes aislados, 15 categorías y 15 productos.`);
+const categoryCount=data.restaurants.reduce((total,item)=>total+item.categories.length,0);const productCount=data.restaurants.reduce((total,item)=>total+item.products.length,0);
+console.log(`${apply?"Seed aplicado":"Verificación correcta"}: ${rows.length} restaurante demo, ${categoryCount} categorías y ${productCount} productos.`);

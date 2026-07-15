@@ -1,95 +1,38 @@
 {
   "ownerEmail": "demo-owner@carta-video.local",
-  "restaurants": [
-    {
-      "name": "Bistro Nube",
-      "slug": "bistro-nube",
-      "description": "Cocina urbana, sabores intensos y una carta que entra por los ojos.",
-      "logoUrl": "/demo/logos/bistro-nube.svg",
-      "template": "cinematic",
-      "languageSwitcherEnabled": true,
-      "categories": [
-        {"name": "Hamburguesas", "slug": "hamburguesas"},
-        {"name": "Para compartir", "slug": "para-compartir"},
-        {"name": "Postres", "slug": "postres"}
-      ],
-      "products": [
-        {"category": "hamburguesas", "name": "Hamburguesa Nebulosa", "description": "Carne madurada, cheddar, cebolla caramelizada y salsa secreta.", "priceCents": 1290, "videoUrl": "https://videos.pexels.com/video-files/19107070/19107070-hd_1080_1920_30fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/burger-19107070/"},
-        {"category": "para-compartir", "name": "Papas Voladoras", "description": "Patata crujiente, parmesano, hierbas y mayonesa ahumada.", "priceCents": 690, "videoUrl": "https://videos.pexels.com/video-files/7490594/7490594-sd_960_506_30fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/close-up-view-of-french-fries-7490594/"},
-        {"category": "postres", "name": "Tarta Estratos", "description": "Tarta de queso cremosa con centro fundente y galleta tostada.", "priceCents": 650, "videoUrl": "https://videos.pexels.com/video-files/4547597/4547597-hd_1080_1920_25fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/a-cheesecake-is-being-cut-into-pieces-in-a-pan-4547597/"}
-      ]
-    },
-    {
-      "name": "Pizzería Roma",
-      "slug": "pizzeria-roma",
-      "description": "Masa lenta, horno fuerte y clásicos italianos hechos sin prisa.",
-      "logoUrl": "/demo/logos/pizzeria-roma.svg",
-      "template": "mediterranean",
-      "languageSwitcherEnabled": true,
-      "categories": [
-        {"name": "Pizzas", "slug": "pizzas"},
-        {"name": "Antipasti", "slug": "antipasti"},
-        {"name": "Dolci", "slug": "dolci"}
-      ],
-      "products": [
-        {"category": "pizzas", "name": "Margherita Roma", "description": "Tomate San Marzano, mozzarella fior di latte, albahaca y aceite de oliva.", "priceCents": 1150, "videoUrl": "https://videos.pexels.com/video-files/6090695/6090695-sd_506_960_30fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/pizza-on-the-table-6090695/"},
-        {"category": "antipasti", "name": "Patate al Parmigiano", "description": "Patatas doradas, parmesano curado, romero y alioli de ajo asado.", "priceCents": 720, "videoUrl": "https://videos.pexels.com/video-files/7490594/7490594-sd_960_506_30fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/close-up-view-of-french-fries-7490594/"},
-        {"category": "dolci", "name": "Tiramisú della Casa", "description": "Mascarpone, café espresso, cacao y bizcocho empapado al momento.", "priceCents": 680, "videoUrl": "https://videos.pexels.com/video-files/36911779/15636641_1080_1920_30fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/elegant-tiramisu-dessert-preparation-at-home-36911779/"}
-      ]
-    },
-    {
-      "name": "Café Central",
-      "slug": "cafe-central",
-      "description": "Café de especialidad, bollería artesana y desayunos para quedarse.",
-      "logoUrl": "/demo/logos/cafe-central.svg",
-      "template": "artdeco",
-      "languageSwitcherEnabled": false,
-      "categories": [
-        {"name": "Café", "slug": "cafe"},
-        {"name": "Desayunos", "slug": "desayunos"},
-        {"name": "Dulce", "slug": "dulce"}
-      ],
-      "products": [
-        {"category": "cafe", "name": "Flat White Central", "description": "Doble espresso de origen y leche texturizada con acabado sedoso.", "priceCents": 320, "videoUrl": "https://videos.pexels.com/video-files/9046231/9046231-hd_1080_1920_24fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/a-coffee-cup-with-latte-art-9046231/"},
-        {"category": "desayunos", "name": "Tostada del Mercado", "description": "Pan de masa madre, tomate rallado, aceite arbequina y sal en escamas.", "priceCents": 490, "videoUrl": "https://videos.pexels.com/video-files/8085432/8085432-hd_1080_1920_24fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/a-person-preparing-breakfast-8085432/"},
-        {"category": "dulce", "name": "Croissant de Pistacho", "description": "Hojaldre de mantequilla relleno de crema suave de pistacho.", "priceCents": 450, "videoUrl": "https://videos.pexels.com/video-files/8430966/8430966-sd_960_506_25fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/close-up-video-of-a-croissant-8430966/"}
-      ]
-    },
-    {
-      "name": "La Brasa",
-      "slug": "la-brasa",
-      "description": "Producto honesto, fuego de encina y guarniciones para compartir.",
-      "logoUrl": "/demo/logos/la-brasa.svg",
-      "template": "taqueria",
-      "languageSwitcherEnabled": false,
-      "categories": [
-        {"name": "Carnes", "slug": "carnes"},
-        {"name": "Guarniciones", "slug": "guarniciones"},
-        {"name": "Final dulce", "slug": "final-dulce"}
-      ],
-      "products": [
-        {"category": "carnes", "name": "Entrecot de Encina", "description": "Carne madurada al punto de brasa, jugo reducido y sal ahumada.", "priceCents": 2490, "videoUrl": "https://videos.pexels.com/video-files/1231765/1231765-hd_1920_1080_30fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/grilling-steaks-1231765/"},
-        {"category": "guarniciones", "name": "Patatas a la Brasa", "description": "Patata baby, mantequilla de hierbas y crema de ajo negro.", "priceCents": 590, "videoUrl": "https://videos.pexels.com/video-files/4852188/4852188-hd_1080_1920_30fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/people-roasting-a-potatoes-4852188/"},
-        {"category": "final-dulce", "name": "Queso Ahumado", "description": "Tarta cremosa de queso con caramelo tostado y un toque de humo.", "priceCents": 690, "videoUrl": "https://videos.pexels.com/video-files/4547597/4547597-hd_1080_1920_25fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/a-cheesecake-is-being-cut-into-pieces-in-a-pan-4547597/"}
-      ]
-    },
-    {
-      "name": "Sushi Yume",
-      "slug": "sushi-yume",
-      "description": "Sushi contemporáneo, cortes precisos y pequeños bocados de temporada.",
-      "logoUrl": "/demo/logos/sushi-yume.svg",
-      "template": "sakura",
-      "languageSwitcherEnabled": true,
-      "categories": [
-        {"name": "Nigiri", "slug": "nigiri"},
-        {"name": "Uramaki", "slug": "uramaki"},
-        {"name": "Dulces", "slug": "dulces"}
-      ],
-      "products": [
-        {"category": "nigiri", "name": "Nigiri de Salmón", "description": "Salmón flameado, arroz aliñado, cítrico japonés y sal de kombu.", "priceCents": 520, "videoUrl": "https://videos.pexels.com/video-files/5845750/5845750-sd_960_506_24fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/a-person-serving-a-sushi-5845750/"},
-        {"category": "uramaki", "name": "Uramaki Yume", "description": "Atún, aguacate, pepino, sésamo tostado y mayonesa de miso.", "priceCents": 1390, "videoUrl": "https://videos.pexels.com/video-files/4725792/4725792-hd_1920_1080_25fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/video-of-sushi-rolls-4725792/"},
-        {"category": "dulces", "name": "Mochi de Cheesecake", "description": "Mochi suave relleno de crema de queso y frutos rojos.", "priceCents": 590, "videoUrl": "https://videos.pexels.com/video-files/8963587/8963587-hd_1920_1080_30fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/mochi-on-plate-8963587/"}
-      ]
-    }
-  ]
+  "legacyDemoSlugs": ["pizzeria-roma", "cafe-central", "la-brasa", "sushi-yume"],
+  "restaurants": [{
+    "name": "Bistro Nube",
+    "slug": "bistro-nube",
+    "description": "Una demostración completa de carta en vídeo: hamburguesas, pizza, desayunos, brasa, sushi y postres.",
+    "logoUrl": "/demo/logos/bistro-nube.svg",
+    "template": "cinematic",
+    "languageSwitcherEnabled": true,
+    "categories": [
+      {"name": "Hamburguesas", "slug": "hamburguesas"},
+      {"name": "Pizzas", "slug": "pizzas"},
+      {"name": "Café y desayuno", "slug": "cafe-desayuno"},
+      {"name": "Brasas", "slug": "brasas"},
+      {"name": "Sushi", "slug": "sushi"},
+      {"name": "Para compartir", "slug": "para-compartir"},
+      {"name": "Postres", "slug": "postres"}
+    ],
+    "products": [
+      {"category": "hamburguesas", "name": "Hamburguesa Nebulosa", "description": "Carne madurada, cheddar, cebolla caramelizada y salsa secreta.", "priceCents": 1290, "videoUrl": "https://videos.pexels.com/video-files/19107070/19107070-hd_1080_1920_30fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/burger-19107070/"},
+      {"category": "pizzas", "name": "Margherita Roma", "description": "Tomate San Marzano, mozzarella fior di latte, albahaca y aceite de oliva.", "priceCents": 1150, "videoUrl": "https://videos.pexels.com/video-files/6090695/6090695-sd_506_960_30fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/pizza-on-the-table-6090695/"},
+      {"category": "cafe-desayuno", "name": "Flat White Central", "description": "Doble espresso de origen y leche texturizada con acabado sedoso.", "priceCents": 320, "videoUrl": "https://videos.pexels.com/video-files/9046231/9046231-hd_1080_1920_24fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/a-coffee-cup-with-latte-art-9046231/"},
+      {"category": "cafe-desayuno", "name": "Tostada del Mercado", "description": "Pan de masa madre, tomate rallado, aceite arbequina y sal en escamas.", "priceCents": 490, "videoUrl": "https://videos.pexels.com/video-files/8085432/8085432-hd_1080_1920_24fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/a-person-preparing-breakfast-8085432/"},
+      {"category": "cafe-desayuno", "name": "Croissant de Pistacho", "description": "Hojaldre de mantequilla relleno de crema suave de pistacho.", "priceCents": 450, "videoUrl": "https://videos.pexels.com/video-files/8430966/8430966-sd_960_506_25fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/close-up-video-of-a-croissant-8430966/"},
+      {"category": "brasas", "name": "Entrecot de Encina", "description": "Carne madurada al punto de brasa, jugo reducido y sal ahumada.", "priceCents": 2490, "videoUrl": "https://videos.pexels.com/video-files/1231765/1231765-hd_1920_1080_30fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/grilling-steaks-1231765/"},
+      {"category": "brasas", "name": "Patatas a la Brasa", "description": "Patata baby, mantequilla de hierbas y crema de ajo negro.", "priceCents": 590, "videoUrl": "https://videos.pexels.com/video-files/4852188/4852188-hd_1080_1920_30fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/people-roasting-a-potatoes-4852188/"},
+      {"category": "sushi", "name": "Nigiri de Salmón", "description": "Salmón flameado, arroz aliñado, cítrico japonés y sal de kombu.", "priceCents": 520, "videoUrl": "https://videos.pexels.com/video-files/5845750/5845750-sd_960_506_24fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/a-person-serving-a-sushi-5845750/"},
+      {"category": "sushi", "name": "Uramaki Yume", "description": "Atún, aguacate, pepino, sésamo tostado y mayonesa de miso.", "priceCents": 1390, "videoUrl": "https://videos.pexels.com/video-files/4725792/4725792-hd_1920_1080_25fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/video-of-sushi-rolls-4725792/"},
+      {"category": "para-compartir", "name": "Papas Voladoras", "description": "Patata crujiente, parmesano, hierbas y mayonesa ahumada.", "priceCents": 690, "videoUrl": "https://videos.pexels.com/video-files/7490594/7490594-sd_960_506_30fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/close-up-view-of-french-fries-7490594/"},
+      {"category": "para-compartir", "name": "Patate al Parmigiano", "description": "Patatas doradas, parmesano curado, romero y alioli de ajo asado.", "priceCents": 720, "videoUrl": "https://videos.pexels.com/video-files/7490594/7490594-sd_960_506_30fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/close-up-view-of-french-fries-7490594/"},
+      {"category": "postres", "name": "Tarta Estratos", "description": "Tarta de queso cremosa con centro fundente y galleta tostada.", "priceCents": 650, "videoUrl": "https://videos.pexels.com/video-files/4547597/4547597-hd_1080_1920_25fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/a-cheesecake-is-being-cut-into-pieces-in-a-pan-4547597/"},
+      {"category": "postres", "name": "Tiramisú della Casa", "description": "Mascarpone, café espresso, cacao y bizcocho empapado al momento.", "priceCents": 680, "videoUrl": "https://videos.pexels.com/video-files/36911779/15636641_1080_1920_30fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/elegant-tiramisu-dessert-preparation-at-home-36911779/"},
+      {"category": "postres", "name": "Queso Ahumado", "description": "Tarta cremosa de queso con caramelo tostado y un toque de humo.", "priceCents": 690, "videoUrl": "https://videos.pexels.com/video-files/4547597/4547597-hd_1080_1920_25fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/a-cheesecake-is-being-cut-into-pieces-in-a-pan-4547597/"},
+      {"category": "postres", "name": "Mochi de Cheesecake", "description": "Mochi suave relleno de crema de queso y frutos rojos.", "priceCents": 590, "videoUrl": "https://videos.pexels.com/video-files/8963587/8963587-hd_1920_1080_30fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/mochi-on-plate-8963587/"}
+    ]
+  }]
 }

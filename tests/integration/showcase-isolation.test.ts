@@ -24,6 +24,6 @@ suite("aislamiento del escaparate público",()=>{
       expect(products.data.map(product=>product.name)).toEqual(expected.products.map(product=>product.name));
       expect(products.data.every(product=>product.restaurant_id===restaurant.data.id)).toBe(true);
     }
-    expect(seenIds.size).toBe(5);
+    expect(seenIds.size).toBe(showcase.restaurants.length);
   });
 });
