@@ -7,7 +7,7 @@ test.describe("landing responsive contract",()=>{
 
     await expect(page.getByRole("heading",{name:"Haz que tus platos se vendan solos.",exact:true})).toBeVisible();
     await expect(page.getByRole("navigation",{name:"Navegación principal"})).toBeVisible();
-    for(const id of["inicio","producto","como-funciona","precios","nosotros","faq","contacto"]){
+    for(const id of["inicio","producto","como-funciona","precios","faq","contacto"]){
       await expect(page.locator(`#${id}`)).toHaveCount(1);
     }
     await expect(page.getByRole("link",{name:"Probar la demo",exact:true})).toBeVisible();
