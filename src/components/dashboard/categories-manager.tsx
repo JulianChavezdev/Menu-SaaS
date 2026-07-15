@@ -5,20 +5,21 @@ import {ArrowDown,ArrowUp,Eye,EyeOff,Pencil,Trash2,X} from "lucide-react";
 import {toast} from "sonner";
 import {deleteCategory,reorderCategories,saveCategory,toggleCategory} from "@/app/dashboard/actions";
 import type {Category} from "@/lib/types";
+import {AutomaticTranslationNote,notifyAutomaticTranslation} from "@/components/dashboard/automatic-translation";
 
 function reordered(items:Category[],index:number,delta:number){const copy=[...items];const target=index+delta;if(target<0||target>=copy.length)return null;[copy[index],copy[target]]=[copy[target],copy[index]];return copy.map(item=>item.id)}
 
 export function CategoriesManager({categories}:{categories:Category[]}){
   const[selected,setSelected]=useState<Category|null>(null);
   const[busy,start]=useTransition();
-  const submit=(form:FormData)=>start(async()=>{try{await saveCategory(form);toast.success(selected?"Categoría actualizada":"Categoría creada");setSelected(null)}catch(error){toast.error(error instanceof Error?error.message:"No se pudo guardar")}});
+  const submit=(form:FormData)=>start(async()=>{try{const result=await saveCategory(form);toast.success(selected?"Categoría actualizada":"Categoría creada");notifyAutomaticTranslation(result.translationStatus);setSelected(null)}catch(error){toast.error(error instanceof Error?error.message:"No se pudo guardar")}});
   const move=(index:number,delta:number)=>{const ids=reordered(categories,index,delta);if(ids)start(async()=>{await reorderCategories(ids);toast.success("Orden actualizado")})};
   return <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
     <form key={selected?.id??"new"} action={submit} className="glass h-fit rounded-2xl p-5">
       <div className="flex items-center justify-between"><h2 className="font-bold">{selected?"Editar categoría":"Nueva categoría"}</h2>{selected&&<button type="button" aria-label="Cancelar edición" onClick={()=>setSelected(null)}><X/></button>}</div>
       {selected&&<input type="hidden" name="id" value={selected.id}/>}
       <label className="mt-4 block">Nombre<input name="name" required defaultValue={selected?.name??""} placeholder="Ej. Entrantes" className="mt-1 w-full rounded-lg p-3 text-slate-900"/></label>
-      <details className="mt-4 rounded-xl border border-white/10 bg-white/[.03] p-3"><summary className="cursor-pointer text-sm font-semibold text-slate-300">Traducción al inglés (opcional)</summary><label className="mt-3 block text-sm">Nombre en inglés<input name="name_en" defaultValue={selected?.translations?.en?.name??""} placeholder="e.g. Starters" className="mt-1 w-full rounded-lg p-3 text-slate-900"/></label></details>
+      <AutomaticTranslationNote/>
       <button disabled={busy} className="mt-4 rounded-lg bg-violet-500 px-4 py-2 font-semibold disabled:opacity-50">{busy?"Guardando…":selected?"Guardar cambios":"Crear categoría"}</button>
     </form>
     <div className="space-y-2">{categories.map((category,index)=><article key={category.id} className="glass flex flex-wrap items-center justify-between gap-2 rounded-xl p-3">

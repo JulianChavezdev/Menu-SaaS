@@ -52,9 +52,7 @@ test.describe("restaurant owner journey",()=>{
     await page.getByRole("link",{name:"Carta",exact:true}).click();
     await page.getByLabel("Nombre",{exact:true}).fill("Producto E2E");
     await page.getByLabel("Descripción",{exact:true}).fill("Producto creado mediante una prueba completa.");
-    await page.getByText("Traducción al inglés (opcional)").click();
-    await page.getByLabel("Nombre en inglés").fill("E2E Product");
-    await page.getByLabel("Descripción en inglés").fill("Product created by a complete end-to-end test.");
+    await expect(page.getByText("La versión inglesa se genera automáticamente al guardar.")).toBeVisible();
     await page.getByLabel("Precio (€)").fill("9.50");
     await page.getByLabel("Categoría").selectOption({label:"Entrantes"});
     await page.getByRole("button",{name:"Crear producto"}).click();
@@ -95,8 +93,8 @@ test.describe("restaurant owner journey",()=>{
     const detailsBox=await page.locator("[data-product-details]").boundingBox();
     expect(detailsBox?.height??844).toBeLessThan(844*.35);
     await page.getByRole("button",{name:"Cambiar a inglés"}).click();
-    await expect(page.getByRole("heading",{name:"E2E Product"})).toBeVisible();
+    await expect(page.getByRole("heading",{name:"Producto E2E"})).toBeVisible();
     await page.getByText("Description",{exact:true}).click();
-    await expect(page.getByText("Product created by a complete end-to-end test.")).toBeVisible();
+    await expect(page.getByText("Producto creado mediante una prueba completa.")).toBeVisible();
   });
 });

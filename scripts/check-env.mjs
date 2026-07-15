@@ -23,6 +23,7 @@ if(production&&appUrl&&(appUrl.protocol!=="https:"||appUrl.hostname==="localhost
 if(publicKey&&publicKey===secretKey)errors.push("La clave pública y la secreta no pueden ser iguales.");
 if(production&&!process.env.SUPERADMIN_EMAILS&&!process.env.SUPERADMIN_USER_IDS)errors.push("Configura SUPERADMIN_EMAILS o SUPERADMIN_USER_IDS.");
 if(production&&!process.env.CRON_SECRET)errors.push("Configura CRON_SECRET para proteger las tareas programadas de Vercel.");
+if(production&&!process.env.DEEPL_API_KEY)errors.push("Configura DEEPL_API_KEY para traducir automáticamente la carta.");
 if(process.env.SUPERADMIN_RESTAURANT_CAPACITY){
   const capacity=Number(process.env.SUPERADMIN_RESTAURANT_CAPACITY);
   if(!Number.isInteger(capacity)||capacity<1||capacity>100_000)errors.push("SUPERADMIN_RESTAURANT_CAPACITY debe ser un entero entre 1 y 100000.");

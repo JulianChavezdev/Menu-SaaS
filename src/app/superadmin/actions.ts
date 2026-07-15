@@ -8,6 +8,7 @@ import {requireSuperadmin} from "@/lib/superadmin";
 import {matchesRestaurantDeletion} from "@/lib/restaurant-deletion";
 import {storagePathFromPublicUrl} from "@/lib/media";
 import {isRestaurantTrashRestorable,restaurantRestoreDeadline} from "@/lib/restaurant-trash";
+import {automaticTranslationMap,translateFieldsToEnglish} from "@/lib/automatic-translation";
 
 const uuid=z.string().uuid();
 const status=z.enum(["trialing","active","past_due","canceled"]);
@@ -130,9 +131,10 @@ export async function updateManagedRestaurant(form:FormData){
   const languageSwitcher=form.get("language_switcher_enabled")==="on";
   const effectiveStatus=suspended?"canceled":parsed.data.subscription_status;
   const {restaurant_id,...values}=parsed.data;
-  const {data:current,error:readError}=await admin.from("restaurants").select("access_suspended,suspended_at").eq("id",restaurant_id).single();
+  const {data:current,error:readError}=await admin.from("restaurants").select("access_suspended,suspended_at,description,translations").eq("id",restaurant_id).single();
   if(readError)throw new Error(readError.message);
-  await admin.from("restaurants").update({...values,menu_template:parsed.data.menu_template,subscription_status:effectiveStatus,is_published:published,language_switcher_enabled:languageSwitcher,access_suspended:suspended,suspension_reason:suspended?values.suspension_reason||"Cuenta suspendida manualmente.":null,suspended_at:suspended?(current.suspended_at??new Date().toISOString()):null}).eq("id",restaurant_id).throwOnError();
+  const translated=await translateFieldsToEnglish({description:values.description});
+  await admin.from("restaurants").update({...values,translations:automaticTranslationMap(current.translations,translated,(current.description??"")!==values.description),menu_template:parsed.data.menu_template,subscription_status:effectiveStatus,is_published:published,language_switcher_enabled:languageSwitcher,access_suspended:suspended,suspension_reason:suspended?values.suspension_reason||"Cuenta suspendida manualmente.":null,suspended_at:suspended?(current.suspended_at??new Date().toISOString()):null}).eq("id",restaurant_id).throwOnError();
   await admin.from("subscriptions").update({status:effectiveStatus}).eq("restaurant_id",restaurant_id).throwOnError();
   await audit(admin,user.id,restaurant_id,"restaurant.updated",{subscription_status:effectiveStatus,access_suspended:suspended,is_published:published,menu_template:parsed.data.menu_template});
   refresh(restaurant_id,values.slug);
@@ -157,7 +159,8 @@ export async function updateManagedCategory(form:FormData){
   const parsed=z.object({restaurant_id:uuid,category_id:uuid,name:z.string().trim().min(1).max(80)}).safeParse(Object.fromEntries(form));
   if(!parsed.success)throw new Error("Categoría no válida.");
   const {admin,user}=await requireSuperadmin();
-  await admin.from("categories").update({name:parsed.data.name}).eq("id",parsed.data.category_id).eq("restaurant_id",parsed.data.restaurant_id).throwOnError();
+  const[{data:current},translated]=await Promise.all([admin.from("categories").select("name,translations").eq("id",parsed.data.category_id).eq("restaurant_id",parsed.data.restaurant_id).single(),translateFieldsToEnglish({name:parsed.data.name})]);
+  await admin.from("categories").update({name:parsed.data.name,translations:automaticTranslationMap(current?.translations,translated,current?.name!==parsed.data.name)}).eq("id",parsed.data.category_id).eq("restaurant_id",parsed.data.restaurant_id).throwOnError();
   await audit(admin,user.id,parsed.data.restaurant_id,"category.updated",{category_id:parsed.data.category_id,name:parsed.data.name});refresh(parsed.data.restaurant_id);
 }
 
@@ -165,7 +168,9 @@ export async function updateManagedProduct(form:FormData){
   const parsed=z.object({restaurant_id:uuid,product_id:uuid,name:z.string().trim().min(1).max(120),description:z.string().trim().max(500),price:z.coerce.number().min(0).max(100000),category_id:uuid}).safeParse(Object.fromEntries(form));
   if(!parsed.success)throw new Error("Producto no válido.");
   const {admin,user}=await requireSuperadmin();
-  await admin.from("products").update({name:parsed.data.name,description:parsed.data.description||null,price_cents:Math.round(parsed.data.price*100),category_id:parsed.data.category_id}).eq("id",parsed.data.product_id).eq("restaurant_id",parsed.data.restaurant_id).throwOnError();
+  const[{data:current},translated]=await Promise.all([admin.from("products").select("name,description,translations").eq("id",parsed.data.product_id).eq("restaurant_id",parsed.data.restaurant_id).single(),translateFieldsToEnglish({name:parsed.data.name,description:parsed.data.description})]);
+  const changed=current?.name!==parsed.data.name||(current?.description??"")!==parsed.data.description;
+  await admin.from("products").update({name:parsed.data.name,description:parsed.data.description||null,translations:automaticTranslationMap(current?.translations,translated,changed),price_cents:Math.round(parsed.data.price*100),category_id:parsed.data.category_id}).eq("id",parsed.data.product_id).eq("restaurant_id",parsed.data.restaurant_id).throwOnError();
   await audit(admin,user.id,parsed.data.restaurant_id,"product.updated",{product_id:parsed.data.product_id,name:parsed.data.name});refresh(parsed.data.restaurant_id);
 }
 

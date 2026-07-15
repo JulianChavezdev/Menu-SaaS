@@ -13,7 +13,7 @@ npm run dev
 
 Configura en Supabase las Redirect URLs de Auth y el bucket público `restaurant-media`. Las políticas de Storage limitan las escrituras a miembros del restaurante, validan las rutas exactas de logos y vídeos y rechazan archivos mayores de 50 MB o con formatos no permitidos.
 
-Variables obligatorias: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY` —solo servidor— y `NEXT_PUBLIC_APP_URL`. Los alias antiguos `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY` siguen admitidos durante la transición.
+Variables obligatorias: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SECRET_KEY` —solo servidor— y `NEXT_PUBLIC_APP_URL`. En producción también se requieren `CRON_SECRET`, una allowlist de superadmin y `DEEPL_API_KEY`. Los alias antiguos `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY` siguen admitidos durante la transición.
 
 ## Base de datos
 
@@ -25,9 +25,11 @@ npm run check:db
 
 La comprobación es de solo lectura e indica por nombre cualquier migración pendiente. Las migraciones más recientes añaden traducciones, sincronización futura de Stripe, endurecimiento de RLS, límites de prueba, aislamiento entre restaurantes y suspensión administrativa.
 
-## Plantillas
+## Plantillas e idiomas
 
 La carta incluye siete estilos mobile-first con decoración SVG nativa: Cinemática y Brisa Mediterránea son gratuitos; Medianoche, Sakura, Taquería Solar, Bistró Art Déco y Neón Urbano requieren estado de suscripción `active`. Un restaurante sin acceso premium conserva sus datos y muestra automáticamente la plantilla gratuita predeterminada.
+
+El restaurante escribe nombres y descripciones únicamente en español. Al guardar, el servidor genera automáticamente `translations.en` mediante DeepL; la clave privada nunca llega al navegador. Activar el selector de idioma vuelve a traducir la carta completa, y Apariencia incluye un botón para regenerar categorías, productos y descripción del restaurante cuando sea necesario. Si el proveedor no está configurado o no responde, el contenido español se guarda; un texto recién editado hace fallback al español para no mostrar una traducción antigua.
 
 ## Superadmin
 

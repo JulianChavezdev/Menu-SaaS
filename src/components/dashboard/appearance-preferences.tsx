@@ -1,12 +1,13 @@
 "use client";
 
-import {useEffect,useState} from "react";
+import {useEffect,useState,useTransition} from "react";
 import Link from "next/link";
-import {Eye,Lock,X} from "lucide-react";
+import {Eye,Languages,Lock,X} from "lucide-react";
 import {toast} from "sonner";
-import {updateAppearancePreferences} from "@/app/dashboard/actions";
+import {translateEntireMenu,updateAppearancePreferences} from "@/app/dashboard/actions";
 import {MENU_TEMPLATES,resolveMenuTemplate,type MenuTemplateKey} from "@/lib/menu-templates";
 import {ThemeVectors} from "@/components/menu/theme-vectors";
+import {notifyAutomaticTranslation} from "@/components/dashboard/automatic-translation";
 
 type PreviewProduct={name:string;priceCents:number;videoUrl:string|null;category:string};
 type PreviewProps={kind:MenuTemplateKey;restaurantName:string;logoUrl:string|null;currency:string;product?:PreviewProduct;large?:boolean};
@@ -40,6 +41,7 @@ export function AppearancePreferences({enabled,template,canUsePremium,restaurant
   const current=resolveMenuTemplate(template,canUsePremium);
   const[selected,setSelected]=useState<MenuTemplateKey>(current.key);
   const[preview,setPreview]=useState<MenuTemplateKey|null>(null);
+  const[translating,startTranslation]=useTransition();
   useEffect(()=>{
     if(!preview)return;
     const closeOnEscape=(event:KeyboardEvent)=>{if(event.key==="Escape")setPreview(null)};
@@ -47,7 +49,7 @@ export function AppearancePreferences({enabled,template,canUsePremium,restaurant
     return()=>removeEventListener("keydown",closeOnEscape);
   },[preview]);
   return <>
-    <form action={async form=>{try{await updateAppearancePreferences(form);toast.success("Preferencias guardadas")}catch(error){toast.error(error instanceof Error?error.message:"No se pudo guardar")}}} className="space-y-6 rounded-2xl border border-slate-800 bg-slate-950/40 p-5">
+    <form action={async form=>{try{const result=await updateAppearancePreferences(form);toast.success("Preferencias guardadas");notifyAutomaticTranslation(result.translationStatus)}catch(error){toast.error(error instanceof Error?error.message:"No se pudo guardar")}}} className="space-y-6 rounded-2xl border border-slate-800 bg-slate-950/40 p-5">
       <section>
         <div className="flex items-end justify-between gap-4"><div><h2 className="font-bold">Plantillas de la carta</h2><p className="mt-1 text-sm text-slate-400">Previsualiza cada estilo antes de elegirlo.</p></div><span className="text-xs text-slate-500">{Object.keys(MENU_TEMPLATES).length} disponibles</span></div>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -59,7 +61,7 @@ export function AppearancePreferences({enabled,template,canUsePremium,restaurant
         </div>
         {!canUsePremium&&<div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-400/15 bg-amber-400/[.06] p-3 text-xs text-slate-400"><span>Puedes previsualizar las plantillas premium antes de activarlas.</span><Link href="/dashboard/billing?from=templates" className="font-semibold text-amber-300 hover:text-amber-200">Ver Plan Carta →</Link></div>}
       </section>
-      <section className="border-t border-white/10 pt-5"><h2 className="font-bold">Idiomas de la carta</h2><p className="mt-1 text-sm text-slate-400">Permite cambiar los controles públicos entre español e inglés.</p><label className="mt-4 flex items-center gap-3"><input name="language_switcher_enabled" type="checkbox" defaultChecked={enabled} className="h-5 w-5 accent-violet-500"/><span>Mostrar selector de idioma</span></label></section>
+      <section className="border-t border-white/10 pt-5"><h2 className="font-bold">Idiomas de la carta</h2><p className="mt-1 text-sm text-slate-400">Permite cambiar los controles públicos entre español e inglés. El restaurante solo escribe en español.</p><label className="mt-4 flex items-center gap-3"><input name="language_switcher_enabled" type="checkbox" defaultChecked={enabled} className="h-5 w-5 accent-violet-500"/><span>Mostrar selector de idioma</span></label><button type="button" disabled={translating} onClick={()=>startTranslation(async()=>{try{const result=await translateEntireMenu();notifyAutomaticTranslation(result.translationStatus);if(result.translationStatus==="translated")toast.success(`${result.translatedCount} elementos traducidos`)}catch(error){toast.error(error instanceof Error?error.message:"No se pudo traducir la carta")}})} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-400/20 bg-cyan-400/[.06] px-4 py-3 text-sm font-semibold text-cyan-200 disabled:opacity-50"><Languages size={17}/>{translating?"Traduciendo carta…":"Traducir ahora toda la carta"}</button></section>
       <button className="w-full rounded-lg bg-violet-600 px-4 py-3 font-semibold">Guardar preferencias</button>
     </form>
 

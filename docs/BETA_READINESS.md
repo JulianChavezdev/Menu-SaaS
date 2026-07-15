@@ -6,7 +6,7 @@ Actualizado: 15 de julio de 2026.
 
 - Autenticación, recuperación de contraseña y selector para ver u ocultar la clave.
 - Onboarding, roles y aislamiento multi-restaurante mediante RLS.
-- Gestión de categorías, productos, disponibilidad, orden, traducciones y vídeos.
+- Gestión de categorías, productos, disponibilidad, orden, traducción inglesa automática y vídeos.
 - Carta pública mobile-first con navegación vertical por pantalla, carrito local, observaciones y descripción desplegable.
 - Logo único, selector opcional español/inglés y siete plantillas: dos gratuitas y cinco premium.
 - Plan de prueba limitado a 3 productos y 5 categorías en servidor y base de datos.
@@ -31,15 +31,15 @@ Actualizado: 15 de julio de 2026.
 
 1. Rotar `SUPABASE_SECRET_KEY`, porque una clave anterior se compartió fuera del almacén de secretos, y actualizarla en Supabase, Vercel y `.env.local`.
 2. Confirmar que Vercel contiene `CRON_SECRET`, `NEXT_PUBLIC_APP_URL=https://menu-saas-alpha.vercel.app` y la allowlist de superadmin.
-3. Revisar en un móvil real registro, recuperación de contraseña, subida de vídeo, carrito y las siete plantillas.
-4. Revisar los textos y traducciones reales antes de incorporar cada restaurante.
-5. Preparar la documentación comercial/legal y el canal de soporte antes de ofrecer el servicio a terceros.
+3. Crear una clave de DeepL API, guardarla como `DEEPL_API_KEY` en Vercel y ejecutar “Traducir ahora toda la carta” en los restaurantes existentes.
+4. Revisar en un móvil real registro, recuperación de contraseña, subida de vídeo, carrito y las siete plantillas.
+5. Revisar una muestra de las traducciones automáticas antes de incorporar cada restaurante.
+6. Preparar la documentación comercial/legal y el canal de soporte antes de ofrecer el servicio a terceros.
 
 ## Pospuesto intencionadamente
 
 - Activar Stripe y cobros recurrentes reales.
 - Envío automático de recordatorios: durante la beta todos los mensajes requieren una acción humana.
-- Traducción automática con IA.
 - Nuevas iteraciones visuales y plantillas adicionales.
 
 ## Verificación de una versión

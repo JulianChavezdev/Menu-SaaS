@@ -5,6 +5,7 @@ import {ArrowDown,ArrowUp,Eye,EyeOff,Pencil,Trash2,X} from "lucide-react";
 import {toast} from "sonner";
 import {deleteProduct,reorderProducts,saveProduct,toggleProduct} from "@/app/dashboard/actions";
 import type {Category,Product} from "@/lib/types";
+import {AutomaticTranslationNote,notifyAutomaticTranslation} from "@/components/dashboard/automatic-translation";
 
 function reordered(products:Product[],index:number,delta:number){
   const copy=[...products];const target=index+delta;
@@ -15,7 +16,7 @@ function reordered(products:Product[],index:number,delta:number){
 
 export function ProductsManager({categories,products}:{categories:Category[];products:Product[]}){
   const[selected,setSelected]=useState<Product|null>(null);const[busy,start]=useTransition();
-  const submit=(form:FormData)=>start(async()=>{try{await saveProduct(form);toast.success(selected?"Producto actualizado":"Producto creado");setSelected(null)}catch(error){toast.error(error instanceof Error?error.message:"No se pudo guardar")}});
+  const submit=(form:FormData)=>start(async()=>{try{const result=await saveProduct(form);toast.success(selected?"Producto actualizado":"Producto creado");notifyAutomaticTranslation(result.translationStatus);setSelected(null)}catch(error){toast.error(error instanceof Error?error.message:"No se pudo guardar")}});
   const move=(index:number,delta:number)=>{const ids=reordered(products,index,delta);if(ids)start(async()=>{await reorderProducts(ids);toast.success("Orden actualizado")})};
 
   return <div className="grid gap-5 lg:grid-cols-[360px_1fr]">
@@ -24,11 +25,7 @@ export function ProductsManager({categories,products}:{categories:Category[];pro
       {selected&&<input type="hidden" name="id" value={selected.id}/>} 
       <label className="mt-3 block text-sm">Nombre<input name="name" required defaultValue={selected?.name??""} className="mt-1 w-full rounded-lg p-3 text-slate-900"/></label>
       <label className="mt-3 block text-sm">Descripción<textarea name="description" defaultValue={selected?.description??""} className="mt-1 min-h-24 w-full rounded-lg p-3 text-slate-900"/></label>
-      <details className="mt-3 rounded-xl border border-white/10 bg-white/[.03] p-3">
-        <summary className="cursor-pointer text-sm font-semibold text-slate-300">Traducción al inglés (opcional)</summary>
-        <label className="mt-3 block text-sm">Nombre en inglés<input name="name_en" defaultValue={selected?.translations?.en?.name??""} className="mt-1 w-full rounded-lg p-3 text-slate-900"/></label>
-        <label className="mt-3 block text-sm">Descripción en inglés<textarea name="description_en" defaultValue={selected?.translations?.en?.description??""} className="mt-1 min-h-20 w-full rounded-lg p-3 text-slate-900"/></label>
-      </details>
+      <AutomaticTranslationNote/>
       <div className="grid grid-cols-2 gap-3">
         <label className="mt-3 block text-sm">Precio (€)<input name="price" required min="0" step="0.01" type="number" defaultValue={selected?selected.price_cents/100:""} className="mt-1 w-full rounded-lg p-3 text-slate-900"/></label>
         <label className="mt-3 block text-sm">Categoría<select name="category_id" required defaultValue={selected?.category_id??""} className="mt-1 w-full rounded-lg p-3 text-slate-900"><option value="">Selecciona</option>{categories.map(category=><option key={category.id} value={category.id}>{category.name}</option>)}</select></label>

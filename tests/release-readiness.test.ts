@@ -15,6 +15,7 @@ describe("release readiness",()=>{
     expect(envCheck).toContain('appUrl.protocol!=="https:"');
     expect(envCheck).toContain("SUPERADMIN_USER_IDS");
     expect(envCheck).toContain("CRON_SECRET");
+    expect(envCheck).toContain("DEEPL_API_KEY");
     expect(packageJson.scripts["check:release"]).toContain("--production");
   });
 
