@@ -54,6 +54,20 @@ test.describe("public menu responsive contract",()=>{
     await expect(page.getByRole("navigation",{name:"Controles de la carta"})).toBeVisible();
   });
 
+  test("autoplays muted inline video on phone and iPad layouts",async({page})=>{
+    for(const viewport of [{width:390,height:844},{width:820,height:1180}]){
+      await page.setViewportSize(viewport);
+      await page.goto("/r/bistro-nube",{waitUntil:"domcontentloaded"});
+      const video=page.locator("video").first();
+      await expect(video).toHaveAttribute("autoplay","");
+      await expect(video).toHaveAttribute("playsinline","");
+      await expect.poll(()=>video.evaluate(element=>{const media=element as HTMLVideoElement;return{paused:media.paused,muted:media.muted}})).toEqual({paused:false,muted:true});
+      const menuBox=await page.locator("main.public-menu").boundingBox();
+      expect(menuBox?.height).toBeCloseTo(viewport.height,0);
+      expect(menuBox?.width??999).toBeLessThanOrEqual(viewport.width<768?viewport.width:431);
+    }
+  });
+
   test("keeps a local cart with quantities and product notes",async({page})=>{
     await page.setViewportSize({width:390,height:844});
     await page.goto("/r/bistro-nube",{waitUntil:"domcontentloaded"});

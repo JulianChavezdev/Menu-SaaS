@@ -8,6 +8,8 @@ describe("ficha compacta de producto",()=>{
   it("limita la altura y el texto en la carta pública",()=>{
     expect(menu).toContain("data-product-details");
     expect(menu).toContain("max-h-[34dvh]");
+    expect(menu).toContain("h-screen h-dvh");
+    expect(menu).toContain('preload={index===active?"auto"');
     expect(menu).toContain("line-clamp-2");
     expect(menu).not.toContain("text-[clamp(2rem,9vw,3rem)]");
     expect(menu).toContain("<details");

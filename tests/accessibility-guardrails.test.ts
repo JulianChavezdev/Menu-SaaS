@@ -3,6 +3,7 @@ import {describe,expect,it} from "vitest";
 
 const menu=readFileSync("src/components/menu/video-menu.tsx","utf8");
 const landingVideo=readFileSync("src/components/marketing/landing-preview-video.tsx","utf8");
+const productMedia=readFileSync("src/components/menu/product-media.tsx","utf8");
 const login=readFileSync("src/app/(auth)/login/page.tsx","utf8");
 const register=readFileSync("src/app/(auth)/register/page.tsx","utf8");
 
@@ -17,6 +18,13 @@ describe("accessibility guardrails",()=>{
     expect(landingVideo).toContain('matchMedia("(prefers-reduced-motion: reduce)")');
     expect(landingVideo).toContain("video.pause()");
     expect(landingVideo).not.toContain("autoPlay");
+  });
+
+  it("keeps mobile autoplay muted and offers a manual fallback",()=>{
+    expect(productMedia).toContain("autoPlay={active&&!reducedMotion}");
+    expect(productMedia).toContain("muted={muted}");
+    expect(productMedia).toContain("playsInline");
+    expect(productMedia).toContain("autoBlocked");
   });
 
   it("provides password autocomplete and submission state",()=>{
