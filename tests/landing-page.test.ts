@@ -9,4 +9,5 @@ describe("landing pública",()=>{
   it("ofrece navegación mobile y llamadas a demo, registro y acceso",()=>{expect(nav).toContain('aria-label="Navegación principal"');expect(nav).toContain('aria-expanded={open}');expect(page).toContain('href="/r/bistro-nube"');expect(page).toContain('href="/register"');expect(nav).toContain('href="/login"')});
   it("no publica un correo personal y usa una variable explícita",()=>{expect(page).toContain("NEXT_PUBLIC_CONTACT_EMAIL");expect(page).not.toMatch(/[\w.+-]+@hotmail\.com/i)});
   it("incluye metadatos específicos y un enlace de salto",()=>{expect(page).toContain("export const metadata");expect(page).toContain('href="#contenido"')});
+  it("publica los tres planes y el ahorro anual",()=>{for(const copy of["Prueba","Plan Carta","34,99 €","344,30 €/año","ahorra un 18%","Llave en mano","149,99 €","Primer mes gratis","Hasta 4 vídeos por categoría","Máximo 5 categorías"])expect(page).toContain(copy)});
 });
