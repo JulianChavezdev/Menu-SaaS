@@ -87,6 +87,13 @@ const checks=[
     migration:"202607140007_automatic_restaurant_backups.sql",
     run:()=>supabase.from("restaurant_backups").select("id",{head:true}).limit(1),
   },
+  {
+    migration:"202607150001_extended_menu_analytics.sql",
+    run:async()=>{
+      const {error}=await supabase.rpc("record_menu_analytics_event",{target_restaurant:randomId,target_product:randomId,target_event:"cart_add",target_locale:"es"});
+      return {error:error?.code==="42501"?null:(error??new Error("Extended analytics validation did not run"))};
+    },
+  },
 ];
 
 const pending=[];

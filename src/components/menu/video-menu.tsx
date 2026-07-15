@@ -1,6 +1,6 @@
 "use client";
 
-import {useEffect,useRef,useState,type CSSProperties} from "react";
+import {useCallback,useEffect,useRef,useState,type CSSProperties} from "react";
 import {ArrowLeft,ChevronDown,Info,Languages,List,MapPin,Minus,Phone,Plus,Share2,ShoppingBag,Trash2,Volume2,VolumeX,X} from "lucide-react";
 import type {Product,Restaurant} from "@/lib/types";
 import {resolveMenuTemplate} from "@/lib/menu-templates";
@@ -26,6 +26,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restauran
   const sectionRefs=useRef<(HTMLElement|null)[]>([]);
   const trackedMenu=useRef(false);
   const seenProducts=useRef(new Set<string>());
+  const playedVideos=useRef(new Set<string>());
   const playingIndex=useRef<number|null>(null);
   const[muted,setMuted]=useState(true);
   const[panel,setPanel]=useState<"menu"|"info"|"cart"|null>(null);
@@ -47,6 +48,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restauran
   const cartDetails=cart.flatMap(line=>{const product=products.find(item=>item.id===line.productId);return product?[{...line,product}]:[]});
   const cartQuantity=cartDetails.reduce((total,line)=>total+line.quantity,0);
   const cartTotal=cartDetails.reduce((total,line)=>total+(line.product.price_cents*line.quantity),0);
+  const trackVideoPlay=useCallback((index:number)=>{const product=products[index];if(!analyticsEnabled||!product?.video_url||playedVideos.current.has(product.id))return;playedVideos.current.add(product.id);sendAnalytics({restaurantId:restaurant.id,productId:product.id,event:"video_play",locale:language})},[analyticsEnabled,language,products,restaurant.id]);
 
   useEffect(()=>{
     const sectionObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting&&entry.intersectionRatio>.55)setActive(Number((entry.target as HTMLElement).dataset.index??0))}),{threshold:[.55]});
@@ -58,13 +60,13 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restauran
         if(motionPreference.matches){video.pause();video.currentTime=0;return}
         if(playingIndex.current===index)return;
         videoRefs.current.forEach(other=>{if(other&&other!==video){other.pause();other.currentTime=0}});video.currentTime=0;playingIndex.current=index;
-        void video.play().then(()=>setPlaybackBlocked(current=>{if(!current.has(index))return current;const next=new Set(current);next.delete(index);return next})).catch(()=>{if(playingIndex.current===index)setPlaybackBlocked(current=>new Set(current).add(index))});
+        void video.play().then(()=>{trackVideoPlay(index);setPlaybackBlocked(current=>{if(!current.has(index))return current;const next=new Set(current);next.delete(index);return next})}).catch(()=>{if(playingIndex.current===index)setPlaybackBlocked(current=>new Set(current).add(index))});
       }else{video.pause();video.currentTime=0;if(playingIndex.current===index)playingIndex.current=null}
     }),{threshold:[.7]});
     const observedVideos=videoRefs.current.filter((video):video is HTMLVideoElement=>Boolean(video));
     observedVideos.forEach(video=>videoObserver.observe(video));
     return()=>{sectionObserver.disconnect();videoObserver.disconnect();playingIndex.current=null;observedVideos.forEach(video=>{video.pause();video.currentTime=0})};
-  },[products]);
+  },[products,trackVideoPlay]);
 
   useEffect(()=>{const query=matchMedia("(prefers-reduced-motion: reduce)");const update=()=>{setReducedMotion(query.matches);if(query.matches){playingIndex.current=null;videoRefs.current.forEach(video=>{if(video){video.pause();video.currentTime=0}})}};update();query.addEventListener("change",update);return()=>query.removeEventListener("change",update)},[]);
   useEffect(()=>{if(!panel)return;const closeOnEscape=(event:KeyboardEvent)=>{if(event.key==="Escape")setPanel(null)};addEventListener("keydown",closeOnEscape);return()=>removeEventListener("keydown",closeOnEscape)},[panel]);
@@ -77,8 +79,8 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restauran
   const share=async()=>{let completed=false;try{await navigator.share({title:restaurant.name,url:location.href});completed=true}catch{try{await navigator.clipboard.writeText(location.href);completed=true}catch{completed=false}}if(completed&&analyticsEnabled)sendAnalytics({restaurantId:restaurant.id,event:"share",locale:language})};
   const go=(id:string)=>{document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"});setPanel(null)};
   const back=()=>history.length>1?history.back():location.assign("/");
-  const manualPlaybackStarted=(index:number)=>{playingIndex.current=index;setPlaybackBlocked(current=>{if(!current.has(index))return current;const next=new Set(current);next.delete(index);return next})};
-  const addProduct=(productId:string)=>setCart(current=>addCartItem(current,productId));
+  const manualPlaybackStarted=(index:number)=>{playingIndex.current=index;trackVideoPlay(index);setPlaybackBlocked(current=>{if(!current.has(index))return current;const next=new Set(current);next.delete(index);return next})};
+  const addProduct=(productId:string)=>{setCart(current=>addCartItem(current,productId));if(analyticsEnabled)sendAnalytics({restaurantId:restaurant.id,productId,event:"cart_add",locale:language})};
 
   return <main aria-label={`Carta de ${restaurant.name}`} data-template={template.key} style={themeStyle} className="public-menu relative h-dvh snap-y snap-mandatory overflow-y-auto overscroll-y-contain scroll-smooth bg-[var(--theme-bg)] text-white md:mx-auto md:max-w-[430px] md:border-x md:border-white/10 md:shadow-2xl">
     <h1 className="sr-only">{restaurant.name}: carta en vídeo</h1>
@@ -96,7 +98,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restauran
         {panel==="menu"?<nav className="mt-5 grid overflow-y-auto gap-2">{categories.map(([name,product])=><button key={name} onClick={()=>go(`product-${product.id}`)} className="flex items-center rounded-2xl border border-white/10 bg-white/[.04] px-4 py-3 text-left transition hover:bg-white/10"><span className="font-medium">{name}</span></button>)}</nav>
         :panel==="cart"?<div className="mt-5 min-h-0 overflow-y-auto pr-1">
           {cartDetails.length===0?<div className="grid place-items-center py-12 text-center text-white/60"><ShoppingBag size={36}/><p className="mt-3">{text.emptyCart}</p></div>:<div className="space-y-4">{cartDetails.map(({product,quantity,note})=><article key={product.id} className="border-b border-white/10 pb-4">
-            <div className="flex items-start justify-between gap-3"><div className="min-w-0"><h3 className="truncate font-semibold">{translatedField(product,"name",language,product.name)}</h3><p style={{color:colors.accent}} className="mt-1 text-sm font-semibold">{currency.format(product.price_cents/100)}</p></div><div className="flex shrink-0 items-center rounded-full border border-white/15 bg-black/15 p-1"><button aria-label={`Quitar una unidad de ${product.name}`} onClick={()=>setCart(current=>changeCartQuantity(current,product.id,-1))} className="grid h-8 w-8 place-items-center rounded-full hover:bg-white/10"><Minus size={16}/></button><span className="w-7 text-center text-sm font-bold tabular-nums">{quantity}</span><button aria-label={`Añadir una unidad de ${product.name}`} onClick={()=>setCart(current=>changeCartQuantity(current,product.id,1))} className="grid h-8 w-8 place-items-center rounded-full hover:bg-white/10"><Plus size={16}/></button></div></div>
+            <div className="flex items-start justify-between gap-3"><div className="min-w-0"><h3 className="truncate font-semibold">{translatedField(product,"name",language,product.name)}</h3><p style={{color:colors.accent}} className="mt-1 text-sm font-semibold">{currency.format(product.price_cents/100)}</p></div><div className="flex shrink-0 items-center rounded-full border border-white/15 bg-black/15 p-1"><button aria-label={`Quitar una unidad de ${product.name}`} onClick={()=>setCart(current=>changeCartQuantity(current,product.id,-1))} className="grid h-8 w-8 place-items-center rounded-full hover:bg-white/10"><Minus size={16}/></button><span className="w-7 text-center text-sm font-bold tabular-nums">{quantity}</span><button aria-label={`Añadir una unidad de ${product.name}`} onClick={()=>addProduct(product.id)} className="grid h-8 w-8 place-items-center rounded-full hover:bg-white/10"><Plus size={16}/></button></div></div>
             <label className="mt-3 block text-xs font-medium text-white/65">{text.note}<textarea value={note} maxLength={300} onChange={event=>setCart(current=>updateCartNote(current,product.id,event.target.value))} placeholder={text.notePlaceholder} className="mt-1.5 min-h-20 w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/30"/></label>
             <button onClick={()=>setCart(current=>current.filter(line=>line.productId!==product.id))} className="mt-2 flex items-center gap-1.5 text-xs text-white/55 hover:text-white"><Trash2 size={14}/>{text.remove}</button>
           </article>)}</div>}
