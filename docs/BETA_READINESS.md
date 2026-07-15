@@ -17,6 +17,8 @@ Actualizado: 15 de julio de 2026.
 - Pagos manuales genéricos, vencimientos, cortesía, suspensión en dos pasos, libro financiero y cierres mensuales.
 - Central de cobros pendientes con mensajes para copiar, WhatsApp o correo y registro del último aviso preparado.
 - Centro de actividad y auditoría privada con filtros y CSV.
+- Analíticas globales de superadmin con visitas, vídeos, carrito, contactos, rankings y filtros de periodo.
+- Landing pública completa con navegación, producto, precios, equipo, FAQ y contacto configurable.
 - Checkout y webhook de Stripe implementados, pero desactivados mientras no existan todas sus variables.
 - Despliegue operativo en `https://menu-saas-alpha.vercel.app`.
 
@@ -32,9 +34,10 @@ Actualizado: 15 de julio de 2026.
 1. Rotar `SUPABASE_SECRET_KEY`, porque una clave anterior se compartió fuera del almacén de secretos, y actualizarla en Supabase, Vercel y `.env.local`.
 2. Confirmar que Vercel contiene `CRON_SECRET`, `NEXT_PUBLIC_APP_URL=https://menu-saas-alpha.vercel.app` y la allowlist de superadmin.
 3. Crear una clave de DeepL API, guardarla como `DEEPL_API_KEY` en Vercel y ejecutar “Traducir ahora toda la carta” en los restaurantes existentes.
-4. Revisar en un móvil real registro, recuperación de contraseña, subida de vídeo, carrito y las siete plantillas.
-5. Revisar una muestra de las traducciones automáticas antes de incorporar cada restaurante.
-6. Preparar la documentación comercial/legal y el canal de soporte antes de ofrecer el servicio a terceros.
+4. Configurar `NEXT_PUBLIC_CONTACT_EMAIL` si se quiere mostrar un correo público en la landing.
+5. Revisar en un móvil real registro, recuperación de contraseña, subida de vídeo, carrito y las siete plantillas.
+6. Revisar una muestra de las traducciones automáticas antes de incorporar cada restaurante.
+7. Preparar la documentación comercial/legal y el canal de soporte antes de ofrecer el servicio a terceros.
 
 ## Pospuesto intencionadamente
 

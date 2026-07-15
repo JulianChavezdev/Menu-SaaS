@@ -102,7 +102,13 @@ npm run check:media
 
 ## Analíticas privadas
 
-La carta registra únicamente contadores diarios agregados: visitas, productos vistos, compartidos y clics de contacto. No existen eventos individuales ni se almacenan IP, cookies, agentes de usuario, dispositivos o identificadores de visitante. Cada restaurante solo puede leer sus propios agregados mediante RLS; la escritura pública pasa por una función limitada que valida que la carta y el producto estén publicados.
+La carta registra únicamente contadores diarios agregados: visitas, productos vistos, reproducciones de vídeo, añadidos al carrito, compartidos y clics de contacto. No existen eventos individuales ni se almacenan IP, cookies, agentes de usuario, dispositivos o identificadores de visitante. Cada restaurante solo puede leer sus propios agregados mediante RLS; la escritura pública pasa por una función limitada que valida que la carta y el producto estén publicados.
+
+`/superadmin/analytics` reúne todas las cartas con filtros de periodo, actividad diaria, tasas del embudo, ranking de restaurantes y productos, idiomas y desglose de vídeo/carrito. Los eventos nuevos no reconstruyen actividad histórica anterior a su despliegue.
+
+## Landing pública
+
+La portada incluye navegación responsive, presentación del producto, funcionamiento, precios, quiénes somos, preguntas frecuentes y contacto. `NEXT_PUBLIC_CONTACT_EMAIL` es opcional: cuando existe muestra el enlace de correo; si está vacío, la llamada a contacto dirige al registro o acceso sin publicar una dirección personal.
 
 ## Comprobaciones
 

@@ -11,6 +11,7 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 SUPABASE_SECRET_KEY=
 NEXT_PUBLIC_APP_URL=https://menu-saas-alpha.vercel.app
+NEXT_PUBLIC_CONTACT_EMAIL=
 SUPERADMIN_EMAILS=
 SUPERADMIN_USER_IDS=
 SUPERADMIN_RESTAURANT_CAPACITY=25
@@ -24,6 +25,8 @@ Usa preferentemente los nombres actuales. `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `SUP
 `DEEPL_API_KEY` activa la traducción automática español → inglés. Las claves Free terminadas en `:fx` usan automáticamente `api-free.deepl.com`; las demás usan `api.deepl.com`. Después de añadir o rotar la clave, abre Apariencia y ejecuta “Traducir ahora toda la carta” para completar el contenido histórico.
 
 `/api/health` muestra `features.automatic_translation` como booleano para confirmar la activación sin revelar la clave.
+
+`NEXT_PUBLIC_CONTACT_EMAIL` es opcional y deliberadamente público. Configúralo solo con una dirección de soporte que pueda mostrarse en la landing; nunca uses aquí una dirección que deba permanecer privada.
 
 Stripe debe estar completamente configurado o completamente vacío. Mientras siga desactivado, la beta utiliza pagos manuales y no intenta cobrar al cliente.
 
