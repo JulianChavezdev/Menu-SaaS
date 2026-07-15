@@ -7,6 +7,7 @@ describe("health endpoint",()=>{
   it("never caches its result or exposes credentials",()=>{
     expect(route).toContain('"Cache-Control":"no-store"');
     expect(route).not.toContain("SUPABASE_SERVICE_ROLE_KEY");
+    expect(route).toContain("automatic_translation:Boolean(process.env.DEEPL_API_KEY)");
   });
 
   it("bounds the database probe",()=>{

@@ -9,6 +9,7 @@ export async function GET(){
   const url=getSupabaseUrl();
   const key=getSupabasePublicKey();
   const checks={environment:Boolean(url&&key&&process.env.NEXT_PUBLIC_APP_URL),database:false};
+  const features={automatic_translation:Boolean(process.env.DEEPL_API_KEY)};
 
   if(url&&key){
     const controller=new AbortController();
@@ -26,7 +27,7 @@ export async function GET(){
 
   const healthy=checks.environment&&checks.database;
   return NextResponse.json(
-    {status:healthy?"ok":"degraded",checks,timestamp:new Date().toISOString()},
+    {status:healthy?"ok":"degraded",checks,features,timestamp:new Date().toISOString()},
     {status:healthy?200:503,headers:{"Cache-Control":"no-store"}},
   );
 }
