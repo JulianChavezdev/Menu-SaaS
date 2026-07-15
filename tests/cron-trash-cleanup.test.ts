@@ -4,6 +4,7 @@ import {isValidCronAuthorization} from "../src/lib/cron-auth";
 
 const route=readFileSync("src/app/api/cron/trash-cleanup/route.ts","utf8");
 const cleanup=readFileSync("src/lib/trash-cleanup.ts","utf8");
+const runner=readFileSync("src/lib/trash-cleanup-run.ts","utf8");
 const vercel=JSON.parse(readFileSync("vercel.json","utf8"));
 
 describe("purga programada de papelera",()=>{
@@ -28,8 +29,9 @@ describe("purga programada de papelera",()=>{
   });
 
   it("registra cada ejecución para mostrar su estado al superadmin",()=>{
-    expect(route).toContain("platform.trash_cleanup_completed");
-    expect(route).toContain("platform.trash_cleanup_failed");
-    expect(route).toContain("duration_ms");
+    expect(runner).toContain("platform.trash_cleanup_completed");
+    expect(runner).toContain("platform.trash_cleanup_failed");
+    expect(runner).toContain("duration_ms");
+    expect(runner).toContain("error_message");
   });
 });
