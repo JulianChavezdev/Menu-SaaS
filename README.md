@@ -63,6 +63,8 @@ La sustitución de un logo elimina el archivo anterior. Para auditar Storage man
 
 La beta funciona sin cobros: el plan de prueba admite hasta **3 productos y 5 categorías**. Esos límites se validan en servidor y en la base de datos.
 
+Cada producto admite los 14 grupos de alérgenos del anexo II del Reglamento (UE) 1169/2011. El restaurante los selecciona desde Carta y el cliente los consulta en una pestaña desplegable con aviso de confirmación al personal. La carta pública ofrece además una vista listada por categorías, con miniaturas y productos en dos columnas, accesible desde el control Carta.
+
 Mientras Stripe permanezca desactivado, el superadmin puede registrar pagos manuales por Bizum, efectivo, transferencia bancaria u otro método. Cada registro conserva método, importe, fecha, referencia, nota interna y vencimiento; la confirmación activa el Plan Carta y restaura una cuenta suspendida. El restaurante ve que su suscripción es manual y nunca se inicia un cobro automático.
 
 El control de vencimientos es deliberadamente manual: permite aplicar de 0 a 30 días de cortesía, marcar pagos pendientes sin bloquear el panel y ejecutar la suspensión solo tras una segunda confirmación. Los avisos se preparan para copiar, WhatsApp o correo, pero nunca se envían automáticamente; cada preparación queda auditada.

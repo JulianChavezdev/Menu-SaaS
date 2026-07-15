@@ -6,6 +6,7 @@ import {toast} from "sonner";
 import {deleteProduct,reorderProducts,saveProduct,toggleProduct} from "@/app/dashboard/actions";
 import type {Category,Product} from "@/lib/types";
 import {AutomaticTranslationNote,notifyAutomaticTranslation} from "@/components/dashboard/automatic-translation";
+import {ALLERGEN_CODES,ALLERGENS} from "@/lib/allergens";
 
 function reordered(products:Product[],index:number,delta:number){
   const copy=[...products];const target=index+delta;
@@ -30,6 +31,7 @@ export function ProductsManager({categories,products}:{categories:Category[];pro
         <label className="mt-3 block text-sm">Precio (€)<input name="price" required min="0" step="0.01" type="number" defaultValue={selected?selected.price_cents/100:""} className="mt-1 w-full rounded-lg p-3 text-slate-900"/></label>
         <label className="mt-3 block text-sm">Categoría<select name="category_id" required defaultValue={selected?.category_id??""} className="mt-1 w-full rounded-lg p-3 text-slate-900"><option value="">Selecciona</option>{categories.map(category=><option key={category.id} value={category.id}>{category.name}</option>)}</select></label>
       </div>
+      <fieldset className="mt-4"><legend className="text-sm font-semibold">Alérgenos</legend><p className="mt-1 text-xs text-slate-400">Marca todos los que contiene el plato.</p><div className="mt-3 grid grid-cols-2 gap-2">{ALLERGEN_CODES.map(code=><label key={code} className="flex min-h-10 items-center gap-2 rounded-lg border border-white/10 bg-white/[.03] px-3 py-2 text-xs"><input name="allergens" value={code} defaultChecked={selected?.allergens?.includes(code)??false} type="checkbox"/><span>{ALLERGENS[code].es}</span></label>)}</div></fieldset>
       <div className="mt-3 flex flex-wrap gap-4 text-sm"><label className="flex gap-2"><input name="is_available" defaultChecked={selected?.is_available??true} type="checkbox"/>Disponible</label><label className="flex gap-2"><input name="is_featured" defaultChecked={selected?.is_featured??false} type="checkbox"/>Destacado</label></div>
       <button disabled={busy} className="mt-4 w-full rounded-lg bg-violet-500 px-4 py-3 font-semibold disabled:opacity-50">{busy?"Guardando…":selected?"Guardar cambios":"Crear producto"}</button>
     </form>

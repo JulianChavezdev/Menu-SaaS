@@ -18,6 +18,7 @@ describe("restaurant backup restore",()=>{
     const parsed=parseRestaurantBackup({...backup,members:[{role:"owner"}],restaurant:{...backup.restaurant,owner_id:"attacker"}},restaurantId);
     expect(parsed.restaurant).not.toHaveProperty("owner_id");
     expect(parsed).not.toHaveProperty("members");
+    expect(parsed.products[0].allergens).toEqual([]);
   });
 
   it("rejects cross-restaurant and broken category references",()=>{

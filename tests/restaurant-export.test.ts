@@ -8,11 +8,12 @@ describe("restaurant exports",()=>{
   });
 
   it("exports an Excel-friendly CSV and neutralizes formulas",()=>{
-    const csv=productsCsv([{category:"Postres",name:'=HYPERLINK("bad")',description:'Tarta "especial"',price_cents:650,currency:"EUR",is_available:true}]);
+    const csv=productsCsv([{category:"Postres",name:'=HYPERLINK("bad")',description:'Tarta "especial"',price_cents:650,currency:"EUR",allergens:["gluten","milk"],is_available:true}]);
     expect(csv.startsWith("\uFEFF")).toBe(true);
     expect(csv).toContain('"\'=HYPERLINK(""bad"")"');
     expect(csv).toContain('"Tarta ""especial"""');
     expect(csv).toContain('"6.50"');
+    expect(csv).toContain('"[""gluten"",""milk""]"');
   });
 
   it("marks JSON backups as manifests without embedded media",()=>{

@@ -1,4 +1,4 @@
-type ExportProduct={name?:unknown;description?:unknown;price_cents?:unknown;currency?:unknown;category?:unknown;is_available?:unknown;is_featured?:unknown;video_url?:unknown;video_path?:unknown;translations?:unknown};
+type ExportProduct={name?:unknown;description?:unknown;price_cents?:unknown;currency?:unknown;category?:unknown;allergens?:unknown;is_available?:unknown;is_featured?:unknown;video_url?:unknown;video_path?:unknown;translations?:unknown};
 
 function csvCell(value:unknown){
   let text=value===null||value===undefined?"":typeof value==="object"?JSON.stringify(value):String(value);
@@ -12,9 +12,9 @@ export function safeExportName(slug:unknown){
 }
 
 export function productsCsv(products:ExportProduct[]){
-  const headers=["categoría","producto","descripción","precio","moneda","disponible","destacado","vídeo_url","vídeo_path","traducciones"];
+  const headers=["categoría","producto","descripción","precio","moneda","alérgenos","disponible","destacado","vídeo_url","vídeo_path","traducciones"];
   const rows=products.map(product=>[
-    product.category,product.name,product.description,(Number(product.price_cents??0)/100).toFixed(2),product.currency,Boolean(product.is_available),Boolean(product.is_featured),product.video_url,product.video_path,product.translations,
+    product.category,product.name,product.description,(Number(product.price_cents??0)/100).toFixed(2),product.currency,product.allergens,Boolean(product.is_available),Boolean(product.is_featured),product.video_url,product.video_path,product.translations,
   ]);
   return `\uFEFF${[headers,...rows].map(row=>row.map(csvCell).join(",")).join("\r\n")}\r\n`;
 }
