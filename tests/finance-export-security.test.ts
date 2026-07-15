@@ -1,0 +1,2 @@
+import {readFileSync} from "node:fs";import {describe,expect,it} from "vitest";
+const route=readFileSync("src/app/api/superadmin/finance/export/route.ts","utf8");describe("exportación financiera privada",()=>{it("exige superadmin, evita caché y limita filas",()=>{expect(route).toContain("superadminApiContext");expect(route).toContain("status:context.status");expect(route).toContain("private, no-store");expect(route).toContain("limit(5000)")})});

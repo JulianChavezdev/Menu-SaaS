@@ -1,0 +1,6 @@
+import {NextResponse} from "next/server";
+import {filterLedgerPayments,manualPaymentsCsv,type ManualPaymentRow} from "@/lib/manual-payment-ledger";
+import {superadminApiContext} from "@/lib/superadmin-api";
+
+export const dynamic="force-dynamic";const headers={"Cache-Control":"private, no-store, max-age=0","X-Content-Type-Options":"nosniff"};
+export async function GET(request:Request){const context=await superadminApiContext();if(context.status!==200)return NextResponse.json({error:context.status===401?"Authentication required":context.status===403?"Forbidden":"Export unavailable"},{status:context.status,headers});const params=new URL(request.url).searchParams;const {data,error}=await context.admin.from("manual_payments").select("id,amount_cents,currency,method,paid_at,period_end,restaurants(id,name,slug)").order("paid_at",{ascending:false}).limit(5000);if(error)return NextResponse.json({error:"Finance export unavailable"},{status:503,headers});const rows=filterLedgerPayments((data??[]) as ManualPaymentRow[],{q:params.get("q"),method:params.get("method"),from:params.get("from"),to:params.get("to")});return new NextResponse(manualPaymentsCsv(rows),{headers:{...headers,"Content-Type":"text/csv; charset=utf-8","Content-Disposition":`attachment; filename="pagos-manuales-${new Date().toISOString().slice(0,10)}.csv"`}})}
