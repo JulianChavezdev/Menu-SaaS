@@ -10,5 +10,6 @@ describe("cabecera mobile-first del superadmin",()=>{
     expect(layout).toContain("sm:flex-row");
     expect(layout).toContain("grid grid-cols-2");
     expect(layout).toContain('/superadmin/activity');
+    expect(layout).toContain('/superadmin/finance');
   });
 });
