@@ -1,6 +1,15 @@
 import {expect,test} from "@playwright/test";
+import {createClient} from "@supabase/supabase-js";
+
+const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
+const serviceKey=process.env.SUPABASE_SECRET_KEY??process.env.SUPABASE_SERVICE_ROLE_KEY;
+const admin=url&&serviceKey?createClient(url,serviceKey,{auth:{persistSession:false,autoRefreshToken:false}}):null;
+const fixtureSlug=`e2e-mobile-menu-${Date.now()}`;
+let fixtureUserId="";let fixtureRestaurantId="";
 
 test.describe("public menu responsive contract",()=>{
+  test.beforeAll(async()=>{if(!admin)return;const user=await admin.auth.admin.createUser({email:`${fixtureSlug}@carta-video.local`,password:`Test-${crypto.randomUUID()}!`,email_confirm:true});if(user.error)throw user.error;fixtureUserId=user.data.user.id;const restaurant=await admin.from("restaurants").insert({owner_id:fixtureUserId,name:"Mobile E2E",slug:fixtureSlug,is_published:true,language_switcher_enabled:false}).select("id").single();if(restaurant.error)throw restaurant.error;fixtureRestaurantId=restaurant.data.id;const category=await admin.from("categories").insert({restaurant_id:fixtureRestaurantId,name:"Carta",slug:"carta",is_active:true}).select("id").single();if(category.error)throw category.error;const product=await admin.from("products").insert({restaurant_id:fixtureRestaurantId,category_id:category.data.id,name:"Producto móvil",price_cents:500,is_available:true}).select("id").single();if(product.error)throw product.error});
+  test.afterAll(async()=>{if(!admin)return;if(fixtureRestaurantId)await admin.from("restaurants").delete().eq("id",fixtureRestaurantId);if(fixtureUserId)await admin.auth.admin.deleteUser(fixtureUserId)});
   test("keeps a centered phone canvas and vertical product snapping on desktop",async({page})=>{
     await page.setViewportSize({width:1440,height:900});
     await page.goto("/r/bistro-nube",{waitUntil:"domcontentloaded"});
@@ -11,7 +20,7 @@ test.describe("public menu responsive contract",()=>{
     expect(menuBox).not.toBeNull();
     expect(menuBox!.width).toBeLessThanOrEqual(431);
     expect(Math.abs(menuBox!.x-(1440-menuBox!.width)/2)).toBeLessThan(2);
-    await expect(menu.locator("section")).toHaveCount(3);
+    await expect(menu.locator("section")).toHaveCount(15);
     await expect(page.getByText(/01\s*\/\s*03/)).toHaveCount(0);
 
     for(const details of await page.locator("[data-product-details]").all()){
@@ -30,8 +39,9 @@ test.describe("public menu responsive contract",()=>{
   });
 
   test("uses the full mobile viewport and respects a disabled language switcher",async({page})=>{
+    test.skip(!admin,"Supabase server credentials are required");
     await page.setViewportSize({width:390,height:844});
-    await page.goto("/r/cafe-central",{waitUntil:"domcontentloaded"});
+    await page.goto(`/r/${fixtureSlug}`,{waitUntil:"domcontentloaded"});
 
     const menu=page.locator("main.public-menu");
     await expect(menu).toBeVisible();

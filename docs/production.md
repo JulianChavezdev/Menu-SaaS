@@ -1,30 +1,59 @@
-# Puesta en producción
+# Operación en producción
 
-## Vercel
+Producción actual: `https://menu-saas-alpha.vercel.app`.
 
-1. Importa `JulianChavezdev/Menu-SaaS` desde Vercel.
-2. Usa Node.js 22 y el framework Next.js.
-3. Añade en Production, Preview y Development: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` y `NEXT_PUBLIC_APP_URL`.
-4. Define `NEXT_PUBLIC_APP_URL` con la URL pública, sin barra final.
-5. Despliega y comprueba `https://tu-dominio/api/health`.
+## Variables de Vercel
 
-La clave `SUPABASE_SERVICE_ROLE_KEY` es solo de servidor. Nunca debe usar el prefijo `NEXT_PUBLIC_`.
+Configura en Production, Preview y Development según corresponda:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+SUPABASE_SECRET_KEY=
+NEXT_PUBLIC_APP_URL=https://menu-saas-alpha.vercel.app
+SUPERADMIN_EMAILS=
+SUPERADMIN_USER_IDS=
+SUPERADMIN_RESTAURANT_CAPACITY=25
+SUPERADMIN_STORAGE_CAPACITY_GB=1
+CRON_SECRET=
+```
+
+Usa preferentemente los nombres actuales. `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY` solo existen como alias heredados. La clave secreta, `CRON_SECRET` y los secretos de Stripe nunca deben tener el prefijo `NEXT_PUBLIC_`.
+
+Stripe debe estar completamente configurado o completamente vacío. Mientras siga desactivado, la beta utiliza pagos manuales y no intenta cobrar al cliente.
 
 ## Supabase Auth
 
-En Authentication → URL Configuration configura:
+En Authentication → URL Configuration:
 
-- Site URL: `https://tu-dominio`
-- Redirect URLs: `http://localhost:3000/auth/callback`, `http://localhost:3000/reset-password`, `https://tu-dominio/auth/callback` y `https://tu-dominio/reset-password`.
+- Site URL: `https://menu-saas-alpha.vercel.app`
+- Redirect URLs: `http://localhost:3000/auth/callback`, `http://localhost:3000/reset-password`, `https://menu-saas-alpha.vercel.app/auth/callback` y `https://menu-saas-alpha.vercel.app/reset-password`.
 
-## Verificación
+Al cambiar a un dominio propio, añade primero sus callbacks, cambia `NEXT_PUBLIC_APP_URL`, despliega y después conviértelo en Site URL.
 
-```bash
-npm run check:env
-npm test
-npm run lint
-npm run typecheck
-npm run build
-```
+## Base de datos y tareas programadas
 
-Después prueba registro, recuperación de contraseña, subida de vídeo, QR y una carta pública desde móvil.
+Aplica las migraciones en orden y ejecuta `npm run check:db`. La migración de copias de seguridad instala una tarea diaria de Supabase a las 02:30 UTC. Vercel llama a `/api/cron/trash-cleanup` cada día a las 03:15 UTC y autentica la solicitud con `CRON_SECRET`.
+
+La pantalla de papelera muestra el resultado de la última limpieza. Un fallo no elimina datos silenciosamente: queda registrado en la auditoría para reintento manual.
+
+## Publicar cambios
+
+1. Ejecuta pruebas, TypeScript, lint y build.
+2. Comprueba migraciones, demo y medios con `npm run check:release` usando el entorno de producción.
+3. Haz commit y push de `main`; Vercel genera un nuevo despliegue sin impedir cambios posteriores.
+4. Espera a que el despliegue esté `Ready`.
+5. Ejecuta `npm run check:deployment -- https://menu-saas-alpha.vercel.app`.
+6. Prueba el flujo afectado desde móvil y revisa `/superadmin/activity`.
+
+## Rotación de secretos
+
+Si una clave se comparte o se sospecha que está expuesta:
+
+1. Genera una nueva clave en el proveedor.
+2. Sustitúyela en Vercel y en el `.env.local` autorizado.
+3. Fuerza un nuevo despliegue.
+4. Verifica `/api/health`, acceso del superadmin y una operación de lectura.
+5. Revoca la clave anterior.
+
+No pegues el valor de los secretos en incidencias, commits, capturas o conversaciones.

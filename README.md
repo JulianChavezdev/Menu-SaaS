@@ -65,6 +65,8 @@ Mientras Stripe permanezca desactivado, el superadmin puede registrar pagos manu
 
 El control de vencimientos es deliberadamente manual: permite aplicar de 0 a 30 días de cortesía, marcar pagos pendientes sin bloquear el panel y ejecutar la suspensión solo tras una segunda confirmación. Los avisos se preparan para copiar, WhatsApp o correo, pero nunca se envían automáticamente; cada preparación queda auditada.
 
+`/superadmin/finance` centraliza los vencimientos próximos y atrasados, los prioriza por urgencia y muestra el último aviso preparado. Los botones solo copian el mensaje o abren el canal elegido; el envío final siempre depende del superadmin.
+
 Stripe queda preparado para una fase posterior, pero el checkout permanece desactivado mientras no existan `STRIPE_SECRET_KEY` y `STRIPE_PLAN_PRICE_ID`. Cuando se active:
 
 1. Crea un precio recurrente en Stripe.
@@ -88,7 +90,7 @@ Si una clave secreta se comparte fuera de un almacén seguro, rótala antes de p
 
 Sin variables de Supabase, `/r/bistro-nube` utiliza una demo local con vídeos gastronómicos de Pexels y contenido español/inglés. Para datos persistentes, crea una cuenta y completa el onboarding.
 
-El escaparate persistente incluye cinco restaurantes aislados, logos SVG y vídeos relacionados con cada producto. Sus páginas de procedencia quedan guardadas junto a los datos declarativos. Puede regenerarse y comprobarse de forma segura con:
+El escaparate persistente está consolidado en `Bistro Nube`: un único restaurante demo con siete categorías, quince productos, logos SVG y vídeos relacionados con la comida. Puede regenerarse y comprobarse de forma segura con:
 
 ```bash
 npm run seed:showcase
@@ -124,6 +126,6 @@ npm run check:deployment -- https://tu-dominio.com
 
 La comprobación visita salud, portada, carta demo, manifest, robots y sitemap, y confirma las cabeceras de seguridad esenciales.
 
-## Despliegue futuro
+## Producción actual
 
-Antes de Vercel: aplica migraciones, rota secretos compartidos, configura variables, actualiza Redirect URLs, ejecuta todas las comprobaciones y registra el webhook solo cuando se vayan a aceptar pagos.
+La aplicación está desplegada en `https://menu-saas-alpha.vercel.app`. Para cada versión: ejecuta las comprobaciones, sube `main`, espera a que Vercel marque el despliegue como `Ready` y valida el dominio con `check:deployment`. Mantén `CRON_SECRET` configurado para proteger la limpieza diaria de la papelera y registra el webhook de Stripe únicamente cuando vayas a aceptar cobros reales.

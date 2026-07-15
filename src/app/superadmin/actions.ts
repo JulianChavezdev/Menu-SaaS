@@ -117,6 +117,7 @@ export async function recordPaymentReminder(form:FormData){
   const {admin,user}=await requireSuperadmin();
   await audit(admin,user.id,parsed.data.restaurant_id,"payment.reminder_prepared",{channel:parsed.data.channel,period_end:parsed.data.period_end});
   revalidatePath(`/superadmin/restaurants/${parsed.data.restaurant_id}`);
+  revalidatePath("/superadmin/finance");
 }
 
 export async function updateManagedRestaurant(form:FormData){

@@ -1,42 +1,59 @@
 # Estado de preparación de la beta
 
-Actualizado: 13 de julio de 2026.
+Actualizado: 15 de julio de 2026.
 
 ## Terminado
 
-- Autenticación, recuperación de contraseña y selector de visibilidad de clave.
-- Onboarding y separación multi-restaurante.
-- Gestión de categorías, productos, disponibilidad, orden y vídeos.
-- Logo único; portada, colores y selector de imagen retirados del flujo activo.
-- Carta pública mobile-first con navegación vertical por pantalla, controles fijos y dos plantillas.
-- Selector opcional español/inglés con traducciones de contenido y fallback al español.
-- Código QR, datos del restaurante, enlaces y equipo con roles.
-- Plan de prueba de 3 productos y 5 categorías.
-- Checkout y webhook de Stripe preparados pero desactivados durante la beta.
-- RLS reforzado, campos de facturación protegidos y aislamiento categoría-producto por restaurante.
-- Pruebas unitarias, integración, E2E, build, auditoría de dependencias y comprobaciones de entorno/esquema.
+- Autenticación, recuperación de contraseña y selector para ver u ocultar la clave.
+- Onboarding, roles y aislamiento multi-restaurante mediante RLS.
+- Gestión de categorías, productos, disponibilidad, orden, traducciones y vídeos.
+- Carta pública mobile-first con navegación vertical por pantalla, carrito local, observaciones y descripción desplegable.
+- Logo único, selector opcional español/inglés y siete plantillas: dos gratuitas y cinco premium.
+- Plan de prueba limitado a 3 productos y 5 categorías en servidor y base de datos.
+- Panel de superadmin para métricas, capacidad, soporte, previsualización, suspensión, restauración y eliminación protegida.
+- Papelera con restauración temporal, purga diaria auditada y limpieza de archivos asociados.
+- Exportaciones, copias versionadas y copias automáticas diarias con retención.
+- Demo única `Bistro Nube` con 7 categorías y 15 productos; los fixtures de prueba se eliminan automáticamente.
+- Pagos manuales genéricos, vencimientos, cortesía, suspensión en dos pasos, libro financiero y cierres mensuales.
+- Central de cobros pendientes con mensajes para copiar, WhatsApp o correo y registro del último aviso preparado.
+- Centro de actividad y auditoría privada con filtros y CSV.
+- Checkout y webhook de Stripe implementados, pero desactivados mientras no existan todas sus variables.
+- Despliegue operativo en `https://menu-saas-alpha.vercel.app`.
+
+## Estado técnico comprobado
+
+- `npm run check:db`: esquema remoto completo, sin migraciones pendientes.
+- Pruebas unitarias, integración, TypeScript, lint y build disponibles en los scripts del proyecto.
+- `npm run check:deployment -- https://menu-saas-alpha.vercel.app`: salud, portada, demo, manifest, robots, sitemap y cabeceras correctos.
+- Los secretos no se almacenan en Git y las rutas privadas requieren sesión y rol de superadmin.
 
 ## Acciones externas pendientes
 
-1. Aplicar las migraciones que indique `npm run check:db`.
-2. Rotar `SUPABASE_SERVICE_ROLE_KEY` antes de producción porque una clave se compartió en una conversación.
-3. Ejecutar `npm run test:integration` y `npm run test:e2e` después de las migraciones.
-4. Revisar visualmente los textos y traducciones reales cargados por el restaurante.
+1. Rotar `SUPABASE_SECRET_KEY`, porque una clave anterior se compartió fuera del almacén de secretos, y actualizarla en Supabase, Vercel y `.env.local`.
+2. Confirmar que Vercel contiene `CRON_SECRET`, `NEXT_PUBLIC_APP_URL=https://menu-saas-alpha.vercel.app` y la allowlist de superadmin.
+3. Revisar en un móvil real registro, recuperación de contraseña, subida de vídeo, carrito y las siete plantillas.
+4. Revisar los textos y traducciones reales antes de incorporar cada restaurante.
+5. Preparar la documentación comercial/legal y el canal de soporte antes de ofrecer el servicio a terceros.
 
 ## Pospuesto intencionadamente
 
-- Despliegue en Vercel.
-- Cobros reales, Stripe en producción y cualquier proceso manual por Bizum.
-- Nuevas plantillas de pago.
-- Automatización o traducción con IA.
+- Activar Stripe y cobros recurrentes reales.
+- Envío automático de recordatorios: durante la beta todos los mensajes requieren una acción humana.
+- Traducción automática con IA.
+- Nuevas iteraciones visuales y plantillas adicionales.
 
-## Comando de reanudación
+## Verificación de una versión
 
 ```bash
 npm run check:env
 npm run check:db
 npm test
+npm run test:integration
 npm run typecheck
 npm run lint
 npm run build
+npm run check:release
+npm run check:deployment -- https://menu-saas-alpha.vercel.app
 ```
+
+`check:release` debe ejecutarse con un `.env.local` que use el dominio HTTPS definitivo. Para desarrollo local puede mantenerse `NEXT_PUBLIC_APP_URL=http://localhost:3000`, pero esa configuración no supera deliberadamente la comprobación de producción.

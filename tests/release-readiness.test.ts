@@ -14,6 +14,7 @@ describe("release readiness",()=>{
     expect(envCheck).toContain('process.argv.includes("--production")');
     expect(envCheck).toContain('appUrl.protocol!=="https:"');
     expect(envCheck).toContain("SUPERADMIN_USER_IDS");
+    expect(envCheck).toContain("CRON_SECRET");
     expect(packageJson.scripts["check:release"]).toContain("--production");
   });
 
