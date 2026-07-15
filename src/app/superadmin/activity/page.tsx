@@ -1,0 +1,24 @@
+import Link from "next/link";
+import {Activity,Building2,CalendarClock,CircleDollarSign,FilePenLine,KeyRound,ServerCog} from "lucide-react";
+import {requireSuperadmin} from "@/lib/superadmin";
+import {auditGroups,describeAuditEvent,isAuditGroup,type AuditGroup,type AuditTone} from "@/lib/audit-events";
+
+type RestaurantRelation={name?:string;slug?:string}|Array<{name?:string;slug?:string}>|null;
+type AuditRow={id:string;actor_user_id:string|null;restaurant_id:string|null;action:string;details:unknown;created_at:string;restaurants:RestaurantRelation};
+const labels:Record<AuditGroup,string>={all:"Todo",restaurants:"Restaurantes",access:"Acceso",payments:"Pagos",content:"Carta",system:"Sistema"};
+const icons={all:Activity,restaurants:Building2,access:KeyRound,payments:CircleDollarSign,content:FilePenLine,system:ServerCog};
+const tones:Record<AuditTone,string>={neutral:"border-white/10 bg-slate-950/55",success:"border-emerald-400/20 bg-emerald-400/[.05]",warning:"border-amber-400/20 bg-amber-400/[.05]",danger:"border-red-400/20 bg-red-400/[.06]"};
+
+function restaurant(value:RestaurantRelation){return Array.isArray(value)?value[0]??null:value}
+
+export default async function ActivityPage({searchParams}:{searchParams:Promise<{group?:string}>}){
+  const params=await searchParams;const group=isAuditGroup(params.group)?params.group:"all";const {admin}=await requireSuperadmin();
+  const {data,error}=await admin.from("superadmin_audit_log").select("id,actor_user_id,restaurant_id,action,details,created_at,restaurants(name,slug)").order("created_at",{ascending:false}).limit(150);
+  if(error)throw new Error(error.message);
+  const rows=((data??[]) as AuditRow[]).map(row=>({row,event:describeAuditEvent(row.action,row.details)}));
+  const visible=group==="all"?rows:rows.filter(item=>item.event.group===group);
+  return <main className="mx-auto max-w-5xl p-4 md:p-6"><div className="flex items-start gap-3"><span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-violet-500/15 text-violet-300"><Activity size={23}/></span><div><p className="text-xs font-bold uppercase tracking-[.18em] text-violet-300">Auditoría privada</p><h1 className="mt-1 text-3xl font-extrabold">Actividad de la plataforma</h1><p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">Cambios de soporte, pagos y tareas automáticas. Los respaldos y diagnósticos sensibles nunca se muestran aquí.</p></div></div>
+    <nav className="mt-6 flex gap-2 overflow-x-auto pb-2" aria-label="Filtrar actividad">{auditGroups.map(item=>{const Icon=icons[item];return <Link key={item} href={item==="all"?"/superadmin/activity":`/superadmin/activity?group=${item}`} aria-current={group===item?"page":undefined} className={`inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-2 text-xs font-bold ${group===item?"bg-violet-600 text-white":"border border-white/10 bg-slate-950/60 text-slate-300 hover:bg-white/5"}`}><Icon size={14}/>{labels[item]}</Link>})}</nav>
+    <section className="mt-3 space-y-3" aria-label="Eventos recientes">{visible.map(({row,event})=>{const related=restaurant(row.restaurants);const restaurantName=related?.name??(row.details&&typeof row.details==="object"&&!Array.isArray(row.details)&&typeof (row.details as Record<string,unknown>).restaurant_name==="string"?(row.details as Record<string,string>).restaurant_name:null);return <article key={row.id} className={`rounded-2xl border p-4 ${tones[event.tone]}`}><div className="flex items-start justify-between gap-3"><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><h2 className="font-bold">{event.title}</h2><span className="rounded-full bg-white/[.06] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-400">{labels[event.group]}</span></div><p className="mt-1 text-sm leading-relaxed text-slate-400">{event.description}</p>{restaurantName&&<p className="mt-2 truncate text-xs font-semibold text-slate-300">{restaurantName}</p>}</div><CalendarClock className="mt-0.5 shrink-0 text-slate-500" size={17}/></div><div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-white/[.07] pt-3 text-[11px] text-slate-500"><span>{new Intl.DateTimeFormat("es-ES",{dateStyle:"medium",timeStyle:"short"}).format(new Date(row.created_at))} · {row.actor_user_id?"Superadmin":"Sistema"}</span>{row.restaurant_id&&related&&<Link href={`/superadmin/restaurants/${row.restaurant_id}`} className="font-bold text-violet-300 hover:text-violet-200">Abrir restaurante →</Link>}</div></article>})}{!visible.length&&<div className="rounded-3xl border border-dashed border-white/15 p-10 text-center"><Activity className="mx-auto text-slate-600" size={32}/><h2 className="mt-3 font-bold">No hay actividad en este filtro</h2><p className="mt-1 text-sm text-slate-500">Los próximos eventos aparecerán aquí automáticamente.</p></div>}</section>
+  </main>;
+}
