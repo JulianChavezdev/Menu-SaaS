@@ -1,7 +1,7 @@
 export type PaymentReminderChannel="copy"|"whatsapp"|"email";
 
 export function paymentReminderMessage({restaurantName,periodEnd}:{restaurantName:string;periodEnd:string}){
-  const date=new Intl.DateTimeFormat("es-ES",{dateStyle:"long",timeZone:"Europe/Madrid"}).format(new Date(periodEnd));
+  const date=new Intl.DateTimeFormat("es-ES",{dateStyle:"long",timeZone:"UTC"}).format(new Date(periodEnd));
   return`Hola, ${restaurantName}. Te recordamos que la suscripción de tu carta vence el ${date}. Cuando realices el pago, envíanos el justificante para mantener activo el servicio. Gracias.`;
 }
 
