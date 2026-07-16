@@ -94,6 +94,20 @@ const checks=[
       return {error:error?.code==="42501"?null:(error??new Error("Extended analytics validation did not run"))};
     },
   },
+  {
+    migration:"202607150002_product_allergens.sql",
+    run:()=>supabase.from("products").select("allergens",{head:true}).limit(1),
+  },
+  {
+    migration:"202607160001_seven_day_trial.sql",
+    run:async()=>{
+      const results=await Promise.all([
+        supabase.from("restaurants").select("publication_suspended_for_payment",{head:true}).limit(1),
+        supabase.from("subscriptions").select("current_period_end",{head:true}).limit(1),
+      ]);
+      return {error:results.find(result=>result.error)?.error??null};
+    },
+  },
 ];
 
 const pending=[];

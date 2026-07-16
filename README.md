@@ -23,7 +23,7 @@ Aplica en orden todos los archivos de `supabase/migrations`. Después comprueba 
 npm run check:db
 ```
 
-La comprobación es de solo lectura e indica por nombre cualquier migración pendiente. Las migraciones más recientes añaden traducciones, sincronización futura de Stripe, endurecimiento de RLS, límites de prueba, aislamiento entre restaurantes y suspensión administrativa.
+La comprobación es de solo lectura e indica por nombre cualquier migración pendiente. También valida alérgenos y la suspensión de publicación al vencer la prueba de siete días. Las migraciones más recientes añaden traducciones, sincronización futura de Stripe, endurecimiento de RLS, límites de prueba, aislamiento entre restaurantes y suspensión administrativa.
 
 ## Plantillas e idiomas
 
