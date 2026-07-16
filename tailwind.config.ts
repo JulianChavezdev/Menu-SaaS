@@ -4,13 +4,14 @@ export default {
   theme:{
     extend:{
       borderRadius:{
-        DEFAULT:"0.2rem",
-        sm:"0.2rem",
-        md:"0.25rem",
-        lg:"0.375rem",
-        xl:"0.5rem",
-        "2xl":"0.625rem",
-        "3xl":"0.75rem",
+        DEFAULT:"0.125rem",
+        sm:"0.125rem",
+        md:"0.15rem",
+        lg:"0.2rem",
+        xl:"0.25rem",
+        "2xl":"0.3rem",
+        "3xl":"0.375rem",
+        full:"0.375rem",
       },
     },
   },
