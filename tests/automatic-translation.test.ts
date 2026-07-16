@@ -1,5 +1,5 @@
 import {describe,expect,it,vi} from "vitest";
-import {automaticTranslationMap,translateFieldsToEnglish,translateTextsToEnglish} from "../src/lib/automatic-translation";
+import {automaticTranslationMap,translateFieldsToEnglish,translateTextsToEnglish,translationProviderStatus} from "../src/lib/automatic-translation";
 
 describe("traducción automática",()=>{
   it("no llama a servicios externos sin clave",async()=>{const fetcher=vi.fn();const result=await translateTextsToEnglish(["Tarta"],{apiKey:"",fetcher:fetcher as unknown as typeof fetch});expect(result).toEqual({status:"not_configured",value:["Tarta"]});expect(fetcher).not.toHaveBeenCalled()});
@@ -7,4 +7,6 @@ describe("traducción automática",()=>{
   it("devuelve el original y permite guardar si el proveedor falla",async()=>{const fetcher=vi.fn().mockResolvedValue(new Response("error",{status:503}));expect(await translateTextsToEnglish(["Entrantes"],{apiKey:"test",fetcher:fetcher as unknown as typeof fetch})).toEqual({status:"failed",value:["Entrantes"]})});
   it("omite campos vacíos",async()=>{expect(await translateFieldsToEnglish({name:"",description:"  "},{apiKey:"test"})).toEqual({status:"empty",value:{}})});
   it("evita traducciones antiguas si cambia el original y el proveedor falla",()=>{const current={en:{name:"Old name"},fr:{name:"Ancien"}};expect(automaticTranslationMap(current,{status:"failed",value:{name:"Nombre nuevo"}},true)).toEqual({fr:{name:"Ancien"}});expect(automaticTranslationMap(current,{status:"failed",value:{name:"Nombre"}},false)).toEqual(current)});
+  it("consulta la cuota sin exponer la clave",async()=>{const fetcher=vi.fn().mockResolvedValue(new Response(JSON.stringify({character_count:1250,character_limit:1_000_000}),{status:200}));expect(await translationProviderStatus({apiKey:"test:fx",fetcher:fetcher as unknown as typeof fetch})).toEqual({status:"ready",used:1250,limit:1_000_000});const[url,request]=fetcher.mock.calls[0];expect(url).toBe("https://api-free.deepl.com/v2/usage");expect(request.headers.Authorization).toBe("DeepL-Auth-Key test:fx")});
+  it("marca una clave rechazada sin lanzar errores",async()=>{const fetcher=vi.fn().mockResolvedValue(new Response("unauthorized",{status:403}));expect(await translationProviderStatus({apiKey:"bad",fetcher:fetcher as unknown as typeof fetch})).toEqual({status:"unavailable",used:null,limit:null})});
 });
