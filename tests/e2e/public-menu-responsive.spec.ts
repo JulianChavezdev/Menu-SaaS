@@ -113,10 +113,11 @@ test.describe("public menu responsive contract",()=>{
   });
 
   test("virtualizes videos and jumps directly between categories",async({page})=>{
-    await page.setViewportSize({width:390,height:844});
+    await page.setViewportSize({width:402,height:874});
     await page.goto("/r/bistro-nube",{waitUntil:"domcontentloaded"});
 
     const menu=page.locator("main.public-menu");
+    await expect(menu).toHaveAttribute("data-hydrated","true");
     await expect.poll(()=>menu.locator(":scope > div > section video").count()).toBeLessThanOrEqual(2);
     const categories=page.getByRole("navigation",{name:"Categorías"});
     await categories.getByRole("button",{name:"Brasas",exact:true}).click();
@@ -127,6 +128,8 @@ test.describe("public menu responsive contract",()=>{
     expect(visibleCategories).toBeLessThanOrEqual(3);
     const addBox=await page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Entrecot de Encina",exact:true})}).getByRole("button",{name:"Añadir",exact:true}).boundingBox();
     expect(navBox!.y+navBox!.height).toBeLessThan(addBox!.y);
+    const controlsBox=await page.getByRole("navigation",{name:"Controles de la carta"}).boundingBox();
+    expect(addBox!.y+addBox!.height).toBeLessThan(controlsBox!.y);
     await categories.getByRole("button",{name:"Postres",exact:true}).click();
     await expect(categories.getByRole("button",{name:"Postres",exact:true})).toHaveAttribute("aria-current","true");
     await expect.poll(()=>menu.locator(":scope > div > section video").count()).toBeLessThanOrEqual(3);
