@@ -7,7 +7,8 @@ const preview=readFileSync("src/components/dashboard/appearance-preferences.tsx"
 describe("ficha compacta de producto",()=>{
   it("limita la altura y el texto en la carta pública",()=>{
     expect(menu).toContain("data-product-details");
-    expect(menu).toContain("max-h-[32dvh]");
+    expect(menu).toContain("max-h-[calc(100dvh-16rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))]");
+    expect(menu).toContain("revealExpandedDetails");
     expect(menu).toContain("h-screen h-dvh");
     expect(menu).toContain('hydrated={Math.abs(index-active)<=1}');
     expect(menu).toContain('preload={index>=active&&index<=active+1?"auto":"metadata"}');

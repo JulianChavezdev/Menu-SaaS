@@ -10,4 +10,5 @@ describe("virtualización del feed de vídeo",()=>{
   it("publica una señal estable cuando los controles ya están hidratados",()=>expect(menu).toContain('data-hydrated={hydrated?"true":"false"}'));
   it("centra tres categorías arriba y atenúa las laterales",()=>{expect(menu).toContain("categoryNavRef");expect(menu).toContain("button.offsetLeft-(nav.clientWidth-button.offsetWidth)/2");expect(menu).toContain("w-[calc((100%-1rem)/3)]");expect(menu).toContain('selected?"opacity-100":"opacity-[.45]"');expect(menu).toContain("top-[calc(max(1rem,env(safe-area-inset-top))+3.5rem)]")});
   it("precarga el siguiente vídeo y reintenta tras gestos o al volver a la app",()=>{expect(menu).toContain('preload={index>=active&&index<=active+1?"auto":"metadata"}');expect(menu).toContain("onTouchEnd={resumeActiveVideo}");expect(menu).toContain('addEventListener("pageshow",resume)')});
+  it("reserva una zona segura para desplegar descripción y alérgenos",()=>{expect(menu).toContain("100dvh-16rem-env(safe-area-inset-top)-env(safe-area-inset-bottom)");expect(menu).toContain("revealExpandedDetails");expect(menu).toContain("overscroll-contain")});
 });
