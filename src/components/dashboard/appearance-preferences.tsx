@@ -18,14 +18,14 @@ function TemplatePreview({kind,restaurantName,logoUrl,currency,product,large=fal
   const framed=template.layout==="framed";
   const card=template.layout!=="fullscreen";
   const price=new Intl.NumberFormat("es-ES",{style:"currency",currency}).format((product?.priceCents??1290)/100);
-  return <div style={{background:colors.background}} className={`relative isolate mx-auto w-full overflow-hidden text-white shadow-2xl ${large?"h-[min(70dvh,620px)] max-w-[350px] rounded-[32px]":"aspect-[9/12] rounded-2xl"}`}>
-    <div style={{borderColor:colors.frame}} className={`absolute z-0 overflow-hidden ${framed?"inset-2 bottom-14 rounded-[22px] border":"inset-0"}`}>
+  return <div style={{background:colors.background}} className={`relative isolate mx-auto w-full overflow-hidden text-white shadow-2xl ${large?"h-[min(70dvh,620px)] max-w-[350px] rounded-xl":"aspect-[9/12] rounded-2xl"}`}>
+    <div style={{borderColor:colors.frame}} className={`absolute z-0 overflow-hidden ${framed?"inset-2 bottom-14 rounded-lg border":"inset-0"}`}>
       {product?.videoUrl
         ?<video src={product.videoUrl} muted loop autoPlay playsInline className="h-full w-full object-cover"/>
         :<div className="h-full w-full" style={{background:`radial-gradient(circle at 65% 25%,${colors.accent2}99,${colors.panel} 48%,${colors.background})`}}/>
       }
     </div>
-    <div className={`absolute z-[1] ${framed?"inset-2 bottom-14 rounded-[22px]":"inset-0"}`} style={{background:`linear-gradient(to bottom,${colors.background}33,transparent 42%,${colors.background}f2)`}}/>
+    <div className={`absolute z-[1] ${framed?"inset-2 bottom-14 rounded-lg":"inset-0"}`} style={{background:`linear-gradient(to bottom,${colors.background}33,transparent 42%,${colors.background}f2)`}}/>
     <ThemeVectors motif={template.motif} accent={colors.accent} accent2={colors.accent2} className="absolute inset-0 z-[2] h-full w-full"/>
     <div className="absolute left-3 right-3 top-3 z-10 flex h-8 items-center justify-center">{logoUrl?<span role="img" aria-label={`Logo de ${restaurantName}`} className="h-8 w-24 bg-contain bg-center bg-no-repeat drop-shadow-lg" style={{backgroundImage:`url(${logoUrl})`}}/>:<strong className={`${large?"text-base":"text-[10px]"} drop-shadow-lg`}>{restaurantName}</strong>}</div>
     <div style={card?{background:`${colors.panel}d9`,borderColor:colors.frame}:undefined} className={`absolute z-10 ${card?"bottom-16 left-4 right-4 rounded-2xl border p-3 backdrop-blur-md":"bottom-4 left-4 right-4"}`}>

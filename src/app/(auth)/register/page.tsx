@@ -34,7 +34,7 @@ export default function Register() {
       <form 
         onSubmit={submit}
         aria-busy={pending}
-        className="relative w-full max-w-md rounded-[2rem] border border-slate-800 bg-slate-950/60 p-8 shadow-2xl shadow-violet-950/10 backdrop-blur-xl ring-1 ring-white/5"
+        className="relative w-full max-w-md rounded-xl border border-slate-800 bg-slate-950/60 p-8 shadow-2xl shadow-violet-950/10 backdrop-blur-xl ring-1 ring-white/5"
       >
    
         <div className="mb-8">

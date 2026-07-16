@@ -80,7 +80,7 @@ export default async function Dashboard() {
         {/* Enlace Principal: Gestor de la Carta */}
         <Link 
           href="/dashboard/menu" 
-          className="group relative flex flex-col justify-between rounded-[1.5rem] border border-slate-800/80 bg-slate-950/40 p-6 backdrop-blur-sm shadow-xl transition-all duration-200 hover:border-violet-500/50 hover:bg-slate-900/30 overflow-hidden"
+          className="group relative flex flex-col justify-between rounded-xl border border-slate-800/80 bg-slate-950/40 p-6 backdrop-blur-sm shadow-xl transition-all duration-200 hover:border-violet-500/50 hover:bg-slate-900/30 overflow-hidden"
         >
           <div className="absolute top-0 right-0 -z-10 h-32 w-32 rounded-full bg-violet-600/5 blur-2xl group-hover:bg-violet-600/10 transition-all" />
           <div>
@@ -102,7 +102,7 @@ export default async function Dashboard() {
           href={`/r/${restaurant.slug}`} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="group relative flex flex-col justify-between rounded-[1.5rem] border border-slate-800/80 bg-slate-950/40 p-6 backdrop-blur-sm shadow-xl transition-all duration-200 hover:border-slate-700 hover:bg-slate-900/30 overflow-hidden"
+          className="group relative flex flex-col justify-between rounded-xl border border-slate-800/80 bg-slate-950/40 p-6 backdrop-blur-sm shadow-xl transition-all duration-200 hover:border-slate-700 hover:bg-slate-900/30 overflow-hidden"
         >
           <div className="absolute top-0 right-0 -z-10 h-32 w-32 rounded-full bg-pink-600/5 blur-2xl group-hover:bg-pink-600/10 transition-all" />
           <div>

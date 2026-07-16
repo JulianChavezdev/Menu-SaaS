@@ -22,7 +22,7 @@ export default async function Page() {
       </div>
 
       {/* Tarjeta Bento del QR */}
-      <div className="mt-8 max-w-xl rounded-[2rem] border border-slate-800 bg-slate-950/40 p-6 md:p-8 shadow-xl backdrop-blur-sm ring-1 ring-white/5 flex flex-col">
+      <div className="mt-8 max-w-xl rounded-xl border border-slate-800 bg-slate-950/40 p-6 md:p-8 shadow-xl backdrop-blur-sm ring-1 ring-white/5 flex flex-col">
         {/* Encabezado interno */}
         <div className="mb-6 pb-2 border-b border-slate-800/60">
           <h2 className="text-sm font-semibold text-slate-200">
