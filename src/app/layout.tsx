@@ -18,6 +18,6 @@ export const metadata:Metadata={
 export const viewport:Viewport={width:"device-width",initialScale:1,viewportFit:"cover",themeColor:"#090b18"};
 
 export default function Layout({children}:{children:React.ReactNode}){
-  const mediaOrigin="https://videos.pexels.com";
-  return <html lang="es"><head><link rel="preconnect" href={mediaOrigin} crossOrigin="anonymous"/><link rel="dns-prefetch" href={mediaOrigin}/></head><body><SaasNavigationTracker/>{children}<Toaster richColors/></body></html>;
+  const mediaOrigins=["https://videos.pexels.com","https://res.cloudinary.com",process.env.NEXT_PUBLIC_SUPABASE_URL].filter((origin):origin is string=>Boolean(origin));
+  return <html lang="es"><head>{mediaOrigins.map(origin=><link key={origin} rel="preconnect" href={origin} crossOrigin="anonymous"/>)}</head><body><SaasNavigationTracker/>{children}<Toaster richColors/></body></html>;
 }

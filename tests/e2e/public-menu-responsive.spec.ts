@@ -133,5 +133,10 @@ test.describe("public menu responsive contract",()=>{
     await categories.getByRole("button",{name:"Postres",exact:true}).click();
     await expect(categories.getByRole("button",{name:"Postres",exact:true})).toHaveAttribute("aria-current","true");
     await expect.poll(()=>menu.locator(":scope > div > section video").count()).toBeLessThanOrEqual(3);
+    const dessertVideo=page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Tarta Estratos",exact:true})}).locator("video");
+    await expect.poll(()=>dessertVideo.evaluate(element=>(element as HTMLVideoElement).paused)).toBe(false);
+    await categories.getByRole("button",{name:"Hamburguesas",exact:true}).click();
+    const burgerVideo=page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Hamburguesa Nebulosa",exact:true})}).locator("video");
+    await expect.poll(()=>burgerVideo.evaluate(element=>(element as HTMLVideoElement).paused)).toBe(false);
   });
 });

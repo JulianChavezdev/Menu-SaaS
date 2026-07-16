@@ -60,6 +60,8 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restauran
   const cartQuantity=cartDetails.reduce((total,line)=>total+line.quantity,0);
   const cartTotal=cartDetails.reduce((total,line)=>total+(line.product.price_cents*line.quantity),0);
   const trackVideoPlay=useCallback((index:number)=>{const product=products[index];if(!analyticsEnabled||!product?.video_url||playedVideos.current.has(product.id))return;playedVideos.current.add(product.id);sendAnalytics({restaurantId:restaurant.id,productId:product.id,event:"video_play",locale:language})},[analyticsEnabled,language,products,restaurant.id]);
+  const playbackStarted=useCallback((index:number)=>{playingIndex.current=index;trackVideoPlay(index);setPlaybackBlocked(current=>{if(!current.has(index))return current;const next=new Set(current);next.delete(index);return next})},[trackVideoPlay]);
+  const startVideo=useCallback((video:HTMLVideoElement,index:number)=>{video.muted=muted;const failed=()=>{if(playingIndex.current===index)playingIndex.current=null;setPlaybackBlocked(current=>new Set(current).add(index))};void video.play().then(()=>playbackStarted(index)).catch(()=>{if(video.muted){failed();return}video.muted=true;setMuted(true);void video.play().then(()=>playbackStarted(index)).catch(failed)})},[muted,playbackStarted]);
 
   useEffect(()=>{
     const sectionObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting&&entry.intersectionRatio>.6)setActive(Number((entry.target as HTMLElement).dataset.index??0))}),{root:feedRef.current,threshold:[.6]});
@@ -69,15 +71,15 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restauran
       const video=entry.target as HTMLVideoElement;const index=Number(video.dataset.videoIndex);
       if(entry.isIntersecting&&entry.intersectionRatio>.7){
         if(motionPreference.matches){video.pause();video.currentTime=0;return}
-        if(playingIndex.current===index)return;
+        if(playingIndex.current===index&&!video.paused&&!video.ended)return;
         videoRefs.current.forEach(other=>{if(other&&other!==video){other.pause();other.currentTime=0}});video.currentTime=0;playingIndex.current=index;
-        void video.play().then(()=>{trackVideoPlay(index);setPlaybackBlocked(current=>{if(!current.has(index))return current;const next=new Set(current);next.delete(index);return next})}).catch(()=>{if(playingIndex.current===index){playingIndex.current=null;setPlaybackBlocked(current=>new Set(current).add(index))}});
+        startVideo(video,index);
       }else{video.pause();video.currentTime=0;if(playingIndex.current===index)playingIndex.current=null}
     }),{threshold:[.7]});
     const observedVideos=videoRefs.current.filter((video):video is HTMLVideoElement=>Boolean(video));
     observedVideos.forEach(video=>videoObserver.observe(video));
     return()=>{sectionObserver.disconnect();videoObserver.disconnect();playingIndex.current=null;observedVideos.forEach(video=>{video.pause();video.currentTime=0})};
-  },[active,products,trackVideoPlay]);
+  },[active,products,startVideo]);
 
   useEffect(()=>{const query=matchMedia("(prefers-reduced-motion: reduce)");const update=()=>{setReducedMotion(query.matches);if(query.matches){playingIndex.current=null;videoRefs.current.forEach(video=>{if(video){video.pause();video.currentTime=0}})}};update();query.addEventListener("change",update);return()=>query.removeEventListener("change",update)},[]);
   useEffect(()=>{if(!panel)return;const closeOnEscape=(event:KeyboardEvent)=>{if(event.key==="Escape")setPanel(null)};addEventListener("keydown",closeOnEscape);return()=>removeEventListener("keydown",closeOnEscape)},[panel]);
@@ -92,9 +94,8 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restauran
   const share=async()=>{let completed=false;try{await navigator.share({title:restaurant.name,url:location.href});completed=true}catch{try{await navigator.clipboard.writeText(location.href);completed=true}catch{completed=false}}if(completed&&analyticsEnabled)sendAnalytics({restaurantId:restaurant.id,event:"share",locale:language})};
   const go=(id:string,direct=false)=>{const target=document.getElementById(id);if(direct&&target&&feedRef.current)feedRef.current.scrollTo({top:target.offsetTop,behavior:"instant"});else target?.scrollIntoView({behavior:"smooth",block:"start"});setPanel(null)};
   const back=()=>history.length>1?history.back():location.assign("/");
-  const playbackStarted=useCallback((index:number)=>{playingIndex.current=index;trackVideoPlay(index);setPlaybackBlocked(current=>{if(!current.has(index))return current;const next=new Set(current);next.delete(index);return next})},[trackVideoPlay]);
-  const resumeActiveVideo=useCallback(()=>{const feed=feedRef.current;const visibleIndex=feed?Math.max(0,Math.min(products.length-1,Math.round(feed.scrollTop/feed.clientHeight))):active;const video=videoRefs.current[visibleIndex];if(!video||reducedMotion||!products[visibleIndex]?.video_url)return;video.muted=muted;void video.play().then(()=>playbackStarted(visibleIndex)).catch(()=>setPlaybackBlocked(current=>new Set(current).add(visibleIndex)))},[active,muted,playbackStarted,products,reducedMotion]);
-  useEffect(()=>{const resume=()=>{if(document.visibilityState==="visible")resumeActiveVideo()};document.addEventListener("visibilitychange",resume);addEventListener("pageshow",resume);return()=>{document.removeEventListener("visibilitychange",resume);removeEventListener("pageshow",resume)}},[resumeActiveVideo]);
+  const resumeActiveVideo=useCallback(()=>{const feed=feedRef.current;const visibleIndex=feed?Math.max(0,Math.min(products.length-1,Math.round(feed.scrollTop/feed.clientHeight))):active;const video=videoRefs.current[visibleIndex];if(!video||reducedMotion||!products[visibleIndex]?.video_url)return;if(video.error||video.networkState===HTMLMediaElement.NETWORK_NO_SOURCE)video.load();startVideo(video,visibleIndex)},[active,products,reducedMotion,startVideo]);
+  useEffect(()=>{const resume=()=>{if(document.visibilityState==="visible")resumeActiveVideo()};document.addEventListener("visibilitychange",resume);addEventListener("pageshow",resume);addEventListener("online",resume);return()=>{document.removeEventListener("visibilitychange",resume);removeEventListener("pageshow",resume);removeEventListener("online",resume)}},[resumeActiveVideo]);
   const addProduct=(productId:string)=>{setCart(current=>addCartItem(current,productId));if(analyticsEnabled)sendAnalytics({restaurantId:restaurant.id,productId,event:"cart_add",locale:language})};
 
   return <main ref={feedRef} onTouchEnd={resumeActiveVideo} aria-label={`Carta de ${restaurant.name}`} data-template={template.key} data-hydrated={hydrated?"true":"false"} style={themeStyle} className="public-menu relative h-screen h-dvh snap-y snap-mandatory overflow-y-auto overscroll-y-contain scroll-smooth bg-[var(--theme-bg)] text-white md:mx-auto md:max-w-[430px] md:border-x md:border-white/10 md:shadow-2xl">
@@ -124,7 +125,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restauran
     </div>}
 
     <div>{products.map((product,index)=>{const description=translatedField(product,"description",language,product.description);const allergens=(product.allergens??[]) as AllergenCode[];return <section ref={element=>{sectionRefs.current[index]=element}} data-index={index} id={`product-${product.id}`} key={product.id} className="relative isolate flex h-screen h-dvh snap-start snap-always items-end overflow-hidden bg-[var(--theme-bg)] px-4 pb-[calc(8rem+max(.75rem,env(safe-area-inset-bottom)))] pt-28">
-      <div style={{borderColor:colors.frame}} className={`absolute z-0 overflow-hidden bg-[#22221f] ${framed?"inset-3 bottom-24 rounded-xl border shadow-2xl":"inset-0"}`}><ProductMedia index={index} name={product.name} src={product.video_url} poster={product.image_url} muted={muted} preload={index>=active&&index<=active+1?"auto":"metadata"} active={index===active} hydrated={Math.abs(index-active)<=1} reducedMotion={reducedMotion} playbackBlocked={playbackBlocked.has(index)} setVideoRef={element=>{videoRefs.current[index]=element}} onPlaybackStarted={playbackStarted}/></div>
+      <div style={{borderColor:colors.frame}} className={`absolute z-0 overflow-hidden bg-[#22221f] ${framed?"inset-3 bottom-24 rounded-xl border shadow-2xl":"inset-0"}`}><ProductMedia index={index} name={product.name} src={product.video_url} poster={product.image_url} muted={muted} preload={Math.abs(index-active)<=1?"auto":"metadata"} active={index===active} hydrated={Math.abs(index-active)<=1} reducedMotion={reducedMotion} playbackBlocked={playbackBlocked.has(index)} setVideoRef={element=>{videoRefs.current[index]=element}} onPlaybackStarted={playbackStarted}/></div>
       <div className={`absolute z-[1] ${framed?"inset-3 bottom-24 rounded-xl":"inset-0"}`} style={{background:`linear-gradient(180deg,${colors.background}66 0%,transparent 32%,transparent 45%,${colors.background}f2 100%)`}}/>
       <ThemeVectors motif={template.motif} accent={colors.accent} accent2={colors.accent2} className="absolute inset-0 z-[2] h-full w-full"/>
       <div data-product-details className="relative z-10 w-full max-h-[calc(100vh-16rem)] max-h-[calc(100dvh-16rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] overflow-y-auto overscroll-contain pb-1 text-shadow-lg [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

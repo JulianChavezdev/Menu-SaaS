@@ -11,7 +11,7 @@ describe("ficha compacta de producto",()=>{
     expect(menu).toContain("revealExpandedDetails");
     expect(menu).toContain("h-screen h-dvh");
     expect(menu).toContain('hydrated={Math.abs(index-active)<=1}');
-    expect(menu).toContain('preload={index>=active&&index<=active+1?"auto":"metadata"}');
+    expect(menu).toContain('preload={Math.abs(index-active)<=1?"auto":"metadata"}');
     expect(menu).toContain('aria-label={text.categories}');
     expect(menu).toContain("top-[calc(max(1rem,env(safe-area-inset-top))+3.5rem)]");
     expect(menu).toContain("pb-[calc(8rem+max(.75rem,env(safe-area-inset-bottom)))]");
