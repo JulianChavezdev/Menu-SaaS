@@ -24,13 +24,13 @@ export default async function Dashboard() {
   return (
     <main className="mx-auto max-w-6xl p-4 md:p-8 animate-in fade-in duration-300 min-h-screen flex flex-col justify-start">
       {/* Cabecera Principal */}
-      <div className="flex flex-wrap items-center justify-between border-b border-slate-800 pb-5 gap-4">
+      <div className="flex flex-wrap items-center justify-between border-b border-stone-200 pb-5 gap-4">
         <div className="flex flex-col gap-1">
           <BackButton fallback="/" />
-          <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-extrabold tracking-tight text-slate-950">
             Hola, {restaurant.name}
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-slate-600">
             Gestiona productos, identidad corporativa y la disponibilidad de tu negocio.
           </p>
         </div>
@@ -51,23 +51,23 @@ export default async function Dashboard() {
 
       {/* Módulo de Estadísticas Clave */}
       <section className="mt-8 grid gap-4 grid-cols-2 lg:grid-cols-3">
-        <div className="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm shadow-md">
+        <div className="border-l-4 border-l-orange-500 border-y border-r border-stone-200 bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Productos</p>
-          <p className="mt-2 text-3xl font-black bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+          <p className="mt-2 text-3xl font-black text-slate-950">
             {products ?? 0}
           </p>
         </div>
         
-        <div className="bg-slate-950/40 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm shadow-md">
+        <div className="border-l-4 border-l-emerald-500 border-y border-r border-stone-200 bg-white p-5 shadow-sm">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Categorías</p>
-          <p className="mt-2 text-3xl font-black bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+          <p className="mt-2 text-3xl font-black text-slate-950">
             {categories ?? 0}
           </p>
         </div>
 
-        <div className="col-span-2 lg:col-span-1 bg-slate-950/40 border border-slate-800/80 rounded-2xl p-5 backdrop-blur-sm shadow-md">
+        <div className="col-span-2 border-l-4 border-l-amber-500 border-y border-r border-stone-200 bg-white p-5 shadow-sm lg:col-span-1">
           <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Vídeos enlazados</p>
-          <p className="mt-2 text-3xl font-black text-violet-400">
+          <p className="mt-2 text-3xl font-black text-orange-700">
             {videos ?? 0}
           </p>
         </div>
@@ -80,19 +80,18 @@ export default async function Dashboard() {
         {/* Enlace Principal: Gestor de la Carta */}
         <Link 
           href="/dashboard/menu" 
-          className="group relative flex flex-col justify-between rounded-xl border border-slate-800/80 bg-slate-950/40 p-6 backdrop-blur-sm shadow-xl transition-all duration-200 hover:border-violet-500/50 hover:bg-slate-900/30 overflow-hidden"
+          className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-stone-200 bg-white p-6 shadow-sm transition-all duration-200 hover:border-orange-500/50 hover:bg-stone-50"
         >
-          <div className="absolute top-0 right-0 -z-10 h-32 w-32 rounded-full bg-violet-600/5 blur-2xl group-hover:bg-violet-600/10 transition-all" />
           <div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10 border border-violet-500/20 text-lg group-hover:bg-violet-600/20">
+            <div className="flex h-10 w-10 items-center justify-center bg-orange-100 text-lg">
               📋
             </div>
-            <h3 className="mt-4 text-lg font-bold text-slate-200 group-hover:text-white">Gestionar catálogo de carta</h3>
-            <p className="mt-1 text-xs text-slate-400 leading-relaxed">
+            <h3 className="mt-4 text-lg font-bold text-slate-900 group-hover:text-orange-900">Gestionar catálogo de carta</h3>
+            <p className="mt-1 text-xs text-slate-600 leading-relaxed">
               Modifica la estructura de tus platos, organiza el orden de tus menús y edita la disponibilidad en tiempo real.
             </p>
           </div>
-          <span className="mt-6 text-xs font-semibold text-violet-400 group-hover:text-violet-300 flex items-center gap-1">
+          <span className="mt-6 text-xs font-semibold text-orange-700 group-hover:text-orange-700 flex items-center gap-1">
             Abrir administrador de carta →
           </span>
         </Link>
@@ -102,19 +101,18 @@ export default async function Dashboard() {
           href={`/r/${restaurant.slug}`} 
           target="_blank" 
           rel="noopener noreferrer"
-          className="group relative flex flex-col justify-between rounded-xl border border-slate-800/80 bg-slate-950/40 p-6 backdrop-blur-sm shadow-xl transition-all duration-200 hover:border-slate-700 hover:bg-slate-900/30 overflow-hidden"
+          className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-stone-200 bg-white p-6 shadow-sm transition-all duration-200 hover:border-stone-400 hover:bg-stone-50"
         >
-          <div className="absolute top-0 right-0 -z-10 h-32 w-32 rounded-full bg-pink-600/5 blur-2xl group-hover:bg-pink-600/10 transition-all" />
           <div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-900 border border-slate-800 text-lg group-hover:border-slate-700">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100 border border-stone-200 text-lg group-hover:border-slate-700">
               🎥
             </div>
-            <h3 className="mt-4 text-lg font-bold text-slate-200 group-hover:text-white">Ver carta interactiva pública</h3>
-            <p className="mt-1 text-xs text-slate-400 leading-relaxed">
+            <h3 className="mt-4 text-lg font-bold text-slate-900 group-hover:text-slate-950">Ver carta interactiva pública</h3>
+            <p className="mt-1 text-xs text-slate-600 leading-relaxed">
               Visualiza en vivo la interfaz móvil interactiva que escanearán tus clientes finales en las mesas.
             </p>
           </div>
-          <span className="mt-6 text-xs font-semibold text-slate-400 group-hover:text-slate-200 flex items-center gap-1">
+          <span className="mt-6 text-xs font-semibold text-slate-600 group-hover:text-slate-900 flex items-center gap-1">
             Abrir URL en pestaña nueva ↗
           </span>
         </a>

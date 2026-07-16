@@ -20,10 +20,10 @@ export function CategoriesManager({categories}:{categories:Category[]}){
       {selected&&<input type="hidden" name="id" value={selected.id}/>}
       <label className="mt-4 block">Nombre<input name="name" required defaultValue={selected?.name??""} placeholder="Ej. Entrantes" className="mt-1 w-full rounded-lg p-3 text-slate-900"/></label>
       <AutomaticTranslationNote/>
-      <button disabled={busy} className="mt-4 rounded-lg bg-violet-500 px-4 py-2 font-semibold disabled:opacity-50">{busy?"Guardando…":selected?"Guardar cambios":"Crear categoría"}</button>
+      <button disabled={busy} className="mt-4 rounded-lg bg-orange-600 text-white px-4 py-2 font-semibold disabled:opacity-50">{busy?"Guardando…":selected?"Guardar cambios":"Crear categoría"}</button>
     </form>
     <div className="space-y-2">{categories.map((category,index)=><article key={category.id} className="glass flex flex-wrap items-center justify-between gap-2 rounded-xl p-3">
-      <div><p className="font-semibold">{category.name}</p>{category.translations?.en?.name&&<p className="text-xs text-cyan-300/80">EN · {category.translations.en.name}</p>}<p className="text-xs text-slate-400">{category.is_active?"Visible":"Oculta"}</p></div>
+      <div><p className="font-semibold">{category.name}</p>{category.translations?.en?.name&&<p className="text-xs text-teal-700">EN · {category.translations.en.name}</p>}<p className="text-xs text-slate-600">{category.is_active?"Visible":"Oculta"}</p></div>
       <div className="flex"><button disabled={!index||busy} aria-label="Subir categoría" onClick={()=>move(index,-1)} className="p-2 disabled:opacity-30"><ArrowUp/></button><button disabled={index===categories.length-1||busy} aria-label="Bajar categoría" onClick={()=>move(index,1)} className="p-2 disabled:opacity-30"><ArrowDown/></button><button aria-label={`Editar ${category.name}`} onClick={()=>setSelected(category)} className="p-2"><Pencil/></button><button aria-label="Cambiar visibilidad" onClick={()=>start(async()=>{await toggleCategory(category.id,!category.is_active);toast.success("Visibilidad actualizada")})} className="p-2">{category.is_active?<Eye/>:<EyeOff/>}</button><button aria-label={`Eliminar ${category.name}`} onClick={()=>{if(confirm(`¿Eliminar ${category.name}?`))start(async()=>{try{await deleteCategory(category.id);toast.success("Categoría eliminada")}catch(error){toast.error(error instanceof Error?error.message:"Error")}})}} className="p-2 text-red-300"><Trash2/></button></div>
     </article>)}</div>
   </div>;

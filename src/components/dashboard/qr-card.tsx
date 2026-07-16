@@ -24,9 +24,9 @@ export function QrCard({url}:{url:string}){
     {src&&<Image className="mx-auto h-auto w-full max-w-[320px] rounded-xl" src={src} alt={`Código QR de ${url}`} width={512} height={512} unoptimized/>}
     <p className="mt-4 break-all text-sm">{url}</p>
     <div className="mt-4 grid gap-2 sm:grid-cols-3">
-      <button type="button" onClick={()=>void copy()} className="rounded-lg border border-white/20 px-3 py-2 text-sm hover:bg-white/10">Copiar URL</button>
-      {src&&<a className="rounded-lg border border-white/20 px-3 py-2 text-sm hover:bg-white/10" href={src} download="carta-qr.png">Descargar PNG</a>}
-      <a className="rounded-lg border border-white/20 px-3 py-2 text-sm hover:bg-white/10" href={url} target="_blank" rel="noopener noreferrer">Abrir carta</a>
+      <button type="button" onClick={()=>void copy()} className="rounded-lg border border-stone-300 px-3 py-2 text-sm hover:bg-stone-100">Copiar URL</button>
+      {src&&<a className="rounded-lg border border-stone-300 px-3 py-2 text-sm hover:bg-stone-100" href={src} download="carta-qr.png">Descargar PNG</a>}
+      <a className="rounded-lg border border-stone-300 px-3 py-2 text-sm hover:bg-stone-100" href={url} target="_blank" rel="noopener noreferrer">Abrir carta</a>
     </div>
   </div>;
 }

@@ -63,13 +63,13 @@ export function MediaUpload({restaurantId,kind="logo",products=[],label,currentU
   const shown=preview||currentUrl;
   return <div className="glass rounded-xl p-4">
     <h2 className="mb-1 font-bold">{title}</h2>
-    <p className="mb-3 text-xs text-slate-400">{currentUrl?"Archivo actual guardado. Puedes reemplazarlo.":"Todavía no hay ningún archivo guardado."}</p>
+    <p className="mb-3 text-xs text-slate-600">{currentUrl?"Archivo actual guardado. Puedes reemplazarlo.":"Todavía no hay ningún archivo guardado."}</p>
     {video&&<select aria-label="Producto para el vídeo" value={productId} onChange={event=>setProductId(event.target.value)} className="mb-3 w-full rounded-lg p-2 text-slate-900"><option value="">Selecciona el producto</option>{products.map(product=><option key={product.id} value={product.id}>{product.name}</option>)}</select>}
     {shown&&<div className="mb-3">{video?<video src={shown} controls muted playsInline className="aspect-video w-full rounded-lg object-cover"/>:<div role="img" aria-label={`Vista previa de ${title}`} className="aspect-video rounded-lg bg-contain bg-center bg-no-repeat" style={{backgroundImage:`url(${shown})`}}/>}</div>}
-    <label onDragOver={event=>event.preventDefault()} onDrop={event=>{event.preventDefault();const candidate=event.dataTransfer.files[0];if(candidate)choose(candidate)}} className="block cursor-pointer rounded-xl border-2 border-dashed border-white/25 p-5 text-center hover:bg-white/5">
+    <label onDragOver={event=>event.preventDefault()} onDrop={event=>{event.preventDefault();const candidate=event.dataTransfer.files[0];if(candidate)choose(candidate)}} className="block cursor-pointer rounded-xl border-2 border-dashed border-stone-300 p-5 text-center hover:bg-stone-100">
       <input className="sr-only" type="file" accept={video?"video/mp4,video/webm,video/quicktime":"image/jpeg,image/png,image/webp"} onChange={event=>{const candidate=event.target.files?.[0];if(candidate)choose(candidate)}}/>
-      <Upload className="mx-auto mb-2"/><span>{file?file.name:`Seleccionar o arrastrar ${video?"vídeo":"logo"}`}</span><span className="mt-1 block text-xs text-slate-400">Máximo {video?50:5} MB</span>
+      <Upload className="mx-auto mb-2"/><span>{file?file.name:`Seleccionar o arrastrar ${video?"vídeo":"logo"}`}</span><span className="mt-1 block text-xs text-slate-600">Máximo {video?50:5} MB</span>
     </label>
-    {file&&<div className="mt-3 flex gap-2"><button type="button" disabled={uploading} onClick={()=>void upload()} className="rounded-lg bg-violet-500 px-4 py-2 font-semibold disabled:opacity-50">{uploading?"Subiendo…":"Confirmar subida"}</button><button type="button" disabled={uploading} onClick={()=>setFile(null)} className="inline-flex items-center gap-1 rounded-lg border border-white/25 px-3 py-2"><X size={16}/>Cancelar</button></div>}
+    {file&&<div className="mt-3 flex gap-2"><button type="button" disabled={uploading} onClick={()=>void upload()} className="rounded-lg bg-orange-600 text-white px-4 py-2 font-semibold disabled:opacity-50">{uploading?"Subiendo…":"Confirmar subida"}</button><button type="button" disabled={uploading} onClick={()=>setFile(null)} className="inline-flex items-center gap-1 rounded-lg border border-stone-300 px-3 py-2"><X size={16}/>Cancelar</button></div>}
   </div>;
 }

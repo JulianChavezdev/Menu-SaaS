@@ -14,6 +14,6 @@ export function RestaurantDetailsForm({restaurant}:{restaurant:Restaurant}){
     <label className="md:col-span-2">Descripción<textarea name="description" defaultValue={restaurant.description??""} className="mt-1 min-h-28 w-full rounded-lg p-3 text-slate-900"/></label>
     <div className="md:col-span-2"><AutomaticTranslationNote/></div>
     <label className="flex items-center gap-2 md:col-span-2"><input name="is_published" defaultChecked={restaurant.is_published} type="checkbox"/>Publicar carta</label>
-    <button className="w-fit rounded-lg bg-violet-500 px-4 py-2 font-semibold">Guardar cambios</button>
+    <button className="w-fit rounded-lg bg-orange-600 text-white px-4 py-2 font-semibold">Guardar cambios</button>
   </form>;
 }
