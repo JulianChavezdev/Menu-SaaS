@@ -7,7 +7,7 @@ const contentSecurityPolicy=[
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob: https://images.unsplash.com https://*.supabase.co",
   "media-src 'self' blob: https://videos.pexels.com https://res.cloudinary.com https://*.supabase.co",
-  `connect-src 'self' https://*.supabase.co wss://*.supabase.co${development?" ws:":""}`,
+  `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.cloudinary.com${development?" ws:":""}`,
   "font-src 'self' data:",
   "object-src 'none'",
   "base-uri 'self'",

@@ -4,8 +4,9 @@ import {useEffect,useState} from "react";
 import {useRouter} from "next/navigation";
 import {Upload,X} from "lucide-react";
 import {createClient} from "@/lib/supabase/client";
-import {assignMedia} from "@/app/dashboard/actions";
+import {assignCloudinaryVideo,assignMedia} from "@/app/dashboard/actions";
 import {uploadVideoResumable} from "@/lib/resumable-video-upload";
+import {CloudinaryUnavailableError,uploadCloudinaryVideo} from "@/lib/cloudinary-video-upload";
 import {toast} from "sonner";
 
 type Option={id:string;name:string};
@@ -57,6 +58,11 @@ export function MediaUpload({restaurantId,kind="logo",products=[],label,currentU
         ?`restaurants/${restaurantId}/products/${productId}/video-${crypto.randomUUID()}.${ext}`
         :`restaurants/${restaurantId}/branding/logo-${crypto.randomUUID()}.${ext}`;
       if(video){
+        try{
+          const result=await uploadCloudinaryVideo({file,restaurantId,productId,onProgress:setProgress});
+          await assignCloudinaryVideo(productId,result.publicId);
+          toast.success(`${title} optimizado y actualizado`);setFile(null);setProgress(0);setVideoInfo(null);router.refresh();return;
+        }catch(error){if(!(error instanceof CloudinaryUnavailableError))throw error}
         const{data:{session}}=await supabase.auth.getSession();
         if(!session)throw new Error("Tu sesión ha caducado. Vuelve a iniciar sesión.");
         await uploadVideoResumable({file,path:uploadedPath,supabaseUrl:process.env.NEXT_PUBLIC_SUPABASE_URL!,accessToken:session.access_token,onProgress:setProgress});

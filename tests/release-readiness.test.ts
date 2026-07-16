@@ -63,5 +63,6 @@ describe("release readiness",()=>{
     expect(nextConfig).toContain("object-src 'none'");
     expect(nextConfig).toContain("frame-ancestors 'self'");
     expect(nextConfig).toContain("https://videos.pexels.com");
+    expect(nextConfig).toContain("https://api.cloudinary.com");
   });
 });

@@ -18,9 +18,14 @@ SUPERADMIN_RESTAURANT_CAPACITY=25
 SUPERADMIN_STORAGE_CAPACITY_GB=1
 CRON_SECRET=
 DEEPL_API_KEY=
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
 ```
 
-Usa preferentemente los nombres actuales. `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY` solo existen como alias heredados. La clave secreta, `CRON_SECRET`, `DEEPL_API_KEY` y los secretos de Stripe nunca deben tener el prefijo `NEXT_PUBLIC_`.
+Usa preferentemente los nombres actuales. `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `SUPABASE_SERVICE_ROLE_KEY` solo existen como alias heredados. La clave secreta, `CRON_SECRET`, `DEEPL_API_KEY`, `CLOUDINARY_API_SECRET` y los secretos de Stripe nunca deben tener el prefijo `NEXT_PUBLIC_`.
+
+Las tres variables de Cloudinary activan la subida directa y la entrega automática en MP4 H.264, ancho máximo de 720 px y calidad optimizada. Si faltan, el panel utiliza automáticamente la subida reanudable de Supabase.
 
 `DEEPL_API_KEY` activa la traducción automática español → inglés. Las claves Free terminadas en `:fx` usan automáticamente `api-free.deepl.com`; las demás usan `api.deepl.com`. Después de añadir o rotar la clave, abre Apariencia y ejecuta “Traducir ahora toda la carta” para completar el contenido histórico.
 
