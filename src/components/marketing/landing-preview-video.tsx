@@ -2,8 +2,8 @@
 
 import {useEffect,useRef} from "react";
 
-const BURGER_VIDEO="https://videos.pexels.com/video-files/19107070/19107070-hd_1080_1920_30fps.mp4";
-const BURGER_POSTER="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=80";
+const BURGER_VIDEO="https://res.cloudinary.com/det6jfwzx/video/upload/v1783700256/Generame_un_video_de_una_hambu_oo9gur.mp4";
+const BURGER_POSTER="https://res.cloudinary.com/det6jfwzx/video/upload/so_0.5,f_jpg,q_auto/v1783700256/Generame_un_video_de_una_hambu_oo9gur.jpg";
 
 export function LandingPreviewVideo(){
   const videoRef=useRef<HTMLVideoElement>(null);
