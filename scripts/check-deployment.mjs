@@ -1,4 +1,6 @@
-const input=process.argv[2]||process.env.DEPLOYMENT_URL;
+const args=process.argv.slice(2);
+const input=args.find(argument=>!argument.startsWith("--"))||process.env.DEPLOYMENT_URL;
+const requireFeatures=args.includes("--require-features");
 if(!input){
   console.error("Uso: npm run check:deployment -- https://tu-dominio.com");
   process.exit(1);
@@ -33,6 +35,11 @@ for(const check of checks){
     if(check.path==="/api/health"){
       const payload=await response.json().catch(()=>null);
       if(payload?.status!=="ok")failures.push(`${check.path}: estado ${payload?.status??"inválido"}`);
+      const features=payload?.features??{};
+      console.log(`      traducción automática: ${features.automatic_translation?"activa":"inactiva"}`);
+      console.log(`      mantenimiento programado: ${features.scheduled_maintenance?"activo":"inactivo"}`);
+      if(requireFeatures&&!features.automatic_translation)failures.push(`${check.path}: traducción automática inactiva (falta DEEPL_API_KEY)`);
+      if(requireFeatures&&!features.scheduled_maintenance)failures.push(`${check.path}: mantenimiento programado inactivo (falta CRON_SECRET)`);
       if(!response.headers.get("cache-control")?.includes("no-store"))failures.push(`${check.path}: falta Cache-Control no-store`);
     }
     if(check.security){

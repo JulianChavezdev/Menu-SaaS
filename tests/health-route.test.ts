@@ -8,6 +8,7 @@ describe("health endpoint",()=>{
     expect(route).toContain('"Cache-Control":"no-store"');
     expect(route).not.toContain("SUPABASE_SERVICE_ROLE_KEY");
     expect(route).toContain("automatic_translation:Boolean(process.env.DEEPL_API_KEY)");
+    expect(route).toContain("scheduled_maintenance:Boolean(process.env.CRON_SECRET)");
   });
 
   it("bounds the database probe",()=>{

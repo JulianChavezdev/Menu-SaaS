@@ -1,6 +1,6 @@
 # Estado de preparación de la beta
 
-Actualizado: 15 de julio de 2026.
+Actualizado: 16 de julio de 2026.
 
 ## Terminado
 
@@ -27,6 +27,8 @@ Actualizado: 15 de julio de 2026.
 - `npm run check:db`: esquema remoto completo, sin migraciones pendientes.
 - Pruebas unitarias, integración, TypeScript, lint y build disponibles en los scripts del proyecto.
 - `npm run check:deployment -- https://menu-saas-alpha.vercel.app`: salud, portada, demo, manifest, robots, sitemap y cabeceras correctos.
+- Demo remota comprobada: 1 restaurante, 7 categorías, 15 productos y 13 vídeos accesibles por debajo de 15 MB.
+- 200 pruebas unitarias, 14 de integración y 7 pruebas E2E críticas superadas.
 - Los secretos no se almacenan en Git y las rutas privadas requieren sesión y rol de superadmin.
 
 ## Acciones externas pendientes
@@ -57,6 +59,9 @@ npm run lint
 npm run build
 npm run check:release
 npm run check:deployment -- https://menu-saas-alpha.vercel.app
+npm run check:production
 ```
 
 `check:release` debe ejecutarse con un `.env.local` que use el dominio HTTPS definitivo. Para desarrollo local puede mantenerse `NEXT_PUBLIC_APP_URL=http://localhost:3000`, pero esa configuración no supera deliberadamente la comprobación de producción.
+
+`check:production` también exige que la traducción automática y el mantenimiento programado estén activos. El endpoint de salud solo publica su estado booleano; nunca expone las claves.

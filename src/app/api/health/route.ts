@@ -9,7 +9,10 @@ export async function GET(){
   const url=getSupabaseUrl();
   const key=getSupabasePublicKey();
   const checks={environment:Boolean(url&&key&&process.env.NEXT_PUBLIC_APP_URL),database:false};
-  const features={automatic_translation:Boolean(process.env.DEEPL_API_KEY)};
+  const features={
+    automatic_translation:Boolean(process.env.DEEPL_API_KEY),
+    scheduled_maintenance:Boolean(process.env.CRON_SECRET),
+  };
 
   if(url&&key){
     const controller=new AbortController();

@@ -18,6 +18,7 @@
     "check:media": "node scripts/check-showcase-media.mjs",
     "check:release": "node scripts/check-env.mjs --production && node scripts/check-db.mjs && node scripts/seed-showcase.mjs --verify && node scripts/check-showcase-media.mjs",
     "check:deployment": "node scripts/check-deployment.mjs",
+    "check:production": "node scripts/check-deployment.mjs https://menu-saas-alpha.vercel.app --require-features",
     "cleanup:media": "node scripts/cleanup-orphan-media.mjs"
   },
   "dependencies": {

@@ -52,7 +52,8 @@ La pantalla de papelera muestra el resultado de la última limpieza. Un fallo no
 3. Haz commit y push de `main`; Vercel genera un nuevo despliegue sin impedir cambios posteriores.
 4. Espera a que el despliegue esté `Ready`.
 5. Ejecuta `npm run check:deployment -- https://menu-saas-alpha.vercel.app`.
-6. Prueba el flujo afectado desde móvil y revisa `/superadmin/activity`.
+6. Ejecuta `npm run check:production` para confirmar traducción y mantenimiento programado.
+7. Prueba el flujo afectado desde móvil y revisa `/superadmin/activity`.
 
 ## Rotación de secretos
 
