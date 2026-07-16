@@ -26,6 +26,8 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restauran
   const videoRefs=useRef<(HTMLVideoElement|null)[]>([]);
   const sectionRefs=useRef<(HTMLElement|null)[]>([]);
   const feedRef=useRef<HTMLElement|null>(null);
+  const categoryNavRef=useRef<HTMLElement|null>(null);
+  const categoryButtonRefs=useRef(new Map<string,HTMLButtonElement>());
   const trackedMenu=useRef(false);
   const seenProducts=useRef(new Set<string>());
   const playedVideos=useRef(new Set<string>());
@@ -80,9 +82,10 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restauran
   useEffect(()=>{setCart(parseCart(localStorage.getItem(cartKey)));setCartReady(true)},[cartKey]);
   useEffect(()=>{if(cartReady)localStorage.setItem(cartKey,JSON.stringify(cart))},[cart,cartKey,cartReady]);
   useEffect(()=>setHydrated(true),[]);
+  useEffect(()=>{const nav=categoryNavRef.current;const button=activeCategory?categoryButtonRefs.current.get(activeCategory):null;if(!nav||!button)return;nav.scrollTo({left:button.offsetLeft-(nav.clientWidth-button.offsetWidth)/2,behavior:"smooth"})},[activeCategory]);
 
   const share=async()=>{let completed=false;try{await navigator.share({title:restaurant.name,url:location.href});completed=true}catch{try{await navigator.clipboard.writeText(location.href);completed=true}catch{completed=false}}if(completed&&analyticsEnabled)sendAnalytics({restaurantId:restaurant.id,event:"share",locale:language})};
-  const go=(id:string)=>{document.getElementById(id)?.scrollIntoView({behavior:"smooth",block:"start"});setPanel(null)};
+  const go=(id:string,direct=false)=>{const target=document.getElementById(id);if(direct&&target&&feedRef.current)feedRef.current.scrollTo({top:target.offsetTop,behavior:"instant"});else target?.scrollIntoView({behavior:"smooth",block:"start"});setPanel(null)};
   const back=()=>history.length>1?history.back():location.assign("/");
   const playbackStarted=useCallback((index:number)=>{playingIndex.current=index;trackVideoPlay(index);setPlaybackBlocked(current=>{if(!current.has(index))return current;const next=new Set(current);next.delete(index);return next})},[trackVideoPlay]);
   const addProduct=(productId:string)=>{setCart(current=>addCartItem(current,productId));if(analyticsEnabled)sendAnalytics({restaurantId:restaurant.id,productId,event:"cart_add",locale:language})};
@@ -126,8 +129,10 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restauran
       </div>
     </section>})}</div>
 
-    <nav aria-label={text.categories} className="fixed bottom-[calc(max(.75rem,env(safe-area-inset-bottom))+4.75rem)] left-1/2 z-40 flex w-[calc(100%-1.5rem)] max-w-[398px] -translate-x-1/2 gap-1.5 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      {categoryGroups.map(group=><button key={group.id} type="button" aria-current={activeCategory===group.id?"true":undefined} onClick={()=>go(`product-${group.products[0].id}`)} style={activeCategory===group.id?{background:colors.accent,color:colors.background,borderColor:colors.accent}:{background:`${colors.nav}ed`,borderColor:colors.frame}} className="shrink-0 rounded-full border px-3 py-2 text-[11px] font-bold shadow-lg backdrop-blur-xl">{group.name}</button>)}
+    <nav ref={categoryNavRef} aria-label={text.categories} className="fixed left-1/2 top-[calc(max(1rem,env(safe-area-inset-top))+4.25rem)] z-40 flex w-[calc(100%-1.5rem)] max-w-[398px] -translate-x-1/2 snap-x snap-mandatory gap-2 overflow-x-auto [mask-image:linear-gradient(to_right,transparent,black_14%,black_86%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <span aria-hidden="true" className="w-[calc((100%-1rem)/3)] shrink-0"/>
+      {categoryGroups.map(group=>{const selected=activeCategory===group.id;return <button ref={element=>{if(element)categoryButtonRefs.current.set(group.id,element);else categoryButtonRefs.current.delete(group.id)}} key={group.id} type="button" aria-current={selected?"true":undefined} onClick={()=>{const index=products.findIndex(product=>product.id===group.products[0].id);if(index>=0)setActive(index);go(`product-${group.products[0].id}`,true)}} style={selected?{background:colors.accent,color:colors.background,borderColor:colors.accent}:{background:`${colors.nav}ed`,borderColor:colors.frame}} className={`w-[calc((100%-1rem)/3)] shrink-0 snap-center truncate rounded-full border px-2 py-2 text-[11px] font-bold shadow-lg backdrop-blur-xl transition-opacity duration-300 ${selected?"opacity-100":"opacity-[.45]"}`}>{group.name}</button>})}
+      <span aria-hidden="true" className="w-[calc((100%-1rem)/3)] shrink-0"/>
     </nav>
 
     <nav aria-label="Controles de la carta" style={{background:`${colors.nav}ed`,borderColor:colors.frame}} className="fixed bottom-[max(.75rem,env(safe-area-inset-bottom))] left-1/2 z-40 grid w-[calc(100%-1.5rem)] max-w-[398px] -translate-x-1/2 grid-cols-5 items-center rounded-2xl border px-1 py-2 shadow-2xl backdrop-blur-xl">

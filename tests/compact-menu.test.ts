@@ -12,6 +12,8 @@ describe("ficha compacta de producto",()=>{
     expect(menu).toContain('hydrated={Math.abs(index-active)<=1}');
     expect(menu).toContain('preload={index===active?"auto":"metadata"}');
     expect(menu).toContain('aria-label={text.categories}');
+    expect(menu).toContain("top-[calc(max(1rem,env(safe-area-inset-top))+4.25rem)]");
+    expect(menu).not.toContain("bottom-[calc(max(.75rem,env(safe-area-inset-bottom))+4.75rem)]");
     expect(menu).toContain("line-clamp-2");
     expect(menu).not.toContain("text-[clamp(2rem,9vw,3rem)]");
     expect(menu).toContain("<details");

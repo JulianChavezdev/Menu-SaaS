@@ -119,8 +119,16 @@ test.describe("public menu responsive contract",()=>{
     const menu=page.locator("main.public-menu");
     await expect.poll(()=>menu.locator(":scope > div > section video").count()).toBeLessThanOrEqual(2);
     const categories=page.getByRole("navigation",{name:"Categorías"});
+    await categories.getByRole("button",{name:"Brasas",exact:true}).click();
+    await expect(categories.getByRole("button",{name:"Brasas",exact:true})).toHaveAttribute("aria-current","true");
+    const navBox=await categories.boundingBox();
+    await expect.poll(async()=>{const activeBox=await categories.getByRole("button",{name:"Brasas",exact:true}).boundingBox();return Math.abs((activeBox!.x+activeBox!.width/2)-(navBox!.x+navBox!.width/2))}).toBeLessThan(3);
+    const visibleCategories=await categories.locator("button").evaluateAll((buttons,box)=>buttons.filter(button=>{const rect=button.getBoundingClientRect();return rect.right>(box as {x:number}).x&&rect.left<(box as {x:number;width:number}).x+(box as {width:number}).width}).length,navBox!);
+    expect(visibleCategories).toBeLessThanOrEqual(3);
+    const addBox=await page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Entrecot de Encina",exact:true})}).getByRole("button",{name:"Añadir",exact:true}).boundingBox();
+    expect(navBox!.y+navBox!.height).toBeLessThan(addBox!.y);
     await categories.getByRole("button",{name:"Postres",exact:true}).click();
-    await expect(page.getByRole("heading",{name:"Mochi de Cheesecake",exact:true})).toBeVisible();
+    await expect(categories.getByRole("button",{name:"Postres",exact:true})).toHaveAttribute("aria-current","true");
     await expect.poll(()=>menu.locator(":scope > div > section video").count()).toBeLessThanOrEqual(3);
   });
 });
