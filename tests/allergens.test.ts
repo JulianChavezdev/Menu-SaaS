@@ -28,10 +28,11 @@ describe("product allergens",()=>{
     expect(menu).toContain("allergenLabel(code,language)");
   });
 
-  it("offers a categorized two-column menu with media thumbnails",()=>{
+  it("offers a categorized two-column menu with static media thumbnails",()=>{
     expect(menu).toContain("categoryGroups");
     expect(menu).toContain("grid grid-cols-2 gap-3");
-    expect(menu).toContain('preload="metadata"');
+    expect(menu).not.toContain('src={`${product.video_url}#t=0.1`}');
+    expect(menu).toContain("product.image_url");
     expect(menu).toContain("text.listHint");
   });
 });

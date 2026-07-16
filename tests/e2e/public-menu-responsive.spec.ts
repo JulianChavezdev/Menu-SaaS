@@ -32,6 +32,7 @@ test.describe("public menu responsive contract",()=>{
     await expect.poll(()=>menu.evaluate(element=>element.scrollTop)).toBeGreaterThan(700);
     await expect(page.getByRole("heading",{name:"Papas Voladoras"})).toBeVisible();
     await expect(page.getByRole("navigation",{name:"Controles de la carta"})).toBeVisible();
+    await expect(page.getByRole("navigation",{name:"Categorías"})).toBeVisible();
 
     await page.getByRole("button",{name:"Cambiar a inglés"}).click();
     await expect(page.locator("html")).toHaveAttribute("lang","en");
@@ -91,14 +92,15 @@ test.describe("public menu responsive contract",()=>{
     await page.setViewportSize({width:390,height:844});
     await page.goto("/r/bistro-nube",{waitUntil:"domcontentloaded"});
 
-    await page.getByRole("button",{name:"Carta",exact:true}).evaluate(button=>(button as HTMLButtonElement).click());
+    await expect(page.locator("main.public-menu")).toHaveAttribute("data-hydrated","true");
+    await page.getByRole("button",{name:"Carta",exact:true}).dispatchEvent("click");
     const catalog=page.locator('aside[aria-label="Carta"]');
     await expect(catalog).toBeVisible();
     await expect(catalog.getByText("Hamburguesas",{exact:true})).toBeVisible();
     const productGrid=catalog.locator(".grid.grid-cols-2").first();
     await expect(productGrid.locator("article")).not.toHaveCount(0);
     await expect.poll(()=>productGrid.evaluate(element=>getComputedStyle(element).gridTemplateColumns.split(" ").length)).toBe(2);
-    expect(await catalog.locator("video").count()).toBeGreaterThan(0);
+    await expect(catalog.locator("video")).toHaveCount(0);
     await catalog.getByRole("button",{name:"Cerrar"}).click();
 
     const burger=page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Hamburguesa Nebulosa",exact:true})});
@@ -108,5 +110,17 @@ test.describe("public menu responsive contract",()=>{
     await expect(burger.getByText("Huevos",{exact:true})).toBeVisible();
     await expect(burger.getByText("Leche",{exact:true})).toBeVisible();
     await expect(burger.getByText(/confirma siempre la información con el personal/i)).toBeVisible();
+  });
+
+  test("virtualizes videos and jumps directly between categories",async({page})=>{
+    await page.setViewportSize({width:390,height:844});
+    await page.goto("/r/bistro-nube",{waitUntil:"domcontentloaded"});
+
+    const menu=page.locator("main.public-menu");
+    await expect.poll(()=>menu.locator(":scope > div > section video").count()).toBeLessThanOrEqual(2);
+    const categories=page.getByRole("navigation",{name:"Categorías"});
+    await categories.getByRole("button",{name:"Postres",exact:true}).click();
+    await expect(page.getByRole("heading",{name:"Mochi de Cheesecake",exact:true})).toBeVisible();
+    await expect.poll(()=>menu.locator(":scope > div > section video").count()).toBeLessThanOrEqual(3);
   });
 });
