@@ -3,7 +3,7 @@ import {describe,expect,it} from "vitest";
 
 const page=readFileSync("src/app/page.tsx","utf8");
 const nav=readFileSync("src/components/marketing/marketing-nav.tsx","utf8");
-const preview=readFileSync("src/components/marketing/landing-preview-video.tsx","utf8");
+const publicMenu=readFileSync("src/app/r/[slug]/page.tsx","utf8");
 
 describe("landing pública",()=>{
   it("incluye todas las secciones comerciales",()=>{for(const id of["inicio","producto","como-funciona","precios","faq","contacto"])expect(page).toContain(`id="${id}"`);expect(page).not.toContain('id="nosotros"')});
@@ -13,5 +13,6 @@ describe("landing pública",()=>{
   it("publica los tres planes y el ahorro anual",()=>{for(const copy of["Prueba","Plan Carta","34,99 €","344,30 €/año","ahorra un 18%","Llave en mano","149,99 €","Primer mes gratis","Hasta 4 vídeos por categoría","Máximo 5 categorías"])expect(page).toContain(copy)});
   it("ofrece soporte continuo y contacto por WhatsApp",()=>{expect(page).toContain("soporte 24/7");expect(page).toContain("todos los días de la semana");expect(page).toContain("https://wa.me/34643663194");expect(page).toContain("+34 643 663 194")});
   it("enlaza el manual para restaurantes",()=>{expect(page).toContain('/manual-carta-video-restaurantes.pdf');expect(page).toContain('>Manual</a>')});
-  it("muestra un mockup fiel a la carta y usa el vídeo de Cloudinary",()=>{expect(preview).toContain("res.cloudinary.com/det6jfwzx/video/upload/v1783700256");expect(page).toContain("aspect-[9/18.7]");expect(page).toContain("Entrantes");expect(page).toContain("Alérgenos · 3");expect(page).toContain("Así verán tus clientes cada plato");expect(page).not.toContain("bg-violet-500/20")});
+  it("muestra la carta móvil real dentro del mockup sin contaminar analíticas",()=>{expect(page).toContain("aspect-[9/18.7]");expect(page).toContain('title="Vista móvil real de Carta Video"');expect(page).toContain('src="/r/bistro-nube?preview=landing"');expect(page).toContain('allow="autoplay"');expect(page).toContain("Así verán tus clientes cada plato");expect(page).not.toContain("MockControl")});
+  it("desactiva las analíticas dentro de la vista previa",()=>{expect(publicMenu).toContain('preview==="landing"');expect(publicMenu).toContain("analyticsEnabled={!preview}")});
 });

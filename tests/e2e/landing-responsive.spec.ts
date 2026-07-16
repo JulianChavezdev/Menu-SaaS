@@ -52,6 +52,7 @@ test.describe("landing responsive contract",()=>{
     }
     await expect(page.getByRole("link",{name:"Probar la demo",exact:true})).toBeVisible();
     await expect(page.locator("#contenido").getByRole("link",{name:"Crear mi carta",exact:true})).toBeVisible();
+    await expect(page.locator('iframe[title="Vista móvil real de Carta Video"]')).toHaveAttribute("src","/r/bistro-nube?preview=landing");
     expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(1440);
   });
 

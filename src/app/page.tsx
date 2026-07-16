@@ -1,7 +1,6 @@
 import Link from "next/link";
 import type {Metadata} from "next";
-import {ArrowLeft,ArrowRight,BarChart3,Check,ChevronRight,Info,Languages,LayoutTemplate,List,MessageCircle,Play,QrCode,Share2,ShoppingBag,Sparkles,Users,Video,VolumeX} from "lucide-react";
-import {LandingPreviewVideo} from "@/components/marketing/landing-preview-video";
+import {ArrowRight,BarChart3,Check,ChevronRight,Languages,LayoutTemplate,MessageCircle,Play,QrCode,ShoppingBag,Sparkles,Users,Video} from "lucide-react";
 import {MarketingNav} from "@/components/marketing/marketing-nav";
 
 export const metadata:Metadata={title:"Cartas digitales en vídeo para restaurantes",description:"Convierte cada plato en una experiencia visual. Carta digital mobile-first con vídeos, QR, carrito, traducción automática y analíticas."};
@@ -24,31 +23,10 @@ function PhoneShowcase(){return <div className="relative mx-auto w-full min-w-0 
   <div className="absolute inset-x-8 bottom-4 top-16 -z-10 rounded-[50%] bg-orange-200/70 blur-3xl"/>
   <div className="relative mx-auto aspect-[9/18.7] w-[min(78vw,310px)] rounded-[42px] border-[8px] border-[#171713] bg-[#171713] p-1 shadow-[0_30px_70px_rgba(68,44,24,.3)] ring-1 ring-black/20 md:w-[min(34vw,280px)] lg:w-[min(78vw,310px)] lg:rounded-[48px] lg:border-[9px]">
     <span className="absolute -left-[13px] top-28 h-16 w-1.5 rounded-l bg-[#35352f]"/><span className="absolute -right-[13px] top-36 h-24 w-1.5 rounded-r bg-[#35352f]"/>
-    <div className="relative h-full overflow-hidden rounded-[36px] bg-stone-950 text-white">
-      <LandingPreviewVideo/>
-      <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-transparent via-45% to-black/95"/>
-      <div className="absolute left-1/2 top-3 z-30 h-6 w-24 -translate-x-1/2 rounded-full bg-black shadow-sm"/>
-      <div className="absolute inset-x-3 top-5 z-20 flex items-center justify-between">
-        <span className="grid h-9 w-9 place-items-center rounded-full border border-white/20 bg-black/40 backdrop-blur-md"><ArrowLeft size={16}/></span>
-        <span role="img" aria-label="Logo de Bistro Nube" className="mt-5 h-9 w-24 bg-contain bg-center bg-no-repeat drop-shadow-lg" style={{backgroundImage:"url(/demo/logos/bistro-nube.svg)"}}/>
-        <span className="flex h-9 items-center gap-1 rounded-full border border-white/20 bg-black/40 px-2.5 text-[10px] font-bold backdrop-blur-md"><Languages size={13}/>ES</span>
-      </div>
-      <div className="absolute inset-x-3 top-[5.35rem] z-20 grid grid-cols-3 gap-1.5 text-center text-[8px] font-bold">
-        <span className="truncate rounded-full border border-white/15 bg-black/35 px-2 py-2 text-white/45 backdrop-blur-md">Entrantes</span><span className="truncate rounded-full border border-amber-200 bg-amber-200 px-2 py-2 text-stone-950 shadow-md">Hamburguesas</span><span className="truncate rounded-full border border-white/15 bg-black/35 px-2 py-2 text-white/45 backdrop-blur-md">Postres</span>
-      </div>
-      <div aria-hidden="true" className="absolute right-2 top-1/2 z-20 flex -translate-y-1/2 flex-col gap-1"><span className="h-4 w-1 rounded-full bg-amber-200"/><span className="h-1 w-1 rounded-full bg-white/45"/><span className="h-1 w-1 rounded-full bg-white/45"/><span className="h-1 w-1 rounded-full bg-white/45"/></div>
-      <div className="absolute inset-x-4 bottom-[5.55rem] z-10 text-shadow-lg">
-        <div className="flex items-center gap-2"><span className="rounded-full border border-amber-200/30 bg-black/40 px-2 py-1 text-[8px] font-bold uppercase tracking-[.12em] text-amber-200 backdrop-blur-md">Hamburguesas</span><span className="text-[9px] font-medium text-white/70">★ Destacado</span></div>
-        <h3 className="mt-2 max-w-[250px] text-[1.55rem] font-semibold leading-[1.02] tracking-[-.035em]">Hamburguesa Nebulosa</h3>
-        <div className="mt-2 flex items-center gap-3 text-[9px] font-semibold text-white/75"><span>Descripción ⌄</span><span>Alérgenos · 3 ⌄</span></div>
-        <div className="mt-3 flex items-center justify-between"><strong className="text-lg font-semibold text-amber-200">12,90 €</strong><span className="rounded-full bg-amber-200 px-4 py-2.5 text-[11px] font-bold text-stone-950 shadow-lg">+ Añadir</span></div>
-      </div>
-      <div className="absolute inset-x-2.5 bottom-2.5 z-20 grid grid-cols-5 rounded-xl border border-white/15 bg-[#171715]/95 px-1 py-2.5 shadow-2xl backdrop-blur-xl"><MockControl icon={<List/>} label="Carta"/><MockControl icon={<VolumeX/>} label="Audio"/><MockControl icon={<ShoppingBag/>} label="Carrito" active/><MockControl icon={<Info/>} label="Restaurante"/><MockControl icon={<Share2/>} label="Compartir"/></div>
-    </div>
+    <div className="relative h-full overflow-hidden rounded-[34px] bg-stone-950 lg:rounded-[36px]"><iframe title="Vista móvil real de Carta Video" src="/r/bistro-nube?preview=landing" loading="eager" allow="autoplay" tabIndex={-1} className="pointer-events-none h-full w-full border-0 bg-stone-950"/></div>
   </div>
   <p className="mx-auto mt-5 w-fit rounded-full border border-stone-200 bg-white px-4 py-2 text-center text-[11px] font-semibold text-slate-600 shadow-sm">Así verán tus clientes cada plato</p>
 </div>}
-function MockControl({icon,label,active=false}:{icon:React.ReactNode;label:string;active?:boolean}){return <span className={`flex min-w-0 flex-col items-center gap-1 text-[7px] ${active?"font-bold text-white":"text-white/65"}`}><span className="[&>svg]:h-4 [&>svg]:w-4">{icon}</span>{label}</span>}
 function Eyebrow({children}:{children:React.ReactNode}){return <p className="text-xs font-bold uppercase tracking-[.2em] text-orange-700">{children}</p>}
 function SectionTitle({children}:{children:React.ReactNode}){return <h2 className="mt-4 max-w-3xl text-3xl font-black leading-tight tracking-[-.035em] sm:text-4xl lg:text-5xl">{children}</h2>}
 function Stat({value,suffix="+",label}:{value:string;suffix?:string;label:string}){return <div className="bg-white p-5 text-center"><strong className="text-2xl font-black">{value}{suffix}</strong><p className="mt-1 text-[10px] uppercase tracking-wider text-slate-500">{label}</p></div>}
