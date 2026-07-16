@@ -1,5 +1,6 @@
 import {cookies} from "next/headers";
 import {redirect} from "next/navigation";
+import {cache} from "react";
 import {createClient} from "@/lib/supabase/server";
 import {canCreateCategory,canCreateProduct,planForStatus} from "@/lib/plans";
 import {isSuperadminUser} from "@/lib/superadmin-identity";
@@ -9,7 +10,7 @@ type Membership={restaurant_id:string;role:string;restaurants:unknown};
 
 function restaurantOf(member:Membership){return member.restaurants as Restaurant}
 
-export async function activeRestaurant(){
+export const activeRestaurant=cache(async function activeRestaurant(){
   const supabase=await createClient();
   const {data:{user}}=await supabase.auth.getUser();
   if(!user)redirect("/login");
@@ -28,7 +29,7 @@ export async function activeRestaurant(){
   const restaurant=restaurantOf(member);
   if(restaurant.access_suspended)redirect(isSuperadminUser(user)?"/superadmin":"/suspended");
   return {supabase,user,member,restaurant};
-}
+});
 
 export async function canAddProduct(restaurantId:string){const supabase=await createClient();const[{count},{data:restaurant}]=await Promise.all([supabase.from("products").select("id",{count:"exact",head:true}).eq("restaurant_id",restaurantId),supabase.from("restaurants").select("subscription_status").eq("id",restaurantId).single()]);return canCreateProduct(count??0,planForStatus(restaurant?.subscription_status??"trialing"))}
 export async function canAddCategory(restaurantId:string){const supabase=await createClient();const[{count},{data:restaurant}]=await Promise.all([supabase.from("categories").select("id",{count:"exact",head:true}).eq("restaurant_id",restaurantId),supabase.from("restaurants").select("subscription_status").eq("id",restaurantId).single()]);return canCreateCategory(count??0,planForStatus(restaurant?.subscription_status??"trialing"))}

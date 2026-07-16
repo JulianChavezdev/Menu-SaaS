@@ -61,7 +61,7 @@ La sustitución de un logo elimina el archivo anterior. Para auditar Storage man
 
 ## Planes y pagos
 
-La beta funciona sin cobros: el plan de prueba admite hasta **3 productos y 5 categorías**. Esos límites se validan en servidor y en la base de datos.
+La prueba dura **7 días** y admite hasta **3 productos y 5 categorías**. Al vencer, la carta pública se suspende hasta registrar un pago; el restaurante conserva acceso al panel. Estos límites se validan en servidor y en la base de datos.
 
 Cada producto admite los 14 grupos de alérgenos del anexo II del Reglamento (UE) 1169/2011. El restaurante los selecciona desde Carta y el cliente los consulta en una pestaña desplegable con aviso de confirmación al personal. La carta pública ofrece además una vista listada por categorías, con miniaturas y productos en dos columnas, accesible desde el control Carta.
 
