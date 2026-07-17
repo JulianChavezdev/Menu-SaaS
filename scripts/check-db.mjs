@@ -108,6 +108,10 @@ const checks=[
       return {error:results.find(result=>result.error)?.error??null};
     },
   },
+  {
+    migration:"202607170001_product_images.sql",
+    run:()=>supabase.rpc("can_manage_restaurant_product_image",{object_name:"invalid"}),
+  },
 ];
 
 const pending=[];

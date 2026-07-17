@@ -42,6 +42,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restauran
   const[cart,setCart]=useState<CartLine[]>([]);
   const[cartReady,setCartReady]=useState(false);
   const[hydrated,setHydrated]=useState(false);
+  const[introVisible,setIntroVisible]=useState(true);
   const[active,setActive]=useState(0);
   const[reducedMotion,setReducedMotion]=useState(false);
   const[playbackBlocked,setPlaybackBlocked]=useState<Set<number>>(()=>new Set());
@@ -89,6 +90,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restauran
   useEffect(()=>{setCart(parseCart(localStorage.getItem(cartKey)));setCartReady(true)},[cartKey]);
   useEffect(()=>{if(cartReady)localStorage.setItem(cartKey,JSON.stringify(cart))},[cart,cartKey,cartReady]);
   useEffect(()=>setHydrated(true),[]);
+  useEffect(()=>{const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;const timer=setTimeout(()=>setIntroVisible(false),reduced?450:1800);return()=>clearTimeout(timer)},[]);
   useEffect(()=>{const nav=categoryNavRef.current;const button=activeCategory?categoryButtonRefs.current.get(activeCategory):null;if(!nav||!button)return;nav.scrollTo({left:button.offsetLeft-(nav.clientWidth-button.offsetWidth)/2,behavior:"smooth"})},[activeCategory]);
 
   const share=async()=>{let completed=false;try{await navigator.share({title:restaurant.name,url:location.href});completed=true}catch{try{await navigator.clipboard.writeText(location.href);completed=true}catch{completed=false}}if(completed&&analyticsEnabled)sendAnalytics({restaurantId:restaurant.id,event:"share",locale:language})};
@@ -100,6 +102,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restauran
 
   return <main ref={feedRef} onTouchEnd={resumeActiveVideo} aria-label={`Carta de ${restaurant.name}`} data-template={template.key} data-hydrated={hydrated?"true":"false"} style={themeStyle} className="public-menu relative h-screen h-dvh snap-y snap-mandatory overflow-y-auto overscroll-y-contain scroll-smooth bg-[var(--theme-bg)] text-white md:mx-auto md:max-w-[430px] md:border-x md:border-white/10 md:shadow-2xl">
     <h1 className="sr-only">{restaurant.name}: carta en vídeo</h1>
+    {introVisible&&<div role="status" aria-label={`Abriendo la carta de ${restaurant.name}`} style={{background:`linear-gradient(145deg,${colors.background},${colors.panel})`}} className="fixed inset-0 z-[70] mx-auto grid max-w-[430px] place-items-center overflow-hidden px-8 text-center"><button type="button" aria-label="Abrir carta" onClick={()=>setIntroVisible(false)} className="flex w-full flex-col items-center"><span style={{background:`${colors.accent}18`,borderColor:colors.frame}} className="grid h-28 w-28 place-items-center rounded-2xl border p-4 shadow-2xl">{restaurant.logo_url?<span role="img" aria-label={`Logo de ${restaurant.name}`} style={{backgroundImage:`url(${restaurant.logo_url})`}} className="h-full w-full bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.8)]"/>:<span style={{color:colors.accent}} className="text-4xl font-black">{restaurant.name.slice(0,1)}</span>}</span><span style={{color:colors.accent}} className="mt-7 text-xs font-bold uppercase tracking-[.35em]">Carta</span><strong className="mt-3 max-w-full truncate text-2xl">{restaurant.name}</strong><span style={{background:`${colors.frame}`}} className="mt-8 h-1 w-28 overflow-hidden rounded-full"><span style={{background:colors.accent}} className="block h-full w-2/3 animate-pulse rounded-full"/></span></button></div>}
     <header style={{background:`linear-gradient(to bottom,${colors.background}f2,${colors.background}a8,transparent)`}} className="pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-center justify-between px-4 pb-10 pt-[max(1rem,env(safe-area-inset-top))]">
       <button aria-label="Volver" onClick={back} className="pointer-events-auto grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-black/30 backdrop-blur-md"><ArrowLeft size={20}/></button>
       <div className="flex min-w-0 flex-1 justify-center px-3">{restaurant.logo_url?<span role="img" aria-label={`Logo de ${restaurant.name}`} className="h-12 w-32 bg-contain bg-center bg-no-repeat drop-shadow-[0_2px_8px_rgba(0,0,0,.9)]" style={{backgroundImage:`url(${restaurant.logo_url})`}}/>:<strong className="truncate text-lg tracking-tight drop-shadow-lg">{restaurant.name}</strong>}</div>

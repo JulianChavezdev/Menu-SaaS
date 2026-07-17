@@ -2,6 +2,7 @@ import {readFileSync} from "node:fs";
 import {describe,expect,it} from "vitest";
 
 const migration=readFileSync("supabase/migrations/202607140004_storage_upload_hardening.sql","utf8");
+const productImages=readFileSync("supabase/migrations/202607170001_product_images.sql","utf8");
 
 describe("storage upload hardening",()=>{
   it("limits bucket size and MIME types",()=>{
@@ -23,4 +24,6 @@ describe("storage upload hardening",()=>{
     expect(migration).toContain('create policy "member media update"');
     expect(migration).toContain('create policy "member media delete"');
   });
+
+  it("authorizes product photos only inside their restaurant and product",()=>{expect(productImages).toContain("can_manage_restaurant_product_image");expect(productImages).toContain("product.id::text = path.folders[4]");expect(productImages).toContain("product.restaurant_id = member.restaurant_id");expect(productImages).toContain("member product image insert")});
 });

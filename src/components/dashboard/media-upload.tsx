@@ -10,7 +10,7 @@ import {CloudinaryUnavailableError,uploadCloudinaryVideo} from "@/lib/cloudinary
 import {toast} from "sonner";
 
 type Option={id:string;name:string};
-type Kind="product-video"|"logo";
+type Kind="product-video"|"product-image"|"logo";
 
 const VIDEO_TYPES=["video/mp4","video/webm","video/quicktime"];
 const IMAGE_TYPES=["image/jpeg","image/png","image/webp"];
@@ -24,7 +24,8 @@ export function MediaUpload({restaurantId,kind="logo",products=[],label,currentU
   const[videoInfo,setVideoInfo]=useState<{duration:number;width:number;height:number}|null>(null);
   const[productId,setProductId]=useState("");
   const video=kind==="product-video";
-  const title=label??(video?"Vídeo del producto":"Logo");
+  const productMedia=kind==="product-video"||kind==="product-image";
+  const title=label??(video?"Vídeo del producto":kind==="product-image"?"Foto del producto":"Logo");
   const maxBytes=video?50*1024*1024:5*1024*1024;
 
   useEffect(()=>{
@@ -47,16 +48,14 @@ export function MediaUpload({restaurantId,kind="logo",products=[],label,currentU
 
   async function upload(){
     if(!file)return;
-    if(video&&!productId){toast.error("Selecciona primero un producto.");return}
+    if(productMedia&&!productId){toast.error("Selecciona primero un producto.");return}
     setUploading(true);
     setProgress(0);
     const supabase=createClient();
     let uploadedPath="";
     try{
       const ext=file.name.split(".").pop()?.toLowerCase()||"bin";
-      uploadedPath=video
-        ?`restaurants/${restaurantId}/products/${productId}/video-${crypto.randomUUID()}.${ext}`
-        :`restaurants/${restaurantId}/branding/logo-${crypto.randomUUID()}.${ext}`;
+      uploadedPath=video?`restaurants/${restaurantId}/products/${productId}/video-${crypto.randomUUID()}.${ext}`:kind==="product-image"?`restaurants/${restaurantId}/products/${productId}/image-${crypto.randomUUID()}.${ext}`:`restaurants/${restaurantId}/branding/logo-${crypto.randomUUID()}.${ext}`;
       if(video){
         try{
           const result=await uploadCloudinaryVideo({file,restaurantId,productId,onProgress:setProgress});
@@ -70,7 +69,7 @@ export function MediaUpload({restaurantId,kind="logo",products=[],label,currentU
         const {error}=await supabase.storage.from("restaurant-media").upload(uploadedPath,file,{upsert:false,contentType:file.type,cacheControl:"31536000"});
         if(error)throw error;
       }
-      await assignMedia(kind,uploadedPath,video?productId:undefined);
+      await assignMedia(kind,uploadedPath,productMedia?productId:undefined);
       toast.success(`${title} actualizado`);
       setFile(null);setProgress(0);setVideoInfo(null);
       router.refresh();
@@ -84,11 +83,11 @@ export function MediaUpload({restaurantId,kind="logo",products=[],label,currentU
   return <div className="glass rounded-xl p-4">
     <h2 className="mb-1 font-bold">{title}</h2>
     <p className="mb-3 text-xs text-slate-600">{currentUrl?"Archivo actual guardado. Puedes reemplazarlo.":"Todavía no hay ningún archivo guardado."}</p>
-    {video&&<select aria-label="Producto para el vídeo" value={productId} onChange={event=>setProductId(event.target.value)} className="mb-3 w-full rounded-lg p-2 text-slate-900"><option value="">Selecciona el producto</option>{products.map(product=><option key={product.id} value={product.id}>{product.name}</option>)}</select>}
+    {productMedia&&<select aria-label={video?"Producto para el vídeo":"Producto para la foto"} value={productId} onChange={event=>setProductId(event.target.value)} className="mb-3 w-full rounded-lg p-2 text-slate-900"><option value="">Selecciona el producto</option>{products.map(product=><option key={product.id} value={product.id}>{product.name}</option>)}</select>}
     {shown&&<div className="mb-3">{video?<video src={shown} controls muted playsInline preload="metadata" onLoadedMetadata={event=>{if(file){const media=event.currentTarget;setVideoInfo({duration:media.duration,width:media.videoWidth,height:media.videoHeight})}}} className="aspect-video w-full rounded-lg bg-black object-contain"/>:<div role="img" aria-label={`Vista previa de ${title}`} className="aspect-video rounded-lg bg-contain bg-center bg-no-repeat" style={{backgroundImage:`url(${shown})`}}/>}</div>}
     <label onDragOver={event=>event.preventDefault()} onDrop={event=>{event.preventDefault();const candidate=event.dataTransfer.files[0];if(candidate)choose(candidate)}} className="block cursor-pointer rounded-xl border-2 border-dashed border-stone-300 p-5 text-center hover:bg-stone-100">
       <input className="sr-only" type="file" accept={video?"video/mp4,video/webm,video/quicktime":"image/jpeg,image/png,image/webp"} onChange={event=>{const candidate=event.target.files?.[0];if(candidate)choose(candidate)}}/>
-      <Upload className="mx-auto mb-2"/><span>{file?file.name:`Seleccionar o arrastrar ${video?"vídeo":"logo"}`}</span><span className="mt-1 block text-xs text-slate-600">Máximo {video?50:5} MB</span>
+      <Upload className="mx-auto mb-2"/><span>{file?file.name:`Seleccionar o arrastrar ${video?"vídeo":kind==="product-image"?"foto":"logo"}`}</span><span className="mt-1 block text-xs text-slate-600">Máximo {video?50:5} MB</span>
     </label>
     {video&&<p className="mt-2 text-xs leading-relaxed text-slate-500">Recomendado: MP4 vertical, H.264, menos de 30 segundos y 20 MB para una carga rápida.</p>}
     {file&&videoInfo&&<p className="mt-2 text-xs font-medium text-slate-600">{(file.size/1024/1024).toFixed(1)} MB · {Math.ceil(videoInfo.duration)} s · {videoInfo.width} × {videoInfo.height}px{videoInfo.width>videoInfo.height?" · Mejor en formato vertical":""}</p>}

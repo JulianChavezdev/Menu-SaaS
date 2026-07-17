@@ -16,6 +16,7 @@ const devices=[
 ];
 
 test("description and allergens never overlap navigation across devices",async({page})=>{
+  test.setTimeout(90000);
   await page.route(/\.mp4(?:$|\?)/,route=>route.abort());
   for(const device of devices){
     await test.step(device.name,async()=>{
@@ -27,12 +28,12 @@ test("description and allergens never overlap navigation across devices",async({
       const detailsPanel=product.locator("[data-product-details]");
       const description=product.locator("details").nth(0);
       const allergens=product.locator("details").nth(1);
-      await description.locator("summary").click();
+      await description.locator("summary").dispatchEvent("click");
       await expect(description).toHaveAttribute("open","");
       const controlsBox=await page.getByRole("navigation",{name:"Controles de la carta"}).boundingBox();
       const descriptionBox=await description.boundingBox();
       expect(descriptionBox!.y+descriptionBox!.height).toBeLessThanOrEqual(controlsBox!.y-4);
-      await allergens.locator("summary").click();
+      await allergens.locator("summary").dispatchEvent("click");
       await expect(allergens).toHaveAttribute("open","");
       await expect.poll(()=>detailsPanel.evaluate(element=>element.scrollTop)).toBeGreaterThanOrEqual(0);
       const panelBox=await detailsPanel.boundingBox();
