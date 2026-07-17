@@ -127,6 +127,10 @@ const checks=[
     migration:"202607170003_restaurant_feedback.sql",
     run:()=>supabase.from("restaurant_feedback").select("id",{head:true}).limit(1),
   },
+  {
+    migration:"202607170004_analytics_goals.sql",
+    run:()=>supabase.from("restaurant_analytics_goals").select("restaurant_id",{head:true}).limit(1),
+  },
 ];
 
 const pending=[];

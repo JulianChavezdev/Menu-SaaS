@@ -1,0 +1,8 @@
+import Link from "next/link";
+import {AlertTriangle,ArrowRight,Lightbulb} from "lucide-react";
+import type {RestaurantAlert} from "@/lib/restaurant-alerts";
+
+export function ActionCenter({alerts}:{alerts:RestaurantAlert[]}){
+  if(!alerts.length)return <section className="mt-6 border-l-4 border-emerald-500 bg-emerald-50 p-4"><h2 className="font-bold text-emerald-950">Todo está en orden</h2><p className="mt-1 text-sm text-emerald-800">No hay acciones urgentes para tu carta.</p></section>;
+  return <section className="mt-6"><div className="flex items-center justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[.15em] text-orange-700">Prioridades</p><h2 className="mt-1 text-lg font-bold">Qué hacer ahora</h2></div><span className="bg-white px-2.5 py-1 text-xs font-bold text-slate-600">{alerts.length}</span></div><div className="mt-3 grid gap-3 md:grid-cols-2">{alerts.map(alert=><article key={alert.id} className={`border-l-4 bg-white p-4 shadow-sm ${alert.tone==="critical"?"border-red-600":alert.tone==="warning"?"border-amber-500":"border-olive-600 border-l-emerald-700"}`}><div className="flex gap-3">{alert.tone==="opportunity"?<Lightbulb className="mt-0.5 shrink-0 text-emerald-700" size={19}/>:<AlertTriangle className={`mt-0.5 shrink-0 ${alert.tone==="critical"?"text-red-600":"text-amber-600"}`} size={19}/>}<div className="min-w-0"><h3 className="text-sm font-bold">{alert.title}</h3><p className="mt-1 text-xs leading-relaxed text-slate-600">{alert.description}</p><Link href={alert.href} className="mt-3 inline-flex items-center gap-1 text-xs font-bold text-orange-700 hover:underline">{alert.action}<ArrowRight size={14}/></Link></div></div></article>)}</div></section>;
+}

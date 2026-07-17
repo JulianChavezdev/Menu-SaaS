@@ -2,11 +2,15 @@ import Link from "next/link";
 import { BackButton } from "@/components/ui/back-button";
 import { activeRestaurant } from "@/lib/permissions";
 import { OnboardingChecklist } from "@/components/dashboard/onboarding-checklist";
+import {ActionCenter} from "@/components/dashboard/action-center";
+import {restaurantAlerts} from "@/lib/restaurant-alerts";
+import {trialDaysRemaining} from "@/lib/trial-expiration";
 
 export default async function Dashboard() {
   const { restaurant, supabase } = await activeRestaurant();
 
-  const [{ count: products }, { count: categories }, { count: videos }, { count: media }] = await Promise.all([
+  const since=new Date();since.setUTCDate(since.getUTCDate()-6);
+  const [{ count: products }, { count: categories }, { count: videos }, { count: media },{count:productsWithoutMedia},{data:subscription},{data:analytics}] = await Promise.all([
     supabase
       .from("products")
       .select("id", { count: "exact", head: true })
@@ -25,7 +29,12 @@ export default async function Dashboard() {
       .select("id", { count: "exact", head: true })
       .eq("restaurant_id", restaurant.id)
       .or("video_url.not.is.null,image_url.not.is.null"),
+    supabase.from("products").select("id",{count:"exact",head:true}).eq("restaurant_id",restaurant.id).is("video_url",null).is("image_url",null),
+    supabase.from("subscriptions").select("status,current_period_end").eq("restaurant_id",restaurant.id).maybeSingle(),
+    supabase.from("menu_analytics_daily").select("event_type,event_count").eq("restaurant_id",restaurant.id).gte("event_date",since.toISOString().slice(0,10)),
   ]);
+  const eventTotal=(type:string)=>(analytics??[]).filter(row=>row.event_type===type).reduce((total,row)=>total+Number(row.event_count||0),0);
+  const status=subscription?.status??restaurant.subscription_status;const alerts=restaurantAlerts({subscriptionStatus:status,trialDays:status==="trialing"?trialDaysRemaining(subscription?.current_period_end):null,published:restaurant.is_published,products:products??0,productsWithoutMedia:productsWithoutMedia??0,menuViews:eventTotal("menu_view"),cartAdds:eventTotal("cart_add"),recommendationAdds:eventTotal("recommendation_add"),hasLogo:Boolean(restaurant.logo_url),hasContact:Boolean(restaurant.phone||restaurant.address)});
 
   return (
     <main className="mx-auto max-w-6xl p-4 md:p-8 animate-in fade-in duration-300 min-h-screen flex flex-col justify-start">
@@ -56,6 +65,7 @@ export default async function Dashboard() {
       </div>
 
       <OnboardingChecklist input={{hasLogo:Boolean(restaurant.logo_url),hasContact:Boolean(restaurant.phone||restaurant.address),categories:categories??0,products:products??0,media:media??0,published:restaurant.is_published}} />
+      <ActionCenter alerts={alerts}/>
 
       {/* Módulo de Estadísticas Clave */}
       <section className="mt-8 grid gap-4 grid-cols-2 lg:grid-cols-3">

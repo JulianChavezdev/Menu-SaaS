@@ -117,7 +117,7 @@ Cada producto puede recomendar hasta tres acompañamientos, bebidas o postres de
 
 El inicio del panel incluye una guía persistente de cinco pasos: logo, datos del local, primer producto, contenido visual y publicación. El progreso se calcula desde datos reales y siempre enlaza a la siguiente tarea pendiente.
 
-Analíticas incluye además un resumen de los últimos siete días, recomendaciones accionables y un enlace para compartirlo por WhatsApp. Suscripción incorpora un buzón privado de sugerencias; el superadmin puede clasificarlas, anotar decisiones y marcar su estado desde `/superadmin/feedback`.
+Analíticas incluye además un embudo desde la visita hasta el carrito, un resumen de los últimos siete días, recomendaciones accionables, objetivos semanales editables y un enlace para compartirlo por WhatsApp. El inicio reúne alertas priorizadas sobre publicación, prueba, contenido incompleto, tráfico y conversión. Suscripción incorpora un buzón privado de sugerencias; el superadmin puede clasificarlas, anotar decisiones y marcar su estado desde `/superadmin/feedback`, cuyo contador indica las pendientes.
 
 ## Landing pública
 
