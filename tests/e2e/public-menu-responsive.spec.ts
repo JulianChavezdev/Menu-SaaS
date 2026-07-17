@@ -18,7 +18,7 @@ test.describe("public menu responsive contract",()=>{
     await expect(menu).toBeVisible();
     const menuBox=await menu.boundingBox();
     expect(menuBox).not.toBeNull();
-    expect(menuBox!.width).toBeLessThanOrEqual(431);
+    expect(menuBox!.width).toBeLessThanOrEqual(403);
     expect(Math.abs(menuBox!.x-(1440-menuBox!.width)/2)).toBeLessThan(2);
     await expect(menu.locator("section")).toHaveCount(15);
     await expect(page.getByText(/01\s*\/\s*03/)).toHaveCount(0);
@@ -33,6 +33,7 @@ test.describe("public menu responsive contract",()=>{
     await expect(page.getByRole("heading",{name:"Papas Voladoras"})).toBeVisible();
     await expect(page.getByRole("navigation",{name:"Controles de la carta"})).toBeVisible();
     await expect(page.getByRole("navigation",{name:"Categorías"})).toBeVisible();
+    expect((await page.getByRole("navigation",{name:"Controles de la carta"}).boundingBox())!.width).toBeCloseTo(370,0);
 
     await page.getByRole("button",{name:"Cambiar a inglés"}).click();
     await expect(page.locator("html")).toHaveAttribute("lang","en");

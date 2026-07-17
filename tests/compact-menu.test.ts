@@ -31,6 +31,9 @@ describe("ficha compacta de producto",()=>{
     expect(menu).toContain("Abrir carta");
     expect(menu).toContain("Abriendo la carta de");
     expect(menu).not.toContain("animate-pulse");
+    expect(menu).toContain("md:max-w-[402px]");
+    expect(menu).toContain("md:max-w-[370px]");
+    expect(menu).not.toContain("md:border-x");
   });
 
   it("mantiene compacta la vista previa de las plantillas",()=>{
