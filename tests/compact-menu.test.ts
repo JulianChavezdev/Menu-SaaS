@@ -35,6 +35,8 @@ describe("ficha compacta de producto",()=>{
     expect(menu).toContain("lg:left-[calc(50%-430px)]");
     expect(menu).toContain("lg:grid-cols-4");
     expect(menu).toContain("lg:grid-cols-1");
+    expect(menu).toContain("lg:text-4xl");
+    expect(menu).not.toContain("lg:backdrop-blur-xl");
   });
 
   it("mantiene compacta la vista previa de las plantillas",()=>{
