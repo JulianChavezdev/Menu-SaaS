@@ -22,8 +22,10 @@ describe("ficha compacta de producto",()=>{
     expect(menu).toContain('setPanel("cart")');
     expect(menu).not.toContain("card?");
     expect(menu).toContain("introVisible");
+    expect(menu).toContain("data-menu-intro");
     expect(menu).toContain("Abrir carta");
     expect(menu).toContain("Abriendo la carta de");
+    expect(menu).not.toContain("animate-pulse");
   });
 
   it("mantiene compacta la vista previa de las plantillas",()=>{
