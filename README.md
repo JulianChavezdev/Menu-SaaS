@@ -94,12 +94,13 @@ Si una clave secreta se comparte fuera de un almacén seguro, rótala antes de p
 
 Sin variables de Supabase, `/r/bistro-nube` utiliza una demo local con vídeos gastronómicos de Pexels y contenido español/inglés. Para datos persistentes, crea una cuenta y completa el onboarding.
 
-El escaparate persistente está consolidado en `Bistro Nube`: un único restaurante demo con siete categorías, quince productos, logos SVG y vídeos relacionados con la comida. Puede regenerarse y comprobarse de forma segura con:
+El escaparate persistente está consolidado en `Bistro Nube`: un único restaurante demo con siete categorías, quince productos, veintiuna recomendaciones comerciales, logo SVG y vídeos relacionados con la comida. Puede regenerarse y comprobarse de forma segura con:
 
 ```bash
 npm run seed:showcase
 npm run check:showcase
 npm run check:media
+npm run check:showcase-sales
 ```
 
 ## Analíticas privadas

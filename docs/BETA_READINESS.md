@@ -13,7 +13,7 @@ Actualizado: 17 de julio de 2026.
 - Panel de superadmin para métricas, capacidad, soporte, previsualización, suspensión, restauración y eliminación protegida.
 - Papelera con restauración temporal, purga diaria auditada y limpieza de archivos asociados.
 - Exportaciones, copias versionadas y copias automáticas diarias con retención.
-- Demo única `Bistro Nube` con 7 categorías y 15 productos; los fixtures de prueba se eliminan automáticamente.
+- Demo única `Bistro Nube` con 7 categorías, 15 productos y 21 recomendaciones comerciales; los fixtures de prueba se eliminan automáticamente.
 - Pagos manuales genéricos, vencimientos, cortesía, suspensión en dos pasos, libro financiero y cierres mensuales.
 - Central de cobros pendientes con mensajes para copiar, WhatsApp o correo y registro del último aviso preparado.
 - Centro de actividad y auditoría privada con filtros y CSV.
