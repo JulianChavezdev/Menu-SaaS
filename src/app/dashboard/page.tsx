@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { BackButton } from "@/components/ui/back-button";
 import { activeRestaurant } from "@/lib/permissions";
+import { OnboardingChecklist } from "@/components/dashboard/onboarding-checklist";
 
 export default async function Dashboard() {
   const { restaurant, supabase } = await activeRestaurant();
 
-  const [{ count: products }, { count: categories }, { count: videos }] = await Promise.all([
+  const [{ count: products }, { count: categories }, { count: videos }, { count: media }] = await Promise.all([
     supabase
       .from("products")
       .select("id", { count: "exact", head: true })
@@ -19,6 +20,11 @@ export default async function Dashboard() {
       .select("id", { count: "exact", head: true })
       .eq("restaurant_id", restaurant.id)
       .not("video_url", "is", null),
+    supabase
+      .from("products")
+      .select("id", { count: "exact", head: true })
+      .eq("restaurant_id", restaurant.id)
+      .or("video_url.not.is.null,image_url.not.is.null"),
   ]);
 
   return (
@@ -48,6 +54,8 @@ export default async function Dashboard() {
           </span>
         </div>
       </div>
+
+      <OnboardingChecklist input={{hasLogo:Boolean(restaurant.logo_url),hasContact:Boolean(restaurant.phone||restaurant.address),categories:categories??0,products:products??0,media:media??0,published:restaurant.is_published}} />
 
       {/* Módulo de Estadísticas Clave */}
       <section className="mt-8 grid gap-4 grid-cols-2 lg:grid-cols-3">

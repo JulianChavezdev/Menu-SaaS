@@ -44,7 +44,7 @@ export default function Onboarding() {
             Crea tu restaurante
           </h1>
           <p className="mt-2 text-sm text-slate-600">
-            Configura el espacio inicial para empezar a subir tus platos en vídeo.
+            Paso 1 de 5. Después te guiaremos para añadir logo, productos, contenido visual y publicar.
           </p>
         </div>
 
@@ -83,7 +83,7 @@ export default function Onboarding() {
 
         {/* Botón de Envío */}
         <button disabled={pending} className="mt-6 w-full rounded-xl bg-orange-600 py-3.5 font-semibold text-white shadow-lg  transition-all duration-200 hover:bg-orange-600  focus:outline-none focus:ring-2 focus:ring-orange-500/50 disabled:cursor-wait disabled:opacity-60">
-          {pending?"Creando restaurante…":"Crear restaurante"}
+          {pending?"Creando restaurante…":"Crear restaurante y continuar"}
         </button>
       </form>
     </main>

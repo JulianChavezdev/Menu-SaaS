@@ -104,9 +104,17 @@ npm run check:media
 
 ## Analíticas privadas
 
-La carta registra únicamente contadores diarios agregados: visitas, productos vistos, reproducciones de vídeo, añadidos al carrito, compartidos y clics de contacto. No existen eventos individuales ni se almacenan IP, cookies, agentes de usuario, dispositivos o identificadores de visitante. Cada restaurante solo puede leer sus propios agregados mediante RLS; la escritura pública pasa por una función limitada que valida que la carta y el producto estén publicados.
+La carta registra únicamente contadores diarios agregados: visitas, productos vistos, reproducciones de vídeo, detalles abiertos, añadidos al carrito, añadidos desde recomendaciones, compartidos y clics de contacto. No existen eventos individuales ni se almacenan IP, cookies, agentes de usuario, dispositivos o identificadores de visitante. Cada restaurante solo puede leer sus propios agregados mediante RLS; la escritura pública pasa por una función limitada que valida que la carta y el producto estén publicados.
+
+`/dashboard/analytics` presenta tasas de intención, embudo, categorías, rendimiento por producto y oportunidades de mejora. Los añadidos son señales de intención guardadas localmente, no ventas confirmadas.
 
 `/superadmin/analytics` reúne todas las cartas con filtros de periodo, actividad diaria, tasas del embudo, ranking de restaurantes y productos, idiomas y desglose de vídeo/carrito. Los eventos nuevos no reconstruyen actividad histórica anterior a su despliegue.
+
+## Venta adicional y onboarding
+
+Cada producto puede recomendar hasta tres acompañamientos, bebidas o postres del mismo restaurante. La carta los muestra dentro del detalle con precio y acceso directo al carrito. La relación está protegida por RLS y validación de pertenencia al restaurante.
+
+El inicio del panel incluye una guía persistente de cinco pasos: logo, datos del local, primer producto, contenido visual y publicación. El progreso se calcula desde datos reales y siempre enlaza a la siguiente tarea pendiente.
 
 ## Landing pública
 

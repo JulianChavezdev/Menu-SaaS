@@ -112,6 +112,17 @@ const checks=[
     migration:"202607170001_product_images.sql",
     run:()=>supabase.rpc("can_manage_restaurant_product_image",{object_name:"invalid"}),
   },
+  {
+    migration:"202607170002_sales_growth.sql",
+    run:async()=>{
+      const results=await Promise.all([
+        supabase.from("product_recommendations").select("id",{head:true}).limit(1),
+        supabase.rpc("record_menu_analytics_event",{target_restaurant:randomId,target_product:randomId,target_event:"detail_open",target_locale:"es"}),
+      ]);
+      const analyticsError=results[1].error;
+      return {error:results[0].error??(analyticsError?.code==="42501"?null:analyticsError)};
+    },
+  },
 ];
 
 const pending=[];

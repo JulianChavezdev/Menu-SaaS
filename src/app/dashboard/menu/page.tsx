@@ -6,11 +6,12 @@ import {BackButton} from "@/components/ui/back-button";
 
 export default async function Page(){
   const {supabase,restaurant}=await activeRestaurant();
-  const[{data:categories},{data:products}]=await Promise.all([
+  const[{data:categories},{data:products},{data:recommendations}]=await Promise.all([
     supabase.from("categories").select("*").eq("restaurant_id",restaurant.id).order("sort_order"),
     supabase.from("products").select("*,categories(*)").eq("restaurant_id",restaurant.id).order("sort_order"),
+    supabase.from("product_recommendations").select("source_product_id,recommended_product_id,sort_order").eq("restaurant_id",restaurant.id).order("sort_order"),
   ]);
-  const list=products??[];
+  const list=(products??[]).map(product=>({...product,recommended_product_ids:(recommendations??[]).filter(item=>item.source_product_id===product.id).map(item=>item.recommended_product_id)}));
   const options=list.map(product=>({id:product.id,name:product.name}));
   return <main className="mx-auto max-w-7xl p-4 md:p-6">
     <div className="flex flex-wrap items-end justify-between gap-3 border-b border-stone-200 pb-4">

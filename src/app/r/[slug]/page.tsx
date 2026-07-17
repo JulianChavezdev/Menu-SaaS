@@ -32,7 +32,10 @@ export default async function PublicMenu({params,searchParams}:{params:Promise<{
   if(!restaurant.is_published||paymentRequired)return <main className="grid min-h-screen place-items-center bg-slate-950 p-6 text-center"><div className="max-w-md"><h1 className="text-3xl font-bold">Carta no disponible</h1><p className="mt-2 text-slate-300">{paymentRequired?"El periodo de prueba ha terminado y el restaurante debe registrar un pago para volver a publicar la carta.":"Este restaurante todavía no ha publicado su carta."}</p></div></main>;
   const {data:products}=await supabase.from("products").select("*,categories!inner(*)").eq("restaurant_id",restaurant.id).eq("is_available",true).eq("categories.is_active",true).order("sort_order");
   if(!products?.length)return <main className="grid min-h-screen place-items-center bg-slate-950 p-6 text-center"><div className="glass max-w-md rounded-2xl p-6"><h1 className="text-3xl font-bold">{restaurant.name}</h1><p className="mt-3 text-slate-300">La carta todavía no tiene productos disponibles.</p></div></main>;
+  const {data:recommendations}=await supabase.from("product_recommendations").select("source_product_id,recommended_product_id,sort_order").eq("restaurant_id",restaurant.id).order("sort_order");
+  const productsById=new Map(products.map(product=>[product.id,product]));
+  const productsWithRecommendations=products.map(product=>({...product,recommended_products:(recommendations??[]).filter(item=>item.source_product_id===product.id).flatMap(item=>{const recommended=productsById.get(item.recommended_product_id);return recommended?[{id:recommended.id,name:recommended.name,price_cents:recommended.price_cents,image_url:recommended.image_url,is_available:recommended.is_available,translations:recommended.translations}]:[]})}));
   const {subscriptions:_,...publicRestaurant}=restaurant;
-  const publicProducts=preview?products.map((product,index)=>index===0?{...product,video_url:LANDING_PREVIEW_VIDEO}:product):products;
+  const publicProducts=preview?productsWithRecommendations.map((product,index)=>index===0?{...product,video_url:LANDING_PREVIEW_VIDEO}:product):productsWithRecommendations;
   return <VideoMenu restaurant={publicRestaurant} products={publicProducts as typeof demoProducts} analyticsEnabled={!preview} introEnabled={!preview}/>;
 }
