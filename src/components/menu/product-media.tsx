@@ -35,6 +35,11 @@ export function ProductMedia({index,name,src,poster,muted,preload,active,hydrate
     void video.play().then(()=>{setAutoBlocked(false);setBuffering(false);setSlow(false);onPlaybackStarted(index)}).catch(()=>setAutoBlocked(true));
   },[active,index,muted,onPlaybackStarted,reducedMotion]);
   useEffect(()=>{
+    const video=localRef.current;if(!video||!hydrated||!src)return;
+    const synchronize=()=>{if(video.error){setStatus("error");return}if(video.readyState>=HTMLMediaElement.HAVE_CURRENT_DATA){setStatus("ready");setBuffering(false)}if(active&&!reducedMotion)attemptPlayback()};
+    synchronize();const frame=requestAnimationFrame(synchronize);return()=>cancelAnimationFrame(frame);
+  },[active,attemptPlayback,hydrated,reducedMotion,src]);
+  useEffect(()=>{
     if(!active||!hydrated||!src||reducedMotion)return;
     attemptPlayback();
     const retryShort=setTimeout(attemptPlayback,700);
@@ -69,7 +74,7 @@ export function ProductMedia({index,name,src,poster,muted,preload,active,hydrate
       onWaiting={markBuffering}
       onStalled={markBuffering}
       onError={()=>setStatus("error")}
-      className={`relative h-full w-full object-cover transition-opacity duration-300 ${status==="ready"?"opacity-100":"opacity-0"}`}
+      className={`relative h-full w-full object-cover transition-opacity duration-300 ${status==="error"?"opacity-0":"opacity-100"}`}
     />}
     {src&&hydrated&&(status==="loading"||buffering)&&!slow&&<div role="status" aria-label={`Cargando vídeo de ${name}`} className="pointer-events-none absolute inset-0 grid place-items-center bg-black/15"><span className="grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-black/35 backdrop-blur-md"><LoaderCircle className="animate-spin" size={20}/></span></div>}
     {src&&hydrated&&slow&&status!=="error"&&<button type="button" onClick={retry} className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border border-white/20 bg-black/55 px-4 py-3 text-xs font-semibold shadow-xl backdrop-blur-md"><RefreshCcw size={15}/>Reanudar vídeo</button>}

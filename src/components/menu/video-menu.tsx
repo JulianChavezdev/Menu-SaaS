@@ -27,6 +27,8 @@ function revealExpandedDetails(details:HTMLDetailsElement){
   requestAnimationFrame(()=>{const container=details.closest<HTMLElement>("[data-product-details]");if(!container)return;const bottom=details.offsetTop+details.offsetHeight;const visibleBottom=container.scrollTop+container.clientHeight;if(bottom>visibleBottom)container.scrollTo({top:bottom-container.clientHeight+8,behavior:"smooth"})});
 }
 
+function safelyRewind(video:HTMLVideoElement){if(video.readyState<HTMLMediaElement.HAVE_METADATA)return;try{video.currentTime=0}catch{}}
+
 export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnabled=true}:{restaurant:Restaurant;products:Product[];analyticsEnabled?:boolean;introEnabled?:boolean}){
   const videoRefs=useRef<(HTMLVideoElement|null)[]>([]);
   const sectionRefs=useRef<(HTMLElement|null)[]>([]);
@@ -75,20 +77,19 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
     const motionPreference=matchMedia("(prefers-reduced-motion: reduce)");
     const videoObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{
       const video=entry.target as HTMLVideoElement;const index=Number(video.dataset.videoIndex);
-      if(introVisible){video.pause();video.currentTime=0;return}
       if(entry.isIntersecting&&entry.intersectionRatio>.45){
-        if(motionPreference.matches){video.pause();video.currentTime=0;return}
+        if(motionPreference.matches){video.pause();return}
         if(playingIndex.current===index&&!video.paused&&!video.ended)return;
-        videoRefs.current.forEach(other=>{if(other&&other!==video){other.pause();other.currentTime=0}});video.currentTime=0;playingIndex.current=index;
+        videoRefs.current.forEach(other=>{if(other&&other!==video){other.pause();safelyRewind(other)}});playingIndex.current=index;
         startVideo(video,index);
-      }else{video.pause();video.currentTime=0;if(playingIndex.current===index)playingIndex.current=null}
+      }else{video.pause();safelyRewind(video);if(playingIndex.current===index)playingIndex.current=null}
     }),{threshold:[.45]});
     const observedVideos=videoRefs.current.filter((video):video is HTMLVideoElement=>Boolean(video));
     observedVideos.forEach(video=>videoObserver.observe(video));
-    return()=>{sectionObserver.disconnect();videoObserver.disconnect();playingIndex.current=null;observedVideos.forEach(video=>{video.pause();video.currentTime=0})};
-  },[active,introVisible,products,startVideo]);
+    return()=>{sectionObserver.disconnect();videoObserver.disconnect();playingIndex.current=null;observedVideos.forEach(video=>video.pause())};
+  },[active,products,startVideo]);
 
-  useEffect(()=>{const query=matchMedia("(prefers-reduced-motion: reduce)");const update=()=>{setReducedMotion(query.matches);if(query.matches){playingIndex.current=null;videoRefs.current.forEach(video=>{if(video){video.pause();video.currentTime=0}})}};update();query.addEventListener("change",update);return()=>query.removeEventListener("change",update)},[]);
+  useEffect(()=>{const query=matchMedia("(prefers-reduced-motion: reduce)");const update=()=>{setReducedMotion(query.matches);if(query.matches){playingIndex.current=null;videoRefs.current.forEach(video=>{if(video){video.pause();safelyRewind(video)}})}};update();query.addEventListener("change",update);return()=>query.removeEventListener("change",update)},[]);
   useEffect(()=>{if(!panel)return;const closeOnEscape=(event:KeyboardEvent)=>{if(event.key==="Escape")setPanel(null)};addEventListener("keydown",closeOnEscape);return()=>removeEventListener("keydown",closeOnEscape)},[panel]);
   useEffect(()=>{if(!analyticsEnabled||trackedMenu.current)return;trackedMenu.current=true;sendAnalytics({restaurantId:restaurant.id,event:"menu_view",locale:language})},[analyticsEnabled,restaurant.id,language]);
   useEffect(()=>{if(!analyticsEnabled)return;const product=products[active];if(!product||seenProducts.current.has(product.id))return;seenProducts.current.add(product.id);sendAnalytics({restaurantId:restaurant.id,productId:product.id,event:"product_view",locale:language})},[active,analyticsEnabled,language,products,restaurant.id]);
@@ -110,7 +111,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
   const addRecommendation=(productId:string)=>{addFromCatalog(productId);if(analyticsEnabled)sendAnalytics({restaurantId:restaurant.id,productId,event:"recommendation_add",locale:language})};
   const toggleDetails=(productId:string,details:HTMLDetailsElement)=>{revealExpandedDetails(details);if(details.open&&analyticsEnabled&&!openedDetails.current.has(productId)){openedDetails.current.add(productId);sendAnalytics({restaurantId:restaurant.id,productId,event:"detail_open",locale:language})}};
 
-  return <main ref={feedRef} onTouchEnd={resumeActiveVideo} aria-label={`Carta de ${restaurant.name}`} data-template={template.key} data-hydrated={hydrated?"true":"false"} style={themeStyle} className="public-menu relative h-screen h-dvh snap-y snap-mandatory overflow-y-auto overscroll-y-contain scroll-smooth bg-[var(--theme-bg)] text-white [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-auto md:max-w-[402px]">
+  return <main ref={feedRef} onTouchEnd={resumeActiveVideo} onPointerUp={resumeActiveVideo} aria-label={`Carta de ${restaurant.name}`} data-template={template.key} data-hydrated={hydrated?"true":"false"} style={themeStyle} className="public-menu relative h-screen h-dvh snap-y snap-mandatory overflow-y-auto overscroll-y-contain scroll-smooth bg-[var(--theme-bg)] text-white [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-auto md:max-w-[402px]">
     <h1 className="sr-only">{restaurant.name}: carta en vídeo</h1>
     {introVisible&&restaurant.logo_url&&<div data-menu-intro role="status" aria-label={`Abriendo la carta de ${restaurant.name}`} style={{background:colors.background}} className="fixed inset-0 z-[70] grid place-items-center overflow-hidden p-8 text-center"><button type="button" aria-label="Abrir carta" onClick={()=>setIntroVisible(false)} className="grid h-44 w-full place-items-center"><span role="img" aria-label={`Logo de ${restaurant.name}`} style={{backgroundImage:`url(${restaurant.logo_url})`}} className="h-full w-full max-w-[280px] bg-contain bg-center bg-no-repeat"/></button></div>}
     <header style={{background:`linear-gradient(to bottom,${colors.background}f2,${colors.background}a8,transparent)`}} className="pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-center justify-between px-4 pb-10 pt-[max(1rem,env(safe-area-inset-top))] md:max-w-[402px]">
@@ -138,7 +139,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
     </div>}
 
     <div>{products.map((product,index)=>{const description=translatedField(product,"description",language,product.description);const allergens=(product.allergens??[]) as AllergenCode[];const recommendations=product.recommended_products?.filter(item=>item.is_available)??[];return <section ref={element=>{sectionRefs.current[index]=element}} data-index={index} id={`product-${product.id}`} key={product.id} className="relative isolate flex h-screen h-dvh snap-start snap-always items-end overflow-hidden bg-[var(--theme-bg)] px-4 pb-[var(--controls-clearance)] pt-24">
-      <div style={{borderColor:colors.frame}} className={`absolute z-0 overflow-hidden bg-[#22221f] ${framed?"inset-3 bottom-16 rounded-xl border shadow-2xl":"inset-0"}`}><ProductMedia index={index} name={product.name} src={product.video_url} poster={product.image_url} muted={muted} preload={Math.abs(index-active)<=1?"auto":"metadata"} active={index===active&&!introVisible} hydrated={Math.abs(index-active)<=1} reducedMotion={reducedMotion} playbackBlocked={playbackBlocked.has(index)} setVideoRef={element=>{videoRefs.current[index]=element}} onPlaybackStarted={playbackStarted}/></div>
+      <div style={{borderColor:colors.frame}} className={`absolute z-0 overflow-hidden bg-[#22221f] ${framed?"inset-3 bottom-16 rounded-xl border shadow-2xl":"inset-0"}`}><ProductMedia index={index} name={product.name} src={product.video_url} poster={product.image_url} muted={muted} preload={Math.abs(index-active)<=1?"auto":"metadata"} active={index===active} hydrated={Math.abs(index-active)<=1} reducedMotion={reducedMotion} playbackBlocked={playbackBlocked.has(index)} setVideoRef={element=>{videoRefs.current[index]=element}} onPlaybackStarted={playbackStarted}/></div>
       <div className={`absolute z-[1] ${framed?"inset-3 bottom-16 rounded-xl":"inset-0"}`} style={{background:`linear-gradient(180deg,${colors.background}66 0%,transparent 32%,transparent 45%,${colors.background}f2 100%)`}}/>
       <ThemeVectors motif={template.motif} accent={colors.accent} accent2={colors.accent2} className="absolute inset-0 z-[2] h-full w-full"/>
       <div data-product-details className="relative z-10 w-full max-h-[calc(100dvh-11rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] overflow-y-auto overscroll-contain pb-0.5 text-shadow-lg [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
