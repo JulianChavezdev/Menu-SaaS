@@ -19,7 +19,7 @@ export async function generateMetadata({params}:{params:Promise<{slug:string}>})
 export default async function PublicMenu({params,searchParams}:{params:Promise<{slug:string}>;searchParams:Promise<{preview?:string}>}){
   const {slug}=await params;
   const preview=(await searchParams).preview==="landing";
-  if(slug==="bistro-nube"&&!process.env.NEXT_PUBLIC_SUPABASE_URL)return <VideoMenu restaurant={demoRestaurant} products={demoProducts} analyticsEnabled={!preview}/>;
+  if(slug==="bistro-nube"&&!process.env.NEXT_PUBLIC_SUPABASE_URL)return <VideoMenu restaurant={demoRestaurant} products={demoProducts} analyticsEnabled={!preview} introEnabled={!preview}/>;
   const url=process.env.NEXT_PUBLIC_SUPABASE_URL;const key=getSupabaseSecretKey();
   const supabase=url&&key?createSupabaseClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}}):await createServerClient();
   const {data:restaurant}=await supabase.from("restaurants").select("*,subscriptions(status,current_period_end)").eq("slug",slug).maybeSingle();
@@ -31,5 +31,5 @@ export default async function PublicMenu({params,searchParams}:{params:Promise<{
   const {data:products}=await supabase.from("products").select("*,categories!inner(*)").eq("restaurant_id",restaurant.id).eq("is_available",true).eq("categories.is_active",true).order("sort_order");
   if(!products?.length)return <main className="grid min-h-screen place-items-center bg-slate-950 p-6 text-center"><div className="glass max-w-md rounded-2xl p-6"><h1 className="text-3xl font-bold">{restaurant.name}</h1><p className="mt-3 text-slate-300">La carta todavía no tiene productos disponibles.</p></div></main>;
   const {subscriptions:_,...publicRestaurant}=restaurant;
-  return <VideoMenu restaurant={publicRestaurant} products={products as typeof demoProducts} analyticsEnabled={!preview}/>;
+  return <VideoMenu restaurant={publicRestaurant} products={products as typeof demoProducts} analyticsEnabled={!preview} introEnabled={!preview}/>;
 }

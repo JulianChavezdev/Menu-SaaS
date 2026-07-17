@@ -14,5 +14,5 @@ describe("landing pública",()=>{
   it("ofrece soporte continuo y contacto por WhatsApp",()=>{expect(page).toContain("soporte 24/7");expect(page).toContain("todos los días de la semana");expect(page).toContain("https://wa.me/34643663194");expect(page).toContain("+34 643 663 194")});
   it("enlaza el manual para restaurantes",()=>{expect(page).toContain('/manual-carta-video-restaurantes.pdf');expect(page).toContain('>Manual</a>')});
   it("muestra la carta móvil real dentro del mockup sin contaminar analíticas",()=>{expect(page).toContain("aspect-[9/18.7]");expect(page).toContain('title="Vista móvil real de Carta Video"');expect(page).toContain('src="/r/bistro-nube?preview=landing"');expect(page).toContain('allow="autoplay"');expect(page).toContain("Así verán tus clientes cada plato");expect(page).not.toContain("MockControl")});
-  it("desactiva las analíticas dentro de la vista previa",()=>{expect(publicMenu).toContain('preview==="landing"');expect(publicMenu).toContain("analyticsEnabled={!preview}")});
+  it("desactiva las analíticas y la apertura de marca dentro de la vista previa",()=>{expect(publicMenu).toContain('preview==="landing"');expect(publicMenu).toContain("analyticsEnabled={!preview}");expect(publicMenu).toContain("introEnabled={!preview}")});
 });

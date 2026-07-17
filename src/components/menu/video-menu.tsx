@@ -27,7 +27,7 @@ function revealExpandedDetails(details:HTMLDetailsElement){
   requestAnimationFrame(()=>{const container=details.closest<HTMLElement>("[data-product-details]");if(!container)return;const bottom=details.offsetTop+details.offsetHeight;const visibleBottom=container.scrollTop+container.clientHeight;if(bottom>visibleBottom)container.scrollTo({top:bottom-container.clientHeight+8,behavior:"smooth"})});
 }
 
-export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restaurant:Restaurant;products:Product[];analyticsEnabled?:boolean}){
+export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnabled=true}:{restaurant:Restaurant;products:Product[];analyticsEnabled?:boolean;introEnabled?:boolean}){
   const videoRefs=useRef<(HTMLVideoElement|null)[]>([]);
   const sectionRefs=useRef<(HTMLElement|null)[]>([]);
   const feedRef=useRef<HTMLElement|null>(null);
@@ -42,7 +42,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true}:{restauran
   const[cart,setCart]=useState<CartLine[]>([]);
   const[cartReady,setCartReady]=useState(false);
   const[hydrated,setHydrated]=useState(false);
-  const[introVisible,setIntroVisible]=useState(Boolean(restaurant.logo_url));
+  const[introVisible,setIntroVisible]=useState(Boolean(restaurant.logo_url)&&introEnabled);
   const[active,setActive]=useState(0);
   const[reducedMotion,setReducedMotion]=useState(false);
   const[playbackBlocked,setPlaybackBlocked]=useState<Set<number>>(()=>new Set());
