@@ -43,7 +43,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
   const[cart,setCart]=useState<CartLine[]>([]);
   const[cartReady,setCartReady]=useState(false);
   const[catalogAdded,setCatalogAdded]=useState<string|null>(null);
-  const[hydrated,setHydrated]=useState(false);
+  const hydrated=true;
   const[introVisible,setIntroVisible]=useState(Boolean(restaurant.logo_url)&&introEnabled);
   const[active,setActive]=useState(0);
   const[reducedMotion,setReducedMotion]=useState(false);
@@ -92,7 +92,6 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
   useEffect(()=>{document.documentElement.lang=language;return()=>{document.documentElement.lang="es"}},[language]);
   useEffect(()=>{setCart(parseCart(localStorage.getItem(cartKey)));setCartReady(true)},[cartKey]);
   useEffect(()=>{if(cartReady)localStorage.setItem(cartKey,JSON.stringify(cart))},[cart,cartKey,cartReady]);
-  useEffect(()=>setHydrated(true),[]);
   useEffect(()=>()=>{if(catalogFeedbackTimer.current)clearTimeout(catalogFeedbackTimer.current)},[]);
   useEffect(()=>{const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;const timer=setTimeout(()=>setIntroVisible(false),reduced?450:1800);return()=>clearTimeout(timer)},[]);
   useEffect(()=>{const nav=categoryNavRef.current;const button=activeCategory?categoryButtonRefs.current.get(activeCategory):null;if(!nav||!button)return;nav.scrollTo({left:button.offsetLeft-(nav.clientWidth-button.offsetWidth)/2,behavior:"smooth"})},[activeCategory]);
@@ -105,7 +104,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
   const addProduct=(productId:string)=>{setCart(current=>addCartItem(current,productId));if(analyticsEnabled)sendAnalytics({restaurantId:restaurant.id,productId,event:"cart_add",locale:language})};
   const addFromCatalog=(productId:string)=>{addProduct(productId);setCatalogAdded(productId);if(catalogFeedbackTimer.current)clearTimeout(catalogFeedbackTimer.current);catalogFeedbackTimer.current=setTimeout(()=>setCatalogAdded(null),900)};
 
-  return <main ref={feedRef} onTouchEnd={resumeActiveVideo} aria-label={`Carta de ${restaurant.name}`} data-template={template.key} data-hydrated={hydrated?"true":"false"} style={themeStyle} className="public-menu relative h-screen h-dvh snap-y snap-mandatory overflow-y-auto overscroll-y-contain scroll-smooth bg-[var(--theme-bg)] text-white md:mx-auto md:max-w-[402px]">
+  return <main ref={feedRef} onTouchEnd={resumeActiveVideo} aria-label={`Carta de ${restaurant.name}`} data-template={template.key} data-hydrated={hydrated?"true":"false"} style={themeStyle} className="public-menu relative h-screen h-dvh snap-y snap-mandatory overflow-y-auto overscroll-y-contain scroll-smooth bg-[var(--theme-bg)] text-white [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-auto md:max-w-[402px]">
     <h1 className="sr-only">{restaurant.name}: carta en vídeo</h1>
     {introVisible&&restaurant.logo_url&&<div data-menu-intro role="status" aria-label={`Abriendo la carta de ${restaurant.name}`} style={{background:colors.background}} className="fixed inset-0 z-[70] grid place-items-center overflow-hidden p-8 text-center"><button type="button" aria-label="Abrir carta" onClick={()=>setIntroVisible(false)} className="grid h-44 w-full place-items-center"><span role="img" aria-label={`Logo de ${restaurant.name}`} style={{backgroundImage:`url(${restaurant.logo_url})`}} className="h-full w-full max-w-[280px] bg-contain bg-center bg-no-repeat"/></button></div>}
     <header style={{background:`linear-gradient(to bottom,${colors.background}f2,${colors.background}a8,transparent)`}} className="pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-center justify-between px-4 pb-10 pt-[max(1rem,env(safe-area-inset-top))] md:max-w-[402px]">

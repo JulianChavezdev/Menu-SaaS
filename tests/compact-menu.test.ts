@@ -38,6 +38,7 @@ describe("ficha compacta de producto",()=>{
     expect(menu).toContain("md:max-w-[402px]");
     expect(menu).toContain("md:max-w-[370px]");
     expect(menu).not.toContain("md:border-x");
+    expect(menu).toContain("[scrollbar-width:none]");
   });
 
   it("mantiene compacta la vista previa de las plantillas",()=>{
