@@ -107,7 +107,7 @@ npm run check:showcase-sales
 
 La carta registra únicamente contadores diarios agregados: visitas, productos vistos, reproducciones de vídeo, detalles abiertos, añadidos al carrito, añadidos desde recomendaciones, compartidos y clics de contacto. No existen eventos individuales ni se almacenan IP, cookies, agentes de usuario, dispositivos o identificadores de visitante. Cada restaurante solo puede leer sus propios agregados mediante RLS; la escritura pública pasa por una función limitada que valida que la carta y el producto estén publicados.
 
-`/dashboard/analytics` presenta tasas de intención, embudo, categorías, rendimiento por producto y oportunidades de mejora. Los añadidos son señales de intención guardadas localmente, no ventas confirmadas.
+`/dashboard/analytics` presenta tasas de intención, embudo, categorías, rendimiento por producto y oportunidades de mejora. Permite comparar 7, 30 o 90 días con el periodo anterior y descargar un CSV privado. Los añadidos son señales de intención guardadas localmente, no ventas confirmadas.
 
 `/superadmin/analytics` reúne todas las cartas con filtros de periodo, actividad diaria, tasas del embudo, ranking de restaurantes y productos, idiomas y desglose de vídeo/carrito. Los eventos nuevos no reconstruyen actividad histórica anterior a su despliegue.
 

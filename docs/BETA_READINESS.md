@@ -18,7 +18,7 @@ Actualizado: 17 de julio de 2026.
 - Central de cobros pendientes con mensajes para copiar, WhatsApp o correo y registro del último aviso preparado.
 - Centro de actividad y auditoría privada con filtros y CSV.
 - Analíticas globales de superadmin con visitas, vídeos, carrito, contactos, rankings y filtros de periodo.
-- Analíticas del restaurante orientadas a intención: detalles abiertos, tasa de añadido, rendimiento por producto, categorías y oportunidades de mejora.
+- Analíticas del restaurante orientadas a intención: detalles abiertos, tasa de añadido, rendimiento por producto, categorías, oportunidades, comparación 7/30/90 días y exportación CSV privada.
 - Venta adicional contextual con hasta tres recomendaciones por producto y atribución agregada de añadidos.
 - Onboarding guiado de cinco pasos con progreso real y siguiente acción directa.
 - Landing pública completa con navegación, producto, precios, equipo, FAQ y contacto configurable.
