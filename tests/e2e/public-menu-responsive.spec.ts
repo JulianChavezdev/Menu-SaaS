@@ -101,6 +101,8 @@ test.describe("public menu responsive contract",()=>{
     await expect(productGrid.locator("article")).not.toHaveCount(0);
     await expect.poll(()=>productGrid.evaluate(element=>getComputedStyle(element).gridTemplateColumns.split(" ").length)).toBe(2);
     await expect(catalog.locator("video")).toHaveCount(0);
+    await catalog.getByRole("button",{name:"Añadir Hamburguesa Nebulosa"}).click();
+    await expect(catalog.getByRole("button",{name:"Hamburguesa Nebulosa añadido al carrito"})).toBeVisible();
     await catalog.getByRole("button",{name:"Cerrar"}).click();
 
     const burger=page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Hamburguesa Nebulosa",exact:true})});
