@@ -26,6 +26,8 @@ describe("product allergens",()=>{
     expect(manager).toContain("Marca todos los que contiene el plato");
     expect(menu).toContain("allergenNotice");
     expect(menu).toContain("allergenLabel(code,language)");
+    expect(menu).toContain("{(description||allergens.length>0)");
+    expect(menu).toContain("border-t border-white/10");
   });
 
   it("offers a categorized two-column menu with static media thumbnails",()=>{

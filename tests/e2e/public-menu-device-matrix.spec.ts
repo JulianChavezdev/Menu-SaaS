@@ -26,15 +26,13 @@ test("description and allergens never overlap navigation across devices",async({
       await expect(menu).toHaveAttribute("data-hydrated","true");
       const product=page.locator('section[id^="product-"]').first();
       const detailsPanel=product.locator("[data-product-details]");
-      const description=product.locator("details").nth(0);
-      const allergens=product.locator("details").nth(1);
+      const description=product.locator("details").first();
       await description.locator("summary").dispatchEvent("click");
       await expect(description).toHaveAttribute("open","");
+      await expect(description.getByText(/Alérgenos ·/)).toBeVisible();
       const controlsBox=await page.getByRole("navigation",{name:"Controles de la carta"}).boundingBox();
       const descriptionBox=await description.boundingBox();
       expect(descriptionBox!.y+descriptionBox!.height).toBeLessThanOrEqual(controlsBox!.y-4);
-      await allergens.locator("summary").dispatchEvent("click");
-      await expect(allergens).toHaveAttribute("open","");
       await expect.poll(()=>detailsPanel.evaluate(element=>element.scrollTop)).toBeGreaterThanOrEqual(0);
       const panelBox=await detailsPanel.boundingBox();
       const categoryBox=await page.getByRole("navigation",{name:"Categorías"}).boundingBox();

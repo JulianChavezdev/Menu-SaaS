@@ -104,8 +104,8 @@ test.describe("public menu responsive contract",()=>{
     await catalog.getByRole("button",{name:"Cerrar"}).click();
 
     const burger=page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Hamburguesa Nebulosa",exact:true})});
-    const allergens=burger.getByText(/Alérgenos · 3/);
-    await allergens.click();
+    await burger.getByText("Descripción",{exact:true}).click();
+    await expect(burger.getByText(/Alérgenos · 3/)).toBeVisible();
     await expect(burger.getByText("Gluten",{exact:true})).toBeVisible();
     await expect(burger.getByText("Huevos",{exact:true})).toBeVisible();
     await expect(burger.getByText("Leche",{exact:true})).toBeVisible();

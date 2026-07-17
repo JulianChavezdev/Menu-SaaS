@@ -20,6 +20,8 @@ describe("ficha compacta de producto",()=>{
     expect(menu).not.toContain("text-[clamp(2rem,9vw,3rem)]");
     expect(menu).toContain("<details");
     expect(menu).toContain('setPanel("cart")');
+    expect(menu).toContain('title={text.menu}');
+    expect(menu).not.toContain('<List size={18}/>{text.menu}');
     expect(menu).not.toContain("card?");
     expect(menu).toContain("introVisible");
     expect(menu).toContain("data-menu-intro");
