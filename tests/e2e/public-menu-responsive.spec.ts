@@ -75,7 +75,7 @@ test.describe("public menu responsive contract",()=>{
     await page.goto("/r/bistro-nube",{waitUntil:"domcontentloaded"});
 
     const burger=page.locator("section").filter({has:page.getByRole("heading",{name:"Hamburguesa Nebulosa",exact:true})});
-    await burger.getByRole("button",{name:"Añadir",exact:true}).click();
+    await burger.getByRole("button",{name:/^Añadir /}).click();
     await expect(page.getByRole("button",{name:"Carrito: 1"})).toBeVisible();
     await page.getByRole("button",{name:"Carrito: 1"}).click();
     await expect(page.getByRole("heading",{name:"Carrito · 1"})).toBeVisible();
@@ -129,7 +129,7 @@ test.describe("public menu responsive contract",()=>{
     await expect.poll(async()=>{const activeBox=await categories.getByRole("button",{name:"Brasas",exact:true}).boundingBox();return Math.abs((activeBox!.x+activeBox!.width/2)-(navBox!.x+navBox!.width/2))}).toBeLessThan(3);
     const visibleCategories=await categories.locator("button").evaluateAll((buttons,box)=>buttons.filter(button=>{const rect=button.getBoundingClientRect();return rect.right>(box as {x:number}).x&&rect.left<(box as {x:number;width:number}).x+(box as {width:number}).width}).length,navBox!);
     expect(visibleCategories).toBeLessThanOrEqual(3);
-    const addBox=await page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Entrecot de Encina",exact:true})}).getByRole("button",{name:"Añadir",exact:true}).boundingBox();
+    const addBox=await page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Entrecot de Encina",exact:true})}).getByRole("button",{name:/^Añadir /}).boundingBox();
     expect(navBox!.y+navBox!.height).toBeLessThan(addBox!.y);
     const controlsBox=await page.getByRole("navigation",{name:"Controles de la carta"}).boundingBox();
     expect(addBox!.y+addBox!.height).toBeLessThan(controlsBox!.y);

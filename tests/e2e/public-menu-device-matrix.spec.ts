@@ -36,7 +36,7 @@ test("description and allergens never overlap navigation across devices",async({
       await expect.poll(()=>detailsPanel.evaluate(element=>element.scrollTop)).toBeGreaterThanOrEqual(0);
       const panelBox=await detailsPanel.boundingBox();
       const categoryBox=await page.getByRole("navigation",{name:"Categorías"}).boundingBox();
-      const addBox=await product.getByRole("button",{name:"Añadir",exact:true}).boundingBox();
+      const addBox=await product.getByRole("button",{name:/^Añadir /}).boundingBox();
       expect(panelBox!.y).toBeGreaterThanOrEqual(categoryBox!.y+categoryBox!.height+4);
       expect(panelBox!.y+panelBox!.height).toBeLessThanOrEqual(controlsBox!.y-4);
       expect(addBox!.y+addBox!.height).toBeLessThan(controlsBox!.y);
