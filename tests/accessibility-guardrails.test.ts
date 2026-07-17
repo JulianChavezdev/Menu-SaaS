@@ -21,7 +21,7 @@ describe("accessibility guardrails",()=>{
   });
 
   it("keeps mobile autoplay muted and offers a manual fallback",()=>{
-    expect(productMedia).toContain("autoPlay={active&&!reducedMotion}");
+    expect(productMedia).toContain("autoPlay={active}");
     expect(productMedia).toContain("muted={muted}");
     expect(productMedia).toContain("playsInline");
     expect(productMedia).toContain("autoBlocked");

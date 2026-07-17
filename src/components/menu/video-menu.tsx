@@ -51,7 +51,6 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
   const hydrated=true;
   const[introVisible,setIntroVisible]=useState(Boolean(restaurant.logo_url)&&introEnabled);
   const[active,setActive]=useState(0);
-  const[reducedMotion,setReducedMotion]=useState(false);
   const[playbackBlocked,setPlaybackBlocked]=useState<Set<number>>(()=>new Set());
   const[language,setLanguage]=useState<"es"|"en">(restaurant.locale.startsWith("en")?"en":"es");
   const text=copy[language];
@@ -74,11 +73,9 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
   useEffect(()=>{
     const sectionObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting&&entry.intersectionRatio>.35)setActive(Number((entry.target as HTMLElement).dataset.index??0))}),{root:feedRef.current,threshold:[.35]});
     sectionRefs.current.forEach(section=>section&&sectionObserver.observe(section));
-    const motionPreference=matchMedia("(prefers-reduced-motion: reduce)");
     const videoObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{
       const video=entry.target as HTMLVideoElement;const index=Number(video.dataset.videoIndex);
       if(entry.isIntersecting&&entry.intersectionRatio>.45){
-        if(motionPreference.matches){video.pause();return}
         if(playingIndex.current===index&&!video.paused&&!video.ended)return;
         videoRefs.current.forEach(other=>{if(other&&other!==video){other.pause();safelyRewind(other)}});playingIndex.current=index;
         startVideo(video,index);
@@ -89,7 +86,6 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
     return()=>{sectionObserver.disconnect();videoObserver.disconnect();playingIndex.current=null;observedVideos.forEach(video=>video.pause())};
   },[active,products,startVideo]);
 
-  useEffect(()=>{const query=matchMedia("(prefers-reduced-motion: reduce)");const update=()=>{setReducedMotion(query.matches);if(query.matches){playingIndex.current=null;videoRefs.current.forEach(video=>{if(video){video.pause();safelyRewind(video)}})}};update();query.addEventListener("change",update);return()=>query.removeEventListener("change",update)},[]);
   useEffect(()=>{if(!panel)return;const closeOnEscape=(event:KeyboardEvent)=>{if(event.key==="Escape")setPanel(null)};addEventListener("keydown",closeOnEscape);return()=>removeEventListener("keydown",closeOnEscape)},[panel]);
   useEffect(()=>{if(!analyticsEnabled||trackedMenu.current)return;trackedMenu.current=true;sendAnalytics({restaurantId:restaurant.id,event:"menu_view",locale:language})},[analyticsEnabled,restaurant.id,language]);
   useEffect(()=>{if(!analyticsEnabled)return;const product=products[active];if(!product||seenProducts.current.has(product.id))return;seenProducts.current.add(product.id);sendAnalytics({restaurantId:restaurant.id,productId:product.id,event:"product_view",locale:language})},[active,analyticsEnabled,language,products,restaurant.id]);
@@ -104,7 +100,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
   const share=async()=>{let completed=false;try{await navigator.share({title:restaurant.name,url:location.href});completed=true}catch{try{await navigator.clipboard.writeText(location.href);completed=true}catch{completed=false}}if(completed&&analyticsEnabled)sendAnalytics({restaurantId:restaurant.id,event:"share",locale:language})};
   const go=(id:string,direct=false)=>{const target=document.getElementById(id);if(direct&&target&&feedRef.current)feedRef.current.scrollTo({top:target.offsetTop,behavior:"instant"});else target?.scrollIntoView({behavior:"smooth",block:"start"});setPanel(null)};
   const back=()=>history.length>1?history.back():location.assign("/");
-  const resumeActiveVideo=useCallback(()=>{if(introVisible)return;const feed=feedRef.current;const visibleIndex=feed?Math.max(0,Math.min(products.length-1,Math.round(feed.scrollTop/feed.clientHeight))):active;const video=videoRefs.current[visibleIndex];if(!video||reducedMotion||!products[visibleIndex]?.video_url)return;if(video.error||video.networkState===HTMLMediaElement.NETWORK_NO_SOURCE)video.load();startVideo(video,visibleIndex)},[active,introVisible,products,reducedMotion,startVideo]);
+  const resumeActiveVideo=useCallback(()=>{if(introVisible)return;const feed=feedRef.current;const visibleIndex=feed?Math.max(0,Math.min(products.length-1,Math.round(feed.scrollTop/feed.clientHeight))):active;const video=videoRefs.current[visibleIndex];if(!video||!products[visibleIndex]?.video_url)return;if(video.error||video.networkState===HTMLMediaElement.NETWORK_NO_SOURCE)video.load();startVideo(video,visibleIndex)},[active,introVisible,products,startVideo]);
   useEffect(()=>{const resume=()=>{if(document.visibilityState==="visible")resumeActiveVideo()};document.addEventListener("visibilitychange",resume);addEventListener("pageshow",resume);addEventListener("online",resume);return()=>{document.removeEventListener("visibilitychange",resume);removeEventListener("pageshow",resume);removeEventListener("online",resume)}},[resumeActiveVideo]);
   const addProduct=(productId:string)=>{setCart(current=>addCartItem(current,productId));if(analyticsEnabled)sendAnalytics({restaurantId:restaurant.id,productId,event:"cart_add",locale:language})};
   const addFromCatalog=(productId:string)=>{addProduct(productId);setCatalogAdded(productId);if(catalogFeedbackTimer.current)clearTimeout(catalogFeedbackTimer.current);catalogFeedbackTimer.current=setTimeout(()=>setCatalogAdded(null),900)};
@@ -139,7 +135,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
     </div>}
 
     <div>{products.map((product,index)=>{const description=translatedField(product,"description",language,product.description);const allergens=(product.allergens??[]) as AllergenCode[];const recommendations=product.recommended_products?.filter(item=>item.is_available)??[];return <section ref={element=>{sectionRefs.current[index]=element}} data-index={index} id={`product-${product.id}`} key={product.id} className="relative isolate flex h-screen h-dvh snap-start snap-always items-end overflow-hidden bg-[var(--theme-bg)] px-4 pb-[var(--controls-clearance)] pt-24">
-      <div style={{borderColor:colors.frame}} className={`absolute z-0 overflow-hidden bg-[#22221f] ${framed?"inset-3 bottom-16 rounded-xl border shadow-2xl":"inset-0"}`}><ProductMedia index={index} name={product.name} src={product.video_url} poster={product.image_url} muted={muted} preload={Math.abs(index-active)<=1?"auto":"metadata"} active={index===active} hydrated={Math.abs(index-active)<=1} reducedMotion={reducedMotion} playbackBlocked={playbackBlocked.has(index)} setVideoRef={element=>{videoRefs.current[index]=element}} onPlaybackStarted={playbackStarted}/></div>
+      <div style={{borderColor:colors.frame}} className={`absolute z-0 overflow-hidden bg-[#22221f] ${framed?"inset-3 bottom-16 rounded-xl border shadow-2xl":"inset-0"}`}><ProductMedia index={index} name={product.name} src={product.video_url} poster={product.image_url} muted={muted} preload={Math.abs(index-active)<=1?"auto":"metadata"} active={index===active} hydrated={Math.abs(index-active)<=1} playbackBlocked={playbackBlocked.has(index)} setVideoRef={element=>{videoRefs.current[index]=element}} onPlaybackStarted={playbackStarted}/></div>
       <div className={`absolute z-[1] ${framed?"inset-3 bottom-16 rounded-xl":"inset-0"}`} style={{background:`linear-gradient(180deg,${colors.background}66 0%,transparent 32%,transparent 45%,${colors.background}f2 100%)`}}/>
       <ThemeVectors motif={template.motif} accent={colors.accent} accent2={colors.accent2} className="absolute inset-0 z-[2] h-full w-full"/>
       <div data-product-details className="relative z-10 w-full max-h-[calc(100dvh-11rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] overflow-y-auto overscroll-contain pb-0.5 text-shadow-lg [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

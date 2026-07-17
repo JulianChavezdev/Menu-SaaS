@@ -70,6 +70,10 @@ test.describe("public menu responsive contract",()=>{
     }
   });
 
+  test("keeps essential dish video autoplay with iOS reduced motion",async({page})=>{
+    await page.emulateMedia({reducedMotion:"reduce"});await page.setViewportSize({width:393,height:852});await page.goto("/r/bistro-nube",{waitUntil:"domcontentloaded"});const video=page.locator("video").first();await expect(video).toHaveAttribute("autoplay","");await expect(video).toHaveAttribute("playsinline","");await expect.poll(()=>video.evaluate(element=>{const media=element as HTMLVideoElement;return{paused:media.paused,muted:media.muted}})).toEqual({paused:false,muted:true});
+  });
+
   test("keeps a local cart with quantities and product notes",async({page})=>{
     await page.setViewportSize({width:390,height:844});
     await page.goto("/r/bistro-nube",{waitUntil:"domcontentloaded"});
