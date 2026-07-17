@@ -31,6 +31,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
   const videoRefs=useRef<(HTMLVideoElement|null)[]>([]);
   const sectionRefs=useRef<(HTMLElement|null)[]>([]);
   const feedRef=useRef<HTMLElement|null>(null);
+  const controlsRef=useRef<HTMLElement|null>(null);
   const categoryNavRef=useRef<HTMLElement|null>(null);
   const categoryButtonRefs=useRef(new Map<string,HTMLButtonElement>());
   const trackedMenu=useRef(false);
@@ -42,6 +43,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
   const[panel,setPanel]=useState<"menu"|"info"|"cart"|null>(null);
   const[cart,setCart]=useState<CartLine[]>([]);
   const[cartReady,setCartReady]=useState(false);
+  const[controlsClearance,setControlsClearance]=useState(80);
   const[catalogAdded,setCatalogAdded]=useState<string|null>(null);
   const hydrated=true;
   const[introVisible,setIntroVisible]=useState(Boolean(restaurant.logo_url)&&introEnabled);
@@ -53,7 +55,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
   const template=resolveMenuTemplate(restaurant.menu_template,restaurant.subscription_status==="active");
   const framed=template.layout==="framed";
   const colors=template.colors;
-  const themeStyle={"--theme-bg":colors.background,"--theme-panel":colors.panel,"--theme-nav":colors.nav,"--theme-accent":colors.accent,"--theme-accent-2":colors.accent2,"--theme-frame":colors.frame} as CSSProperties;
+  const themeStyle={"--theme-bg":colors.background,"--theme-panel":colors.panel,"--theme-nav":colors.nav,"--theme-accent":colors.accent,"--theme-accent-2":colors.accent2,"--theme-frame":colors.frame,"--controls-clearance":`${controlsClearance}px`} as CSSProperties;
   const categoryGroups=[...products.reduce((groups,product)=>{const name=translatedField(product.categories??{},"name",language,product.categories?.name??text.menu);const current=groups.get(product.category_id);if(current)current.products.push(product);else groups.set(product.category_id,{id:product.category_id,name,products:[product]});return groups},new Map<string,{id:string;name:string;products:Product[]}>()).values()];
   const activeCategory=products[active]?.category_id;
   const restaurantDescription=translatedField(restaurant,"description",language,restaurant.description);
@@ -93,6 +95,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
   useEffect(()=>{setCart(parseCart(localStorage.getItem(cartKey)));setCartReady(true)},[cartKey]);
   useEffect(()=>{if(cartReady)localStorage.setItem(cartKey,JSON.stringify(cart))},[cart,cartKey,cartReady]);
   useEffect(()=>()=>{if(catalogFeedbackTimer.current)clearTimeout(catalogFeedbackTimer.current)},[]);
+  useEffect(()=>{const feed=feedRef.current;const controls=controlsRef.current;if(!feed||!controls)return;const update=()=>{const feedBox=feed.getBoundingClientRect();const controlsBox=controls.getBoundingClientRect();setControlsClearance(Math.ceil(feedBox.bottom-controlsBox.top+8))};update();const observer=new ResizeObserver(update);observer.observe(feed);observer.observe(controls);addEventListener("resize",update);visualViewport?.addEventListener("resize",update);return()=>{observer.disconnect();removeEventListener("resize",update);visualViewport?.removeEventListener("resize",update)}},[]);
   useEffect(()=>{const reduced=matchMedia("(prefers-reduced-motion: reduce)").matches;const timer=setTimeout(()=>setIntroVisible(false),reduced?450:1800);return()=>clearTimeout(timer)},[]);
   useEffect(()=>{const nav=categoryNavRef.current;const button=activeCategory?categoryButtonRefs.current.get(activeCategory):null;if(!nav||!button)return;nav.scrollTo({left:button.offsetLeft-(nav.clientWidth-button.offsetWidth)/2,behavior:"smooth"})},[activeCategory]);
 
@@ -131,7 +134,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
       </aside>
     </div>}
 
-    <div>{products.map((product,index)=>{const description=translatedField(product,"description",language,product.description);const allergens=(product.allergens??[]) as AllergenCode[];return <section ref={element=>{sectionRefs.current[index]=element}} data-index={index} id={`product-${product.id}`} key={product.id} className="relative isolate flex h-screen h-dvh snap-start snap-always items-end overflow-hidden bg-[var(--theme-bg)] px-4 pb-[calc(4.25rem+max(.75rem,env(safe-area-inset-bottom)))] pt-24">
+    <div>{products.map((product,index)=>{const description=translatedField(product,"description",language,product.description);const allergens=(product.allergens??[]) as AllergenCode[];return <section ref={element=>{sectionRefs.current[index]=element}} data-index={index} id={`product-${product.id}`} key={product.id} className="relative isolate flex h-screen h-dvh snap-start snap-always items-end overflow-hidden bg-[var(--theme-bg)] px-4 pb-[var(--controls-clearance)] pt-24">
       <div style={{borderColor:colors.frame}} className={`absolute z-0 overflow-hidden bg-[#22221f] ${framed?"inset-3 bottom-16 rounded-xl border shadow-2xl":"inset-0"}`}><ProductMedia index={index} name={product.name} src={product.video_url} poster={product.image_url} muted={muted} preload={Math.abs(index-active)<=1?"auto":"metadata"} active={index===active&&!introVisible} hydrated={Math.abs(index-active)<=1} reducedMotion={reducedMotion} playbackBlocked={playbackBlocked.has(index)} setVideoRef={element=>{videoRefs.current[index]=element}} onPlaybackStarted={playbackStarted}/></div>
       <div className={`absolute z-[1] ${framed?"inset-3 bottom-16 rounded-xl":"inset-0"}`} style={{background:`linear-gradient(180deg,${colors.background}66 0%,transparent 32%,transparent 45%,${colors.background}f2 100%)`}}/>
       <ThemeVectors motif={template.motif} accent={colors.accent} accent2={colors.accent2} className="absolute inset-0 z-[2] h-full w-full"/>
@@ -147,7 +150,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
       <span aria-hidden="true" className="w-[calc((100%-1rem)/3)] shrink-0"/>
     </nav>
 
-    <nav aria-label="Controles de la carta" style={{background:`${colors.nav}ed`,borderColor:colors.frame}} className="fixed bottom-[max(.75rem,env(safe-area-inset-bottom))] left-1/2 z-40 grid w-[calc(100%-2rem)] max-w-[390px] -translate-x-1/2 grid-cols-5 items-center rounded-xl border px-1 py-1 shadow-2xl backdrop-blur-xl md:max-w-[370px]">
+    <nav ref={controlsRef} aria-label="Controles de la carta" style={{background:`${colors.nav}ed`,borderColor:colors.frame}} className="fixed bottom-[max(.75rem,env(safe-area-inset-bottom))] left-1/2 z-40 grid w-[calc(100%-2rem)] max-w-[390px] -translate-x-1/2 grid-cols-5 items-center rounded-xl border px-1 py-1 shadow-2xl backdrop-blur-xl md:max-w-[370px]">
       <button aria-label={text.menu} title={text.menu} onClick={()=>setPanel("menu")} className="grid min-h-9 place-items-center rounded-lg text-white/80"><List size={19}/></button>
       <button aria-label={muted?text.soundOn:text.soundOff} title={muted?text.soundOn:text.soundOff} onClick={()=>setMuted(value=>!value)} className="grid min-h-9 place-items-center rounded-lg text-white/80">{muted?<VolumeX size={19}/>:<Volume2 size={19}/>}</button>
       <button aria-label={`${text.cart}: ${cartQuantity}`} title={text.cart} onClick={()=>setPanel("cart")} className="relative grid min-h-9 place-items-center rounded-lg text-white"><ShoppingBag size={20}/>{cartQuantity>0&&<span style={{background:colors.accent,color:colors.background}} className="absolute right-[24%] top-0 grid h-4 min-w-4 place-items-center rounded-full px-1 text-[9px] font-black">{cartQuantity}</span>}</button>

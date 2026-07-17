@@ -14,7 +14,9 @@ describe("ficha compacta de producto",()=>{
     expect(menu).toContain('preload={Math.abs(index-active)<=1?"auto":"metadata"}');
     expect(menu).toContain('aria-label={text.categories}');
     expect(menu).toContain("top-[calc(max(1rem,env(safe-area-inset-top))+3.25rem)]");
-    expect(menu).toContain("pb-[calc(4.25rem+max(.75rem,env(safe-area-inset-bottom)))]");
+    expect(menu).toContain("pb-[var(--controls-clearance)]");
+    expect(menu).toContain("controlsRef");
+    expect(menu).toContain("feedBox.bottom-controlsBox.top+8");
     expect(menu).not.toContain("bottom-[calc(max(.75rem,env(safe-area-inset-bottom))+4.75rem)]");
     expect(menu).toContain("line-clamp-1");
     expect(menu).toContain("text-[clamp(1.05rem,4.8vw,1.3rem)]");
