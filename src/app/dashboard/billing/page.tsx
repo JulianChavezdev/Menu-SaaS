@@ -5,6 +5,7 @@ import {PLAN_LIMITS,planForStatus} from "@/lib/plans";
 import {checkoutIsConfigured} from "@/lib/billing";
 import {startCheckout} from "@/app/dashboard/actions";
 import {trialDaysRemaining} from "@/lib/trial-expiration";
+import {FeedbackBox} from "@/components/dashboard/feedback-box";
 
 export default async function Page({searchParams}:{searchParams:Promise<{from?:string;checkout?:string}>}){
   const {from,checkout}=await searchParams;
@@ -41,6 +42,7 @@ export default async function Page({searchParams}:{searchParams:Promise<{from?:s
         </div>
       </section>
     </div>
+    <FeedbackBox/>
   </main>;
 }
 

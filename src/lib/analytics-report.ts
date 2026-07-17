@@ -32,3 +32,15 @@ export function analyticsReportCsv(summary:ReturnType<typeof summarizeAnalytics>
   ];
   return `\uFEFF${rows.map(row=>row.map(csvCell).join(",")).join("\r\n")}\r\n`;
 }
+
+export function weeklySalesSummary(summary:ReturnType<typeof summarizeAnalytics>,restaurantName:string){
+  const top=[...summary.products].sort((a,b)=>b.cartAdds-a.cartAdds||b.views-a.views)[0];
+  const opportunity=[...summary.products].filter(item=>item.views>=3).sort((a,b)=>(b.views-b.cartAdds)-(a.views-a.cartAdds))[0];
+  const actions:string[]=[];
+  if(!summary.totals.menuViews)actions.push("Comparte el QR de la carta para empezar a recoger actividad.");
+  else if(opportunity&&opportunity.addRate<30)actions.push(`Revisa la portada, descripción o precio de ${opportunity.name}.`);
+  if(summary.totals.recommendationAdds===0&&summary.totals.cartAdds>0)actions.push("Añade recomendaciones de bebidas, acompañamientos o postres.");
+  if(top)actions.push(`Mantén visible ${top.name}: es el producto con mayor intención esta semana.`);
+  const lines=[`Resumen semanal de ${restaurantName}`,`${summary.totals.menuViews} visitas a la carta`,`${summary.totals.productViews} productos vistos`,`${summary.totals.cartAdds} añadidos al carrito${summary.totals.recommendationAdds?` (${summary.totals.recommendationAdds} desde recomendaciones)`:""}`,top?`Producto destacado: ${top.name}`:"Aún no hay un producto destacado",`Siguiente acción: ${actions[0]??"Sigue compartiendo la carta y revisa la evolución semanal."}`];
+  return{text:lines.join("\n"),actions:actions.slice(0,3),topProduct:top??null};
+}

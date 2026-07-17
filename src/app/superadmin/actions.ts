@@ -189,3 +189,13 @@ export async function setManagedCategoryVisibility(form:FormData){
   await admin.from("categories").update({is_active:active}).eq("id",categoryId.data).eq("restaurant_id",restaurantId.data).throwOnError();
   await audit(admin,user.id,restaurantId.data,"category.visibility",{category_id:categoryId.data,is_active:active});refresh(restaurantId.data);
 }
+
+export async function updateRestaurantFeedback(form:FormData){
+  const parsed=z.object({feedback_id:uuid,restaurant_id:uuid,status:z.enum(["new","reviewed","planned","closed"]),admin_note:z.string().trim().max(2000)}).safeParse(Object.fromEntries(form));
+  if(!parsed.success)throw new Error("Revisa el estado de la sugerencia.");
+  const{admin,user}=await requireSuperadmin();
+  const{error}=await admin.from("restaurant_feedback").update({status:parsed.data.status,admin_note:parsed.data.admin_note||null}).eq("id",parsed.data.feedback_id).eq("restaurant_id",parsed.data.restaurant_id);
+  if(error)throw new Error(error.message);
+  await audit(admin,user.id,parsed.data.restaurant_id,"feedback.updated",{feedback_id:parsed.data.feedback_id,status:parsed.data.status});
+  revalidatePath("/superadmin/feedback");
+}

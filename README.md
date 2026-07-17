@@ -117,6 +117,8 @@ Cada producto puede recomendar hasta tres acompañamientos, bebidas o postres de
 
 El inicio del panel incluye una guía persistente de cinco pasos: logo, datos del local, primer producto, contenido visual y publicación. El progreso se calcula desde datos reales y siempre enlaza a la siguiente tarea pendiente.
 
+Analíticas incluye además un resumen de los últimos siete días, recomendaciones accionables y un enlace para compartirlo por WhatsApp. Suscripción incorpora un buzón privado de sugerencias; el superadmin puede clasificarlas, anotar decisiones y marcar su estado desde `/superadmin/feedback`.
+
 ## Landing pública
 
 La portada incluye navegación responsive, presentación del producto, funcionamiento, precios, quiénes somos, preguntas frecuentes y contacto. `NEXT_PUBLIC_CONTACT_EMAIL` es opcional: cuando existe muestra el enlace de correo; si está vacío, la llamada a contacto dirige al registro o acceso sin publicar una dirección personal.

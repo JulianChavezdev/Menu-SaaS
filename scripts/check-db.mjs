@@ -123,6 +123,10 @@ const checks=[
       return {error:results[0].error??(analyticsError?.code==="42501"?null:analyticsError)};
     },
   },
+  {
+    migration:"202607170003_restaurant_feedback.sql",
+    run:()=>supabase.from("restaurant_feedback").select("id",{head:true}).limit(1),
+  },
 ];
 
 const pending=[];
