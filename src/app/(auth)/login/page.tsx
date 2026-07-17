@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect,useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -9,9 +9,11 @@ import { PasswordInput } from "@/components/ui/password-input";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberEmail,setRememberEmail]=useState(true);
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const router = useRouter();
+  useEffect(()=>{const saved=localStorage.getItem("carta-video:login-email");if(saved)setEmail(saved);void createClient().auth.getUser().then(({data})=>{if(data.user)router.replace("/dashboard")})},[router]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -23,7 +25,7 @@ export default function Login() {
       password,
     });
     if (error){setError(error.message);setPending(false)}
-    else router.push("/dashboard");
+    else {if(rememberEmail)localStorage.setItem("carta-video:login-email",email.trim());else localStorage.removeItem("carta-video:login-email");router.replace("/dashboard");router.refresh()}
   }
 
   return (
@@ -34,6 +36,7 @@ export default function Login() {
 
       <form 
         onSubmit={submit}
+        autoComplete="on"
         aria-busy={pending}
         className="relative w-full max-w-md rounded-xl border border-stone-300 bg-white p-8 shadow-md   ring-1 ring-stone-200"
       >
@@ -56,8 +59,10 @@ export default function Login() {
             Correo electrónico
             <input 
               required 
+              id="login-email"
+              name="email"
               type="email" 
-              autoComplete="email"
+              autoComplete="username"
               value={email} 
               onChange={e => setEmail(e.target.value)} 
               placeholder="tu@restaurante.com"
@@ -69,6 +74,7 @@ export default function Login() {
             <label htmlFor="login-password" className="block text-sm font-medium text-slate-700">Contraseña</label>
             <PasswordInput 
               id="login-password"
+              name="password"
               required 
               autoComplete="current-password"
               value={password} 
@@ -77,6 +83,7 @@ export default function Login() {
               className="w-full rounded-xl border border-stone-300 bg-stone-100 px-4 py-3 text-slate-950 placeholder-slate-400 transition-all duration-200 hover:border-stone-400 focus:border-orange-500 focus:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
             />
           </div>
+          <label className="flex cursor-pointer items-center gap-2 text-sm text-slate-600"><input type="checkbox" checked={rememberEmail} onChange={event=>setRememberEmail(event.target.checked)} className="h-4 w-4 accent-orange-600"/><span>Recordar mi correo en este dispositivo</span></label>
         </div>
 
         {/* Mensaje de Error */}

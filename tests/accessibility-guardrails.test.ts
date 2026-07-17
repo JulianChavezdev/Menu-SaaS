@@ -28,7 +28,9 @@ describe("accessibility guardrails",()=>{
   });
 
   it("provides password autocomplete and submission state",()=>{
+    expect(login).toContain('autoComplete="username"');
     expect(login).toContain('autoComplete="current-password"');
+    expect(login).toContain('name="password"');
     expect(register).toContain('autoComplete="new-password"');
     expect(login).toContain("aria-busy={pending}");
     expect(register).toContain("aria-busy={pending}");
