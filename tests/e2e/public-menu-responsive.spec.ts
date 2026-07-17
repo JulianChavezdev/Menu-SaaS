@@ -10,7 +10,7 @@ let fixtureUserId="";let fixtureRestaurantId="";
 test.describe("public menu responsive contract",()=>{
   test.beforeAll(async()=>{if(!admin)return;const user=await admin.auth.admin.createUser({email:`${fixtureSlug}@carta-video.local`,password:`Test-${crypto.randomUUID()}!`,email_confirm:true});if(user.error)throw user.error;fixtureUserId=user.data.user.id;const restaurant=await admin.from("restaurants").insert({owner_id:fixtureUserId,name:"Mobile E2E",slug:fixtureSlug,is_published:true,language_switcher_enabled:false}).select("id").single();if(restaurant.error)throw restaurant.error;fixtureRestaurantId=restaurant.data.id;const category=await admin.from("categories").insert({restaurant_id:fixtureRestaurantId,name:"Carta",slug:"carta",is_active:true}).select("id").single();if(category.error)throw category.error;const product=await admin.from("products").insert({restaurant_id:fixtureRestaurantId,category_id:category.data.id,name:"Producto móvil",price_cents:500,is_available:true}).select("id").single();if(product.error)throw product.error});
   test.afterAll(async()=>{if(!admin)return;if(fixtureRestaurantId)await admin.from("restaurants").delete().eq("id",fixtureRestaurantId);if(fixtureUserId)await admin.auth.admin.deleteUser(fixtureUserId)});
-  test("keeps a centered phone canvas and vertical product snapping on desktop",async({page})=>{
+  test("uses a two-column video and product workspace on desktop",async({page})=>{
     await page.setViewportSize({width:1440,height:900});
     await page.goto("/r/bistro-nube",{waitUntil:"domcontentloaded"});
 
@@ -18,15 +18,17 @@ test.describe("public menu responsive contract",()=>{
     await expect(menu).toBeVisible();
     const menuBox=await menu.boundingBox();
     expect(menuBox).not.toBeNull();
-    expect(menuBox!.width).toBeLessThanOrEqual(431);
-    expect(Math.abs(menuBox!.x-(1440-menuBox!.width)/2)).toBeLessThan(2);
+    expect(menuBox!.width).toBeCloseTo(1440,0);
+    expect(menuBox!.x).toBeCloseTo(0,0);
     await expect(menu.locator("section")).toHaveCount(15);
     await expect(page.getByText(/01\s*\/\s*03/)).toHaveCount(0);
 
-    for(const details of await page.locator("[data-product-details]").all()){
-      const box=await details.boundingBox();
-      expect(box?.height??900).toBeLessThan(900*.35);
-    }
+    const firstProduct=page.locator('section[id^="product-"]').first();
+    const mediaBox=await firstProduct.locator(":scope > div").first().boundingBox();
+    const detailsBox=await firstProduct.locator("[data-product-details]").boundingBox();
+    expect(mediaBox!.width).toBeCloseTo(360,0);
+    expect(mediaBox!.x+mediaBox!.width).toBeLessThan(detailsBox!.x);
+    expect(detailsBox!.width).toBeLessThanOrEqual(431);
 
     await menu.evaluate(element=>element.scrollTo({top:element.clientHeight,behavior:"instant"}));
     await expect.poll(()=>menu.evaluate(element=>element.scrollTop)).toBeGreaterThan(700);
