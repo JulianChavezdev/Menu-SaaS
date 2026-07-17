@@ -16,6 +16,12 @@ export function ProductMedia({index,name,src,poster,muted,preload,active,hydrate
 
   useEffect(()=>{setStatus(src?"loading":"ready");setAutoBlocked(false);setBuffering(false);setSlow(false);return()=>{if(bufferingTimer.current)clearTimeout(bufferingTimer.current)}},[src]);
   useEffect(()=>{if(!active){setManuallyPlaying(false);setBuffering(false);setSlow(false)}},[active]);
+  useEffect(()=>{
+    const video=localRef.current;
+    if(!hydrated||!src||!video)return;
+    video.preload="auto";
+    if(video.networkState===HTMLMediaElement.NETWORK_EMPTY)video.load();
+  },[hydrated,src]);
 
   const assign=(element:HTMLVideoElement|null)=>{
     localRef.current=element;
