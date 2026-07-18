@@ -3,9 +3,6 @@ export default {
   content:["./src/**/*.{ts,tsx}"],
   theme:{
     extend:{
-      colors:{
-        orange:{50:"#fff7ed",100:"#FFD6A5",200:"#ffc98e",300:"#f3ad68",400:"#a366ff",500:"#812fff",600:"#6A00F4",700:"#5800cc",800:"#4600a3",900:"#35007a",950:"#240052"},
-      },
       borderRadius:{
         DEFAULT:"0.125rem",
         sm:"0.125rem",
