@@ -1,6 +1,7 @@
 import type {NextConfig} from "next";
 
 const development=process.env.NODE_ENV!=="production";
+const deploymentId=(process.env.VERCEL_GIT_COMMIT_SHA||process.env.VERCEL_DEPLOYMENT_ID||"").replace(/[^a-zA-Z0-9_-]/g,"");
 const contentSecurityPolicy=[
   "default-src 'self'",
   `script-src 'self' 'unsafe-inline'${development?" 'unsafe-eval'":""}`,
@@ -29,6 +30,7 @@ const securityHeaders=[
 ];
 
 const nextConfig:NextConfig={
+  ...(deploymentId?{deploymentId}:{}),
   images:{remotePatterns:[{protocol:"https",hostname:"images.unsplash.com"}]},
   async headers(){return[{source:"/:path*",headers:securityHeaders}]},
 };
