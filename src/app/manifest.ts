@@ -2,8 +2,8 @@ import type {MetadataRoute} from "next";
 
 export default function manifest():MetadataRoute.Manifest{
   return {
-    name:"Carta Video",
-    short_name:"Carta Video",
+    name:"Menuly",
+    short_name:"Menuly",
     description:"Cartas digitales en vídeo para hostelería",
     start_url:"/",
     display:"standalone",

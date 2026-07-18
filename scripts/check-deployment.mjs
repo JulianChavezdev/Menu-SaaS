@@ -28,7 +28,7 @@ const checks=[
 const failures=[];
 for(const check of checks){
   try{
-    const response=await fetch(`${origin}${check.path}`,{headers:{"User-Agent":"CartaVideo-Deployment-Check/1.0"},redirect:"follow",signal:AbortSignal.timeout(10_000)});
+    const response=await fetch(`${origin}${check.path}`,{headers:{"User-Agent":"Menuly-Deployment-Check/1.0"},redirect:"follow",signal:AbortSignal.timeout(10_000)});
     const contentType=response.headers.get("content-type")??"";
     if(!response.ok)failures.push(`${check.path}: HTTP ${response.status}`);
     if(!contentType.includes(check.type))failures.push(`${check.path}: Content-Type inesperado (${contentType||"vacío"})`);

@@ -3,10 +3,10 @@ import {notFound} from "next/navigation";
 import {LegalPage, LegalSection} from "@/components/legal/legal-page";
 import {getLegalIdentity} from "@/lib/legal";
 
-export const metadata:Metadata={title:"Encargo de tratamiento | Carta Video",robots:{index:false,follow:false}};
+export const metadata:Metadata={title:"Encargo de tratamiento | Menuly",robots:{index:false,follow:false}};
 
-export default function DpaPage(){const identity=getLegalIdentity();if(!identity.complete)notFound();return <LegalPage title="Acuerdo de encargo de tratamiento" summary="Anexo aplicable cuando Carta Video trata datos personales siguiendo instrucciones de un restaurante cliente." identity={identity}>
-  <LegalSection title="1. Partes y roles"><p>El restaurante cliente actúa como responsable del tratamiento y {identity.name}, proveedor de Carta Video, como encargado. Este acuerdo forma parte de las condiciones del servicio y se aplica durante la prestación.</p></LegalSection>
+export default function DpaPage(){const identity=getLegalIdentity();if(!identity.complete)notFound();return <LegalPage title="Acuerdo de encargo de tratamiento" summary="Anexo aplicable cuando Menuly trata datos personales siguiendo instrucciones de un restaurante cliente." identity={identity}>
+  <LegalSection title="1. Partes y roles"><p>El restaurante cliente actúa como responsable del tratamiento y {identity.name}, proveedor de Menuly, como encargado. Este acuerdo forma parte de las condiciones del servicio y se aplica durante la prestación.</p></LegalSection>
   <LegalSection title="2. Objeto y finalidad"><p>El encargo comprende el alojamiento, organización, soporte, seguridad, visualización y, cuando se active, traducción de los datos incorporados por el restaurante para operar su carta y panel. No se tratarán para finalidades propias incompatibles.</p></LegalSection>
   <LegalSection title="3. Personas y datos"><p>Puede afectar a personal y colaboradores del restaurante, contactos de soporte y otras personas cuyos datos incorpore el responsable. Los datos pueden incluir identificación, contacto, rol, comunicaciones, contenido de la carta y registros técnicos. No debe incorporarse información especialmente sensible salvo acuerdo previo y necesidad justificada.</p></LegalSection>
   <LegalSection title="4. Instrucciones y confidencialidad"><p>El encargado tratará los datos únicamente conforme a instrucciones documentadas del responsable y a la normativa. Si considera que una instrucción infringe la ley, lo comunicará. El personal autorizado estará sujeto a deber de confidencialidad.</p></LegalSection>

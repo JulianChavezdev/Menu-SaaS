@@ -1,4 +1,4 @@
-# Textos legales de Carta Video
+# Textos legales de Menuly
 
 Estado: borradores técnicos preparados, pendientes de identidad del titular y revisión profesional.
 

@@ -7,13 +7,13 @@ import {SaasNavigationTracker} from "@/components/navigation/saas-navigation-tra
 const baseUrl=normalizedAppUrl();
 export const metadata:Metadata={
   metadataBase:new URL(baseUrl),
-  title:{default:"Carta Video",template:"%s | Carta Video"},
+  title:{default:"Menuly",template:"%s | Menuly"},
   description:"Cartas digitales en vídeo para hostelería",
-  applicationName:"Carta Video",
+  applicationName:"Menuly",
   alternates:{canonical:"/"},
   robots:{index:true,follow:true},
-  openGraph:{type:"website",siteName:"Carta Video",locale:"es_ES"},
-  twitter:{card:"summary",title:"Carta Video",description:"Cartas digitales en vídeo para hostelería"},
+  openGraph:{type:"website",siteName:"Menuly",locale:"es_ES"},
+  twitter:{card:"summary",title:"Menuly",description:"Cartas digitales en vídeo para hostelería"},
 };
 export const viewport:Viewport={width:"device-width",initialScale:1,viewportFit:"cover",themeColor:"#090b18"};
 

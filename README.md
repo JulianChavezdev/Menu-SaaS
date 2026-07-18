@@ -1,4 +1,4 @@
-# Carta Video
+# Menuly
 
 SaaS multi-tenant para que restaurantes publiquen una carta vertical en vídeo. La URL pública es `/r/[slug]`; el panel, los datos y los archivos de cada negocio se separan por `restaurant_id`.
 
@@ -149,4 +149,4 @@ La comprobación visita salud, portada, carta demo, manifest, robots y sitemap, 
 
 ## Producción actual
 
-La aplicación está desplegada en `https://menu-saas-alpha.vercel.app`. Para cada versión: ejecuta las comprobaciones, sube `main`, espera a que Vercel marque el despliegue como `Ready` y valida el dominio con `check:deployment`. Mantén `CRON_SECRET` configurado para proteger la limpieza diaria de la papelera y registra el webhook de Stripe únicamente cuando vayas a aceptar cobros reales.
+La aplicación está desplegada en `https://menuly.es`. Para cada versión: ejecuta las comprobaciones, sube `main`, espera a que Vercel marque el despliegue como `Ready` y valida el dominio con `check:deployment`. Mantén `CRON_SECRET` configurado para proteger la limpieza diaria de la papelera y registra el webhook de Stripe únicamente cuando vayas a aceptar cobros reales.

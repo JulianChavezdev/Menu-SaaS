@@ -39,7 +39,7 @@ export default function Register() {
    
         <div className="mb-8">
           <div className="inline-flex items-center gap-2 rounded-full border border-pink-500/30 bg-pink-500/10 px-3 py-1 text-[10px] font-semibold tracking-wider text-pink-300 uppercase">
-            ⚡ Carta Video
+            ⚡ Menuly
           </div>
           <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-slate-950">
             Crea tu cuenta

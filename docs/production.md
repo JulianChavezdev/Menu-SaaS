@@ -1,6 +1,6 @@
 # Operación en producción
 
-Producción actual: `https://menu-saas-alpha.vercel.app`.
+Producción actual: `https://menuly.es`.
 
 ## Variables de Vercel
 
@@ -10,7 +10,7 @@ Configura en Production, Preview y Development según corresponda:
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
 SUPABASE_SECRET_KEY=
-NEXT_PUBLIC_APP_URL=https://menu-saas-alpha.vercel.app
+NEXT_PUBLIC_APP_URL=https://menuly.es
 NEXT_PUBLIC_CONTACT_EMAIL=
 SUPERADMIN_EMAILS=
 SUPERADMIN_USER_IDS=
@@ -39,8 +39,8 @@ Stripe debe estar completamente configurado o completamente vacío. Mientras sig
 
 En Authentication → URL Configuration:
 
-- Site URL: `https://menu-saas-alpha.vercel.app`
-- Redirect URLs: `http://localhost:3000/auth/callback`, `http://localhost:3000/reset-password`, `https://menu-saas-alpha.vercel.app/auth/callback` y `https://menu-saas-alpha.vercel.app/reset-password`.
+- Site URL: `https://menuly.es`
+- Redirect URLs: `http://localhost:3000/auth/callback`, `http://localhost:3000/reset-password`, `https://menuly.es/auth/callback` y `https://menuly.es/reset-password`.
 
 Al cambiar a un dominio propio, añade primero sus callbacks, cambia `NEXT_PUBLIC_APP_URL`, despliega y después conviértelo en Site URL.
 
@@ -56,7 +56,7 @@ La pantalla de papelera muestra el resultado de la última limpieza. Un fallo no
 2. Comprueba migraciones, demo y medios con `npm run check:release` usando el entorno de producción.
 3. Haz commit y push de `main`; Vercel genera un nuevo despliegue sin impedir cambios posteriores.
 4. Espera a que el despliegue esté `Ready`.
-5. Ejecuta `npm run check:deployment -- https://menu-saas-alpha.vercel.app`.
+5. Ejecuta `npm run check:deployment -- https://menuly.es`.
 6. Ejecuta `npm run check:production` para confirmar traducción y mantenimiento programado.
 7. Prueba el flujo afectado desde móvil y revisa `/superadmin/activity`.
 
