@@ -22,7 +22,8 @@
     "check:release": "node scripts/check-env.mjs --production && node scripts/check-db.mjs && node scripts/seed-showcase.mjs --verify && node scripts/check-showcase-media.mjs",
     "check:deployment": "node scripts/check-deployment.mjs",
     "check:production": "node scripts/check-deployment.mjs https://menu-saas-alpha.vercel.app --require-features",
-    "cleanup:media": "node scripts/cleanup-orphan-media.mjs"
+    "cleanup:media": "node scripts/cleanup-orphan-media.mjs",
+    "backfill:posters": "node scripts/backfill-video-posters.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -54,5 +55,7 @@
     "typescript": "^5.7.2",
     "vitest": "^4.1.10"
   },
-  "overrides": {"postcss": "$postcss"}
+  "overrides": {
+    "postcss": "$postcss"
+  }
 }
