@@ -28,6 +28,14 @@ describe("media paths", () => {
     ).toBe(true);
     expect(
       isValidMediaPath({
+        kind: "product-video",
+        restaurantId,
+        productId,
+        path: `restaurants/${restaurantId}/products/${productId}/video-${fileId}.mov`,
+      }),
+    ).toBe(true);
+    expect(
+      isValidMediaPath({
         kind: "product-image",
         restaurantId,
         productId,

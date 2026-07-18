@@ -131,6 +131,10 @@ const checks=[
     migration:"202607170004_analytics_goals.sql",
     run:()=>supabase.from("restaurant_analytics_goals").select("restaurant_id",{head:true}).limit(1),
   },
+  {
+    migration:"202607180001_automatic_video_posters.sql",
+    run:()=>supabase.rpc("can_manage_restaurant_product_image",{object_name:"restaurants/00000000-0000-4000-8000-000000000000/products/00000000-0000-4000-8000-000000000000/image-auto-00000000-0000-4000-8000-000000000000.jpg"}),
+  },
 ];
 
 const pending=[];
