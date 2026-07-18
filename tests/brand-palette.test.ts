@@ -7,13 +7,13 @@ const layout=readFileSync("src/app/layout.tsx","utf8");
 const manifest=readFileSync("src/app/manifest.ts","utf8");
 
 describe("brand palette",()=>{
-  it("uses bottle green and warm cream across the SaaS shell",()=>{
-    for(const source of[tailwind,globalCss,layout,manifest])expect(source).toContain("#064E3B");
-    for(const source of[tailwind,globalCss,manifest])expect(source).toContain("#F8E7C9");
+  it("uses vivid purple and warm peach across the SaaS shell",()=>{
+    for(const source of[tailwind,globalCss,layout,manifest])expect(source).toContain("#6A00F4");
+    for(const source of[tailwind,globalCss,manifest])expect(source).toContain("#FFD6A5");
   });
 
   it("maps the existing orange design tokens onto the new brand",()=>{
-    expect(tailwind).toContain('100:"#F8E7C9"');
-    expect(tailwind).toContain('600:"#064E3B"');
+    expect(tailwind).toContain('100:"#FFD6A5"');
+    expect(tailwind).toContain('600:"#6A00F4"');
   });
 });

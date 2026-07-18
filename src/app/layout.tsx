@@ -15,7 +15,7 @@ export const metadata:Metadata={
   openGraph:{type:"website",siteName:"Carta Video",locale:"es_ES"},
   twitter:{card:"summary",title:"Carta Video",description:"Cartas digitales en vídeo para hostelería"},
 };
-export const viewport:Viewport={width:"device-width",initialScale:1,viewportFit:"cover",themeColor:"#064E3B"};
+export const viewport:Viewport={width:"device-width",initialScale:1,viewportFit:"cover",themeColor:"#6A00F4"};
 
 export default function Layout({children}:{children:React.ReactNode}){
   const mediaOrigins=["https://videos.pexels.com","https://res.cloudinary.com",process.env.NEXT_PUBLIC_SUPABASE_URL].filter((origin):origin is string=>Boolean(origin));

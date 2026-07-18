@@ -7,8 +7,8 @@ export default function manifest():MetadataRoute.Manifest{
     description:"Cartas digitales en vídeo para hostelería",
     start_url:"/",
     display:"standalone",
-    background_color:"#F8E7C9",
-    theme_color:"#064E3B",
+    background_color:"#FFD6A5",
+    theme_color:"#6A00F4",
     lang:"es",
     categories:["food","business"],
   };
