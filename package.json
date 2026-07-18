@@ -23,7 +23,8 @@
     "check:deployment": "node scripts/check-deployment.mjs",
     "check:production": "node scripts/check-deployment.mjs https://menuly.es --require-features",
     "cleanup:media": "node scripts/cleanup-orphan-media.mjs",
-    "backfill:posters": "node scripts/backfill-video-posters.mjs"
+    "backfill:posters": "node scripts/backfill-video-posters.mjs",
+    "manual:generate": "python scripts/generate_manual_menuly.py"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

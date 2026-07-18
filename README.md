@@ -150,3 +150,5 @@ La comprobación visita salud, portada, carta demo, manifest, robots y sitemap, 
 ## Producción actual
 
 La aplicación está desplegada en `https://menuly.es`. Para cada versión: ejecuta las comprobaciones, sube `main`, espera a que Vercel marque el despliegue como `Ready` y valida el dominio con `check:deployment`. Mantén `CRON_SECRET` configurado para proteger la limpieza diaria de la papelera y registra el webhook de Stripe únicamente cuando vayas a aceptar cobros reales.
+
+El manual visual para restaurantes se publica en `/manual-menuly-restaurantes.pdf`. Se regenera desde su fuente vectorial con `npm run manual:generate`; el resultado final se guarda tanto en `output/pdf/` como en `public/`.
