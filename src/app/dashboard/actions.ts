@@ -23,6 +23,7 @@ import {
 } from "@/lib/media";
 import { getSupabaseSecretKey } from "@/lib/supabase/admin-env";
 import { ALLERGEN_CODES } from "@/lib/allergens";
+import {isValidPublicSlug,normalizePublicSlug} from "@/lib/public-slug";
 import { cookies } from "next/headers";
 import {
   cloudinaryVideoPosterUrl,
@@ -139,17 +140,11 @@ export async function createRestaurant(form: FormData) {
     auth: { persistSession: false, autoRefreshToken: false },
   });
   const name = String(form.get("name") || "").trim();
-  const slug = String(form.get("slug") || "")
-    .toLowerCase()
-    .trim()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
+  const slug = normalizePublicSlug(String(form.get("slug") || ""));
   if (
     name.length < 2 ||
     name.length > 80 ||
-    !slug.match(/^[a-z0-9]+(?:-[a-z0-9]+)*$/)
+    !isValidPublicSlug(slug)
   )
     throw new Error("Revisa el nombre y el slug.");
   const { data: created, error } = await s
@@ -445,10 +440,15 @@ export async function reorderProducts(ids: string[]) {
 }
 export async function updateRestaurant(form: FormData) {
   const { supabase, restaurant } = await activeRestaurant();
+  const name=String(form.get("name")||"").trim();
+  const slug=normalizePublicSlug(String(form.get("slug")||""));
+  if(name.length<2||name.length>80)throw new Error("El nombre debe tener entre 2 y 80 caracteres.");
+  if(!isValidPublicSlug(slug))throw new Error("La URL debe tener entre 3 y 60 caracteres y usar letras, números o guiones.");
   const description = String(form.get("description") || "");
   const translated = await translateFieldsToEnglish({ description });
   const data = {
-    name: String(form.get("name")),
+    name,
+    slug,
     description,
     translations: automaticTranslationMap(
       restaurant.translations,
@@ -460,12 +460,13 @@ export async function updateRestaurant(form: FormData) {
     address: String(form.get("address") || ""),
     is_published: form.get("is_published") === "on",
   };
-  await supabase
+  const{error}=await supabase
     .from("restaurants")
     .update(data)
-    .eq("id", restaurant.id)
-    .throwOnError();
+    .eq("id", restaurant.id);
+  if(error)throw new Error(error.code==="23505"?"Esa URL ya está siendo utilizada por otro restaurante.":error.message);
   refresh(restaurant.slug);
+  if(slug!==restaurant.slug)refresh(slug);
   return { translationStatus: translated.status };
 }
 export async function translateEntireMenu() {
