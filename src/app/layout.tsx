@@ -14,8 +14,9 @@ export const metadata:Metadata={
   robots:{index:true,follow:true},
   openGraph:{type:"website",siteName:"Menuly",locale:"es_ES"},
   twitter:{card:"summary",title:"Menuly",description:"Cartas digitales en vídeo para hostelería"},
+  icons:{icon:"/brand/menuly-mark.png",apple:"/brand/menuly-mark.png"},
 };
-export const viewport:Viewport={width:"device-width",initialScale:1,viewportFit:"cover",themeColor:"#090b18"};
+export const viewport:Viewport={width:"device-width",initialScale:1,viewportFit:"cover",themeColor:"#0C1F30"};
 
 export default function Layout({children}:{children:React.ReactNode}){
   const mediaOrigins=["https://videos.pexels.com","https://res.cloudinary.com",process.env.NEXT_PUBLIC_SUPABASE_URL].filter((origin):origin is string=>Boolean(origin));

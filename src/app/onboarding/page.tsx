@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createRestaurant } from "@/app/dashboard/actions";
+import { BrandLogo } from "@/components/brand/brand-logo";
 
 export default function Onboarding() {
   const [error, setError] = useState("");
@@ -27,7 +28,7 @@ export default function Onboarding() {
   return (
     <main className="relative grid min-h-screen place-items-center p-6 overflow-hidden selection:bg-orange-600/30">
       {/* Luces de fondo coherentes con el diseño de la aplicación (Glow Effects) */}
-      <div className="absolute top-1/4 left-1/3 -z-10 h-72 w-72 rounded-full bg-pink-500/10 blur-[120px]" />
+      <div className="absolute top-1/4 left-1/3 -z-10 h-72 w-72 rounded-full bg-[#0C1F30]/10 blur-[120px]" />
       <div className="absolute bottom-1/4 right-1/3 -z-10 h-80 w-80 rounded-full bg-orange-100 blur-[150px]" />
 
       <form 
@@ -37,6 +38,7 @@ export default function Onboarding() {
       >
         {/* Cabecera del Onboarding */}
         <div className="mb-8">
+          <BrandLogo priority className="mb-5 w-[150px]"/>
           <div className="inline-flex items-center gap-2 rounded-full border border-orange-500/30 bg-orange-100 px-3 py-1 text-[10px] font-semibold tracking-wider text-orange-700 uppercase">
             🚀 Primeros pasos
           </div>

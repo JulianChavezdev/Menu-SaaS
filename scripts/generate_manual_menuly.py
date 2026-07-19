@@ -6,19 +6,21 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
+from reportlab.lib.utils import ImageReader
 
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "output" / "pdf" / "manual-menuly-restaurantes.pdf"
 PUBLIC = ROOT / "public" / "manual-menuly-restaurantes.pdf"
+BRAND_LOGO = ROOT / "public" / "brand" / "menuly-logo-horizontal.png"
 WIDTH, HEIGHT = A4
 
-INK = HexColor("#172033")
-MUTED = HexColor("#667085")
-PAPER = HexColor("#F8F5EF")
+INK = HexColor("#0C1F30")
+MUTED = HexColor("#374151")
+PAPER = HexColor("#FBF8F3")
 WHITE = HexColor("#FFFFFF")
-ORANGE = HexColor("#E85D26")
-ORANGE_LIGHT = HexColor("#FCE7DA")
+ORANGE = HexColor("#F0643A")
+ORANGE_LIGHT = HexColor("#FBE4DC")
 GREEN = HexColor("#237A57")
 GREEN_LIGHT = HexColor("#DFF2E8")
 YELLOW = HexColor("#F5C451")
@@ -26,7 +28,7 @@ YELLOW_LIGHT = HexColor("#FFF3CE")
 RED = HexColor("#C4443D")
 RED_LIGHT = HexColor("#FBE5E3")
 LINE = HexColor("#DED8CE")
-NAVY = HexColor("#101426")
+NAVY = HexColor("#0C1F30")
 
 
 def register_fonts() -> None:
@@ -128,7 +130,7 @@ def icon(c: canvas.Canvas, name: str, x: float, y: float, size=30, color=ORANGE,
 
 
 def header(c: canvas.Canvas, section: str, title_value: str, subtitle: str, page: int) -> None:
-    text(c, "MENULY", 42, HEIGHT - 48, 10, ORANGE, True)
+    c.drawImage(ImageReader(BRAND_LOGO), 42, HEIGHT - 56, width=78, height=24, preserveAspectRatio=True, anchor="sw", mask="auto")
     text(c, section.upper(), 42, HEIGHT - 82, 8, MUTED, True)
     text(c, title_value, 42, HEIGHT - 118, 25, INK, True)
     lines(c, subtitle, 42, HEIGHT - 142, 82, size=10, leading=14, color=MUTED, max_lines=2)
@@ -442,9 +444,9 @@ def draw_content_page(c: canvas.Canvas, page: dict, number: int) -> None:
 def cover(c: canvas.Canvas) -> None:
     c.setFillColor(NAVY); c.rect(0,0,WIDTH,HEIGHT,fill=1,stroke=0)
     c.setFillColor(ORANGE); c.circle(WIDTH+25,HEIGHT-95,145,fill=1,stroke=0)
-    c.setFillColor(HexColor("#3D2452")); c.circle(-25,35,150,fill=1,stroke=0)
-    rounded(c,42,HEIGHT-105,105,32,WHITE,radius=16)
-    centered(c,"Menuly",94.5,HEIGHT-94,10,NAVY,True)
+    c.setFillColor(HexColor("#17364D")); c.circle(-25,35,150,fill=1,stroke=0)
+    rounded(c,42,HEIGHT-116,150,48,WHITE,radius=14)
+    c.drawImage(ImageReader(BRAND_LOGO), 54, HEIGHT-106, width=126, height=38, preserveAspectRatio=True, anchor="sw", mask="auto")
     text(c,"Manual visual",42,HEIGHT-220,34,WHITE,True)
     text(c,"del restaurante",42,HEIGHT-264,34,WHITE,True)
     lines(c,"Todo lo que puedes hacer, explicado con pasos rápidos e infografías.",42,HEIGHT-310,48,size=13,leading=18,color=HexColor("#D5D7E2"),max_lines=3)

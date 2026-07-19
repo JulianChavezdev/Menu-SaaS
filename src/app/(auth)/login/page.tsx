@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { PasswordInput } from "@/components/ui/password-input";
+import { BrandLogo } from "@/components/brand/brand-logo";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -31,7 +32,7 @@ export default function Login() {
   return (
     <main className="relative grid min-h-screen place-items-center p-6 overflow-hidden selection:bg-orange-600/30">
       {/* Luces de fondo coherentes con la landing page (Glow Effects) */}
-      <div className="absolute top-1/4 left-1/3 -z-10 h-72 w-72 rounded-full bg-pink-500/10 blur-[120px]" />
+      <div className="absolute top-1/4 left-1/3 -z-10 h-72 w-72 rounded-full bg-[#0C1F30]/10 blur-[120px]" />
       <div className="absolute bottom-1/4 right-1/3 -z-10 h-80 w-80 rounded-full bg-orange-100 blur-[150px]" />
 
       <form 
@@ -42,9 +43,7 @@ export default function Login() {
       >
         {/* Cabecera del formulario */}
         <div className="mb-8">
-          <div className="inline-flex items-center gap-2 rounded-full border border-pink-500/30 bg-pink-500/10 px-3 py-1 text-[10px] font-semibold tracking-wider text-pink-300 uppercase">
-            ⚡ Menuly
-          </div>
+          <Link href="/" aria-label="Menuly · Inicio" className="inline-flex"><BrandLogo priority className="w-[150px]"/></Link>
           <h1 className="mt-4 text-3xl font-extrabold tracking-tight text-slate-950">
             Accede a tu cuenta
           </h1>
