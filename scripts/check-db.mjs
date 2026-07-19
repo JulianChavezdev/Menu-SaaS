@@ -142,6 +142,10 @@ const checks=[
       return {error:error??(data===20260719?null:new Error("Unexpected trial policy version"))};
     },
   },
+  {
+    migration:"202607190002_restaurant_slug_aliases.sql",
+    run:()=>supabase.from("restaurant_slug_aliases").select("slug",{head:true}).limit(1),
+  },
 ];
 
 const pending=[];

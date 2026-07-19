@@ -6,6 +6,7 @@ Actualizado: 17 de julio de 2026.
 
 - Autenticación, recuperación de contraseña y selector para ver u ocultar la clave.
 - Onboarding, roles y aislamiento multi-restaurante mediante RLS.
+- Cambio de URL pública con reserva del slug anterior y redirección permanente para que los QR ya impresos sigan funcionando.
 - Gestión de categorías, productos, alérgenos, disponibilidad, orden, traducción inglesa automática y vídeos.
 - Carta pública mobile-first con navegación vertical, catálogo listado en dos columnas, carrito local, observaciones, descripción y alérgenos desplegables.
 - Logo único, selector opcional español/inglés y siete plantillas: dos gratuitas y cinco premium.
