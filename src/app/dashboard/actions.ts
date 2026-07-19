@@ -384,6 +384,28 @@ export async function saveProduct(form: FormData) {
   revalidatePath("/dashboard/menu");
   return { translationStatus: translated.status };
 }
+
+const PRODUCT_FORM_ERRORS = new Set([
+  "Revisa los datos del producto.",
+  "Un producto no puede recomendarse a sí mismo.",
+  "Una recomendación no pertenece a este restaurante.",
+  "La prueba permite 1 producto por categoría y un máximo de 5 categorías.",
+]);
+
+export async function submitProduct(form: FormData) {
+  try {
+    const result = await saveProduct(form);
+    return { ok: true as const, ...result };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "";
+    return {
+      ok: false as const,
+      error: PRODUCT_FORM_ERRORS.has(message)
+        ? message
+        : "No se pudo guardar el producto. Inténtalo de nuevo.",
+    };
+  }
+}
 export async function deleteProduct(id: string) {
   const parsed = uuid.safeParse(id);
   if (!parsed.success) throw new Error("Producto no válido.");

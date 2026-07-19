@@ -50,13 +50,22 @@ test.describe("restaurant owner journey",()=>{
     await expect(page).toHaveURL(/\/dashboard$/);
 
     await page.getByRole("link",{name:"Carta",exact:true}).click();
-    await page.getByLabel("Nombre",{exact:true}).fill("Producto E2E");
-    await page.getByLabel("Descripción",{exact:true}).fill("Producto creado mediante una prueba completa.");
-    await expect(page.getByText("La versión inglesa se genera automáticamente al guardar.")).toBeVisible();
-    await page.getByLabel("Precio (€)").fill("9.50");
-    await page.getByLabel("Categoría").selectOption({label:"Entrantes"});
-    await page.getByRole("button",{name:"Crear producto"}).click();
+    const productForm=page.locator("form").filter({has:page.getByRole("heading",{name:"Nuevo producto"})});
+    await productForm.getByLabel("Nombre",{exact:true}).fill("Producto E2E");
+    await productForm.getByLabel("Descripción",{exact:true}).fill("Producto creado mediante una prueba completa.");
+    await expect(productForm.getByText("La versión inglesa se genera automáticamente al guardar.")).toBeVisible();
+    await productForm.getByLabel("Precio (€)").fill("9.50");
+    await productForm.getByLabel("Categoría").selectOption({label:"Entrantes"});
+    await productForm.getByRole("button",{name:"Crear producto"}).click();
     await expect(page.getByRole("heading",{name:"Producto E2E",exact:true})).toBeVisible();
+
+    await productForm.getByLabel("Nombre",{exact:true}).fill("Producto bloqueado");
+    await productForm.getByLabel("Descripción",{exact:true}).fill("No debe superar el límite gratuito.");
+    await productForm.getByLabel("Precio (€)").fill("8.50");
+    await productForm.getByLabel("Categoría").selectOption({label:"Entrantes"});
+    await productForm.getByRole("button",{name:"Crear producto"}).click();
+    await expect(page.getByText("La prueba permite 1 producto por categoría y un máximo de 5 categorías.")).toBeVisible();
+    await expect(page.getByRole("heading",{name:"Producto bloqueado",exact:true})).toHaveCount(0);
 
     await page.getByRole("link",{name:"Apariencia",exact:true}).click();
     await page.waitForLoadState("networkidle");
@@ -88,7 +97,7 @@ test.describe("restaurant owner journey",()=>{
     await page.goto(`/r/${slug}`);
     await expect(page.getByRole("heading",{name:"Producto E2E"})).toBeVisible();
     await expect(page.getByText("9,50 €")).toBeVisible();
-    await expect(page.getByRole("img",{name:"Logo de Restaurante E2E"})).toBeVisible();
+    await expect(page.getByRole("img",{name:"Logo de Restaurante E2E"}).first()).toBeVisible();
     await expect(page.getByRole("navigation",{name:"Controles de la carta"})).toBeVisible();
     const detailsBox=await page.locator("[data-product-details]").boundingBox();
     expect(detailsBox?.height??844).toBeLessThan(844*.35);

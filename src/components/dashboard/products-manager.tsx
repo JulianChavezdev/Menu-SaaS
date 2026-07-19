@@ -3,7 +3,7 @@
 import {useState,useTransition} from "react";
 import {ArrowDown,ArrowUp,Eye,EyeOff,Pencil,Sparkles,Trash2,X} from "lucide-react";
 import {toast} from "sonner";
-import {deleteProduct,reorderProducts,saveProduct,toggleProduct} from "@/app/dashboard/actions";
+import {deleteProduct,reorderProducts,submitProduct,toggleProduct} from "@/app/dashboard/actions";
 import type {Category,Product} from "@/lib/types";
 import {AutomaticTranslationNote,notifyAutomaticTranslation} from "@/components/dashboard/automatic-translation";
 import {ALLERGEN_CODES,ALLERGENS} from "@/lib/allergens";
@@ -17,7 +17,7 @@ function reordered(products:Product[],index:number,delta:number){
 
 export function ProductsManager({categories,products}:{categories:Category[];products:Product[]}){
   const[selected,setSelected]=useState<Product|null>(null);const[busy,start]=useTransition();
-  const submit=(form:FormData)=>start(async()=>{try{const result=await saveProduct(form);toast.success(selected?"Producto actualizado":"Producto creado");notifyAutomaticTranslation(result.translationStatus);setSelected(null)}catch(error){toast.error(error instanceof Error?error.message:"No se pudo guardar")}});
+  const submit=(form:FormData)=>start(async()=>{const result=await submitProduct(form);if(!result.ok){toast.error(result.error);return}toast.success(selected?"Producto actualizado":"Producto creado");notifyAutomaticTranslation(result.translationStatus);setSelected(null)});
   const move=(index:number,delta:number)=>{const ids=reordered(products,index,delta);if(ids)start(async()=>{await reorderProducts(ids);toast.success("Orden actualizado")})};
 
   return <div className="grid gap-5 lg:grid-cols-[360px_1fr]">
