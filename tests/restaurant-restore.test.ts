@@ -36,7 +36,7 @@ describe("restaurant backup restore",()=>{
 
   it("blocks backups above trial limits",()=>{
     const parsed=parseRestaurantBackup(backup,restaurantId);
-    const trialPreview=buildRestorePreview({...parsed,products:Array.from({length:4},(_,index)=>({...parsed.products[0],id:`0000000${index}-0000-4000-8000-00000000000${index}`}))},{...current,subscription_status:"trialing"},[],[]);
+    const trialPreview=buildRestorePreview({...parsed,products:Array.from({length:2},(_,index)=>({...parsed.products[0],id:`0000000${index}-0000-4000-8000-00000000000${index}`}))},{...current,subscription_status:"trialing"},[],[]);
     expect(trialPreview.canApply).toBe(false);
     expect(trialPreview.warnings.at(-1)).toContain("plan de prueba");
   });

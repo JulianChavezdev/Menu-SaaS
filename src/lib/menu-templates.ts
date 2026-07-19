@@ -13,7 +13,7 @@ type MenuTemplate={
 };
 
 export const MENU_TEMPLATES={
-  cinematic:{key:"cinematic",name:"Cinemática",description:"Vídeo inmersivo a pantalla completa con contraste cálido y lectura inmediata.",tier:"free",layout:"fullscreen",motif:"cinema",colors:{background:"#0b0b0a",panel:"#171715",nav:"#171715",accent:"#fcd34d",accent2:"#fb7185",frame:"rgba(255,255,255,.14)"}},
+  cinematic:{key:"cinematic",name:"Cinemática",description:"Vídeo limpio a pantalla completa con el HUD flotante como único elemento visual.",tier:"free",layout:"fullscreen",motif:"cinema",colors:{background:"#0b0b0a",panel:"#171715",nav:"#171715",accent:"#fcd34d",accent2:"#fb7185",frame:"rgba(255,255,255,.14)"}},
   mediterranean:{key:"mediterranean",name:"Brisa Mediterránea",description:"Azul costa, coral y ondas orgánicas para restaurantes frescos y luminosos.",tier:"free",layout:"editorial",motif:"mediterranean",colors:{background:"#062a3a",panel:"#0b4053",nav:"#073647",accent:"#7dd3fc",accent2:"#fb7185",frame:"rgba(125,211,252,.28)"}},
   midnight:{key:"midnight",name:"Medianoche",description:"Cristal oscuro, constelaciones y acentos azul hielo para una carta elegante.",tier:"premium",layout:"framed",motif:"constellation",colors:{background:"#050817",panel:"#090e27",nav:"#090e27",accent:"#a5f3fc",accent2:"#818cf8",frame:"rgba(165,243,252,.24)"}},
   sakura:{key:"sakura",name:"Sakura",description:"Pétalos, tinta ciruela y rosa suave para cocina japonesa y propuestas delicadas.",tier:"premium",layout:"editorial",motif:"sakura",colors:{background:"#2a1025",panel:"#451934",nav:"#351229",accent:"#fbcfe8",accent2:"#fb7185",frame:"rgba(251,207,232,.28)"}},

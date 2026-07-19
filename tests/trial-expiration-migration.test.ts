@@ -1,15 +1,16 @@
 import {readFileSync} from "node:fs";
 import {describe,expect,it} from "vitest";
 
-const migration=readFileSync("supabase/migrations/202607160001_seven_day_trial.sql","utf8");
+const trialSetup=readFileSync("supabase/migrations/202607160001_seven_day_trial.sql","utf8");
+const expiration=readFileSync("supabase/migrations/202607190001_trial_one_product_per_category_and_expiration_trash.sql","utf8");
 
 describe("trial expiration migration",()=>{
-  it("limits trials to seven days and suspends publication",()=>{
-    expect(migration).toContain("interval '7 days'");
-    expect(migration).toContain("publication_suspended_for_payment = true");
-    expect(migration).toContain("is_published = false");
+  it("keeps the seven-day trial window",()=>expect(trialSetup).toContain("interval '7 days'"));
+  it("backs up and deletes expired trial restaurants",()=>{
+    expect(expiration).toContain("restaurant.deletion_backup_created");
+    expect(expiration).toContain("'reason', 'trial_expired'");
+    expect(expiration).toContain("delete from public.restaurants");
+    expect(expiration).toContain("interval '30 days'");
   });
-  it("restores billing-suspended publication after payment",()=>{
-    expect(migration).toContain("case when publication_suspended_for_payment then true else is_published end");
-  });
+  it("never deletes the permanent showcase",()=>expect(expiration).toContain("restaurant.slug <> 'bistro-nube'"));
 });

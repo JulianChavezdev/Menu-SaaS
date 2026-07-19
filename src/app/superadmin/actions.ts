@@ -74,12 +74,13 @@ export async function restoreDeletedRestaurant(form:FormData){
   const restaurantId=backup.restaurant.id;
   let created=false;
   try{
-    await admin.from("restaurants").insert({...backup.restaurant,is_published:false,access_suspended:true,subscription_status:"canceled",suspension_reason:"Restaurado desde la papelera. Revisa la configuración antes de activar.",suspended_at:new Date().toISOString()}).throwOnError();created=true;
+    await admin.from("restaurants").insert({...backup.restaurant,is_published:false,access_suspended:true,subscription_status:"active",suspension_reason:"Restaurado desde la papelera. Revisa la configuración antes de activar.",suspended_at:new Date().toISOString()}).throwOnError();created=true;
     if(backup.categories.length)await admin.from("categories").insert(backup.categories).throwOnError();
     if(backup.products.length)await admin.from("products").insert(backup.products).throwOnError();
     if(backup.memberships.length)await admin.from("restaurant_members").insert(backup.memberships).throwOnError();
     if(backup.subscriptions.length)await admin.from("subscriptions").insert(backup.subscriptions.map(item=>({...item,status:"canceled"}))).throwOnError();
     if(backup.payments.length)await admin.from("manual_payments").insert(backup.payments).throwOnError();
+    await admin.from("restaurants").update({subscription_status:"canceled"}).eq("id",restaurantId).throwOnError();
     await audit(admin,user.id,restaurantId,"restaurant.restored_from_trash",{deletion_audit_id:auditId.data,restored_suspended:true,restored_unpublished:true});
   }catch(error){if(created)await admin.from("restaurants").delete().eq("id",restaurantId);throw error}
   revalidatePath("/superadmin");revalidatePath("/superadmin/trash");revalidatePath(`/r/${backup.restaurant.slug}`);

@@ -353,8 +353,8 @@ export async function saveProduct(form: FormData) {
       .eq("restaurant_id", restaurant.id)
       .throwOnError();
   } else {
-    if (!(await canAddProduct(restaurant.id)))
-      throw new Error("El plan de prueba permite hasta 3 productos.");
+    if (!(await canAddProduct(restaurant.id, values.category_id)))
+      throw new Error("La prueba permite 1 producto por categoría y un máximo de 5 categorías.");
     const { data: created } = await supabase
       .from("products")
       .insert({

@@ -9,7 +9,7 @@ Actualizado: 17 de julio de 2026.
 - Gestión de categorías, productos, alérgenos, disponibilidad, orden, traducción inglesa automática y vídeos.
 - Carta pública mobile-first con navegación vertical, catálogo listado en dos columnas, carrito local, observaciones, descripción y alérgenos desplegables.
 - Logo único, selector opcional español/inglés y siete plantillas: dos gratuitas y cinco premium.
-- Plan de prueba limitado a 3 productos y 5 categorías en servidor y base de datos.
+- Plan de prueba de 7 días limitado a 1 producto por categoría y 5 categorías; al vencer pasa a la papelera recuperable.
 - Panel de superadmin para métricas, capacidad, soporte, previsualización, suspensión, restauración y eliminación protegida.
 - Papelera con restauración temporal, purga diaria auditada y limpieza de archivos asociados.
 - Exportaciones, copias versionadas y copias automáticas diarias con retención.

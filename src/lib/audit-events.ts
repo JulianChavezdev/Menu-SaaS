@@ -23,6 +23,7 @@ export function describeAuditEvent(action:string,rawDetails:unknown):Description
     case"payment.reminder_prepared":return{title:"Recordatorio preparado",description:"Se preparó un aviso de vencimiento para el restaurante.",group:"payments",tone:"neutral"};
     case"restaurant.deleted":return{title:"Restaurante eliminado",description:`${text(details,"restaurant_name")??"El restaurante"} se movió a la papelera.`,group:"restaurants",tone:"danger"};
     case"restaurant.deletion_backup_created":return{title:"Copia de eliminación creada",description:"Se guardó una copia recuperable antes de eliminar el restaurante.",group:"restaurants",tone:"warning"};
+    case"restaurant.trial_expired_deleted":return{title:"Prueba finalizada",description:"La carta de prueba se eliminó y pasó temporalmente a la papelera.",group:"restaurants",tone:"danger"};
     case"restaurant.restored_from_trash":return{title:"Restaurante restaurado",description:"Se recuperó suspendido y sin publicar para su revisión.",group:"restaurants",tone:"success"};
     case"restaurant.trash_purged":return{title:"Papelera depurada",description:`Se cerró una copia vencida${number(details,"media_files_removed")?` y se eliminaron ${number(details,"media_files_removed")} archivos`:""}.`,group:"system",tone:"neutral"};
     case"restaurant.updated":return{title:"Configuración actualizada",description:"Se guardaron cambios administrativos del restaurante.",group:"restaurants",tone:"neutral"};

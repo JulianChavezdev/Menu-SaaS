@@ -39,7 +39,11 @@ suite("Supabase security hardening",()=>{
         categories.push(category.data.id);
       }
 
-      const products=await admin.from("products").insert([0,1,2].map(index=>({restaurant_id:createdRestaurants[0],category_id:categories[0],name:`Hidden ${index}`,price_cents:100+index}))).select("id");
+      const extraCategories=await admin.from("categories").insert([1,2].map(index=>({restaurant_id:createdRestaurants[0],name:`Hidden ${index+2}`,slug:`hidden-extra-${index}-${stamp}`}))).select("id");
+      if(extraCategories.error)throw extraCategories.error;
+      const firstRestaurantCategories=[categories[0],...extraCategories.data.map(item=>item.id)];
+
+      const products=await admin.from("products").insert([0,1,2].map(index=>({restaurant_id:createdRestaurants[0],category_id:firstRestaurantCategories[index],name:`Hidden ${index}`,price_cents:100+index}))).select("id");
       if(products.error)throw products.error;
 
       const anonymous=createClient(url!,publicKey!,{auth:{persistSession:false,autoRefreshToken:false}});
@@ -60,7 +64,7 @@ suite("Supabase security hardening",()=>{
 
       const crossTenant=await admin.from("products").insert({restaurant_id:createdRestaurants[0],category_id:categories[1],name:"Cross tenant",price_cents:100});
       expect(crossTenant.error).not.toBeNull();
-      const overLimit=await admin.from("products").insert({restaurant_id:createdRestaurants[0],category_id:categories[0],name:"Fourth product",price_cents:100});
+      const overLimit=await admin.from("products").insert({restaurant_id:createdRestaurants[0],category_id:firstRestaurantCategories[0],name:"Second product in category",price_cents:100});
       expect(overLimit.error).not.toBeNull();
     }finally{
       for(const restaurantId of createdRestaurants)await admin.from("restaurants").delete().eq("id",restaurantId);

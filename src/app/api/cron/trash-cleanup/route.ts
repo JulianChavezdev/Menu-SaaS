@@ -14,7 +14,7 @@ export async function GET(request:Request){
   try{
     const [result,trials]=await Promise.all([executeTrashCleanup(admin),admin.rpc("process_expired_trials")]);
     if(trials.error)throw trials.error;
-    return Response.json({ok:true,...result,expiredTrials:Number(trials.data??0)});
+    return Response.json({ok:true,...result,expiredTrialsDeleted:Number(trials.data??0)});
   }catch(error){
     console.error("trash_cleanup_failed",error instanceof Error?error.message:"unknown");
     return Response.json({ok:false,error:"Cleanup failed"},{status:500});

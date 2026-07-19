@@ -2,6 +2,7 @@ import {readFileSync} from "node:fs";
 import {describe,expect,it} from "vitest";
 
 const migration=readFileSync("supabase/migrations/202607130004_security_hardening.sql","utf8");
+const trialMigration=readFileSync("supabase/migrations/202607190001_trial_one_product_per_category_and_expiration_trash.sql","utf8");
 
 describe("security hardening migration",()=>{
   it("requires a published restaurant for public categories and products",()=>{
@@ -20,9 +21,13 @@ describe("security hardening migration",()=>{
   });
 
   it("enforces trial limits in the database with serialized inserts",()=>{
-    expect(migration).toContain("enforce_trial_plan_limits");
-    expect(migration).toContain("pg_advisory_xact_lock");
-    expect(migration).toContain("row_limit := 3");
-    expect(migration).toContain("row_limit := 5");
+    expect(trialMigration).toContain("enforce_trial_plan_limits");
+    expect(trialMigration).toContain("pg_advisory_xact_lock");
+    expect(trialMigration).toContain("category_count >= 1");
+    expect(trialMigration).toContain("current_count >= 5");
+    expect(trialMigration).toContain("tg_op = 'INSERT' or new.restaurant_id is distinct from old.restaurant_id");
+    expect(trialMigration).toContain("if tg_table_name = 'categories' then");
+    expect(trialMigration).toContain("elsif tg_table_name = 'products'");
+    expect(trialMigration).toContain("trial_policy_version");
   });
 });

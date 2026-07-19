@@ -36,7 +36,7 @@ Después de guardar las variables es necesario volver a desplegar, porque las va
 
 ## Límites reflejados en los textos
 
-- Prueba: siete días, tres productos y cinco categorías.
+- Prueba: siete días, un producto por categoría y un máximo de cinco categorías; después se elimina y permanece 30 días en papelera.
 - Plan Carta: 34,99 € al mes; anual con ahorro aproximado del 18 %.
 - Llave en mano: 149,99 € al mes, primer mes gratis, cuatro vídeos por un máximo de cinco categorías.
 - Pagos manuales durante la beta, sin cargo automático.

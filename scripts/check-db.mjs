@@ -135,6 +135,13 @@ const checks=[
     migration:"202607180001_automatic_video_posters.sql",
     run:()=>supabase.rpc("can_manage_restaurant_product_image",{object_name:"restaurants/00000000-0000-4000-8000-000000000000/products/00000000-0000-4000-8000-000000000000/image-auto-00000000-0000-4000-8000-000000000000.jpg"}),
   },
+  {
+    migration:"202607190001_trial_one_product_per_category_and_expiration_trash.sql",
+    run:async()=>{
+      const {data,error}=await supabase.rpc("trial_policy_version");
+      return {error:error??(data===20260719?null:new Error("Unexpected trial policy version"))};
+    },
+  },
 ];
 
 const pending=[];

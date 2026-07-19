@@ -3,6 +3,7 @@ import {describe,expect,it} from "vitest";
 
 const menu=readFileSync("src/components/menu/video-menu.tsx","utf8");
 const media=readFileSync("src/components/menu/product-media.tsx","utf8");
+const vectors=readFileSync("src/components/menu/theme-vectors.tsx","utf8");
 
 describe("virtualización del feed de vídeo",()=>{
   it("hidrata exclusivamente el producto actual y sus vecinos",()=>{expect(menu).toContain("hydrated={Math.abs(index-active)<=1}");expect(media).toContain("src&&hydrated&&<video");expect(menu).toContain("root:feedRef.current");expect(menu).toContain("threshold:[.35]")});
@@ -12,4 +13,5 @@ describe("virtualización del feed de vídeo",()=>{
   it("precarga ambos vídeos vecinos y reintenta tras gestos, conexión o regreso a la app",()=>{expect(menu).toContain('preload={Math.abs(index-active)<=1?"auto":"metadata"}');expect(media).toContain('video.preload="auto"');expect(media).toContain("HTMLMediaElement.NETWORK_EMPTY");expect(menu).toContain("onTouchEnd={resumeActiveVideo}");expect(menu).toContain('addEventListener("pageshow",resume)');expect(menu).toContain('addEventListener("online",resume)')});
   it("reproduce el primer vídeo detrás de la apertura de marca para mostrarlo ya cargado",()=>{expect(menu).toContain("active={index===active}");expect(menu).not.toContain("if(introVisible){video.pause();video.currentTime=0;return}");expect(menu).toContain("if(introVisible)return")});
   it("reserva una zona segura para desplegar descripción y alérgenos",()=>{expect(menu).toContain("100dvh-11rem-env(safe-area-inset-top)-env(safe-area-inset-bottom)");expect(menu).toContain("revealExpandedDetails");expect(menu).toContain("overscroll-contain")});
+  it("deja Cinemática solo con el HUD y sin capas decorativas",()=>{expect(menu).toContain('template.key!=="cinematic"');expect(vectors).toContain('if(motif==="cinema")return null')});
 });
