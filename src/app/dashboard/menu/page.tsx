@@ -12,7 +12,7 @@ export default async function Page(){
     supabase.from("product_recommendations").select("source_product_id,recommended_product_id,sort_order").eq("restaurant_id",restaurant.id).order("sort_order"),
   ]);
   const list=(products??[]).map(product=>({...product,recommended_product_ids:(recommendations??[]).filter(item=>item.source_product_id===product.id).map(item=>item.recommended_product_id)}));
-  const options=list.map(product=>({id:product.id,name:product.name}));
+  const options=list.map(product=>({id:product.id,name:product.name,imageUrl:product.image_url,videoUrl:product.video_url}));
   return <main className="mx-auto max-w-7xl p-4 md:p-6">
     <div className="flex flex-wrap items-end justify-between gap-3 border-b border-stone-200 pb-4">
       <div><BackButton fallback="/dashboard"/><h1 className="mt-4 text-2xl font-extrabold">Gestión de Carta</h1><p className="mt-1 text-sm text-slate-600">Crea platos, ordénalos y asigna una foto o vídeo a cada producto.</p></div>

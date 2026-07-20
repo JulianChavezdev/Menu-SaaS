@@ -22,6 +22,8 @@ test("description and allergens never overlap navigation across devices",async({
     await test.step(device.name,async()=>{
       await page.setViewportSize({width:device.width,height:device.height});
       await page.goto("/r/bistro-nube",{waitUntil:"domcontentloaded"});
+      const intro=page.getByRole("button",{name:"Abrir carta"});
+      if(await intro.isVisible().catch(()=>false))await intro.click();
       const menu=page.locator("main.public-menu");
       await expect(menu).toHaveAttribute("data-hydrated","true");
       const product=page.locator('section[id^="product-"]').first();
@@ -36,7 +38,7 @@ test("description and allergens never overlap navigation across devices",async({
       await expect.poll(()=>detailsPanel.evaluate(element=>element.scrollTop)).toBeGreaterThanOrEqual(0);
       const panelBox=await detailsPanel.boundingBox();
       const categoryBox=await page.getByRole("navigation",{name:"Categorías"}).boundingBox();
-      const addBox=await product.getByRole("button",{name:/^Añadir /}).boundingBox();
+      const addBox=await product.locator('button[title="Añadir"]').boundingBox();
       expect(panelBox!.y).toBeGreaterThanOrEqual(categoryBox!.y+categoryBox!.height+4);
       expect(panelBox!.y+panelBox!.height).toBeLessThanOrEqual(controlsBox!.y-4);
       expect(addBox!.y+addBox!.height).toBeLessThan(controlsBox!.y);

@@ -13,7 +13,12 @@ import {
 import { toast } from "sonner";
 import { createVideoPoster } from "@/lib/video-poster";
 
-type Option = { id: string; name: string };
+type Option = {
+  id: string;
+  name: string;
+  imageUrl?: string | null;
+  videoUrl?: string | null;
+};
 type Kind = "product-video" | "product-image" | "logo";
 
 const VIDEO_TYPES = ["video/mp4", "video/webm", "video/quicktime"];
@@ -175,12 +180,20 @@ export function MediaUpload({
     }
   }
 
-  const shown = preview || currentUrl;
+  const selectedProduct = productMedia
+    ? products.find((product) => product.id === productId)
+    : undefined;
+  const savedUrl = productMedia
+    ? video
+      ? selectedProduct?.videoUrl
+      : selectedProduct?.imageUrl
+    : currentUrl;
+  const shown = preview || savedUrl;
   return (
     <div className="glass rounded-xl p-4">
       <h2 className="mb-1 font-bold">{title}</h2>
       <p className="mb-3 text-xs text-slate-600">
-        {currentUrl
+        {savedUrl
           ? "Archivo actual guardado. Puedes reemplazarlo."
           : "Todavía no hay ningún archivo guardado."}
       </p>

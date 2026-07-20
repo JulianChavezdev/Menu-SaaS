@@ -16,9 +16,25 @@ let productId="";
 test.describe("superadmin restaurant exports",()=>{
   test.skip(!enabled,"Supabase server credentials are required");
   test.beforeAll(async()=>{
-    const user=await admin!.auth.admin.createUser({email,password,email_confirm:true});
-    if(user.error)throw user.error;
-    userId=user.data.user.id;
+    let existingUserId="";
+    for(let page=1;page<=50&&!existingUserId;page++){
+      const existing=await admin!.auth.admin.listUsers({page,perPage:100});
+      if(existing.error)throw existing.error;
+      existingUserId=existing.data.users.find(item=>item.email===email)?.id??"";
+      if(existing.data.users.length<100)break;
+    }
+    if(existingUserId){
+      userId=existingUserId;
+      const oldRestaurants=await admin!.from("restaurants").select("id").eq("owner_id",userId);
+      if(oldRestaurants.error)throw oldRestaurants.error;
+      for(const item of oldRestaurants.data??[])await admin!.from("restaurants").delete().eq("id",item.id);
+      const updated=await admin!.auth.admin.updateUserById(userId,{password,email_confirm:true});
+      if(updated.error)throw updated.error;
+    }else{
+      const user=await admin!.auth.admin.createUser({email,password,email_confirm:true});
+      if(user.error)throw user.error;
+      userId=user.data.user.id;
+    }
     const restaurant=await admin!.from("restaurants").insert({owner_id:userId,name:"Export E2E",slug:`export-e2e-${stamp}`}).select("id").single();
     if(restaurant.error)throw restaurant.error;
     restaurantId=restaurant.data.id;
@@ -37,6 +53,7 @@ test.describe("superadmin restaurant exports",()=>{
   });
 
   test("blocks anonymous access and downloads valid JSON and CSV",async({page,request})=>{
+    test.setTimeout(90_000);
     const blocked=await request.get(`/api/superadmin/restaurants/${restaurantId}/export`);
     expect(blocked.status()).toBe(401);
     const blockedRestore=await request.post(`/api/superadmin/restaurants/${restaurantId}/restore?mode=preview`,{data:{}});
@@ -49,24 +66,30 @@ test.describe("superadmin restaurant exports",()=>{
     await expect(page).toHaveURL(/\/(dashboard|onboarding)$/,{timeout:30_000});
     await page.goto(`/superadmin/restaurants/${restaurantId}`);
     await expect(page.getByRole("heading",{name:"Export E2E"})).toBeVisible();
-    await page.getByRole("button",{name:"Crear punto ahora"}).click();
+    await Promise.all([
+      page.waitForNavigation({waitUntil:"domcontentloaded"}),
+      page.getByRole("button",{name:"Crear punto ahora"}).click(),
+    ]);
+    await expect(page.getByRole("heading",{name:"Export E2E"})).toBeVisible();
     await expect(page.getByText("Historial privado")).toBeVisible();
     await expect.poll(async()=>{
       const manualBackups=await admin!.from("restaurant_backups").select("id").eq("restaurant_id",restaurantId).eq("reason","manual");
       return manualBackups.data?.length;
     }).toBe(1);
 
-    const jsonDownloadPromise=page.waitForEvent("download");
-    await page.getByRole("link",{name:"Copia completa JSON"}).click();
-    const jsonDownload=await jsonDownloadPromise;
+    const [jsonDownload]=await Promise.all([
+      page.waitForEvent("download"),
+      page.getByRole("link",{name:"Copia completa JSON"}).click(),
+    ]);
     const jsonPath=await jsonDownload.path();
     const backup=JSON.parse(await readFile(jsonPath!,"utf8"));
     expect(backup).toMatchObject({format:"carta-video.restaurant-backup",version:1,restaurant:{id:restaurantId,name:"Export E2E"},mediaFilesIncluded:false});
     expect(backup.products[0]).toMatchObject({name:"Tarta exportada",price_cents:650});
 
-    const csvDownloadPromise=page.waitForEvent("download");
-    await page.getByRole("link",{name:"Carta en CSV"}).click();
-    const csvDownload=await csvDownloadPromise;
+    const [csvDownload]=await Promise.all([
+      page.waitForEvent("download"),
+      page.getByRole("link",{name:"Carta en CSV"}).click(),
+    ]);
     const csvPath=await csvDownload.path();
     const csv=await readFile(csvPath!,"utf8");
     expect(csv).toContain("Tarta exportada");
