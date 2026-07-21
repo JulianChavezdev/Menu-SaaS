@@ -117,6 +117,7 @@ test.describe("public menu responsive contract",()=>{
 
     const burger=page.locator('section[id^="product-"]').filter({hasText:"Hamburguesa Nebulosa"}).first();
     await burger.locator("details > summary").click();
+    await expect(burger.locator("[data-description-backdrop]")).toBeVisible();
     await expect(burger.getByText(/Alérgenos · 3/)).toBeVisible();
     await expect(burger.getByText("Gluten",{exact:true})).toBeVisible();
     await expect(burger.getByText("Huevos",{exact:true})).toBeVisible();
