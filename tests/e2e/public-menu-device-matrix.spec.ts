@@ -27,6 +27,9 @@ test("description and allergens never overlap navigation across devices",async({
       const menu=page.locator("main.public-menu");
       await expect(menu).toHaveAttribute("data-hydrated","true");
       const product=page.locator('section[id^="product-"]').first();
+      await expect(product).toBeAttached();
+      await expect.poll(()=>product.evaluate(element=>element.clientHeight)).toBeGreaterThan(0);
+      expect(await product.evaluate(element=>element.clientHeight)).toBeCloseTo(await menu.evaluate(element=>element.clientHeight),0);
       const detailsPanel=product.locator("[data-product-details]");
       const description=product.locator("details").first();
       await description.locator("summary").dispatchEvent("click");
