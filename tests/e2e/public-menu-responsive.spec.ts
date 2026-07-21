@@ -103,7 +103,9 @@ test.describe("public menu responsive contract",()=>{
     await dismissIntro(page);
 
     await expect(page.locator("main.public-menu")).toHaveAttribute("data-hydrated","true");
-    await page.getByRole("button",{name:"Carta",exact:true}).dispatchEvent("click");
+    const menuButton=page.getByRole("button",{name:"Carta",exact:true});
+    await expect(menuButton).toBeVisible();
+    await menuButton.click();
     const catalog=page.locator('aside[aria-label="Carta"]');
     await expect(catalog).toBeVisible();
     await expect(catalog.getByText("Hamburguesas",{exact:true})).toBeVisible();

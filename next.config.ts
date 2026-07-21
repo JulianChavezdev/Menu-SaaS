@@ -31,6 +31,7 @@ const securityHeaders=[
 
 const nextConfig:NextConfig={
   ...(deploymentId?{deploymentId}:{}),
+  devIndicators:false,
   images:{remotePatterns:[{protocol:"https",hostname:"images.unsplash.com"}]},
   async redirects(){return[{source:"/manual-carta-video-restaurantes.pdf",destination:"/manual-menuly-restaurantes.pdf",permanent:true}]},
   async headers(){return[{source:"/:path*",headers:securityHeaders}]},
