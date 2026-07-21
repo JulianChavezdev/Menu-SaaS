@@ -1,0 +1,269 @@
+{"kind":"deck","id":"pr/4skcml","name":"Deck"}
+{"kind":"layout","layoutId":"d1ec7050-4212-4e2f-b440-94a71b2ca821","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"c9279f5e-2082-4b28-b152-eac99a35bbec","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/y3dmuc","slide":1,"title":"MENULY","textShapes":7}
+{"kind":"shape","id":"sh/n6t07alc","slide":1,"bbox":[0,0,1280,720]}
+{"kind":"shape","id":"sh/o7m1gfmx","slide":1,"bbox":[980,-120,360,360]}
+{"kind":"shape","id":"sh/p8vi9k3i","slide":1,"bbox":[-80,520,260,260]}
+{"kind":"textbox","id":"sh/ehkza54v","slide":1,"text":"MENULY","textPreview":"MENULY","textChars":6,"textLines":1,"bbox":[72,64,320,24]}
+{"kind":"textbox","id":"sh/fit03a5g","slide":1,"text":"Tu carta debería abrir el apetito antes de que llegue el plato","textPreview":"Tu carta debería abrir el apetito antes de que llegue el plato","textChars":62,"textLines":1,"bbox":[72,118,610,120]}
+{"kind":"textbox","id":"sh/0j2hcfm1","slide":1,"text":"Menuly convierte tu menú en una experiencia visual, rápida y fácil de gestionar.","textPreview":"Menuly convierte tu menú en una experiencia visual, rápida y fácil de gestionar.","textChars":80,"textLines":1,"bbox":[72,252,540,72]}
+{"kind":"shape","id":"sh/qd0z6l4z","slide":1,"bbox":[72,590,300,84]}
+{"kind":"textbox","id":"sh/re90zq5k","slide":1,"text":"Escanea, mira y decide.","textPreview":"Escanea, mira y decide.","textChars":23,"textLines":1,"bbox":[92,606,250,22]}
+{"kind":"textbox","id":"sh/3ydcby54","slide":1,"text":"Sin app. Desde el QR.","textPreview":"Sin app. Desde el QR.","textChars":21,"textLines":1,"bbox":[92,632,250,18]}
+{"kind":"shape","id":"sh/2x4bitoj","slide":1,"bbox":[402,590,260,84]}
+{"kind":"textbox","id":"sh/pkvud8na","slide":1,"text":"menuly.es","textPreview":"menuly.es","textChars":9,"textLines":1,"bbox":[430,606,200,22]}
+{"kind":"textbox","id":"sh/ojmtk36p","slide":1,"text":"+34 643 663 194","textPreview":"+34 643 663 194","textChars":15,"textLines":1,"bbox":[430,632,190,18]}
+{"kind":"image","id":"im/4zytgb29","slide":1,"name":"","geometry":"roundRect","alt":"Menuly mobile menu mockup","bbox":[720,120,430,560]}
+{"kind":"notes","id":"nt/y3dmuc","slide":1,"text":"Abrir con la idea central: Menuly no es una carta más, es una carta que vende mejor visualmente.\nLa portada marca el tono: premium, gastronómico, claro y muy comercial.\nNo entrar aún en funciones; solo promesa y contexto."}
+{"kind":"slide","id":"sl/49x651","slide":2,"title":"EL PROBLEMA","textShapes":9}
+{"kind":"textbox","id":"sh/rud4jyd0","slide":2,"text":"EL PROBLEMA","textPreview":"EL PROBLEMA","textChars":11,"textLines":1,"bbox":[64,28,280,26]}
+{"kind":"textbox","id":"sh/sv6ls3el","slide":2,"text":"Una lista de nombres no siempre vende un plato","textPreview":"Una lista de nombres no siempre vende un plato","textChars":46,"textLines":1,"bbox":[64,58,960,64]}
+{"kind":"textbox","id":"sh/twfml8v6","slide":2,"text":"El cliente entiende el menú, pero no siempre lo desea. La diferencia está en cómo lo ve.","textPreview":"El cliente entiende el menú, pero no siempre lo desea. La diferencia está en cómo lo ve.","textChars":88,"textLines":1,"bbox":[64,118,980,42]}
+{"kind":"shape","id":"sh/fyx4nydc","slide":2,"bbox":[778,160,438,470]}
+{"kind":"textbox","id":"sh/gz6lw3ex","slide":2,"text":"• No visualiza el plato.","textPreview":"• No visualiza el plato.","textChars":24,"textLines":1,"bbox":[806,194,380,32]}
+{"kind":"textbox","id":"sh/10fmp8vi","slide":2,"text":"• Los productos rentables pasan desapercibidos.","textPreview":"• Los productos rentables pasan desapercibidos.","textChars":47,"textLines":1,"bbox":[806,272,380,32]}
+{"kind":"textbox","id":"sh/u1k3i9wn","slide":2,"text":"• Actualizar la carta cuesta tiempo y dinero.","textPreview":"• Actualizar la carta cuesta tiempo y dinero.","textChars":45,"textLines":1,"bbox":[806,350,380,32]}
+{"kind":"textbox","id":"sh/v2tkbexs","slide":2,"text":"• No se sabe qué genera interés.","textPreview":"• No se sabe qué genera interés.","textChars":32,"textLines":1,"bbox":[806,428,380,32]}
+{"kind":"textbox","id":"sh/bi5o3qdk","slide":2,"text":"PDF y papel informan. Menuly persuade.","textPreview":"PDF y papel informan. Menuly persuade.","textChars":38,"textLines":1,"bbox":[806,520,370,58]}
+{"kind":"textbox","id":"sh/ahwnalcz","slide":2,"text":"Menuly • problema que resuelve","textPreview":"Menuly • problema que resuelve","textChars":30,"textLines":1,"bbox":[64,680,980,18]}
+{"kind":"image","id":"im/7e1c7its","slide":2,"name":"","geometry":"roundRect","alt":"PDF menu versus Menuly comparison","bbox":[64,160,678,470]}
+{"kind":"notes","id":"nt/49x651","slide":2,"text":"Subrayar que el dolor no es solo operativo, también comercial: un nombre no despierta apetito.\nLa comparación PDF vs Menuly debe ser la primera prueba visual."}
+{"kind":"slide","id":"sl/qhgk5t","slide":3,"title":"LA OPORTUNIDAD LOCAL","textShapes":17}
+{"kind":"textbox","id":"sh/w72h83eh","slide":3,"text":"LA OPORTUNIDAD LOCAL","textPreview":"LA OPORTUNIDAD LOCAL","textChars":20,"textLines":1,"bbox":[64,28,280,26]}
+{"kind":"textbox","id":"sh/v6tgfydw","slide":3,"text":"La restauración española ya es un mercado enorme y visual","textPreview":"La restauración española ya es un mercado enorme y visual","textChars":57,"textLines":1,"bbox":[64,58,960,64]}
+{"kind":"textbox","id":"sh/a5kz6twb","slide":3,"text":"Las cifras justifican una solución enfocada al sector. No es un nicho pequeño.","textPreview":"Las cifras justifican una solución enfocada al sector. No es un nicho pequeño.","textChars":78,"textLines":1,"bbox":[64,118,980,42]}
+{"kind":"shape","id":"sh/8j2h4je5","slide":3,"bbox":[530,172,310,158]}
+{"kind":"textbox","id":"sh/nitgbed0","slide":3,"text":"≈263.500","textPreview":"≈263.500","textChars":8,"textLines":1,"bbox":[548,188,274,56]}
+{"kind":"textbox","id":"sh/mhkf29wf","slide":3,"text":"establecimientos de restauración","textPreview":"establecimientos de restauración","textChars":32,"textLines":1,"bbox":[548,232,274,52]}
+{"kind":"textbox","id":"sh/lgby9ofu","slide":3,"text":"Fuente: Hostelería de España","textPreview":"Fuente: Hostelería de España","textChars":28,"textLines":1,"bbox":[548,308,274,14]}
+{"kind":"shape","id":"sh/0fix0je9","slide":3,"bbox":[860,172,310,158]}
+{"kind":"textbox","id":"sh/udcfi1k3","slide":3,"text":"≈81.000","textPreview":"≈81.000","textChars":7,"textLines":1,"bbox":[878,188,274,56]}
+{"kind":"textbox","id":"sh/velgb618","slide":3,"text":"restaurantes","textPreview":"restaurantes","textChars":12,"textLines":1,"bbox":[878,232,274,52]}
+{"kind":"textbox","id":"sh/gzexkb2t","slide":3,"text":"Fuente: Hostelería de España","textPreview":"Fuente: Hostelería de España","textChars":28,"textLines":1,"bbox":[878,308,274,14]}
+{"kind":"shape","id":"sh/h0nydgje","slide":3,"bbox":[530,350,310,158]}
+{"kind":"textbox","id":"sh/69cfe1kr","slide":3,"text":"116.200 M€","textPreview":"116.200 M€","textChars":10,"textLines":1,"bbox":[548,366,274,56]}
+{"kind":"textbox","id":"sh/7alw761c","slide":3,"text":"facturación del sector","textPreview":"facturación del sector","textChars":22,"textLines":1,"bbox":[548,410,274,52]}
+{"kind":"textbox","id":"sh/8buxgb2x","slide":3,"text":"Fuente: Hostelería de España","textPreview":"Fuente: Hostelería de España","textChars":28,"textLines":1,"bbox":[548,486,274,14]}
+{"kind":"shape","id":"sh/tc3e9gji","slide":3,"bbox":[860,350,310,158]}
+{"kind":"textbox","id":"sh/y5sfahkv","slide":3,"text":"35.872 M€","textPreview":"35.872 M€","textChars":9,"textLines":1,"bbox":[878,366,274,56]}
+{"kind":"textbox","id":"sh/z61w3m1g","slide":3,"text":"gasto fuera del hogar en 2024","textPreview":"gasto fuera del hogar en 2024","textChars":29,"textLines":1,"bbox":[878,410,274,52]}
+{"kind":"textbox","id":"sh/nahcbih8","slide":3,"text":"Fuente: MAPA, Informe 2024","textPreview":"Fuente: MAPA, Informe 2024","textChars":26,"textLines":1,"bbox":[878,486,274,14]}
+{"kind":"textbox","id":"sh/2p8b2x0n","slide":3,"text":"El restaurante compite por atención. Menuly la convierte en decisión.","textPreview":"El restaurante compite por atención. Menuly la convierte en decisión.","textChars":69,"textLines":1,"bbox":[530,546,640,34]}
+{"kind":"textbox","id":"sh/pczudszy","slide":3,"text":"Datos sectoriales usados en la diapositiva 3 y la página de fuentes.","textPreview":"Datos sectoriales usados en la diapositiva 3 y la página de fuentes.","textChars":68,"textLines":1,"bbox":[64,680,980,18]}
+{"kind":"image","id":"im/k3yhsni1","slide":3,"name":"","geometry":"roundRect","alt":"Spain silhouette","bbox":[58,170,430,430]}
+{"kind":"notes","id":"nt/qhgk5t","slide":3,"text":"La idea es dimensionar el mercado sin abrumar: España es enorme para un producto visual de restauración.\nMostrar solo cuatro cifras grandes y dejar la fuente en pequeño.\nNo añadir más datos aquí; el objetivo es oportunidad, no enciclopedia."}
+{"kind":"slide","id":"sl/ts8mcs","slide":4,"title":"QUÉ ES MENULY","textShapes":15}
+{"kind":"textbox","id":"sh/mt8z258b","slide":4,"text":"QUÉ ES MENULY","textPreview":"QUÉ ES MENULY","textChars":13,"textLines":1,"bbox":[64,28,280,26]}
+{"kind":"textbox","id":"sh/9wjidkr2","slide":4,"text":"Una carta que se ve, se entiende y se recuerda","textPreview":"Una carta que se ve, se entiende y se recuerda","textChars":46,"textLines":1,"bbox":[64,58,960,64]}
+{"kind":"textbox","id":"sh/8vah4fqh","slide":4,"text":"Sin descargar apps y desde cualquier dispositivo.","textPreview":"Sin descargar apps y desde cualquier dispositivo.","textChars":49,"textLines":1,"bbox":[64,118,980,42]}
+{"kind":"shape","id":"sh/zqh07q9k","slide":4,"bbox":[92,290,150,122]}
+{"kind":"textbox","id":"sh/yp8zylsf","slide":4,"text":"QR","textPreview":"QR","textChars":2,"textLines":1,"bbox":[110,314,114,30]}
+{"kind":"textbox","id":"sh/lszi90rq","slide":4,"text":"Escanea y abre.","textPreview":"Escanea y abre.","textChars":15,"textLines":1,"bbox":[110,348,114,36]}
+{"kind":"textbox","id":"sh/krqh0vq5","slide":4,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[248,336,30,24]}
+{"kind":"shape","id":"sh/jml0ju94","slide":4,"bbox":[276,290,150,122]}
+{"kind":"textbox","id":"sh/ilszap8j","slide":4,"text":"Carta visual","textPreview":"Carta visual","textChars":12,"textLines":1,"bbox":[294,314,114,30]}
+{"kind":"shape","id":"sh/8zqpc7a9","slide":4,"bbox":[294,348,114,36]}
+{"kind":"textbox","id":"sh/90z6lcru","slide":4,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[432,336,30,24]}
+{"kind":"shape","id":"sh/mx87ahsj","slide":4,"bbox":[460,290,150,122]}
+{"kind":"textbox","id":"sh/nyhojmt4","slide":4,"text":"Descubrimiento","textPreview":"Descubrimiento","textChars":14,"textLines":1,"bbox":[478,314,114,30]}
+{"kind":"shape","id":"sh/0v6587ad","slide":4,"bbox":[478,348,114,36]}
+{"kind":"textbox","id":"sh/lwf6hcby","slide":4,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[616,336,30,24]}
+{"kind":"shape","id":"sh/eton6xs7","slide":4,"bbox":[644,290,150,122]}
+{"kind":"textbox","id":"sh/zuxof2ts","slide":4,"text":"Información","textPreview":"Información","textChars":11,"textLines":1,"bbox":[662,314,114,30]}
+{"kind":"shape","id":"sh/cr654nah","slide":4,"bbox":[662,348,114,36]}
+{"kind":"textbox","id":"sh/dsf6dsbm","slide":4,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[800,336,30,24]}
+{"kind":"shape","id":"sh/to7mho3q","slide":4,"bbox":[828,290,150,122]}
+{"kind":"textbox","id":"sh/snyl8j25","slide":4,"text":"Carrito","textPreview":"Carrito","textChars":7,"textLines":1,"bbox":[846,314,114,30]}
+{"kind":"shape","id":"sh/rmp4felk","slide":4,"bbox":[846,348,114,36]}
+{"kind":"shape","id":"sh/6lg369kz","slide":4,"bbox":[170,462,940,118]}
+{"kind":"textbox","id":"sh/5knmdo3e","slide":4,"text":"El cliente mira el plato, revisa el precio, entiende los alérgenos y organiza su elección.","textPreview":"El cliente mira el plato, revisa el precio, entiende los alérgenos y organiza su elección.","textChars":90,"textLines":1,"bbox":[196,496,890,40]}
+{"kind":"textbox","id":"sh/4jel4j2t","slide":4,"text":"Todo queda en un recorrido simple y visual.","textPreview":"Todo queda en un recorrido simple y visual.","textChars":43,"textLines":1,"bbox":[196,544,700,18]}
+{"kind":"notes","id":"nt/ts8mcs","slide":4,"text":"Explicar que la secuencia es importante: QR, exploración visual, ficha clara, carrito orientativo.\nRemarcar que no es una app que haya que instalar."}
+{"kind":"slide","id":"sl/32h1k3","slide":5,"title":"EXPERIENCIA DEL COMENSAL","textShapes":12}
+{"kind":"textbox","id":"sh/6xw7mpgn","slide":5,"text":"EXPERIENCIA DEL COMENSAL","textPreview":"EXPERIENCIA DEL COMENSAL","textChars":24,"textLines":1,"bbox":[64,28,280,26]}
+{"kind":"textbox","id":"sh/t076x4ze","slide":5,"text":"Todo lo necesario para decidir mejor","textPreview":"Todo lo necesario para decidir mejor","textChars":36,"textLines":1,"bbox":[64,58,960,64]}
+{"kind":"textbox","id":"sh/szypozyt","slide":5,"text":"La carta combina estímulo visual y claridad práctica.","textPreview":"La carta combina estímulo visual y claridad práctica.","textChars":53,"textLines":1,"bbox":[64,118,980,42]}
+{"kind":"shape","id":"sh/i9w7i5gr","slide":5,"bbox":[478,214,150,48]}
+{"kind":"textbox","id":"sh/5wn6tkz2","slide":5,"text":"Vídeo","textPreview":"Vídeo","textChars":5,"textLines":1,"bbox":[490,227,126,18]}
+{"kind":"shape","id":"sh/4vepkfyx","slide":5,"bbox":[660,178,150,48]}
+{"kind":"textbox","id":"sh/3q983exg","slide":5,"text":"Categorías","textPreview":"Categorías","textChars":10,"textLines":1,"bbox":[672,191,126,18]}
+{"kind":"shape","id":"sh/2507u9gv","slide":5,"bbox":[850,214,150,48]}
+{"kind":"textbox","id":"sh/kz2tgbi5","slide":5,"text":"Precio","textPreview":"Precio","textChars":6,"textLines":1,"bbox":[862,227,126,18]}
+{"kind":"shape","id":"sh/l0bapwjq","slide":5,"bbox":[1040,290,150,48]}
+{"kind":"textbox","id":"sh/yxkbe10z","slide":5,"text":"Alérgenos","textPreview":"Alérgenos","textChars":9,"textLines":1,"bbox":[1052,303,126,18]}
+{"kind":"shape","id":"sh/zytsn61k","slide":5,"bbox":[1020,410,150,48]}
+{"kind":"textbox","id":"sh/cvitcri9","slide":5,"text":"Idiomas","textPreview":"Idiomas","textChars":7,"textLines":1,"bbox":[1032,423,126,18]}
+{"kind":"shape","id":"sh/xwralwju","slide":5,"bbox":[840,530,150,48]}
+{"kind":"textbox","id":"sh/at0rqh03","slide":5,"text":"Carrito","textPreview":"Carrito","textChars":7,"textLines":1,"bbox":[852,543,126,18]}
+{"kind":"shape","id":"sh/bu9sjm1o","slide":5,"bbox":[620,570,150,48]}
+{"kind":"textbox","id":"sh/o7i9orix","slide":5,"text":"Observaciones","textPreview":"Observaciones","textChars":13,"textLines":1,"bbox":[632,583,126,18]}
+{"kind":"shape","id":"sh/psrahcji","slide":5,"bbox":[474,430,150,48]}
+{"kind":"textbox","id":"sh/pojql8b6","slide":5,"text":"Logo","textPreview":"Logo","textChars":4,"textLines":1,"bbox":[486,443,126,18]}
+{"kind":"textbox","id":"sh/4napc3u1","slide":5,"text":"La carta acompaña la decisión, no la interrumpe.","textPreview":"La carta acompaña la decisión, no la interrumpe.","textChars":48,"textLines":1,"bbox":[500,110,460,32]}
+{"kind":"image","id":"im/qd0329of","slide":5,"name":"","geometry":"roundRect","alt":"Menuly mobile view","bbox":[60,168,370,488]}
+{"kind":"notes","id":"nt/32h1k3","slide":5,"text":"Acompañar el recorrido con el móvil grande a la izquierda y los elementos clave alrededor.\nPoco texto, mucho señalamiento visual."}
+{"kind":"slide","id":"sl/513o5j","slide":6,"title":"DOS FORMAS DE EXPLORAR","textShapes":9}
+{"kind":"textbox","id":"sh/rmpojy14","slide":6,"text":"DOS FORMAS DE EXPLORAR","textPreview":"DOS FORMAS DE EXPLORAR","textChars":22,"textLines":1,"bbox":[64,28,280,26]}
+{"kind":"textbox","id":"sh/snyps32p","slide":6,"text":"Impacto visual cuando apetece. Rapidez cuando se necesita.","textPreview":"Impacto visual cuando apetece. Rapidez cuando se necesita.","textChars":58,"textLines":1,"bbox":[64,58,960,64]}
+{"kind":"textbox","id":"sh/do76loju","slide":6,"text":"El cliente elige cómo consultar la carta sin perder contexto.","textPreview":"El cliente elige cómo consultar la carta sin perder contexto.","textChars":61,"textLines":1,"bbox":[64,118,980,42]}
+{"kind":"shape","id":"sh/ixwnm9k7","slide":6,"bbox":[60,170,526,458]}
+{"kind":"shape","id":"sh/3ypofe1s","slide":6,"bbox":[694,170,526,458]}
+{"kind":"textbox","id":"sh/4zy5oj2d","slide":6,"text":"Vista vertical","textPreview":"Vista vertical","textChars":14,"textLines":1,"bbox":[90,194,220,26]}
+{"kind":"textbox","id":"sh/5076hojy","slide":6,"text":"Vista listada","textPreview":"Vista listada","textChars":13,"textLines":1,"bbox":[724,194,220,26]}
+{"kind":"shape","id":"sh/2t07ydkr","slide":6,"bbox":[106,246,414,336]}
+{"kind":"shape","id":"sh/nu9ori1c","slide":6,"bbox":[740,246,414,336]}
+{"kind":"textbox","id":"sh/jidwnqtk","slide":6,"text":"Feed de producto","textPreview":"Feed de producto","textChars":16,"textLines":1,"bbox":[136,320,220,24]}
+{"kind":"textbox","id":"sh/ih4velsz","slide":6,"text":"Categorías + miniaturas","textPreview":"Categorías + miniaturas","textChars":23,"textLines":1,"bbox":[772,320,240,24]}
+{"kind":"textbox","id":"sh/5kvep0ba","slide":6,"text":"Vídeo vertical, producto protagonista y navegación rápida.","textPreview":"Vídeo vertical, producto protagonista y navegación rápida.","textChars":58,"textLines":1,"bbox":[136,364,320,70]}
+{"kind":"textbox","id":"sh/kjmdgvap","slide":6,"text":"Una lectura ágil para el cliente que va al grano.","textPreview":"Una lectura ágil para el cliente que va al grano.","textChars":49,"textLines":1,"bbox":[772,364,320,70]}
+{"kind":"notes","id":"nt/513o5j","slide":6,"text":"La diferencia no es tecnológica, es de contexto: cuando el usuario quiere inspiración, ve vídeo; cuando quiere rapidez, lista.\nMostrar dos modos en paralelo."}
+{"kind":"slide","id":"sl/k63yhg","slide":7,"title":"GESTIÓN SENCILLA","textShapes":13}
+{"kind":"textbox","id":"sh/qpkjapw7","slide":7,"text":"GESTIÓN SENCILLA","textPreview":"GESTIÓN SENCILLA","textChars":16,"textLines":1,"bbox":[64,28,280,26]}
+{"kind":"textbox","id":"sh/dcbi54vy","slide":7,"text":"Si sabes usar tu móvil, sabes gestionar Menuly","textPreview":"Si sabes usar tu móvil, sabes gestionar Menuly","textChars":46,"textLines":1,"bbox":[64,58,960,64]}
+{"kind":"textbox","id":"sh/cr21czed","slide":7,"text":"Un flujo corto para que el restaurante pueda editar sin fricción.","textPreview":"Un flujo corto para que el restaurante pueda editar sin fricción.","textChars":65,"textLines":1,"bbox":[64,118,980,42]}
+{"kind":"shape","id":"sh/3m90zuxw","slide":7,"bbox":[90,210,220,160]}
+{"kind":"shape","id":"sh/2l0j6pwb","slide":7,"bbox":[120,234,42,42]}
+{"kind":"textbox","id":"sh/pobi14vm","slide":7,"text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[132,246,18,16]}
+{"kind":"textbox","id":"sh/4n218zeh","slide":7,"text":"Crea categorías.","textPreview":"Crea categorías.","textChars":16,"textLines":1,"bbox":[110,288,178,60]}
+{"kind":"shape","id":"sh/nidkbed0","slide":7,"bbox":[370,210,220,160]}
+{"kind":"shape","id":"sh/mh4ji9wf","slide":7,"bbox":[400,234,42,42]}
+{"kind":"textbox","id":"sh/sred0val","slide":7,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[412,246,18,16]}
+{"kind":"textbox","id":"sh/dsne9gr6","slide":7,"text":"Añade productos.","textPreview":"Añade productos.","textChars":16,"textLines":1,"bbox":[390,288,178,60]}
+{"kind":"shape","id":"sh/qpwvylsf","slide":7,"bbox":[650,210,220,160]}
+{"kind":"shape","id":"sh/rq5w7q90","slide":7,"bbox":[680,234,42,42]}
+{"kind":"textbox","id":"sh/4nedwbap","slide":7,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[692,246,18,16]}
+{"kind":"textbox","id":"sh/5one5gra","slide":7,"text":"Sube vídeo o fotografía.","textPreview":"Sube vídeo o fotografía.","textChars":24,"textLines":1,"bbox":[670,288,178,60]}
+{"kind":"shape","id":"sh/i1cvu1sj","slide":7,"bbox":[930,210,220,160]}
+{"kind":"shape","id":"sh/3m5w3694","slide":7,"bbox":[960,234,42,42]}
+{"kind":"textbox","id":"sh/gzudsbad","slide":7,"text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[972,246,18,16]}
+{"kind":"textbox","id":"sh/h03e1wry","slide":7,"text":"Publica y comparte el QR.","textPreview":"Publica y comparte el QR.","textChars":25,"textLines":1,"bbox":[950,288,178,60]}
+{"kind":"shape","id":"sh/xgvu5sj2","slide":7,"bbox":[90,412,1100,142]}
+{"kind":"textbox","id":"sh/wfmtwn2h","slide":7,"text":"Editar precio, disponibilidad, descripciones y alérgenos en minutos.","textPreview":"Editar precio, disponibilidad, descripciones y alérgenos en minutos.","textChars":68,"textLines":1,"bbox":[124,442,1000,34]}
+{"kind":"textbox","id":"sh/budc3ilw","slide":7,"text":"Y mantener el QR siempre apuntando a la versión correcta.","textPreview":"Y mantener el QR siempre apuntando a la versión correcta.","textChars":57,"textLines":1,"bbox":[124,488,980,18]}
+{"kind":"notes","id":"nt/k63yhg","slide":7,"text":"El mensaje aquí es simple: la operación no exige formación técnica.\nHacer visible el flujo en 4 pasos y cerrar con la idea de edición rápida."}
+{"kind":"slide","id":"sl/ayxg23","slide":8,"title":"IDIOMAS Y ACCESIBILIDAD","textShapes":10}
+{"kind":"textbox","id":"sh/ud8b6pc7","slide":8,"text":"IDIOMAS Y ACCESIBILIDAD","textPreview":"IDIOMAS Y ACCESIBILIDAD","textChars":23,"textLines":1,"bbox":[64,28,280,26]}
+{"kind":"textbox","id":"sh/hgzuh4vi","slide":8,"text":"Tu carta también atiende al cliente extranjero","textPreview":"Tu carta también atiende al cliente extranjero","textChars":46,"textLines":1,"bbox":[64,58,960,64]}
+{"kind":"textbox","id":"sh/gfqt8zux","slide":8,"text":"La traducción ayuda a entender. El restaurante decide cómo y cuándo mostrarla.","textPreview":"La traducción ayuda a entender. El restaurante decide cómo y cuándo mostrarla.","textChars":78,"textLines":1,"bbox":[64,118,980,42]}
+{"kind":"shape","id":"sh/7qxcbadg","slide":8,"bbox":[74,180,500,420]}
+{"kind":"textbox","id":"sh/6pob25cv","slide":8,"text":"Selector de idioma","textPreview":"Selector de idioma","textChars":18,"textLines":1,"bbox":[104,212,240,28]}
+{"kind":"textbox","id":"sh/tczudkvm","slide":8,"text":"• Traducción automática del contenido.","textPreview":"• Traducción automática del contenido.","textChars":38,"textLines":1,"bbox":[104,266,380,32]}
+{"kind":"textbox","id":"sh/sr6t4fu1","slide":8,"text":"• Selector de idiomas opcional.","textPreview":"• Selector de idiomas opcional.","textChars":31,"textLines":1,"bbox":[104,320,380,32]}
+{"kind":"textbox","id":"sh/bm1cnedk","slide":8,"text":"• El restaurante puede revisar el texto.","textPreview":"• El restaurante puede revisar el texto.","textChars":40,"textLines":1,"bbox":[104,374,380,32]}
+{"kind":"textbox","id":"sh/qlsbe9cz","slide":8,"text":"• Alérgenos y descripciones quedan claros.","textPreview":"• Alérgenos y descripciones quedan claros.","textChars":42,"textLines":1,"bbox":[104,428,380,32]}
+{"kind":"shape","id":"sh/wni9gnm1","slide":8,"bbox":[638,178,578,422]}
+{"kind":"textbox","id":"sh/xorq9s36","slide":8,"text":"Una carta en el idioma correcto abre más conversación.","textPreview":"Una carta en el idioma correcto abre más conversación.","textChars":54,"textLines":1,"bbox":[684,226,450,58]}
+{"kind":"textbox","id":"sh/algrex4v","slide":8,"text":"No prometemos traducción perfecta. Prometemos una base útil, revisable y fácil de activar.","textPreview":"No prometemos traducción perfecta. Prometemos una base útil, revisable y fácil de activar.","textChars":90,"textLines":1,"bbox":[684,314,452,86]}
+{"kind":"notes","id":"nt/ayxg23","slide":8,"text":"Aclarar la política con honestidad: traducción automática con revisión opcional.\nNo exagerar. El beneficio es claridad para visitante y control para el restaurante."}
+{"kind":"slide","id":"sl/iww3n4","slide":9,"title":"ANALÍTICAS QUE SIRVEN PARA VENDER","textShapes":16}
+{"kind":"textbox","id":"sh/ihkjel43","slide":9,"text":"ANALÍTICAS QUE SIRVEN PARA VENDER","textPreview":"ANALÍTICAS QUE SIRVEN PARA VENDER","textChars":33,"textLines":1,"bbox":[64,28,280,26]}
+{"kind":"textbox","id":"sh/5kvip03u","slide":9,"text":"No solo sabes qué compran. Sabes qué despierta interés.","textPreview":"No solo sabes qué compran. Sabes qué despierta interés.","textChars":55,"textLines":1,"bbox":[64,58,960,64]}
+{"kind":"textbox","id":"sh/4jm1gvm9","slide":9,"text":"Las métricas ayudan a decidir qué destacar y qué mejorar.","textPreview":"Las métricas ayudan a decidir qué destacar y qué mejorar.","textChars":57,"textLines":1,"bbox":[64,118,980,42]}
+{"kind":"shape","id":"sh/vet0jqlc","slide":9,"bbox":[72,210,1136,240]}
+{"kind":"shape","id":"sh/udkjal47","slide":9,"bbox":[138,286,170,160]}
+{"kind":"textbox","id":"sh/hgbil03i","slide":9,"text":"Visitas","textPreview":"Visitas","textChars":7,"textLines":1,"bbox":[158,256,130,24]}
+{"kind":"textbox","id":"sh/gf21cvmx","slide":9,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[166,314,118,24]}
+{"kind":"shape","id":"sh/7a90f6lg","slide":9,"bbox":[388,286,170,250]}
+{"kind":"textbox","id":"sh/690z614v","slide":9,"text":"Reproducciones","textPreview":"Reproducciones","textChars":14,"textLines":1,"bbox":[408,256,130,24]}
+{"kind":"textbox","id":"sh/cn2p4fyt","slide":9,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[416,314,118,24]}
+{"kind":"shape","id":"sh/dobqdkfe","slide":9,"bbox":[638,286,170,190]}
+{"kind":"textbox","id":"sh/qlk725g3","slide":9,"text":"Vistas","textPreview":"Vistas","textChars":6,"textLines":1,"bbox":[658,256,130,24]}
+{"kind":"textbox","id":"sh/bmt8bax8","slide":9,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[666,314,118,24]}
+{"kind":"shape","id":"sh/ojip0vyx","slide":9,"bbox":[888,286,170,120]}
+{"kind":"textbox","id":"sh/pkbq90fi","slide":9,"text":"Añadidos al carrito","textPreview":"Añadidos al carrito","textChars":19,"textLines":1,"bbox":[908,256,130,24]}
+{"kind":"textbox","id":"sh/2h07y5gr","slide":9,"text":"→","textPreview":"→","textChars":1,"textLines":1,"bbox":[916,314,118,24]}
+{"kind":"shape","id":"sh/3i987ahc","slide":9,"bbox":[104,486,520,64]}
+{"kind":"textbox","id":"sh/8fm9czy1","slide":9,"text":"¿Qué platos atraen más miradas?","textPreview":"¿Qué platos atraen más miradas?","textChars":31,"textLines":1,"bbox":[126,506,480,20]}
+{"kind":"shape","id":"sh/9gvql4fm","slide":9,"bbox":[664,486,520,64]}
+{"kind":"textbox","id":"sh/hcrqp47q","slide":9,"text":"¿Cuáles se añaden más al carrito?","textPreview":"¿Cuáles se añaden más al carrito?","textChars":33,"textLines":1,"bbox":[686,506,480,20]}
+{"kind":"shape","id":"sh/wbipwzq5","slide":9,"bbox":[104,572,520,64]}
+{"kind":"textbox","id":"sh/va98nupk","slide":9,"text":"¿Qué productos necesitan mejor presentación?","textPreview":"¿Qué productos necesitan mejor presentación?","textChars":44,"textLines":1,"bbox":[126,592,480,20]}
+{"kind":"shape","id":"sh/u907up8f","slide":9,"bbox":[664,572,520,64]}
+{"kind":"textbox","id":"sh/98rqlk7u","slide":9,"text":"¿Qué objetivo trabajamos esta semana?","textPreview":"¿Qué objetivo trabajamos esta semana?","textChars":37,"textLines":1,"bbox":[686,592,480,20]}
+{"kind":"textbox","id":"sh/87ipsfq9","slide":9,"text":"Métricas orientadas a decisiones. Sin datos inventados.","textPreview":"Métricas orientadas a decisiones. Sin datos inventados.","textChars":55,"textLines":1,"bbox":[64,680,980,18]}
+{"kind":"notes","id":"nt/iww3n4","slide":9,"text":"No prometer aumento de ventas. Solo enseñar qué preguntas responde la analítica.\nEl embudo debe ser simple y la lista de preguntas muy práctica."}
+{"kind":"slide","id":"sl/d0qx0s","slide":10,"title":"VENTA ADICIONAL","textShapes":16}
+{"kind":"textbox","id":"sh/axoba5gr","slide":10,"text":"VENTA ADICIONAL","textPreview":"VENTA ADICIONAL","textChars":15,"textLines":1,"bbox":[64,28,280,26]}
+{"kind":"textbox","id":"sh/x0zu5kzi","slide":10,"text":"Da protagonismo a lo que quieres vender","textPreview":"Da protagonismo a lo que quieres vender","textChars":39,"textLines":1,"bbox":[64,58,960,64]}
+{"kind":"textbox","id":"sh/czqtcfyx","slide":10,"text":"Menuly ayuda a destacar platos, bebidas y postres con más intención.","textPreview":"Menuly ayuda a destacar platos, bebidas y postres con más intención.","textChars":68,"textLines":1,"bbox":[64,118,980,42]}
+{"kind":"shape","id":"sh/naxsfqhg","slide":10,"bbox":[76,230,248,232]}
+{"kind":"shape","id":"sh/29ob6lgv","slide":10,"bbox":[100,258,44,44]}
+{"kind":"textbox","id":"sh/pcfah0zm","slide":10,"text":"1","textPreview":"1","textChars":1,"textLines":1,"bbox":[112,271,20,16]}
+{"kind":"textbox","id":"sh/ob6t8vy1","slide":10,"text":"Entrante recomendado","textPreview":"Entrante recomendado","textChars":20,"textLines":1,"bbox":[100,326,196,60]}
+{"kind":"textbox","id":"sh/f6dsbqh4","slide":10,"text":"Presentación breve y visual.","textPreview":"Presentación breve y visual.","textChars":28,"textLines":1,"bbox":[100,396,196,42]}
+{"kind":"shape","id":"sh/e54b2lgz","slide":10,"bbox":[358,230,248,232]}
+{"kind":"shape","id":"sh/of6t0zit","slide":10,"bbox":[382,258,44,44]}
+{"kind":"textbox","id":"sh/pgfa94ze","slide":10,"text":"2","textPreview":"2","textChars":1,"textLines":1,"bbox":[394,271,20,16]}
+{"kind":"textbox","id":"sh/2d4byp03","slide":10,"text":"Bebida sugerida","textPreview":"Bebida sugerida","textChars":15,"textLines":1,"bbox":[382,326,196,60]}
+{"kind":"textbox","id":"sh/3exs7uh8","slide":10,"text":"Acompaña la recomendación.","textPreview":"Acompaña la recomendación.","textChars":26,"textLines":1,"bbox":[382,396,196,42]}
+{"kind":"shape","id":"sh/gbm9wzix","slide":10,"bbox":[640,230,248,232]}
+{"kind":"shape","id":"sh/1cva5kzi","slide":10,"bbox":[664,258,44,44]}
+{"kind":"textbox","id":"sh/ep4rup0r","slide":10,"text":"3","textPreview":"3","textChars":1,"textLines":1,"bbox":[676,271,20,16]}
+{"kind":"textbox","id":"sh/fads3uhc","slide":10,"text":"Postre complementario","textPreview":"Postre complementario","textChars":21,"textLines":1,"bbox":[664,326,196,60]}
+{"kind":"textbox","id":"sh/07qt8ji1","slide":10,"text":"Cierra la experiencia.","textPreview":"Cierra la experiencia.","textChars":22,"textLines":1,"bbox":[664,396,196,42]}
+{"kind":"shape","id":"sh/l8zahozm","slide":10,"bbox":[922,230,248,232]}
+{"kind":"shape","id":"sh/9sb25kne","slide":10,"bbox":[946,258,44,44]}
+{"kind":"textbox","id":"sh/8r21cfm9","slide":10,"text":"4","textPreview":"4","textChars":1,"textLines":1,"bbox":[958,271,20,16]}
+{"kind":"textbox","id":"sh/nqtk3a5o","slide":10,"text":"Producto con mayor margen","textPreview":"Producto con mayor margen","textChars":25,"textLines":1,"bbox":[946,326,196,60]}
+{"kind":"textbox","id":"sh/mpkjap43","slide":10,"text":"Más visibilidad, más atención.","textPreview":"Más visibilidad, más atención.","textChars":30,"textLines":1,"bbox":[946,396,196,42]}
+{"kind":"textbox","id":"sh/lobi1kni","slide":10,"text":"No garantizamos resultados. Sí damos más espacio a la decisión correcta.","textPreview":"No garantizamos resultados. Sí damos más espacio a la decisión correcta.","textChars":72,"textLines":1,"bbox":[96,500,1080,40]}
+{"kind":"notes","id":"nt/d0qx0s","slide":10,"text":"Enfatizar que Menuly no inventa ventas. Ayuda a dar protagonismo a lo rentable.\nMantener el lenguaje prudente: sugerir, no prometer."}
+{"kind":"slide","id":"sl/gqlugz","slide":11,"title":"PERSONALIZACIÓN","textShapes":8}
+{"kind":"textbox","id":"sh/c321wfmd","slide":11,"text":"PERSONALIZACIÓN","textPreview":"PERSONALIZACIÓN","textChars":15,"textLines":1,"bbox":[64,28,280,26]}
+{"kind":"textbox","id":"sh/b2tk3a5s","slide":11,"text":"Tu restaurante, tu estilo","textPreview":"Tu restaurante, tu estilo","textChars":25,"textLines":1,"bbox":[64,58,960,64]}
+{"kind":"textbox","id":"sh/q1kju547","slide":11,"text":"Siete plantillas y una identidad consistente para cada local.","textPreview":"Siete plantillas y una identidad consistente para cada local.","textChars":61,"textLines":1,"bbox":[64,118,980,42]}
+{"kind":"shape","id":"sh/0rm10zmp","slide":11,"bbox":[846,176,364,478]}
+{"kind":"textbox","id":"sh/z6dk7u54","slide":11,"text":"• Dos plantillas gratuitas.","textPreview":"• Dos plantillas gratuitas.","textChars":27,"textLines":1,"bbox":[878,212,290,32]}
+{"kind":"textbox","id":"sh/y54jyp4j","slide":11,"text":"• Cinco plantillas premium.","textPreview":"• Cinco plantillas premium.","textChars":27,"textLines":1,"bbox":[878,274,290,32]}
+{"kind":"textbox","id":"sh/1wrix0nq","slide":11,"text":"• Logo y URL personalizada.","textPreview":"• Logo y URL personalizada.","textChars":27,"textLines":1,"bbox":[878,336,290,32]}
+{"kind":"textbox","id":"sh/gvi1ovm5","slide":11,"text":"• Código QR propio.","textPreview":"• Código QR propio.","textChars":19,"textLines":1,"bbox":[878,398,290,32]}
+{"kind":"textbox","id":"sh/69gz6pcn","slide":11,"text":"• Estilo gastronómico premium.","textPreview":"• Estilo gastronómico premium.","textChars":30,"textLines":1,"bbox":[878,460,290,32]}
+{"kind":"image","id":"im/s32lwjyd","slide":11,"name":"","geometry":"roundRect","alt":"Menuly brand system board","bbox":[74,176,740,478]}
+{"kind":"notes","id":"nt/gqlugz","slide":11,"text":"La visualización aquí apoya la parte de marca y deja claro que Menuly no es una plantilla única.\nMencionar siete plantillas sin inventar nombres."}
+{"kind":"slide","id":"sl/6z0inw","slide":12,"title":"PRECIOS","textShapes":14}
+{"kind":"textbox","id":"sh/i54ri5cb","slide":12,"text":"PRECIOS","textPreview":"PRECIOS","textChars":7,"textLines":1,"bbox":[64,28,280,26]}
+{"kind":"textbox","id":"sh/5svqt0v2","slide":12,"text":"Un plan para cada momento","textPreview":"Un plan para cada momento","textChars":25,"textLines":1,"bbox":[64,58,960,64]}
+{"kind":"textbox","id":"sh/k7m9kvuh","slide":12,"text":"Tres opciones claras, con el plan Carta como referencia principal.","textPreview":"Tres opciones claras, con el plan Carta como referencia principal.","textChars":66,"textLines":1,"bbox":[64,118,980,42]}
+{"kind":"shape","id":"sh/7ud8vads","slide":12,"bbox":[74,190,352,430]}
+{"kind":"textbox","id":"sh/6t4rm5c7","slide":12,"text":"Prueba","textPreview":"Prueba","textChars":6,"textLines":1,"bbox":[102,220,260,26]}
+{"kind":"textbox","id":"sh/twfqxkvy","slide":12,"text":"0 €","textPreview":"0 €","textChars":3,"textLines":1,"bbox":[102,264,260,54]}
+{"kind":"textbox","id":"sh/svm9ofud","slide":12,"text":"7 días\n1 restaurante\n5 categorías\n1 producto por categoría","textPreview":"7 días | 1 restaurante | 5 categorías | 1 producto por categoría","textChars":58,"textLines":4,"bbox":[102,330,286,146]}
+{"kind":"shape","id":"sh/fyx8zud4","slide":12,"bbox":[462,190,352,430]}
+{"kind":"textbox","id":"sh/uxorqpcj","slide":12,"text":"Carta","textPreview":"Carta","textChars":5,"textLines":1,"bbox":[490,220,260,26]}
+{"kind":"textbox","id":"sh/wfa94jyl","slide":12,"text":"34,99 €/mes","textPreview":"34,99 €/mes","textChars":11,"textLines":1,"bbox":[490,264,260,54]}
+{"kind":"textbox","id":"sh/hgjadof6","slide":12,"text":"Hasta 100 productos\nCategorías ilimitadas\n7 plantillas\nAnalíticas\nSoporte","textPreview":"Hasta 100 productos | Categorías ilimitadas | 7 plantillas | Analíticas | Soporte","textChars":73,"textLines":5,"bbox":[490,330,286,146]}
+{"kind":"shape","id":"sh/udsr29gv","slide":12,"bbox":[490,510,186,34]}
+{"kind":"textbox","id":"sh/ve1sbex0","slide":12,"text":"Recomendado","textPreview":"Recomendado","textChars":11,"textLines":1,"bbox":[510,517,144,16]}
+{"kind":"shape","id":"sh/4ja98jyx","slide":12,"bbox":[850,190,352,430]}
+{"kind":"textbox","id":"sh/5kjahofi","slide":12,"text":"Llave en mano","textPreview":"Llave en mano","textChars":13,"textLines":1,"bbox":[878,220,260,26]}
+{"kind":"textbox","id":"sh/ihsr6tgr","slide":12,"text":"149,99 €/mes","textPreview":"149,99 €/mes","textChars":12,"textLines":1,"bbox":[878,264,260,54]}
+{"kind":"textbox","id":"sh/ji1sfexc","slide":12,"text":"Primer mes gratis\nGrabación y edición de vídeos\nHasta 4 vídeos por categoría\nConfiguración completa","textPreview":"Primer mes gratis | Grabación y edición de vídeos | Hasta 4 vídeos por categoría | Configuración completa","textChars":99,"textLines":4,"bbox":[878,330,286,146]}
+{"kind":"textbox","id":"sh/s7u9c3yt","slide":12,"text":"Plan anual Carta: 344,30 € en un único pago. Ahorro aproximado del 18 % frente al pago mensual.","textPreview":"Plan anual Carta: 344,30 € en un único pago. Ahorro aproximado del 18 % frente al pago mensual.","textChars":95,"textLines":1,"bbox":[74,646,980,18]}
+{"kind":"notes","id":"nt/6z0inw","slide":12,"text":"Los precios deben mostrarse exactamente como el texto del briefing.\nReforzar la opción Carta como el punto de equilibrio entre sencillez y valor."}
+{"kind":"slide","id":"sl/79a8lj","slide":13,"title":"EMPEZAR","textShapes":11}
+{"kind":"textbox","id":"sh/bqxsvqpc","slide":13,"text":"EMPEZAR","textPreview":"EMPEZAR","textChars":7,"textLines":1,"bbox":[64,28,280,26]}
+{"kind":"textbox","id":"sh/cr694vqx","slide":13,"text":"Tu nueva carta puede empezar hoy","textPreview":"Tu nueva carta puede empezar hoy","textChars":32,"textLines":1,"bbox":[64,58,960,64]}
+{"kind":"textbox","id":"sh/xszax07i","slide":13,"text":"La activación es breve y orientada a que el restaurante vea valor pronto.","textPreview":"La activación es breve y orientada a que el restaurante vea valor pronto.","textChars":73,"textLines":1,"bbox":[64,118,980,42]}
+{"kind":"shape","id":"sh/21oryl8v","slide":13,"bbox":[74,188,598,398]}
+{"kind":"textbox","id":"sh/n2xs76pg","slide":13,"text":"1. Crear la cuenta.","textPreview":"1. Crear la cuenta.","textChars":19,"textLines":1,"bbox":[106,226,500,26]}
+{"kind":"textbox","id":"sh/o3690bql","slide":13,"text":"2. Configurar el restaurante.","textPreview":"2. Configurar el restaurante.","textChars":29,"textLines":1,"bbox":[106,284,500,26]}
+{"kind":"textbox","id":"sh/pofa9g76","slide":13,"text":"3. Añadir los primeros productos.","textPreview":"3. Añadir los primeros productos.","textChars":33,"textLines":1,"bbox":[106,342,500,26]}
+{"kind":"textbox","id":"sh/ex4ru18j","slide":13,"text":"4. Descargar el QR.","textPreview":"4. Descargar el QR.","textChars":19,"textLines":1,"bbox":[106,400,500,26]}
+{"kind":"textbox","id":"sh/fyds36p4","slide":13,"text":"5. Compartir la carta.","textPreview":"5. Compartir la carta.","textChars":22,"textLines":1,"bbox":[106,458,500,26]}
+{"kind":"shape","id":"sh/r2hofy5c","slide":13,"bbox":[708,188,490,398]}
+{"kind":"textbox","id":"sh/618nmto7","slide":13,"text":"Prueba Menuly gratis durante 7 días","textPreview":"Prueba Menuly gratis durante 7 días","textChars":35,"textLines":1,"bbox":[740,244,420,56]}
+{"kind":"textbox","id":"sh/t4z6h8ni","slide":13,"text":"menuly.es","textPreview":"menuly.es","textChars":9,"textLines":1,"bbox":[740,328,402,52]}
+{"kind":"textbox","id":"sh/s3q5o36x","slide":13,"text":"Soporte y acompañamiento desde el principio.","textPreview":"Soporte y acompañamiento desde el principio.","textChars":44,"textLines":1,"bbox":[740,388,390,44]}
+{"kind":"notes","id":"nt/79a8lj","slide":13,"text":"Cerrar con una llamada muy clara a prueba gratuita y puesta en marcha simple.\nLa URL y el soporte deben quedar muy visibles."}
+{"kind":"slide","id":"sl/21d8ip","slide":14,"title":"Haz que tus clientes elijan con los ojos","textShapes":5}
+{"kind":"shape","id":"sh/m9obupw3","slide":14,"bbox":[0,0,1280,720]}
+{"kind":"shape","id":"sh/9cfap4fu","slide":14,"bbox":[72,84,1136,552]}
+{"kind":"textbox","id":"sh/ob6twze9","slide":14,"text":"Haz que tus clientes elijan con los ojos","textPreview":"Haz que tus clientes elijan con los ojos","textChars":40,"textLines":1,"bbox":[122,142,680,72]}
+{"kind":"textbox","id":"sh/behsrux0","slide":14,"text":"Convierte cada plato en una oportunidad de venta.","textPreview":"Convierte cada plato en una oportunidad de venta.","textChars":49,"textLines":1,"bbox":[122,224,580,40]}
+{"kind":"textbox","id":"sh/ad8bypwf","slide":14,"text":"menuly.es","textPreview":"menuly.es","textChars":9,"textLines":1,"bbox":[122,312,240,24]}
+{"kind":"textbox","id":"sh/xgzat4fq","slide":14,"text":"+34 643 663 194","textPreview":"+34 643 663 194","textChars":15,"textLines":1,"bbox":[122,352,330,24]}
+{"kind":"shape","id":"sh/wfqt0zel","slide":14,"bbox":[122,432,220,48]}
+{"kind":"textbox","id":"sh/ridsfaxg","slide":14,"text":"Creamos juntos tu primera carta","textPreview":"Creamos juntos tu primera carta","textChars":31,"textLines":1,"bbox":[152,445,160,16]}
+{"kind":"image","id":"im/3qt0byxk","slide":14,"name":"","geometry":"roundRect","alt":"Menuly mobile final mockup","bbox":[844,146,260,420]}
+{"kind":"notes","id":"nt/21d8ip","slide":14,"text":"Cerrar con la emoción correcta: imagen, CTA y contacto.\nRecordar que el objetivo final es que el restaurante pruebe y contrate."}
