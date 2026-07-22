@@ -17,7 +17,7 @@ suite("privacy-safe menu analytics",()=>{
     const stamp=`${Date.now()}-${crypto.randomUUID()}`;const password=`Analytics-${crypto.randomUUID()}!`;let userId:string|undefined;let restaurantId:string|undefined;
     try{
       const user=await admin.auth.admin.createUser({email:`analytics-${stamp}@carta-video.local`,password,email_confirm:true});if(user.error)throw user.error;userId=user.data.user.id;
-      const restaurant=await admin.from("restaurants").insert({owner_id:userId,name:"Analytics test",slug:`analytics-${stamp}`,is_published:true}).select("id").single();if(restaurant.error)throw restaurant.error;restaurantId=restaurant.data.id;
+      const restaurant=await admin.from("restaurants").insert({owner_id:userId,name:"Analytics test",slug:`analytics-${stamp}`,is_published:true,subscription_status:"active"}).select("id").single();if(restaurant.error)throw restaurant.error;restaurantId=restaurant.data.id;
       const member=await admin.from("restaurant_members").insert({restaurant_id:restaurantId,user_id:userId,role:"owner"});if(member.error)throw member.error;
       const category=await admin.from("categories").insert({restaurant_id:restaurantId,name:"Analytics",slug:"analytics"}).select("id").single();if(category.error)throw category.error;
       const product=await admin.from("products").insert({restaurant_id:restaurantId,category_id:category.data.id,name:"Measured",price_cents:100,video_url:"https://example.com/video.mp4"}).select("id").single();if(product.error)throw product.error;

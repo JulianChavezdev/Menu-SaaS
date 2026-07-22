@@ -12,9 +12,8 @@ export async function GET(request:Request){
   if(!url||!key)return Response.json({ok:false,error:"Service unavailable"},{status:503});
   const admin=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
   try{
-    const [result,trials]=await Promise.all([executeTrashCleanup(admin),admin.rpc("process_expired_trials")]);
-    if(trials.error)throw trials.error;
-    return Response.json({ok:true,...result,expiredTrialsDeleted:Number(trials.data??0)});
+    const result=await executeTrashCleanup(admin);
+    return Response.json({ok:true,...result});
   }catch(error){
     console.error("trash_cleanup_failed",error instanceof Error?error.message:"unknown");
     return Response.json({ok:false,error:"Cleanup failed"},{status:500});

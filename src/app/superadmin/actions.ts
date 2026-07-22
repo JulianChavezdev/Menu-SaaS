@@ -11,7 +11,7 @@ import {isRestaurantTrashRestorable,restaurantRestoreDeadline} from "@/lib/resta
 import {automaticTranslationMap,translateFieldsToEnglish} from "@/lib/automatic-translation";
 
 const uuid=z.string().uuid();
-const status=z.enum(["trialing","active","past_due","canceled"]);
+const status=z.enum(["active","past_due","canceled"]);
 const paymentMethod=z.enum(["bizum","cash","bank_transfer","other"]);
 const restaurantInput=z.object({
   restaurant_id:uuid,name:z.string().trim().min(2).max(80),slug:z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),

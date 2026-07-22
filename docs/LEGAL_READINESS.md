@@ -36,9 +36,9 @@ Después de guardar las variables es necesario volver a desplegar, porque las va
 
 ## Límites reflejados en los textos
 
-- Prueba: siete días, un producto por categoría y un máximo de cinco categorías; después se elimina y permanece 30 días en papelera.
+- No se ofrece prueba gratuita; las cuentas nuevas permanecen pendientes de activación.
 - Plan Carta: 34,99 € al mes; anual con ahorro aproximado del 18 %.
-- Llave en mano: 149,99 € al mes, primer mes gratis, cuatro vídeos por un máximo de cinco categorías.
+- Configuración completa: 149,99 € en pago único, grabación, edición con IA, configuración de carta, primer mes incluido y segundo mes gratis; desde el tercero, Plan Carta a 34,99 €/mes.
 - Pagos manuales durante la beta, sin cargo automático.
 - El carrito es local y no envía comandas ni pedidos a cocina.
 - Las traducciones y los alérgenos deben ser revisados por el restaurante.

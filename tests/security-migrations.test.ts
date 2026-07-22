@@ -3,6 +3,7 @@ import {describe,expect,it} from "vitest";
 
 const migration=readFileSync("supabase/migrations/202607130004_security_hardening.sql","utf8");
 const trialMigration=readFileSync("supabase/migrations/202607190001_trial_one_product_per_category_and_expiration_trash.sql","utf8");
+const paidAccessMigration=readFileSync("supabase/migrations/202607220001_remove_free_trial.sql","utf8");
 
 describe("security hardening migration",()=>{
   it("requires a published restaurant for public categories and products",()=>{
@@ -29,5 +30,10 @@ describe("security hardening migration",()=>{
     expect(trialMigration).toContain("if tg_table_name = 'categories' then");
     expect(trialMigration).toContain("elsif tg_table_name = 'products'");
     expect(trialMigration).toContain("trial_policy_version");
+  });
+
+  it("supersedes trial limits with paid-only content creation",()=>{
+    expect(paidAccessMigration).toContain("current_status <> 'active'");
+    expect(paidAccessMigration).toContain("paid_access_policy_version");
   });
 });

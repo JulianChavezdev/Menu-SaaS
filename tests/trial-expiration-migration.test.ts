@@ -1,16 +1,17 @@
 import {readFileSync} from "node:fs";
 import {describe,expect,it} from "vitest";
 
-const trialSetup=readFileSync("supabase/migrations/202607160001_seven_day_trial.sql","utf8");
-const expiration=readFileSync("supabase/migrations/202607190001_trial_one_product_per_category_and_expiration_trash.sql","utf8");
+const migration=readFileSync("supabase/migrations/202607220001_remove_free_trial.sql","utf8");
 
-describe("trial expiration migration",()=>{
-  it("keeps the seven-day trial window",()=>expect(trialSetup).toContain("interval '7 days'"));
-  it("backs up and deletes expired trial restaurants",()=>{
-    expect(expiration).toContain("restaurant.deletion_backup_created");
-    expect(expiration).toContain("'reason', 'trial_expired'");
-    expect(expiration).toContain("delete from public.restaurants");
-    expect(expiration).toContain("interval '30 days'");
+describe("paid access migration",()=>{
+  it("makes paid activation the default",()=>{
+    expect(migration).toContain("alter column subscription_status set default 'past_due'");
+    expect(migration).toContain("alter column status set default 'past_due'");
   });
-  it("never deletes the permanent showcase",()=>expect(expiration).toContain("restaurant.slug <> 'bistro-nube'"));
+  it("preserves legacy data while disabling trial publication",()=>{
+    expect(migration).toContain("where subscription_status = 'trialing'");
+    expect(migration).toContain("publication_suspended_for_payment = true");
+    expect(migration).not.toContain("delete from public.restaurants");
+  });
+  it("requires Plan Carta for new content",()=>expect(migration).toContain("An active Plan Carta is required"));
 });

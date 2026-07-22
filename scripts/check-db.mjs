@@ -146,6 +146,13 @@ const checks=[
     migration:"202607190002_restaurant_slug_aliases.sql",
     run:()=>supabase.from("restaurant_slug_aliases").select("slug",{head:true}).limit(1),
   },
+  {
+    migration:"202607220001_remove_free_trial.sql",
+    run:async()=>{
+      const {data,error}=await supabase.rpc("paid_access_policy_version");
+      return {error:error??(data===20260722?null:new Error("Unexpected paid access policy version"))};
+    },
+  },
 ];
 
 const pending=[];

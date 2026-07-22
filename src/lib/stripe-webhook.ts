@@ -1,6 +1,6 @@
 import {createHmac,timingSafeEqual} from "node:crypto";
 
-export type LocalSubscriptionStatus="trialing"|"active"|"past_due"|"canceled";
+export type LocalSubscriptionStatus="active"|"past_due"|"canceled";
 
 export function verifyStripeSignature(payload:string,header:string,secret:string,now=Math.floor(Date.now()/1000),tolerance=300){
   const values=header.split(",").map(part=>part.trim().split("=",2));
@@ -16,7 +16,7 @@ export function verifyStripeSignature(payload:string,header:string,secret:string
 
 export function mapStripeSubscriptionStatus(status:string):LocalSubscriptionStatus{
   if(status==="active")return "active";
-  if(status==="trialing")return "trialing";
+  if(status==="trialing")return "past_due";
   if(status==="canceled"||status==="incomplete_expired")return "canceled";
   return "past_due";
 }

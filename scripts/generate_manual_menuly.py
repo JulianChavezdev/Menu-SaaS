@@ -313,10 +313,10 @@ PAGES = [
         ("Administrador","Puede gestionar además configuraciones y miembros permitidos."),
         ("Cambiar o eliminar","Actualiza el rol o retira el acceso cuando sea necesario."),
     ], tip="Aplica el permiso mínimo necesario y elimina accesos de personas que ya no trabajen contigo."),
-    dict(section="Suscripción", title="Prueba, plan y sugerencias", subtitle="Consulta el estado del servicio y envía ideas directamente al equipo de Menuly.", visual="billing", steps=[
-        ("Prueba de 7 días","Permite 1 producto por categoría y un máximo de 5 categorías."),
-        ("Fin de prueba","Sin plan activo, la carta se elimina y pasa 30 días a la papelera."),
-        ("Plan activo","Muestra el acceso profesional y las plantillas disponibles."),
+    dict(section="Suscripción", title="Activación, plan y sugerencias", subtitle="Consulta el estado del servicio y envía ideas directamente al equipo de Menuly.", visual="billing", steps=[
+        ("Activación pendiente","Sin un plan activo no se puede crear ni publicar contenido."),
+        ("Plan Carta","Incluye las funciones profesionales por 34,99 EUR al mes."),
+        ("Configuración completa","Incluye grabación, edición con IA, montaje y dos meses de Plan Carta."),
         ("Enviar sugerencia","Escribe qué añadirías, quitarías o mejorarías y pulsa Enviar."),
     ], tip="Durante la beta los pagos se registran manualmente. Menuly no realiza cargos automáticos."),
     dict(section="Rutina", title="Revisión antes del servicio", subtitle="Cinco minutos de comprobación evitan errores visibles durante la hora punta.", visual="check", steps=[
@@ -365,7 +365,7 @@ def draw_visual(c: canvas.Canvas, kind: str, x: float, y: float, w: float, h: fl
             if i<2:
                 c.setStrokeColor(LINE); c.line(x+w/2,cy-8,x+w/2,cy-33)
     elif kind == "billing":
-        for i,(label,value,tone) in enumerate((("Prueba","7 días",ORANGE),("Por categoría","1 producto",YELLOW),("Categorías","máximo 5",GREEN))):
+        for i,(label,value,tone) in enumerate((("Plan Carta","34,99 EUR/mes",ORANGE),("Configuración","149,99 EUR",YELLOW),("Incluye","2 meses",GREEN))):
             by=y+h-92-i*88
             rounded(c,x+18,by,w-36,66,WHITE,radius=10,stroke=LINE)
             text(c,label,x+32,by+42,7,MUTED,True); text(c,value,x+32,by+19,13,tone,True)

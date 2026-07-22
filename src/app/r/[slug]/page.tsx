@@ -2,7 +2,6 @@ import {notFound,permanentRedirect} from "next/navigation";
 import {createClient as createServerClient} from "@/lib/supabase/server";
 import {createClient as createSupabaseClient} from "@supabase/supabase-js";
 import {getSupabaseSecretKey} from "@/lib/supabase/admin-env";
-import {trialIsExpired} from "@/lib/trial-expiration";
 import {demoProducts,demoRestaurant} from "@/lib/demo";
 import {VideoMenu} from "@/components/menu/video-menu";
 import type {Metadata} from "next";
@@ -29,15 +28,11 @@ export default async function PublicMenu({params,searchParams}:{params:Promise<{
   const {slug}=await params;
   const preview=(await searchParams).preview==="landing";
   if(slug==="bistro-nube"&&!process.env.NEXT_PUBLIC_SUPABASE_URL){const previewProducts=preview?demoProducts.map((product,index)=>index===0?{...product,video_url:LANDING_PREVIEW_VIDEO}:product):demoProducts;return <VideoMenu restaurant={demoRestaurant} products={previewProducts} analyticsEnabled={!preview} introEnabled={!preview}/>}
-  const key=getSupabaseSecretKey();
   const supabase=await menuDatabase();
   const {data:restaurant}=await retryPublicQuery(()=>supabase.from("restaurants").select("*,subscriptions(status,current_period_end)").eq("slug",slug).maybeSingle());
   if(!restaurant){const{data:alias}=await supabase.from("restaurant_slug_aliases").select("restaurants(slug)").eq("slug",slug).maybeSingle();const related=Array.isArray(alias?.restaurants)?alias.restaurants[0]:alias?.restaurants;const target=related as {slug?:string}|null;if(target?.slug&&target.slug!==slug)permanentRedirect(`/r/${target.slug}${preview?"?preview=landing":""}`);notFound()}
-  const relation=Array.isArray(restaurant.subscriptions)?restaurant.subscriptions[0]:restaurant.subscriptions;
-  const expiredTrial=trialIsExpired(relation?.status,relation?.current_period_end);
-  const paymentRequired=Boolean(restaurant.publication_suspended_for_payment)||restaurant.subscription_status==="past_due";
-  if(expiredTrial&&key)await supabase.rpc("process_expired_trials");
-  if(!restaurant.is_published||paymentRequired||expiredTrial)return <main className="grid min-h-screen place-items-center bg-slate-950 p-6 text-center"><div className="max-w-md"><h1 className="text-3xl font-bold">Carta no disponible</h1><p className="mt-2 text-slate-300">{expiredTrial?"El periodo de prueba ha terminado y la carta se ha eliminado.":paymentRequired?"El restaurante debe registrar un pago para volver a publicar la carta.":"Este restaurante todavía no ha publicado su carta."}</p></div></main>;
+  const paymentRequired=Boolean(restaurant.publication_suspended_for_payment)||restaurant.subscription_status!=="active";
+  if(!restaurant.is_published||paymentRequired)return <main className="grid min-h-screen place-items-center bg-slate-950 p-6 text-center"><div className="max-w-md"><h1 className="text-3xl font-bold">Carta no disponible</h1><p className="mt-2 text-slate-300">{paymentRequired?"El restaurante debe activar o renovar su plan para publicar la carta.":"Este restaurante todavía no ha publicado su carta."}</p></div></main>;
   const {data:products}=await supabase.from("products").select("*,categories!inner(*)").eq("restaurant_id",restaurant.id).eq("is_available",true).eq("categories.is_active",true).order("sort_order");
   if(!products?.length)return <main className="grid min-h-screen place-items-center bg-slate-950 p-6 text-center"><div className="glass max-w-md rounded-2xl p-6"><h1 className="text-3xl font-bold">{restaurant.name}</h1><p className="mt-3 text-slate-300">La carta todavía no tiene productos disponibles.</p></div></main>;
   const {data:recommendations}=await supabase.from("product_recommendations").select("source_product_id,recommended_product_id,sort_order").eq("restaurant_id",restaurant.id).order("sort_order");

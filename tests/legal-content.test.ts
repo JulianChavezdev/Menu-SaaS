@@ -13,7 +13,7 @@ describe("legal publication safeguards",()=>{
 
   it.each(["legal","privacidad","cookies","condiciones","encargo-datos"])("protects /%s until identity is complete",route=>{
     const source=read(`src/app/${route}/page.tsx`);
-    expect(source).toContain("if(!identity.complete)notFound()");
+    expect(source).toMatch(/if\s*\(!identity\.complete\)\s*notFound\(\)/);
   });
 
   it("does not describe the cart as an order",()=>{
@@ -24,6 +24,6 @@ describe("legal publication safeguards",()=>{
 
   it("makes the restaurant responsible for allergen review",()=>{
     const terms=read("src/app/condiciones/page.tsx");
-    expect(terms).toContain("La información de alérgenos la proporciona y valida exclusivamente el restaurante");
+    expect(terms.replace(/\s+/g," ")).toContain("La información de alérgenos la proporciona y valida exclusivamente el restaurante");
   });
 });

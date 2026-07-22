@@ -74,8 +74,7 @@ export function buildRestorePreview(backup:RestaurantRestoreBackup,current:Curre
   const backupProductIds=new Set(backup.products.map(item=>item.id));
   const changedSettings=comparedFields.filter(field=>backup.restaurant[field]!==current[field]);
   const mediaReferences=backup.products.filter(product=>product.video_url||product.video_path||product.image_url||product.image_path).length+(backup.restaurant.logo_url?1:0);
-  const productsByCategory=backup.products.reduce((counts,product)=>counts.set(product.category_id,(counts.get(product.category_id)??0)+1),new Map<string,number>());
-  const exceedsPlan=current.subscription_status!=="active"&&(backup.categories.length>5||backup.products.length>5||[...productsByCategory.values()].some(count=>count>1));
+  const exceedsPlan=current.subscription_status!=="active"&&(backup.categories.length>0||backup.products.length>0);
   return{
     exportedAt:backup.exportedAt,
     sourceName:backup.restaurant.name,
@@ -84,6 +83,6 @@ export function buildRestorePreview(backup:RestaurantRestoreBackup,current:Curre
     changedSettings,
     mediaReferences,
     canApply:!exceedsPlan,
-    warnings:["Los miembros, pagos, plan, suspensión, slug, analíticas y auditoría actuales se conservarán.",...(mediaReferences?["La copia contiene referencias a medios, pero no los archivos. Se conservarán las URLs y rutas existentes."]:[]),...(exceedsPlan?["La copia supera el límite de 1 producto por categoría o 5 categorías del plan de prueba."]:[])],
+    warnings:["Los miembros, pagos, plan, suspensión, slug, analíticas y auditoría actuales se conservarán.",...(mediaReferences?["La copia contiene referencias a medios, pero no los archivos. Se conservarán las URLs y rutas existentes."]:[]),...(exceedsPlan?["Activa el Plan Carta antes de restaurar categorías o productos."]:[])],
   };
 }

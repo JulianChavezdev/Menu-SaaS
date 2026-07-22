@@ -149,7 +149,7 @@ export async function createRestaurant(form: FormData) {
     throw new Error("Revisa el nombre y el slug.");
   const { data: created, error } = await s
     .from("restaurants")
-    .insert({ name, slug, currency: "EUR", locale: "es-ES", owner_id: user.id })
+    .insert({ name, slug, currency: "EUR", locale: "es-ES", owner_id: user.id, subscription_status: "past_due" })
     .select("id")
     .single();
   if (error)
@@ -161,28 +161,14 @@ export async function createRestaurant(form: FormData) {
       .from("restaurant_members")
       .insert({ restaurant_id: created.id, user_id: user.id, role: "owner" });
     if (memberError) throw memberError;
-    const trialEnd = new Date(
-      Date.now() + 7 * 24 * 60 * 60 * 1000,
-    ).toISOString();
     const { error: subscriptionError } = await s.from("subscriptions").insert({
       restaurant_id: created.id,
-      provider: "stripe",
+      provider: "manual",
       plan: "carta",
-      status: "trialing",
-      current_period_end: trialEnd,
+      status: "past_due",
+      current_period_end: null,
     });
     if (subscriptionError) throw subscriptionError;
-    const { error: categoryError } = await s.from("categories").insert(
-      ["Entrantes", "Principales", "Postres", "Bebidas"].map(
-        (categoryName, sort_order) => ({
-          restaurant_id: created.id,
-          name: categoryName,
-          slug: categoryName.toLowerCase(),
-          sort_order,
-        }),
-      ),
-    );
-    if (categoryError) throw categoryError;
   } catch (setupError) {
     await s.from("restaurants").delete().eq("id", created.id);
     throw new Error(
@@ -227,7 +213,7 @@ export async function saveCategory(form: FormData) {
       .throwOnError();
   } else {
     if (!(await canAddCategory(restaurant.id)))
-      throw new Error("El plan de prueba permite hasta 5 categorías.");
+      throw new Error("Activa el Plan Carta para añadir categorías.");
     const { count } = await supabase
       .from("categories")
       .select("id", { count: "exact", head: true })
@@ -349,7 +335,7 @@ export async function saveProduct(form: FormData) {
       .throwOnError();
   } else {
     if (!(await canAddProduct(restaurant.id, values.category_id)))
-      throw new Error("La prueba permite 1 producto por categoría y un máximo de 5 categorías.");
+      throw new Error("Activa el Plan Carta para añadir productos.");
     const { data: created } = await supabase
       .from("products")
       .insert({
@@ -389,7 +375,7 @@ const PRODUCT_FORM_ERRORS = new Set([
   "Revisa los datos del producto.",
   "Un producto no puede recomendarse a sí mismo.",
   "Una recomendación no pertenece a este restaurante.",
-  "La prueba permite 1 producto por categoría y un máximo de 5 categorías.",
+  "Activa el Plan Carta para añadir productos.",
 ]);
 
 export async function submitProduct(form: FormData) {

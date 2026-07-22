@@ -49,35 +49,32 @@ test.describe("restaurant owner journey",()=>{
     await page.getByRole("button",{name:"Crear restaurante"}).click();
     await expect(page).toHaveURL(/\/dashboard$/);
 
+    const created=await admin!.from("restaurants").select("id,subscription_status").eq("slug",slug).single();
+    expect(created.data?.subscription_status).toBe("past_due");
+    await admin!.from("restaurants").update({subscription_status:"active",publication_suspended_for_payment:false}).eq("id",created.data!.id).throwOnError();
+    await admin!.from("subscriptions").update({status:"active",provider:"manual",current_period_end:new Date(Date.now()+60*24*60*60*1000).toISOString()}).eq("restaurant_id",created.data!.id).throwOnError();
+
     await page.getByRole("link",{name:"Carta",exact:true}).click();
+    await page.locator("details#categorias > summary").click();
+    const categoryForm=page.locator("details#categorias form");
+    await categoryForm.getByLabel("Nombre").fill("Entrantes");
+    await categoryForm.getByRole("button",{name:"Crear categoría"}).click();
+    await expect(page.getByText("Entrantes",{exact:true}).first()).toBeVisible();
     const productForm=page.locator("form").filter({has:page.getByRole("heading",{name:"Nuevo producto"})});
     await productForm.getByLabel("Nombre",{exact:true}).fill("Producto E2E");
-    await productForm.getByLabel("Descripción",{exact:true}).fill("Producto creado mediante una prueba completa.");
+    await productForm.getByLabel("Descripción",{exact:true}).fill("Producto creado mediante el flujo completo.");
     await expect(productForm.getByText("La versión inglesa se genera automáticamente al guardar.")).toBeVisible();
     await productForm.getByLabel("Precio (€)").fill("9.50");
     await productForm.getByLabel("Categoría").selectOption({label:"Entrantes"});
     await productForm.getByRole("button",{name:"Crear producto"}).click();
     await expect(page.getByRole("heading",{name:"Producto E2E",exact:true})).toBeVisible();
 
-    await productForm.getByLabel("Nombre",{exact:true}).fill("Producto bloqueado");
-    await productForm.getByLabel("Descripción",{exact:true}).fill("No debe superar el límite gratuito.");
-    await productForm.getByLabel("Precio (€)").fill("8.50");
-    await productForm.getByLabel("Categoría").selectOption({label:"Entrantes"});
-    await productForm.getByRole("button",{name:"Crear producto"}).click();
-    await expect(page.getByText("La prueba permite 1 producto por categoría y un máximo de 5 categorías.")).toBeVisible();
-    await expect(page.getByRole("heading",{name:"Producto bloqueado",exact:true})).toHaveCount(0);
-
-    await page.getByRole("link",{name:"Apariencia",exact:true}).click();
+    await page.goto("/dashboard/appearance");
     await page.waitForLoadState("networkidle");
-    await expect(page.getByRole("radio",{name:"Seleccionar plantilla Medianoche"})).toBeDisabled();
+    await expect(page.getByRole("radio",{name:"Seleccionar plantilla Medianoche"})).toBeEnabled();
     await page.getByRole("button",{name:"Vista previa de Medianoche"}).click();
     await expect(page.getByRole("dialog",{name:"Vista previa de Medianoche"})).toBeVisible();
     await page.getByRole("button",{name:"Cerrar vista previa"}).click();
-    await page.getByRole("link",{name:"Ver Plan Carta"}).click();
-    await expect(page).toHaveURL(/\/dashboard\/billing\?from=templates/);
-    await expect(page.getByText("Las plantillas premium forman parte del Plan Carta.")).toBeVisible();
-    await page.getByRole("link",{name:"Apariencia",exact:true}).click();
-    await page.waitForLoadState("networkidle");
     await page.locator('input[accept="image/jpeg,image/png,image/webp"]').setInputFiles({name:"logo.png",mimeType:"image/png",buffer:tinyPng});
     await expect(page.getByRole("button",{name:"Confirmar subida"})).toBeVisible();
     await page.getByRole("button",{name:"Confirmar subida"}).click();
@@ -104,6 +101,6 @@ test.describe("restaurant owner journey",()=>{
     await page.getByRole("button",{name:"Cambiar a inglés"}).click();
     await expect(page.getByRole("heading",{name:"Producto E2E"})).toBeVisible();
     await page.getByText("Description",{exact:true}).click();
-    await expect(page.getByText("Producto creado mediante una prueba completa.")).toBeVisible();
+    await expect(page.getByText("Producto creado mediante el flujo completo.")).toBeVisible();
   });
 });

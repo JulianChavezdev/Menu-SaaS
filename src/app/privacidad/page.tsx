@@ -1,18 +1,142 @@
-import type {Metadata} from "next";
-import {notFound} from "next/navigation";
-import {LegalPage, LegalSection} from "@/components/legal/legal-page";
-import {getLegalIdentity} from "@/lib/legal";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import { LegalPage, LegalSection } from "@/components/legal/legal-page";
+import { getLegalIdentity } from "@/lib/legal";
 
-export const metadata:Metadata={title:"Privacidad | Menuly",robots:{index:false,follow:false}};
+export const metadata: Metadata = {
+  title: "Privacidad | Menuly",
+  robots: { index: false, follow: false },
+};
 
-export default function PrivacyPage(){const identity=getLegalIdentity();if(!identity.complete)notFound();return <LegalPage title="Política de privacidad" summary="Explica qué datos trata Menuly, para qué se utilizan y cómo ejercer tus derechos." identity={identity}>
-  <LegalSection title="1. Responsable"><p>El responsable del tratamiento es {identity.name}, NIF/CIF {identity.taxId}, con domicilio en {identity.address} y correo de privacidad {identity.email}.</p></LegalSection>
-  <LegalSection title="2. Datos tratados"><ul className="list-disc space-y-2 pl-5"><li>Cuenta y acceso: correo, identificador de autenticación, roles y datos de seguridad.</li><li>Restaurante: nombre, datos de contacto, equipo, carta, productos, imágenes, vídeos y configuración.</li><li>Contratación y soporte: plan, estado del servicio, referencias de pago manual, comunicaciones e incidencias.</li><li>Uso técnico: registros de seguridad, navegador, dirección IP y datos necesarios para prestar y proteger el servicio.</li><li>Carta pública: eventos agregados como visualizaciones, reproducciones, productos añadidos, idioma y compartidos, asociados al restaurante o producto, no a una identidad directa del comensal.</li></ul><p className="mt-3">El carrito, sus cantidades y observaciones se guardan localmente en el dispositivo del comensal y no se envían a cocina ni forman un pedido.</p></LegalSection>
-  <LegalSection title="3. Finalidades y bases jurídicas"><ul className="list-disc space-y-2 pl-5"><li>Crear cuentas, prestar el servicio y atender solicitudes precontractuales o contractuales.</li><li>Cumplir obligaciones legales, contables y administrativas.</li><li>Proteger la plataforma, prevenir abusos y mejorarla sobre la base del interés legítimo, ponderado frente a los derechos de las personas.</li><li>Enviar comunicaciones opcionales o activar funciones que requieran consentimiento, cuando este se haya solicitado.</li></ul></LegalSection>
-  <LegalSection title="4. Destinatarios y proveedores"><p>Los datos pueden ser tratados por proveedores necesarios: Supabase (autenticación, base de datos y almacenamiento), Vercel (alojamiento), Cloudinary (contenido multimedia), DeepL (traducciones) y, solo cuando se active el cobro integrado, Stripe. También podrán comunicarse a administraciones y autoridades cuando exista obligación legal.</p></LegalSection>
-  <LegalSection title="5. Transferencias internacionales"><p>Algunos proveedores pueden tratar datos fuera del Espacio Económico Europeo. En esos casos se utilizarán mecanismos admitidos por el RGPD, como decisiones de adecuación o cláusulas contractuales tipo. La configuración y documentación de cada proveedor se revisará antes de activar nuevas funciones.</p></LegalSection>
-  <LegalSection title="6. Conservación"><p>Los datos se conservan mientras la cuenta o relación contractual esté activa y, después, durante los plazos necesarios para atender obligaciones legales o posibles reclamaciones. Al terminar una prueba gratuita sin activar un plan, la carta se elimina y permanece 30 días en una papelera administrativa recuperable antes del borrado definitivo. Las consultas se guardan mientras se tramitan; los registros de seguridad, solo el tiempo necesario para su finalidad, sin perjuicio de copias de seguridad temporales.</p></LegalSection>
-  <LegalSection title="7. Derechos"><p>Puedes solicitar acceso, rectificación, supresión, oposición, limitación y portabilidad, o retirar un consentimiento, escribiendo a {identity.email} e identificando tu solicitud. También puedes reclamar ante la <a className="underline" href="https://www.aepd.es" target="_blank" rel="noreferrer">Agencia Española de Protección de Datos</a>. No se toman decisiones exclusivamente automatizadas con efectos jurídicos sobre las personas.</p></LegalSection>
-  <LegalSection title="8. Restaurantes y comensales"><p>Cuando un restaurante incorpora datos personales propios o de terceros, el restaurante actúa como responsable y Menuly como encargado en los términos del acuerdo de encargo. El restaurante debe disponer de base jurídica y facilitar la información correspondiente. La carta no está dirigida específicamente a menores.</p></LegalSection>
-  <LegalSection title="9. Seguridad y cambios"><p>Se aplican controles de acceso, separación entre restaurantes, autenticación y otras medidas proporcionadas al riesgo. Ningún sistema es infalible. Esta política podrá actualizarse; los cambios relevantes se comunicarán por medios razonables.</p></LegalSection>
-</LegalPage>}
+export default function PrivacyPage() {
+  const identity = getLegalIdentity();
+  if (!identity.complete) notFound();
+  return (
+    <LegalPage
+      title="Política de privacidad"
+      summary="Explica qué datos trata Menuly, para qué se utilizan y cómo ejercer tus derechos."
+      identity={identity}
+    >
+      <LegalSection title="1. Responsable">
+        <p>
+          El responsable del tratamiento es {identity.name}, NIF/CIF{" "}
+          {identity.taxId}, con domicilio en {identity.address} y correo de
+          privacidad {identity.email}.
+        </p>
+      </LegalSection>
+      <LegalSection title="2. Datos tratados">
+        <ul className="list-disc space-y-2 pl-5">
+          <li>
+            Cuenta y acceso: correo, identificador de autenticación, roles y
+            datos de seguridad.
+          </li>
+          <li>
+            Restaurante: nombre, datos de contacto, equipo, carta, productos,
+            imágenes, vídeos y configuración.
+          </li>
+          <li>
+            Contratación y soporte: plan, estado del servicio, referencias de
+            pago manual, comunicaciones e incidencias.
+          </li>
+          <li>
+            Uso técnico: registros de seguridad, navegador, dirección IP y datos
+            necesarios para prestar y proteger el servicio.
+          </li>
+          <li>
+            Carta pública: eventos agregados como visualizaciones,
+            reproducciones, productos añadidos, idioma y compartidos, asociados
+            al restaurante o producto, no a una identidad directa del comensal.
+          </li>
+        </ul>
+        <p className="mt-3">
+          El carrito, sus cantidades y observaciones se guardan localmente en el
+          dispositivo del comensal y no se envían a cocina ni forman un pedido.
+        </p>
+      </LegalSection>
+      <LegalSection title="3. Finalidades y bases jurídicas">
+        <ul className="list-disc space-y-2 pl-5">
+          <li>
+            Crear cuentas, prestar el servicio y atender solicitudes
+            precontractuales o contractuales.
+          </li>
+          <li>Cumplir obligaciones legales, contables y administrativas.</li>
+          <li>
+            Proteger la plataforma, prevenir abusos y mejorarla sobre la base
+            del interés legítimo, ponderado frente a los derechos de las
+            personas.
+          </li>
+          <li>
+            Enviar comunicaciones opcionales o activar funciones que requieran
+            consentimiento, cuando este se haya solicitado.
+          </li>
+        </ul>
+      </LegalSection>
+      <LegalSection title="4. Destinatarios y proveedores">
+        <p>
+          Los datos pueden ser tratados por proveedores necesarios: Supabase
+          (autenticación, base de datos y almacenamiento), Vercel (alojamiento),
+          Cloudinary (contenido multimedia), DeepL (traducciones) y, solo cuando
+          se active el cobro integrado, Stripe. También podrán comunicarse a
+          administraciones y autoridades cuando exista obligación legal.
+        </p>
+      </LegalSection>
+      <LegalSection title="5. Transferencias internacionales">
+        <p>
+          Algunos proveedores pueden tratar datos fuera del Espacio Económico
+          Europeo. En esos casos se utilizarán mecanismos admitidos por el RGPD,
+          como decisiones de adecuación o cláusulas contractuales tipo. La
+          configuración y documentación de cada proveedor se revisará antes de
+          activar nuevas funciones.
+        </p>
+      </LegalSection>
+      <LegalSection title="6. Conservación">
+        <p>
+          Los datos se conservan mientras la cuenta o relación contractual esté
+          activa y, después, durante los plazos necesarios para atender
+          obligaciones legales o posibles reclamaciones. Las cuentas pendientes
+          de activación y las cartas dadas de baja podrán eliminarse tras un
+          plazo razonable de conservación, pasando antes por una papelera
+          administrativa recuperable cuando corresponda. Las consultas se
+          guardan mientras se tramitan; los registros de seguridad, solo el
+          tiempo necesario para su finalidad, sin perjuicio de copias de
+          seguridad temporales.
+        </p>
+      </LegalSection>
+      <LegalSection title="7. Derechos">
+        <p>
+          Puedes solicitar acceso, rectificación, supresión, oposición,
+          limitación y portabilidad, o retirar un consentimiento, escribiendo a{" "}
+          {identity.email} e identificando tu solicitud. También puedes reclamar
+          ante la{" "}
+          <a
+            className="underline"
+            href="https://www.aepd.es"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Agencia Española de Protección de Datos
+          </a>
+          . No se toman decisiones exclusivamente automatizadas con efectos
+          jurídicos sobre las personas.
+        </p>
+      </LegalSection>
+      <LegalSection title="8. Restaurantes y comensales">
+        <p>
+          Cuando un restaurante incorpora datos personales propios o de
+          terceros, el restaurante actúa como responsable y Menuly como
+          encargado en los términos del acuerdo de encargo. El restaurante debe
+          disponer de base jurídica y facilitar la información correspondiente.
+          La carta no está dirigida específicamente a menores.
+        </p>
+      </LegalSection>
+      <LegalSection title="9. Seguridad y cambios">
+        <p>
+          Se aplican controles de acceso, separación entre restaurantes,
+          autenticación y otras medidas proporcionadas al riesgo. Ningún sistema
+          es infalible. Esta política podrá actualizarse; los cambios relevantes
+          se comunicarán por medios razonables.
+        </p>
+      </LegalSection>
+    </LegalPage>
+  );
+}

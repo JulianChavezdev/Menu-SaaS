@@ -23,7 +23,7 @@ Aplica en orden todos los archivos de `supabase/migrations`. Después comprueba 
 npm run check:db
 ```
 
-La comprobación es de solo lectura e indica por nombre cualquier migración pendiente. También valida alérgenos y la eliminación recuperable al vencer la prueba de siete días. Las migraciones más recientes añaden traducciones, sincronización futura de Stripe, endurecimiento de RLS, límites de prueba, aislamiento entre restaurantes y suspensión administrativa.
+La comprobación es de solo lectura e indica por nombre cualquier migración pendiente. También valida alérgenos, acceso de pago, traducciones, sincronización futura de Stripe, endurecimiento de RLS, aislamiento entre restaurantes y suspensión administrativa.
 
 ## Plantillas e idiomas
 
@@ -61,7 +61,7 @@ La sustitución de un logo elimina el archivo anterior. Para auditar Storage man
 
 ## Planes y pagos
 
-La prueba dura **7 días** y admite **1 producto por categoría**, con un máximo de **5 categorías**. Al vencer, el restaurante y su carta se eliminan automáticamente y permanecen 30 días en la papelera administrativa antes del borrado definitivo. Estos límites se validan en servidor y en la base de datos.
+No existe prueba gratuita. Las cuentas nuevas quedan pendientes hasta activar el Plan Carta. La **Configuración completa** cuesta **149,99 € en pago único** e incluye grabación, edición con IA, montaje de la carta, primer mes incluido y segundo mes gratis; desde el tercero se aplica Plan Carta a **34,99 €/mes**.
 
 Cada producto admite los 14 grupos de alérgenos del anexo II del Reglamento (UE) 1169/2011. El restaurante los selecciona desde Carta y el cliente los consulta en una pestaña desplegable con aviso de confirmación al personal. La carta pública ofrece además una vista listada por categorías, con miniaturas y productos en dos columnas, accesible desde el control Carta.
 
@@ -84,7 +84,7 @@ Stripe queda preparado para una fase posterior, pero el checkout permanece desac
 - RLS oculta restaurantes no publicados, categorías inactivas y productos no disponibles.
 - Los roles se verifican en servidor y la pertenencia se valida por restaurante.
 - Los campos de propietario, plan y suscripción no pueden modificarse con un cliente autenticado.
-- Los límites de prueba y la relación producto-categoría se imponen en PostgreSQL.
+- El acceso de pago y la relación producto-categoría se imponen en PostgreSQL.
 - Las rutas de vídeos y logos se validan en servidor; el cliente no decide la URL persistida.
 - Nunca publiques `.env.local` ni expongas `SUPABASE_SECRET_KEY`, su alias heredado `SUPABASE_SERVICE_ROLE_KEY` o secretos de Stripe.
 
@@ -117,7 +117,7 @@ Cada producto puede recomendar hasta tres acompañamientos, bebidas o postres de
 
 El inicio del panel incluye una guía persistente de cinco pasos: logo, datos del local, primer producto, contenido visual y publicación. El progreso se calcula desde datos reales y siempre enlaza a la siguiente tarea pendiente.
 
-Analíticas incluye además un embudo desde la visita hasta el carrito, un resumen de los últimos siete días, recomendaciones accionables, objetivos semanales editables y un enlace para compartirlo por WhatsApp. El inicio reúne alertas priorizadas sobre publicación, prueba, contenido incompleto, tráfico y conversión. Suscripción incorpora un buzón privado de sugerencias; el superadmin puede clasificarlas, anotar decisiones y marcar su estado desde `/superadmin/feedback`, cuyo contador indica las pendientes.
+Analíticas incluye además un embudo desde la visita hasta el carrito, un resumen de los últimos siete días, recomendaciones accionables, objetivos semanales editables y un enlace para compartirlo por WhatsApp. El inicio reúne alertas priorizadas sobre pago, publicación, contenido incompleto, tráfico y conversión. Suscripción incorpora un buzón privado de sugerencias; el superadmin puede clasificarlas, anotar decisiones y marcar su estado desde `/superadmin/feedback`, cuyo contador indica las pendientes.
 
 ## Landing pública
 

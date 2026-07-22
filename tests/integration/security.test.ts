@@ -9,7 +9,7 @@ const serviceKey=process.env.SUPABASE_SECRET_KEY??process.env.SUPABASE_SERVICE_R
 const suite=url&&publicKey&&serviceKey?describe:describe.skip;
 
 suite("Supabase security hardening",()=>{
-  it("protects unpublished content, memberships, billing and trial limits",async context=>{
+  it("protects unpublished content, memberships, billing and paid access",async context=>{
     const admin=createClient(url!,serviceKey!,{auth:{persistSession:false,autoRefreshToken:false}});
     const probe=await admin.rpc("is_published_restaurant",{target:crypto.randomUUID()});
     if(probe.error){context.skip();return}
@@ -25,7 +25,7 @@ suite("Supabase security hardening",()=>{
       createdUsers.push(first.data.user.id,second.data.user.id);
 
       for(const [index,userId] of createdUsers.entries()){
-        const restaurant=await admin.from("restaurants").insert({owner_id:userId,name:`Security ${index}`,slug:`security-${index}-${stamp}`}).select("id").single();
+        const restaurant=await admin.from("restaurants").insert({owner_id:userId,name:`Security ${index}`,slug:`security-${index}-${stamp}`,subscription_status:"active"}).select("id").single();
         if(restaurant.error)throw restaurant.error;
         createdRestaurants.push(restaurant.data.id);
         const member=await admin.from("restaurant_members").insert({restaurant_id:restaurant.data.id,user_id:userId,role:"owner"});
@@ -64,8 +64,9 @@ suite("Supabase security hardening",()=>{
 
       const crossTenant=await admin.from("products").insert({restaurant_id:createdRestaurants[0],category_id:categories[1],name:"Cross tenant",price_cents:100});
       expect(crossTenant.error).not.toBeNull();
-      const overLimit=await admin.from("products").insert({restaurant_id:createdRestaurants[0],category_id:firstRestaurantCategories[0],name:"Second product in category",price_cents:100});
-      expect(overLimit.error).not.toBeNull();
+      await admin.from("restaurants").update({subscription_status:"past_due"}).eq("id",createdRestaurants[0]).throwOnError();
+      const pendingContent=await admin.from("categories").insert({restaurant_id:createdRestaurants[0],name:"Payment required",slug:`payment-required-${stamp}`});
+      expect(pendingContent.error).not.toBeNull();
     }finally{
       for(const restaurantId of createdRestaurants)await admin.from("restaurants").delete().eq("id",restaurantId);
       for(const userId of createdUsers)await admin.auth.admin.deleteUser(userId);

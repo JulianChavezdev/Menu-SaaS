@@ -10,7 +10,8 @@ Actualizado: 20 de julio de 2026.
 - Gestión de categorías, productos, alérgenos, disponibilidad, orden, traducción inglesa automática, fotografías y vídeos MP4/MOV con miniatura automática reemplazable.
 - Carta pública mobile-first con navegación vertical, catálogo listado en dos columnas, carrito local, observaciones, descripción y alérgenos desplegables.
 - Logo único, selector opcional español/inglés y siete plantillas: dos gratuitas y cinco premium.
-- Plan de prueba de 7 días limitado a 1 producto por categoría y 5 categorías; al vencer pasa a la papelera recuperable.
+- Sin prueba gratuita: las cuentas nuevas requieren activación de pago antes de crear o publicar contenido.
+- Configuración completa por 149,99 €: grabación, edición con IA, montaje y dos primeros meses de Plan Carta.
 - Panel de superadmin para métricas, capacidad, soporte, previsualización, suspensión, restauración y eliminación protegida.
 - Papelera con restauración temporal, purga diaria auditada y limpieza de archivos asociados.
 - Exportaciones, copias versionadas y copias automáticas diarias con retención.

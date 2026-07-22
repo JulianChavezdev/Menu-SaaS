@@ -24,7 +24,7 @@ suite("Storage upload hardening",()=>{
       if(user.error)throw user.error;
       userId=user.data.user.id;
 
-      const restaurant=await admin.from("restaurants").insert({owner_id:userId,name:"Storage test",slug:`storage-${stamp}`}).select("id").single();
+      const restaurant=await admin.from("restaurants").insert({owner_id:userId,name:"Storage test",slug:`storage-${stamp}`,subscription_status:"active"}).select("id").single();
       if(restaurant.error)throw restaurant.error;
       restaurantId=restaurant.data.id;
       const member=await admin.from("restaurant_members").insert({restaurant_id:restaurantId,user_id:userId,role:"owner"});

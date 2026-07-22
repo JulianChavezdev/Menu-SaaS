@@ -18,7 +18,7 @@ suite("resumable video upload",()=>{
     try{
       const created=await admin.auth.admin.createUser({email:`resumable-${stamp}@carta-video.local`,password,email_confirm:true});
       if(created.error)throw created.error;userId=created.data.user.id;
-      const restaurant=await admin.from("restaurants").insert({owner_id:userId,name:"Resumable test",slug:`resumable-${stamp}`}).select("id").single();
+      const restaurant=await admin.from("restaurants").insert({owner_id:userId,name:"Resumable test",slug:`resumable-${stamp}`,subscription_status:"active"}).select("id").single();
       if(restaurant.error)throw restaurant.error;restaurantId=restaurant.data.id;
       await admin.from("restaurant_members").insert({restaurant_id:restaurantId,user_id:userId,role:"owner"}).throwOnError();
       const category=await admin.from("categories").insert({restaurant_id:restaurantId,name:"Carta",slug:"carta"}).select("id").single();

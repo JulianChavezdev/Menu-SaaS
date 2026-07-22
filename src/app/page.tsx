@@ -1,35 +1,541 @@
 import Link from "next/link";
-import type {Metadata} from "next";
-import {ArrowRight,BarChart3,Check,ChevronRight,Languages,LayoutTemplate,MessageCircle,Play,QrCode,ShoppingBag,Sparkles,Users,Video} from "lucide-react";
-import {MarketingNav} from "@/components/marketing/marketing-nav";
-import {getLegalIdentity,legalLinks} from "@/lib/legal";
-import {BrandLogo} from "@/components/brand/brand-logo";
+import type { Metadata } from "next";
+import {
+  ArrowRight,
+  BarChart3,
+  Check,
+  ChevronRight,
+  Languages,
+  LayoutTemplate,
+  MessageCircle,
+  Play,
+  QrCode,
+  ShoppingBag,
+  Sparkles,
+  Users,
+  Video,
+} from "lucide-react";
+import { MarketingNav } from "@/components/marketing/marketing-nav";
+import { getLegalIdentity, legalLinks } from "@/lib/legal";
+import { BrandLogo } from "@/components/brand/brand-logo";
 
-export const metadata:Metadata={title:"Carta Digital",description:"Convierte cada plato en una experiencia visual. Carta digital mobile-first con vídeos, QR, carrito, traducción automática y analíticas."};
+export const metadata: Metadata = {
+  title: "Carta Digital",
+  description:
+    "Convierte cada plato en una experiencia visual. Carta digital mobile-first con vídeos, QR, carrito, traducción automática y analíticas.",
+};
 
-const features=[{icon:Video,title:"Vídeo vertical",text:"Cada plato se presenta a pantalla completa con una experiencia fluida y pensada para móvil."},{icon:LayoutTemplate,title:"7 plantillas",text:"Dos diseños gratuitos y cinco estilos premium para adaptar la carta a cada concepto gastronómico."},{icon:Languages,title:"Traducción automática",text:"El restaurante escribe en español y la versión inglesa se genera automáticamente."},{icon:ShoppingBag,title:"Carrito local",text:"Los clientes guardan platos, cantidades y observaciones sin enviar pedidos a cocina."},{icon:BarChart3,title:"Analíticas privadas",text:"Visualizaciones, reproducciones, carrito, compartidos y contactos sin cookies ni seguimiento personal."},{icon:Users,title:"Equipo y soporte",text:"Roles independientes y asistencia de superadmin sin compartir contraseñas."}];
-const faqs=[{q:"¿Necesito instalar una aplicación?",a:"No. El restaurante gestiona su carta desde el navegador y los clientes la abren escaneando un QR."},{q:"¿La carta funciona en cualquier móvil?",a:"Sí. Está diseñada mobile-first y en ordenador mantiene un marco de tamaño móvil para conservar la experiencia."},{q:"¿Los pedidos llegan a cocina?",a:"No. El carrito actual sirve para recordar productos, cantidades y observaciones. No envía comandas ni sustituye un TPV."},{q:"¿Puedo usar mis propios vídeos?",a:"Sí. Cada producto admite su vídeo vertical, que puede sustituirse desde el panel cuando quieras."},{q:"¿Tengo que traducir cada plato?",a:"No. Escribes en español y la traducción inglesa se genera automáticamente cuando el servicio está activado."},{q:"¿Puedo cambiar la carta después de publicarla?",a:"Siempre. Los cambios se reflejan en la misma URL y QR, sin necesidad de volver a imprimirlo."},{q:"¿Qué ocurre si la carta se cae o algo deja de funcionar?",a:"Tendrás soporte 24/7, todos los días de la semana. Revisaremos la incidencia y te ayudaremos a recuperar el servicio lo antes posible."}];
+const features = [
+  {
+    icon: Video,
+    title: "Vídeo vertical",
+    text: "Cada plato se presenta a pantalla completa con una experiencia fluida y pensada para móvil.",
+  },
+  {
+    icon: LayoutTemplate,
+    title: "7 plantillas",
+    text: "Dos diseños gratuitos y cinco estilos premium para adaptar la carta a cada concepto gastronómico.",
+  },
+  {
+    icon: Languages,
+    title: "Traducción automática",
+    text: "El restaurante escribe en español y la versión inglesa se genera automáticamente.",
+  },
+  {
+    icon: ShoppingBag,
+    title: "Carrito local",
+    text: "Los clientes guardan platos, cantidades y observaciones sin enviar pedidos a cocina.",
+  },
+  {
+    icon: BarChart3,
+    title: "Analíticas privadas",
+    text: "Visualizaciones, reproducciones, carrito, compartidos y contactos sin cookies ni seguimiento personal.",
+  },
+  {
+    icon: Users,
+    title: "Equipo y soporte",
+    text: "Roles independientes y asistencia de superadmin sin compartir contraseñas.",
+  },
+];
+const faqs = [
+  {
+    q: "¿Necesito instalar una aplicación?",
+    a: "No. El restaurante gestiona su carta desde el navegador y los clientes la abren escaneando un QR.",
+  },
+  {
+    q: "¿La carta funciona en cualquier móvil?",
+    a: "Sí. Está diseñada mobile-first y en ordenador mantiene un marco de tamaño móvil para conservar la experiencia.",
+  },
+  {
+    q: "¿Los pedidos llegan a cocina?",
+    a: "No. El carrito actual sirve para recordar productos, cantidades y observaciones. No envía comandas ni sustituye un TPV.",
+  },
+  {
+    q: "¿Puedo usar mis propios vídeos?",
+    a: "Sí. Cada producto admite su vídeo vertical, que puede sustituirse desde el panel cuando quieras.",
+  },
+  {
+    q: "¿Tengo que traducir cada plato?",
+    a: "No. Escribes en español y la traducción inglesa se genera automáticamente cuando el servicio está activado.",
+  },
+  {
+    q: "¿Puedo cambiar la carta después de publicarla?",
+    a: "Siempre. Los cambios se reflejan en la misma URL y QR, sin necesidad de volver a imprimirlo.",
+  },
+  {
+    q: "¿Qué ocurre si la carta se cae o algo deja de funcionar?",
+    a: "Tendrás soporte 24/7, todos los días de la semana. Revisaremos la incidencia y te ayudaremos a recuperar el servicio lo antes posible.",
+  },
+];
 
-export default function Home(){const contactEmail=process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim();const legalIdentity=getLegalIdentity();return <main className="saas-light min-w-0 overflow-x-clip bg-[#f4f1eb] text-slate-950"><a href="#contenido" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-slate-950">Saltar al contenido</a><MarketingNav/>
-  <section id="inicio" className="relative isolate scroll-mt-20 overflow-hidden pt-24 lg:min-h-screen lg:pt-28"><div className="absolute inset-0 -z-20 bg-orange-50"/><div className="hidden"/><div id="contenido" className="mx-auto grid max-w-7xl min-w-0 items-center gap-10 px-4 pb-14 sm:px-6 sm:pb-16 md:grid-cols-[minmax(0,1.08fr)_minmax(250px,.72fr)] md:gap-6 lg:grid-cols-[1.08fr_.92fr] lg:gap-14 lg:pb-20"><div className="min-w-0"><span className="inline-flex items-center gap-2 rounded-full border border-orange-300/20 bg-orange-100 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] text-orange-800 sm:text-xs sm:tracking-[.18em]"><Sparkles size={14}/>La carta que entra por los ojos</span><h1 className="mt-6 max-w-4xl text-[clamp(2.75rem,13vw,4rem)] font-black leading-[.94] tracking-[-.055em] md:text-[clamp(3rem,6.8vw,4.25rem)] lg:mt-7 lg:text-7xl">Haz que tus platos <span className="text-orange-700">se vendan solos.</span></h1><p className="mt-6 max-w-2xl text-base leading-relaxed text-slate-700 sm:text-lg lg:mt-7 lg:text-xl">Una carta digital en vídeo, diseñada para móvil y preparada para convertir curiosidad en ganas de pedir.</p><div className="mt-7 flex flex-col gap-3 sm:flex-row md:flex-col lg:mt-9 lg:flex-row"><Link href="/r/bistro-nube" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 font-bold text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:bg-orange-100"><Play size={18} fill="currentColor"/>Probar la demo</Link><Link href="/register" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-stone-300 bg-white px-6 py-3 font-bold transition hover:border-orange-300/40 hover:bg-orange-50">Crear mi carta<ArrowRight size={18}/></Link></div><div className="mt-7 grid gap-2 text-xs text-slate-600 sm:grid-cols-3 md:grid-cols-1 lg:mt-8 lg:grid-cols-3"><span className="flex items-center gap-1.5"><Check className="shrink-0 text-emerald-500" size={15}/>Sin app para el cliente</span><span className="flex items-center gap-1.5"><Check className="shrink-0 text-emerald-500" size={15}/>QR siempre actualizado</span><span className="flex items-center gap-1.5"><Check className="shrink-0 text-emerald-500" size={15}/>Prueba sin tarjeta</span></div></div><PhoneShowcase/></div>
-    <div className="mx-auto grid max-w-7xl grid-cols-2 gap-px border-y border-stone-200 bg-stone-100 md:grid-cols-4"><Stat value="7" label="plantillas"/><Stat value="100" suffix="" label="productos en Plan Carta"/><Stat value="2" label="idiomas"/><Stat value="0" label="cookies de seguimiento"/></div></section>
-  <section id="producto" className="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20 lg:py-24"><div className="mx-auto max-w-7xl"><Eyebrow>Todo en un solo lugar</Eyebrow><SectionTitle>Mucho más que un PDF con QR.</SectionTitle><p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">Una experiencia de descubrimiento para el cliente y un panel de control real para el restaurante.</p><div className="mt-9 grid gap-4 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3">{features.map(({icon:Icon,title,text})=><article key={title} className="group relative min-w-0 overflow-hidden rounded-xl border border-stone-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-orange-300/30 sm:p-6"><div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-orange-100 blur-2xl transition group-hover:bg-orange-100"/><span className="grid h-11 w-11 place-items-center rounded-lg border border-stone-200 bg-stone-100 text-orange-700"><Icon size={21}/></span><h3 className="mt-5 text-xl font-bold">{title}</h3><p className="mt-2 text-sm leading-relaxed text-slate-600">{text}</p></article>)}</div></div></section>
-  <section id="como-funciona" className="scroll-mt-20 border-y border-stone-200 bg-stone-50 px-4 py-16 sm:px-6 sm:py-20 lg:py-24"><div className="mx-auto max-w-7xl"><Eyebrow>De cero a publicada</Eyebrow><SectionTitle>Tres pasos. Un QR. Infinitos cambios.</SectionTitle><div className="mt-9 grid gap-4 md:grid-cols-3 lg:mt-12 lg:gap-5">{[{n:"01",title:"Crea tu restaurante",text:"Configura tus datos, logo, idioma y el estilo que mejor representa tu marca."},{n:"02",title:"Sube carta y vídeos",text:"Añade categorías, productos, precios y vídeos verticales desde cualquier dispositivo."},{n:"03",title:"Comparte tu QR",text:"Publica una vez y actualiza siempre sobre la misma dirección, sin reimprimir."}].map((step,index)=><article key={step.n} className="relative rounded-xl border border-stone-200 bg-white p-5 shadow-sm sm:p-6 lg:p-7"><span className="text-4xl font-black text-orange-200 lg:text-5xl">{step.n}</span><h3 className="mt-4 text-lg font-bold lg:mt-5 lg:text-xl">{step.title}</h3><p className="mt-2 text-sm leading-relaxed text-slate-600">{step.text}</p>{index<2&&<ChevronRight className="absolute -right-4 top-1/2 z-10 hidden text-orange-700 lg:block"/>}</article>)}</div></div></section>
-  <section id="precios" className="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20 lg:py-24"><div className="mx-auto max-w-7xl text-center"><Eyebrow>Precios claros</Eyebrow><SectionTitle>Empieza pequeño. Activa cuando lo necesites.</SectionTitle><div className="mx-auto mt-9 grid max-w-6xl gap-5 text-left md:grid-cols-2 lg:mt-12 lg:grid-cols-3 lg:gap-6"><PriceCard name="Prueba" price="0 €" description="7 días para crear y validar tu primera carta." features={["1 restaurante durante 7 días","1 producto por categoría","Máximo 5 categorías","2 plantillas gratuitas","La carta se elimina al finalizar"]} cta="Empezar gratis" href="/register"/><PriceCard featured name="Plan Carta" price="34,99 €" suffix="/mes" note="344,30 €/año en un único pago · ahorra un 18%" description="La experiencia completa para una carta profesional." features={["Hasta 100 productos","Categorías ilimitadas","7 plantillas, incluidas premium","Vídeo, carrito, idiomas y analíticas","Equipo y soporte"]} cta="Solicitar activación" href="#contacto"/><PriceCard wide badge="Primer mes gratis" name="Llave en mano" price="149,99 €" suffix="/mes" description="Para empresas sin tiempo, equipo audiovisual ni contenido preparado." features={["Grabamos y editamos tus vídeos","Hasta 4 vídeos por categoría","Máximo 5 categorías","Configuramos la carta completa","Todo lo incluido en Plan Carta"]} cta="Quiero que lo hagáis por mí" href="#contacto"/></div><p className="mx-auto mt-5 max-w-3xl text-xs leading-relaxed text-slate-500">Durante la beta, la activación y los pagos se gestionan manualmente. No se realizará ningún cargo automático.</p></div></section>
-  <section id="faq" className="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20 lg:py-24"><div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[.65fr_1fr] lg:gap-10"><div><Eyebrow>Preguntas frecuentes</Eyebrow><SectionTitle>Todo lo que necesitas saber.</SectionTitle><p className="mt-4 text-sm leading-relaxed text-slate-600">Si tu duda no aparece aquí, puedes contactar desde la sección siguiente.</p></div><div className="space-y-3">{faqs.map(item=><details key={item.q} className="group rounded-xl border border-stone-200 bg-white p-4 shadow-sm sm:p-5"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold"><span>{item.q}</span><span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-stone-100 text-orange-700 transition group-open:rotate-45">+</span></summary><p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-600">{item.a}</p></details>)}</div></div></section>
-  <section id="contacto" className="scroll-mt-20 px-4 pb-16 pt-4 sm:px-6 sm:pb-20 lg:pb-24 lg:pt-8"><div className="relative mx-auto max-w-6xl overflow-hidden rounded-xl border border-orange-300/20 bg-orange-100 p-6 text-center sm:p-10 md:p-14"><div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,rgba(240,100,58,.20),transparent_50%)]"/><span className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-white text-orange-800"><QrCode/></span><h2 className="mx-auto mt-6 max-w-3xl text-3xl font-black leading-tight tracking-tight sm:text-5xl">¿Listo para que tu carta se vea como sabe?</h2><p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-slate-700 sm:text-base">Si tienes cualquier pregunta antes de empezar, escríbenos directamente por WhatsApp.</p><div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap"><a href="https://wa.me/34643663194?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20Menuly" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-emerald-400 px-5 py-3.5 font-bold text-emerald-950 transition hover:bg-emerald-300"><MessageCircle size={19}/>Preguntar por WhatsApp</a><Link href="/register" className="min-h-12 rounded-xl bg-white px-6 py-3.5 font-bold text-slate-950 hover:bg-orange-100">Crear mi carta</Link>{contactEmail&&<a href={`mailto:${contactEmail}?subject=${encodeURIComponent("Información sobre Menuly")}`} className="min-h-12 rounded-xl border border-stone-300 bg-white px-6 py-3.5 font-bold hover:bg-stone-100">Contactar por correo</a>}</div><p className="mt-4 text-xs leading-relaxed text-slate-500">WhatsApp: +34 643 663 194 · Soporte disponible 24/7</p></div></section>
-  <footer className="border-t border-stone-200 px-4 py-8 md:px-6"><div className="mx-auto flex max-w-7xl flex-col gap-4 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between"><div className="flex items-center gap-4"><BrandLogo className="w-[110px]"/><p>© {new Date().getFullYear()}. Cartas que despiertan el apetito.</p></div><div className="flex flex-wrap gap-4"><a href="#inicio" className="hover:text-slate-950">Inicio</a><a href="#precios" className="hover:text-slate-950">Precios</a><a href="#faq" className="hover:text-slate-950">FAQ</a><a href="/manual-menuly-restaurantes.pdf" target="_blank" rel="noopener noreferrer" className="hover:text-slate-950">Manual</a>{legalIdentity.complete&&legalLinks.slice(0,4).map(link=><Link key={link.href} href={link.href} className="hover:text-slate-950">{link.label}</Link>)}<Link href="/login" className="hover:text-slate-950">Acceder</Link></div></div></footer>
-  </main>}
+export default function Home() {
+  const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim();
+  const legalIdentity = getLegalIdentity();
+  return (
+    <main className="saas-light min-w-0 overflow-x-clip bg-[#f4f1eb] text-slate-950">
+      <a
+        href="#contenido"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-slate-950"
+      >
+        Saltar al contenido
+      </a>
+      <MarketingNav />
+      <section
+        id="inicio"
+        className="relative isolate scroll-mt-20 overflow-hidden pt-24 lg:min-h-screen lg:pt-28"
+      >
+        <div className="absolute inset-0 -z-20 bg-orange-50" />
+        <div className="hidden" />
+        <div
+          id="contenido"
+          className="mx-auto grid max-w-7xl min-w-0 items-center gap-10 px-4 pb-14 sm:px-6 sm:pb-16 md:grid-cols-[minmax(0,1.08fr)_minmax(250px,.72fr)] md:gap-6 lg:grid-cols-[1.08fr_.92fr] lg:gap-14 lg:pb-20"
+        >
+          <div className="min-w-0">
+            <span className="inline-flex items-center gap-2 rounded-full border border-orange-300/20 bg-orange-100 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] text-orange-800 sm:text-xs sm:tracking-[.18em]">
+              <Sparkles size={14} />
+              La carta que entra por los ojos
+            </span>
+            <h1 className="mt-6 max-w-4xl text-[clamp(2.75rem,13vw,4rem)] font-black leading-[.94] tracking-[-.055em] md:text-[clamp(3rem,6.8vw,4.25rem)] lg:mt-7 lg:text-7xl">
+              Haz que tus platos{" "}
+              <span className="text-orange-700">se vendan solos.</span>
+            </h1>
+            <p className="mt-6 max-w-2xl text-base leading-relaxed text-slate-700 sm:text-lg lg:mt-7 lg:text-xl">
+              Una carta digital en vídeo, diseñada para móvil y preparada para
+              convertir curiosidad en ganas de pedir.
+            </p>
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row md:flex-col lg:mt-9 lg:flex-row">
+              <Link
+                href="/r/bistro-nube"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 font-bold text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:bg-orange-100"
+              >
+                <Play size={18} fill="currentColor" />
+                Probar la demo
+              </Link>
+              <Link
+                href="/register"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-stone-300 bg-white px-6 py-3 font-bold transition hover:border-orange-300/40 hover:bg-orange-50"
+              >
+                Crear cuenta
+                <ArrowRight size={18} />
+              </Link>
+            </div>
+            <div className="mt-7 grid gap-2 text-xs text-slate-600 sm:grid-cols-3 md:grid-cols-1 lg:mt-8 lg:grid-cols-3">
+              <span className="flex items-center gap-1.5">
+                <Check className="shrink-0 text-emerald-500" size={15} />
+                Sin app para el cliente
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Check className="shrink-0 text-emerald-500" size={15} />
+                QR siempre actualizado
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Check className="shrink-0 text-emerald-500" size={15} />
+                Activación asistida
+              </span>
+            </div>
+          </div>
+          <PhoneShowcase />
+        </div>
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-px border-y border-stone-200 bg-stone-100 md:grid-cols-4">
+          <Stat value="7" label="plantillas" />
+          <Stat value="100" suffix="" label="productos en Plan Carta" />
+          <Stat value="2" label="idiomas" />
+          <Stat value="0" label="cookies de seguimiento" />
+        </div>
+      </section>
+      <section
+        id="producto"
+        className="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20 lg:py-24"
+      >
+        <div className="mx-auto max-w-7xl">
+          <Eyebrow>Todo en un solo lugar</Eyebrow>
+          <SectionTitle>Mucho más que un PDF con QR.</SectionTitle>
+          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
+            Una experiencia de descubrimiento para el cliente y un panel de
+            control real para el restaurante.
+          </p>
+          <div className="mt-9 grid gap-4 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3">
+            {features.map(({ icon: Icon, title, text }) => (
+              <article
+                key={title}
+                className="group relative min-w-0 overflow-hidden rounded-xl border border-stone-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-orange-300/30 sm:p-6"
+              >
+                <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-orange-100 blur-2xl transition group-hover:bg-orange-100" />
+                <span className="grid h-11 w-11 place-items-center rounded-lg border border-stone-200 bg-stone-100 text-orange-700">
+                  <Icon size={21} />
+                </span>
+                <h3 className="mt-5 text-xl font-bold">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                  {text}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+      <section
+        id="como-funciona"
+        className="scroll-mt-20 border-y border-stone-200 bg-stone-50 px-4 py-16 sm:px-6 sm:py-20 lg:py-24"
+      >
+        <div className="mx-auto max-w-7xl">
+          <Eyebrow>De cero a publicada</Eyebrow>
+          <SectionTitle>Tres pasos. Un QR. Infinitos cambios.</SectionTitle>
+          <div className="mt-9 grid gap-4 md:grid-cols-3 lg:mt-12 lg:gap-5">
+            {[
+              {
+                n: "01",
+                title: "Crea tu restaurante",
+                text: "Configura tus datos, logo, idioma y el estilo que mejor representa tu marca.",
+              },
+              {
+                n: "02",
+                title: "Sube carta y vídeos",
+                text: "Añade categorías, productos, precios y vídeos verticales desde cualquier dispositivo.",
+              },
+              {
+                n: "03",
+                title: "Comparte tu QR",
+                text: "Publica una vez y actualiza siempre sobre la misma dirección, sin reimprimir.",
+              },
+            ].map((step, index) => (
+              <article
+                key={step.n}
+                className="relative rounded-xl border border-stone-200 bg-white p-5 shadow-sm sm:p-6 lg:p-7"
+              >
+                <span className="text-4xl font-black text-orange-200 lg:text-5xl">
+                  {step.n}
+                </span>
+                <h3 className="mt-4 text-lg font-bold lg:mt-5 lg:text-xl">
+                  {step.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                  {step.text}
+                </p>
+                {index < 2 && (
+                  <ChevronRight className="absolute -right-4 top-1/2 z-10 hidden text-orange-700 lg:block" />
+                )}
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+      <section
+        id="precios"
+        className="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20 lg:py-24"
+      >
+        <div className="mx-auto max-w-7xl text-center">
+          <Eyebrow>Precios claros</Eyebrow>
+          <SectionTitle>
+            Elige cómo quieres poner en marcha tu carta.
+          </SectionTitle>
+          <div className="mx-auto mt-9 grid max-w-4xl gap-5 text-left md:grid-cols-2 lg:mt-12 lg:gap-6">
+            <PriceCard
+              featured
+              name="Plan Carta"
+              price="34,99 €"
+              suffix="/mes"
+              note="344,30 €/año en un único pago · ahorra un 18%"
+              description="La experiencia completa para gestionar tu carta profesional."
+              features={[
+                "Hasta 100 productos",
+                "Categorías ilimitadas",
+                "7 plantillas, incluidas premium",
+                "Vídeo, carrito, idiomas y analíticas",
+                "Equipo y soporte",
+              ]}
+              cta="Solicitar activación"
+              href="#contacto"
+            />
+            <PriceCard
+              badge="Segundo mes gratis"
+              name="Configuración completa"
+              price="149,99 €"
+              suffix=" pago único"
+              description="La ponemos en marcha por ti y te entregamos la carta lista para publicar."
+              features={[
+                "Grabación profesional de tus platos",
+                "Edición de vídeos con IA",
+                "Configuración completa de la carta",
+                "Primer mes de Plan Carta incluido",
+                "Segundo mes de Plan Carta gratis",
+                "Desde el tercer mes: 34,99 €/mes",
+              ]}
+              cta="Quiero la configuración completa"
+              href="#contacto"
+            />
+          </div>
+          <p className="mx-auto mt-5 max-w-3xl text-xs leading-relaxed text-slate-500">
+            La activación y los pagos se gestionan manualmente.
+            No se realizará ningún cargo automático.
+          </p>
+        </div>
+      </section>
+      <section
+        id="faq"
+        className="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20 lg:py-24"
+      >
+        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[.65fr_1fr] lg:gap-10">
+          <div>
+            <Eyebrow>Preguntas frecuentes</Eyebrow>
+            <SectionTitle>Todo lo que necesitas saber.</SectionTitle>
+            <p className="mt-4 text-sm leading-relaxed text-slate-600">
+              Si tu duda no aparece aquí, puedes contactar desde la sección
+              siguiente.
+            </p>
+          </div>
+          <div className="space-y-3">
+            {faqs.map((item) => (
+              <details
+                key={item.q}
+                className="group rounded-xl border border-stone-200 bg-white p-4 shadow-sm sm:p-5"
+              >
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
+                  <span>{item.q}</span>
+                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-stone-100 text-orange-700 transition group-open:rotate-45">
+                    +
+                  </span>
+                </summary>
+                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-600">
+                  {item.a}
+                </p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+      <section
+        id="contacto"
+        className="scroll-mt-20 px-4 pb-16 pt-4 sm:px-6 sm:pb-20 lg:pb-24 lg:pt-8"
+      >
+        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-xl border border-orange-300/20 bg-orange-100 p-6 text-center sm:p-10 md:p-14">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,rgba(240,100,58,.20),transparent_50%)]" />
+          <span className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-white text-orange-800">
+            <QrCode />
+          </span>
+          <h2 className="mx-auto mt-6 max-w-3xl text-3xl font-black leading-tight tracking-tight sm:text-5xl">
+            ¿Listo para que tu carta se vea como sabe?
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-slate-700 sm:text-base">
+            Si tienes cualquier pregunta antes de empezar, escríbenos
+            directamente por WhatsApp.
+          </p>
+          <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
+            <a
+              href="https://wa.me/34643663194?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20Menuly"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-emerald-400 px-5 py-3.5 font-bold text-emerald-950 transition hover:bg-emerald-300"
+            >
+              <MessageCircle size={19} />
+              Preguntar por WhatsApp
+            </a>
+            <Link
+              href="/register"
+              className="min-h-12 rounded-xl bg-white px-6 py-3.5 font-bold text-slate-950 hover:bg-orange-100"
+            >
+              Crear cuenta
+            </Link>
+            {contactEmail && (
+              <a
+                href={`mailto:${contactEmail}?subject=${encodeURIComponent("Información sobre Menuly")}`}
+                className="min-h-12 rounded-xl border border-stone-300 bg-white px-6 py-3.5 font-bold hover:bg-stone-100"
+              >
+                Contactar por correo
+              </a>
+            )}
+          </div>
+          <p className="mt-4 text-xs leading-relaxed text-slate-500">
+            WhatsApp: +34 643 663 194 · Soporte disponible 24/7
+          </p>
+        </div>
+      </section>
+      <footer className="border-t border-stone-200 px-4 py-8 md:px-6">
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4">
+            <BrandLogo className="w-[110px]" />
+            <p>
+              © {new Date().getFullYear()}. Cartas que despiertan el apetito.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-4">
+            <a href="#inicio" className="hover:text-slate-950">
+              Inicio
+            </a>
+            <a href="#precios" className="hover:text-slate-950">
+              Precios
+            </a>
+            <a href="#faq" className="hover:text-slate-950">
+              FAQ
+            </a>
+            <a
+              href="/manual-menuly-restaurantes.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-slate-950"
+            >
+              Manual
+            </a>
+            {legalIdentity.complete &&
+              legalLinks.slice(0, 4).map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="hover:text-slate-950"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            <Link href="/login" className="hover:text-slate-950">
+              Acceder
+            </Link>
+          </div>
+        </div>
+      </footer>
+    </main>
+  );
+}
 
-function PhoneShowcase(){return <div className="relative mx-auto w-full min-w-0 max-w-[430px] py-3 sm:py-5 lg:py-10">
-  <div className="absolute inset-x-8 bottom-4 top-16 -z-10 rounded-[50%] bg-orange-200/70 blur-3xl"/>
-  <div className="relative mx-auto aspect-[9/18.7] w-[min(78vw,310px)] rounded-[42px] border-[8px] border-[#171713] bg-[#171713] p-1 shadow-[0_30px_70px_rgba(68,44,24,.3)] ring-1 ring-black/20 md:w-[min(34vw,280px)] lg:w-[min(78vw,310px)] lg:rounded-[48px] lg:border-[9px]">
-    <span className="absolute -left-[13px] top-28 h-16 w-1.5 rounded-l bg-[#35352f]"/><span className="absolute -right-[13px] top-36 h-24 w-1.5 rounded-r bg-[#35352f]"/>
-    <div className="relative h-full overflow-hidden rounded-[34px] bg-stone-950 lg:rounded-[36px]"><iframe title="Vista móvil real de Menuly" src="/r/bistro-nube?preview=landing" loading="eager" allow="autoplay" tabIndex={-1} className="pointer-events-none h-full w-full border-0 bg-stone-950"/></div>
-  </div>
-  <p className="mx-auto mt-5 w-fit rounded-full border border-stone-200 bg-white px-4 py-2 text-center text-[11px] font-semibold text-slate-600 shadow-sm">Así verán tus clientes cada plato</p>
-</div>}
-function Eyebrow({children}:{children:React.ReactNode}){return <p className="text-xs font-bold uppercase tracking-[.2em] text-orange-700">{children}</p>}
-function SectionTitle({children}:{children:React.ReactNode}){return <h2 className="mt-4 max-w-3xl text-3xl font-black leading-tight tracking-[-.035em] sm:text-4xl lg:text-5xl">{children}</h2>}
-function Stat({value,suffix="+",label}:{value:string;suffix?:string;label:string}){return <div className="bg-white p-5 text-center"><strong className="text-2xl font-black">{value}{suffix}</strong><p className="mt-1 text-[10px] uppercase tracking-wider text-slate-500">{label}</p></div>}
-function PriceCard({name,price,suffix,note,description,features,cta,href,featured=false,badge,wide=false}:{name:string;price:string;suffix?:string;note?:string;description:string;features:string[];cta:string;href:string;featured?:boolean;badge?:string;wide?:boolean}){const label=badge??(featured?"Recomendado":null);return <article className={`relative flex min-w-0 flex-col rounded-xl border p-5 shadow-sm sm:p-7 ${wide?"md:col-span-2 lg:col-span-1":""} ${featured?"border-orange-300/40 bg-orange-100":"border-stone-200 bg-white"}`}>{label&&<span className={`absolute right-5 top-5 max-w-[45%] rounded-lg px-2.5 py-1 text-center text-[9px] font-black uppercase sm:right-6 sm:top-6 sm:px-3 sm:text-[10px] ${featured?"bg-orange-500 text-slate-950":"bg-emerald-400/15 text-emerald-800"}`}>{label}</span>}<h3 className="pr-[48%] text-xl font-bold">{name}</h3><div className="mt-4"><strong className="text-3xl font-black sm:text-4xl">{price}</strong>{suffix&&<span className="text-sm text-slate-600">{suffix}</span>}</div>{note&&<p className="mt-2 text-xs font-semibold text-orange-800">{note}</p>}<p className="mt-3 text-sm leading-relaxed text-slate-600">{description}</p><ul className="mt-6 flex-1 space-y-3 text-sm">{features.map(item=><li key={item} className="flex items-start gap-2"><Check className="mt-0.5 shrink-0 text-emerald-500" size={16}/><span>{item}</span></li>)}</ul><Link href={href} className={`mt-7 block rounded-xl px-5 py-3 text-center text-sm font-bold ${featured?"bg-white text-slate-950":"border border-stone-300 hover:bg-stone-100"}`}>{cta}</Link></article>}
+function PhoneShowcase() {
+  return (
+    <div className="relative mx-auto w-full min-w-0 max-w-[430px] py-3 sm:py-5 lg:py-10">
+      <div className="absolute inset-x-8 bottom-4 top-16 -z-10 rounded-[50%] bg-orange-200/70 blur-3xl" />
+      <div className="relative mx-auto aspect-[9/18.7] w-[min(78vw,310px)] rounded-[42px] border-[8px] border-[#171713] bg-[#171713] p-1 shadow-[0_30px_70px_rgba(68,44,24,.3)] ring-1 ring-black/20 md:w-[min(34vw,280px)] lg:w-[min(78vw,310px)] lg:rounded-[48px] lg:border-[9px]">
+        <span className="absolute -left-[13px] top-28 h-16 w-1.5 rounded-l bg-[#35352f]" />
+        <span className="absolute -right-[13px] top-36 h-24 w-1.5 rounded-r bg-[#35352f]" />
+        <div className="relative h-full overflow-hidden rounded-[34px] bg-stone-950 lg:rounded-[36px]">
+          <iframe
+            title="Vista móvil real de Menuly"
+            src="/r/bistro-nube?preview=landing"
+            loading="eager"
+            allow="autoplay"
+            tabIndex={-1}
+            className="pointer-events-none h-full w-full border-0 bg-stone-950"
+          />
+        </div>
+      </div>
+      <p className="mx-auto mt-5 w-fit rounded-full border border-stone-200 bg-white px-4 py-2 text-center text-[11px] font-semibold text-slate-600 shadow-sm">
+        Así verán tus clientes cada plato
+      </p>
+    </div>
+  );
+}
+function Eyebrow({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-xs font-bold uppercase tracking-[.2em] text-orange-700">
+      {children}
+    </p>
+  );
+}
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <h2 className="mt-4 max-w-3xl text-3xl font-black leading-tight tracking-[-.035em] sm:text-4xl lg:text-5xl">
+      {children}
+    </h2>
+  );
+}
+function Stat({
+  value,
+  suffix = "+",
+  label,
+}: {
+  value: string;
+  suffix?: string;
+  label: string;
+}) {
+  return (
+    <div className="bg-white p-5 text-center">
+      <strong className="text-2xl font-black">
+        {value}
+        {suffix}
+      </strong>
+      <p className="mt-1 text-[10px] uppercase tracking-wider text-slate-500">
+        {label}
+      </p>
+    </div>
+  );
+}
+function PriceCard({
+  name,
+  price,
+  suffix,
+  note,
+  description,
+  features,
+  cta,
+  href,
+  featured = false,
+  badge,
+  wide = false,
+}: {
+  name: string;
+  price: string;
+  suffix?: string;
+  note?: string;
+  description: string;
+  features: string[];
+  cta: string;
+  href: string;
+  featured?: boolean;
+  badge?: string;
+  wide?: boolean;
+}) {
+  const label = badge ?? (featured ? "Recomendado" : null);
+  return (
+    <article
+      className={`relative flex min-w-0 flex-col rounded-xl border p-5 shadow-sm sm:p-7 ${wide ? "md:col-span-2 lg:col-span-1" : ""} ${featured ? "border-orange-300/40 bg-orange-100" : "border-stone-200 bg-white"}`}
+    >
+      {label && (
+        <span
+          className={`absolute right-5 top-5 max-w-[45%] rounded-lg px-2.5 py-1 text-center text-[9px] font-black uppercase sm:right-6 sm:top-6 sm:px-3 sm:text-[10px] ${featured ? "bg-orange-500 text-slate-950" : "bg-emerald-400/15 text-emerald-800"}`}
+        >
+          {label}
+        </span>
+      )}
+      <h3 className="pr-[48%] text-xl font-bold">{name}</h3>
+      <div className="mt-4">
+        <strong className="text-3xl font-black sm:text-4xl">{price}</strong>
+        {suffix && <span className="text-sm text-slate-600">{suffix}</span>}
+      </div>
+      {note && (
+        <p className="mt-2 text-xs font-semibold text-orange-800">{note}</p>
+      )}
+      <p className="mt-3 text-sm leading-relaxed text-slate-600">
+        {description}
+      </p>
+      <ul className="mt-6 flex-1 space-y-3 text-sm">
+        {features.map((item) => (
+          <li key={item} className="flex items-start gap-2">
+            <Check className="mt-0.5 shrink-0 text-emerald-500" size={16} />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+      <Link
+        href={href}
+        className={`mt-7 block rounded-xl px-5 py-3 text-center text-sm font-bold ${featured ? "bg-white text-slate-950" : "border border-stone-300 hover:bg-stone-100"}`}
+      >
+        {cta}
+      </Link>
+    </article>
+  );
+}
