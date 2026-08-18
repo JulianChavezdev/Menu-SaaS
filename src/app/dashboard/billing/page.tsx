@@ -34,6 +34,7 @@ export default async function Page({
   const plan = planForStatus(status);
   const limits = PLAN_LIMITS[plan];
   const active = plan === "carta";
+  const ordering = Boolean(restaurant.ordering_enabled) && active;
   const productProgress = Math.min(
     100,
     limits.products ? Math.round(((products ?? 0) / limits.products) * 100) : 0,
@@ -101,7 +102,7 @@ export default async function Page({
                 {active ? "Plan activo" : "Pendiente"}
               </span>
               <h2 className="mt-3 text-2xl font-bold">
-                {active ? "Plan Carta" : "Sin plan activo"}
+                {ordering ? "Menuly Pedidos" : active ? "Plan Carta" : "Sin plan activo"}
               </h2>
               <p className="mt-1 text-sm text-slate-600">
                 {active
@@ -197,6 +198,9 @@ export default async function Page({
           </div>
         </section>
       </div>
+      <section className={`mt-5 border p-5 shadow-sm md:p-7 ${ordering?"border-emerald-300 bg-emerald-50":"border-stone-200 bg-white"}`}>
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><div><p className="text-xs font-bold uppercase tracking-[.16em] text-emerald-700">Menuly Pedidos · 59,99 €/mes</p><h2 className="mt-1 text-xl font-bold">Pedidos desde la mesa hasta cocina</h2><p className="mt-1 text-sm text-slate-600">QR por mesa, sesiones temporales, comandas en tiempo real y pantalla de cocina.</p></div>{ordering?<span className="shrink-0 bg-emerald-700 px-4 py-2 text-sm font-bold text-white">Plan activo</span>:<a href="https://wa.me/34643663194?text=Hola%2C%20quiero%20activar%20Menuly%20Pedidos" target="_blank" rel="noreferrer" className="shrink-0 bg-slate-900 px-4 py-3 text-center text-sm font-bold text-white">Solicitar activación</a>}</div>
+      </section>
       <FeedbackBox />
     </main>
   );

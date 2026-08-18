@@ -248,9 +248,8 @@ export default function Home() {
           <SectionTitle>
             Elige cómo quieres poner en marcha tu carta.
           </SectionTitle>
-          <div className="mx-auto mt-9 grid max-w-4xl gap-5 text-left md:grid-cols-2 lg:mt-12 lg:gap-6">
+          <div className="mx-auto mt-9 grid max-w-7xl gap-5 text-left md:grid-cols-3 lg:mt-12 lg:gap-6">
             <PriceCard
-              featured
               name="Plan Carta"
               price="34,99 €"
               suffix="/mes"
@@ -267,6 +266,24 @@ export default function Home() {
               href="#contacto"
             />
             <PriceCard
+              featured
+              badge="Más operativo"
+              name="Menuly Pedidos"
+              price="59,99 €"
+              suffix="/mes"
+              note="590,30 €/año en un único pago · ahorra un 18%"
+              description="Carta en vídeo y pedidos desde cada mesa directamente a cocina."
+              features={[
+                "Todo lo incluido en Plan Carta",
+                "QR individual por mesa",
+                "Sesiones temporales y comandas",
+                "Pantalla de cocina en tiempo real",
+                "Estados, avisos e historial de pedidos",
+              ]}
+              cta="Quiero Menuly Pedidos"
+              href="#contacto"
+            />
+            <PriceCard
               badge="Segundo mes gratis"
               name="Configuración completa"
               price="149,99 €"
@@ -278,7 +295,7 @@ export default function Home() {
                 "Configuración completa de la carta",
                 "Primer mes de Plan Carta incluido",
                 "Segundo mes de Plan Carta gratis",
-                "Desde el tercer mes: 34,99 €/mes",
+                "Desde el tercer mes: plan elegido",
               ]}
               cta="Quiero la configuración completa"
               href="#contacto"

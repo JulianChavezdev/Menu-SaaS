@@ -153,6 +153,19 @@ const checks=[
       return {error:error??(data===20260722?null:new Error("Unexpected paid access policy version"))};
     },
   },
+  {
+    migration:"202608180001_table_ordering.sql",
+    run:async()=>{
+      const results=await Promise.all([
+        supabase.from("restaurants").select("ordering_enabled",{head:true}).limit(1),
+        supabase.from("restaurant_tables").select("id",{head:true}).limit(1),
+        supabase.from("table_sessions").select("id",{head:true}).limit(1),
+        supabase.from("dining_orders").select("id",{head:true}).limit(1),
+        supabase.from("dining_order_items").select("id",{head:true}).limit(1),
+      ]);
+      return {error:results.find(result=>result.error)?.error??null};
+    },
+  },
 ];
 
 const pending=[];

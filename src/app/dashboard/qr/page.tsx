@@ -1,6 +1,7 @@
 import { activeRestaurant } from "@/lib/permissions";
 import { QrCard } from "@/components/dashboard/qr-card";
 import { BackButton } from "@/components/ui/back-button";
+import Link from "next/link";
 
 export default async function Page() {
   const { restaurant } = await activeRestaurant();
@@ -16,10 +17,11 @@ export default async function Page() {
             Código QR
           </h1>
           <p className="text-xs text-slate-600">
-            Descarga e imprime el código QR para colocarlo en las mesas de tu restaurante.
+            Descarga el acceso general a la carta o gestiona los QR individuales por mesa.
           </p>
         </div>
       </div>
+      {restaurant.ordering_enabled&&<div className="mt-5 max-w-xl border border-emerald-300 bg-emerald-50 p-5"><h2 className="font-bold text-emerald-950">QR para recibir pedidos</h2><p className="mt-1 text-sm text-emerald-900/75">Cada mesa necesita su propio código para identificar correctamente las comandas.</p><Link href="/dashboard/tables" className="mt-4 inline-flex bg-emerald-700 px-4 py-2.5 text-sm font-bold text-white">Gestionar mesas y QR</Link></div>}
 
       {/* Tarjeta Bento del QR */}
       <div className="mt-8 max-w-xl rounded-xl border border-stone-200 bg-white p-6 md:p-8 shadow-sm  ring-1 ring-stone-200 flex flex-col">

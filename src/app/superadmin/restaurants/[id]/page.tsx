@@ -260,6 +260,14 @@ export default async function ManagedRestaurantPage({
               />
               Selector de idioma
             </label>
+            <label className="flex items-center gap-2 rounded-xl border border-emerald-300 bg-emerald-50 p-3">
+              <input
+                name="ordering_enabled"
+                type="checkbox"
+                defaultChecked={Boolean(restaurant.ordering_enabled)}
+              />
+              Menuly Pedidos · 59,99 €
+            </label>
             <label className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/[.04] p-3">
               <input
                 name="access_suspended"

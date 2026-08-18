@@ -10,6 +10,7 @@ import type {AnalyticsEvent} from "@/lib/analytics";
 import {ProductMedia} from "@/components/menu/product-media";
 import {addCartItem,changeCartQuantity,parseCart,updateCartNote,type CartLine} from "@/lib/menu-cart";
 import {allergenLabel,type AllergenCode} from "@/lib/allergens";
+import {TableOrderCheckout,type TableOrderingContext} from "@/components/menu/table-order-checkout";
 
 const copy={
   es:{menu:"Carta",close:"Cerrar",share:"Compartir",info:"Restaurante",soundOn:"Activar sonido",soundOff:"Silenciar",website:"Visitar web",categories:"Categorías",featured:"Destacado",description:"Descripción",allergens:"Alérgenos",pairings:"Combina bien con",allergenNotice:"Si tienes una alergia, confirma siempre la información con el personal.",listHint:"Toca un plato para verlo en vídeo.",add:"Añadir",cart:"Carrito",emptyCart:"Tu carrito está vacío",total:"Total",note:"Observaciones",notePlaceholder:"Añade o quita ingredientes",remove:"Eliminar",saved:"Guardado en este dispositivo. No se envía a cocina."},
@@ -29,7 +30,7 @@ function revealExpandedDetails(details:HTMLDetailsElement){
 
 function safelyRewind(video:HTMLVideoElement){if(video.readyState<HTMLMediaElement.HAVE_METADATA)return;try{video.currentTime=0}catch{}}
 
-export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnabled=true}:{restaurant:Restaurant;products:Product[];analyticsEnabled?:boolean;introEnabled?:boolean}){
+export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnabled=true,tableOrdering=null}:{restaurant:Restaurant;products:Product[];analyticsEnabled?:boolean;introEnabled?:boolean;tableOrdering?:TableOrderingContext|null}){
   const videoRefs=useRef<(HTMLVideoElement|null)[]>([]);
   const sectionRefs=useRef<(HTMLElement|null)[]>([]);
   const feedRef=useRef<HTMLElement|null>(null);
@@ -130,7 +131,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
             <label className="mt-3 block text-xs font-medium text-white/65">{text.note}<textarea value={note} maxLength={300} onChange={event=>setCart(current=>updateCartNote(current,product.id,event.target.value))} placeholder={text.notePlaceholder} className="mt-1.5 min-h-20 w-full resize-none rounded-xl border border-white/10 bg-black/20 p-3 text-sm text-white outline-none placeholder:text-white/35 focus:border-white/30"/></label>
             <button onClick={()=>setCart(current=>current.filter(line=>line.productId!==product.id))} className="mt-2 flex items-center gap-1.5 text-xs text-white/55 hover:text-white"><Trash2 size={14}/>{text.remove}</button>
           </article>)}</div>}
-          {cartDetails.length>0&&<div className="sticky bottom-0 mt-4 border-t border-white/15 bg-[var(--theme-panel)] pt-4"><div className="flex items-center justify-between text-lg"><span>{text.total}</span><strong style={{color:colors.accent}}>{currency.format(cartTotal/100)}</strong></div><p className="mt-2 text-xs leading-relaxed text-white/55">{text.saved}</p></div>}
+          {cartDetails.length>0&&<div className="sticky bottom-0 mt-4 border-t border-white/15 bg-[var(--theme-panel)] pt-4"><div className="flex items-center justify-between text-lg"><span>{text.total}</span><strong style={{color:colors.accent}}>{currency.format(cartTotal/100)}</strong></div>{tableOrdering?<TableOrderCheckout context={tableOrdering} lines={cart} language={language} accent={colors.accent} background={colors.background} onSent={()=>setCart([])}/>:<p className="mt-2 text-xs leading-relaxed text-white/55">{text.saved}</p>}</div>}
         </div>
         :<div className="mt-5 space-y-4 overflow-y-auto text-sm leading-relaxed text-white/70">{restaurantDescription&&<p>{restaurantDescription}</p>}{restaurant.address&&<p className="flex gap-3"><MapPin style={{color:colors.accent}} className="mt-0.5 shrink-0" size={18}/><span>{restaurant.address}</span></p>}{restaurant.phone&&<a className="flex gap-3 text-white" href={`tel:${restaurant.phone}`} onClick={()=>analyticsEnabled&&sendAnalytics({restaurantId:restaurant.id,event:"contact_click",locale:language})}><Phone style={{color:colors.accent}} className="shrink-0" size={18}/>{restaurant.phone}</a>}<div className="flex flex-wrap gap-2">{restaurant.instagram_url&&<a className="rounded-full border border-white/15 px-4 py-2" target="_blank" rel="noreferrer" href={restaurant.instagram_url} onClick={()=>analyticsEnabled&&sendAnalytics({restaurantId:restaurant.id,event:"contact_click",locale:language})}>Instagram</a>}{restaurant.website_url&&<a className="rounded-full border border-white/15 px-4 py-2" target="_blank" rel="noreferrer" href={restaurant.website_url} onClick={()=>analyticsEnabled&&sendAnalytics({restaurantId:restaurant.id,event:"contact_click",locale:language})}>{text.website}</a>}</div></div>}
       </aside>

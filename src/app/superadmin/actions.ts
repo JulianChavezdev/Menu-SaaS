@@ -130,14 +130,16 @@ export async function updateManagedRestaurant(form:FormData){
   const suspended=form.get("access_suspended")==="on";
   const published=form.get("is_published")==="on";
   const languageSwitcher=form.get("language_switcher_enabled")==="on";
+  const orderingEnabled=form.get("ordering_enabled")==="on";
   const effectiveStatus=suspended?"canceled":parsed.data.subscription_status;
   const {restaurant_id,...values}=parsed.data;
   const {data:current,error:readError}=await admin.from("restaurants").select("access_suspended,suspended_at,description,translations").eq("id",restaurant_id).single();
   if(readError)throw new Error(readError.message);
   const translated=await translateFieldsToEnglish({description:values.description});
-  await admin.from("restaurants").update({...values,translations:automaticTranslationMap(current.translations,translated,(current.description??"")!==values.description),menu_template:parsed.data.menu_template,subscription_status:effectiveStatus,is_published:published,language_switcher_enabled:languageSwitcher,access_suspended:suspended,suspension_reason:suspended?values.suspension_reason||"Cuenta suspendida manualmente.":null,suspended_at:suspended?(current.suspended_at??new Date().toISOString()):null}).eq("id",restaurant_id).throwOnError();
-  await admin.from("subscriptions").update({status:effectiveStatus}).eq("restaurant_id",restaurant_id).throwOnError();
-  await audit(admin,user.id,restaurant_id,"restaurant.updated",{subscription_status:effectiveStatus,access_suspended:suspended,is_published:published,menu_template:parsed.data.menu_template});
+  const plan=orderingEnabled?"pedidos":"carta";
+  await admin.from("restaurants").update({...values,translations:automaticTranslationMap(current.translations,translated,(current.description??"")!==values.description),plan,ordering_enabled:orderingEnabled,menu_template:parsed.data.menu_template,subscription_status:effectiveStatus,is_published:published,language_switcher_enabled:languageSwitcher,access_suspended:suspended,suspension_reason:suspended?values.suspension_reason||"Cuenta suspendida manualmente.":null,suspended_at:suspended?(current.suspended_at??new Date().toISOString()):null}).eq("id",restaurant_id).throwOnError();
+  await admin.from("subscriptions").update({status:effectiveStatus,plan}).eq("restaurant_id",restaurant_id).throwOnError();
+  await audit(admin,user.id,restaurant_id,"restaurant.updated",{subscription_status:effectiveStatus,plan,ordering_enabled:orderingEnabled,access_suspended:suspended,is_published:published,menu_template:parsed.data.menu_template});
   refresh(restaurant_id,values.slug);
   redirect(`/superadmin/restaurants/${restaurant_id}?saved=1`);
 }

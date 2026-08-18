@@ -24,9 +24,9 @@ export async function generateMetadata({params}:{params:Promise<{slug:string}>})
   return {title:`${resolved.name} | Carta en vídeo`,description:resolved.description??"Carta digital en vídeo",alternates:{canonical:`/r/${resolved.slug}`},openGraph:{title:resolved.name,description:resolved.description??"Carta digital en vídeo",images:resolved.logo_url?[resolved.logo_url]:undefined}};
 }
 
-export default async function PublicMenu({params,searchParams}:{params:Promise<{slug:string}>;searchParams:Promise<{preview?:string}>}){
+export default async function PublicMenu({params,searchParams}:{params:Promise<{slug:string}>;searchParams:Promise<{preview?:string;table?:string}>}){
   const {slug}=await params;
-  const preview=(await searchParams).preview==="landing";
+  const query=await searchParams;const preview=query.preview==="landing";
   if(slug==="bistro-nube"&&!process.env.NEXT_PUBLIC_SUPABASE_URL){const previewProducts=preview?demoProducts.map((product,index)=>index===0?{...product,video_url:LANDING_PREVIEW_VIDEO}:product):demoProducts;return <VideoMenu restaurant={demoRestaurant} products={previewProducts} analyticsEnabled={!preview} introEnabled={!preview}/>}
   const supabase=await menuDatabase();
   const {data:restaurant}=await retryPublicQuery(()=>supabase.from("restaurants").select("*,subscriptions(status,current_period_end)").eq("slug",slug).maybeSingle());
@@ -40,5 +40,10 @@ export default async function PublicMenu({params,searchParams}:{params:Promise<{
   const productsWithRecommendations=products.map(product=>({...product,recommended_products:(recommendations??[]).filter(item=>item.source_product_id===product.id).flatMap(item=>{const recommended=productsById.get(item.recommended_product_id);return recommended?[{id:recommended.id,name:recommended.name,price_cents:recommended.price_cents,image_url:recommended.image_url,is_available:recommended.is_available,translations:recommended.translations}]:[]})}));
   const {subscriptions:_,...publicRestaurant}=restaurant;
   const publicProducts=preview?productsWithRecommendations.map((product,index)=>index===0?{...product,video_url:LANDING_PREVIEW_VIDEO}:product):productsWithRecommendations;
-  return <VideoMenu restaurant={publicRestaurant} products={publicProducts as typeof demoProducts} analyticsEnabled={!preview} introEnabled={!preview}/>;
+  let tableOrdering:null|{tableCode:string;tableName:string;active:boolean;expiresAt:string|null}=null;
+  if(!preview&&restaurant.ordering_enabled&&query.table?.match(/^[0-9a-f-]{36}$/i)){
+    const{data:table}=await supabase.from("restaurant_tables").select("id,name,public_code,is_active").eq("restaurant_id",restaurant.id).eq("public_code",query.table).maybeSingle();
+    if(table?.is_active){const{data:session}=await supabase.from("table_sessions").select("expires_at").eq("restaurant_id",restaurant.id).eq("table_id",table.id).eq("status","open").gt("expires_at",new Date().toISOString()).order("started_at",{ascending:false}).limit(1).maybeSingle();tableOrdering={tableCode:table.public_code,tableName:table.name,active:Boolean(session),expiresAt:session?.expires_at??null}}
+  }
+  return <VideoMenu restaurant={publicRestaurant} products={publicProducts as typeof demoProducts} analyticsEnabled={!preview} introEnabled={!preview} tableOrdering={tableOrdering}/>;
 }

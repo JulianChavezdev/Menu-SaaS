@@ -16,10 +16,13 @@ describe("legal publication safeguards",()=>{
     expect(source).toMatch(/if\s*\(!identity\.complete\)\s*notFound\(\)/);
   });
 
-  it("does not describe the cart as an order",()=>{
+  it("distinguishes local carts, kitchen orders and fiscal POS functions",()=>{
     const terms=read("src/app/condiciones/page.tsx");
-    expect(terms).toContain("no transmite comandas");
-    expect(terms).toContain("no sustituye un TPV");
+    const privacy=read("src/app/privacidad/page.tsx");
+    expect(terms).toContain("Menuly Pedidos");
+    expect(terms).toContain("no sustituye un TPV fiscal");
+    expect(privacy).toContain("Solo cuando el");
+    expect(privacy).toContain("confirma el");
   });
 
   it("makes the restaurant responsible for allergen review",()=>{

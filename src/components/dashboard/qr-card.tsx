@@ -5,7 +5,7 @@ import {useEffect,useState} from "react";
 import QRCode from "qrcode";
 import {toast} from "sonner";
 
-export function QrCard({url}:{url:string}){
+export function QrCard({url,fileName="carta-qr.png"}:{url:string;fileName?:string}){
   const[src,setSrc]=useState("");
   useEffect(()=>{
     let active=true;
@@ -25,7 +25,7 @@ export function QrCard({url}:{url:string}){
     <p className="mt-4 break-all text-sm">{url}</p>
     <div className="mt-4 grid gap-2 sm:grid-cols-3">
       <button type="button" onClick={()=>void copy()} className="rounded-lg border border-stone-300 px-3 py-2 text-sm hover:bg-stone-100">Copiar URL</button>
-      {src&&<a className="rounded-lg border border-stone-300 px-3 py-2 text-sm hover:bg-stone-100" href={src} download="carta-qr.png">Descargar PNG</a>}
+      {src&&<a className="rounded-lg border border-stone-300 px-3 py-2 text-sm hover:bg-stone-100" href={src} download={fileName}>Descargar PNG</a>}
       <a className="rounded-lg border border-stone-300 px-3 py-2 text-sm hover:bg-stone-100" href={url} target="_blank" rel="noopener noreferrer">Abrir carta</a>
     </div>
   </div>;
