@@ -32,6 +32,13 @@ export async function setDiningTableActive(form:FormData){
   const{error}=await supabase.from("restaurant_tables").update({is_active:active}).eq("id",parsed.data).eq("restaurant_id",restaurant.id);if(error)throw new Error(error.message);refresh();
 }
 
+export async function rotateDiningTableCode(form:FormData){
+  const table=uuid.safeParse(form.get("table_id"));const confirmation=String(form.get("confirmation")??"").trim().toUpperCase();
+  if(!table.success||confirmation!=="RENOVAR")throw new Error("Escribe RENOVAR para regenerar el QR.");
+  const{supabase,restaurant}=await orderingRestaurant();
+  const{error}=await supabase.from("restaurant_tables").update({public_code:crypto.randomUUID()}).eq("id",table.data).eq("restaurant_id",restaurant.id);if(error)throw new Error(error.message);refresh();
+}
+
 export async function openTableSession(form:FormData){
   const parsed=uuid.safeParse(form.get("table_id"));if(!parsed.success)throw new Error("Mesa no válida.");
   const{supabase,restaurant,user}=await orderingRestaurant();
