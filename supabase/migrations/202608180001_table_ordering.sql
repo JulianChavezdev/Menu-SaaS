@@ -64,6 +64,7 @@ create index if not exists table_sessions_restaurant_status_idx
 
 create table if not exists public.dining_orders (
   id uuid primary key default gen_random_uuid(),
+  public_token uuid not null default gen_random_uuid() unique,
   restaurant_id uuid not null references public.restaurants(id) on delete cascade,
   table_id uuid not null references public.restaurant_tables(id) on delete restrict,
   table_session_id uuid not null references public.table_sessions(id) on delete restrict,

@@ -9,7 +9,7 @@ import {BrandLogo} from "@/components/brand/brand-logo";
 
 export const metadata:Metadata={title:"Panel",robots:{index:false,follow:false}};
 const links=[['Inicio','/dashboard'],['Carta','/dashboard/menu'],['Apariencia','/dashboard/appearance'],['Analíticas','/dashboard/analytics'],['Restaurante','/dashboard/restaurant'],['Equipo','/dashboard/members'],['Código QR','/dashboard/qr'],['Suscripción','/dashboard/billing']] as const;
-const orderingLinks=[['Mesas','/dashboard/tables'],['Cocina','/dashboard/kitchen']] as const;
+const orderingLinks=[['Mesas','/dashboard/tables'],['Cocina','/dashboard/kitchen'],['Pedidos','/dashboard/orders']] as const;
 
 export default async function DashboardLayout({children}:{children:React.ReactNode}){
   const {supabase,user,restaurant}=await activeRestaurant();

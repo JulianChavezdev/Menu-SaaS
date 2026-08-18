@@ -49,7 +49,10 @@ export async function closeTableSession(form:FormData){
 export async function extendTableSession(form:FormData){
   const parsed=uuid.safeParse(form.get("session_id"));if(!parsed.success)throw new Error("Sesión no válida.");
   const{supabase,restaurant}=await orderingRestaurant();
-  const{error}=await supabase.from("table_sessions").update({expires_at:sessionExpiresAt().toISOString()}).eq("id",parsed.data).eq("restaurant_id",restaurant.id).eq("status","open");if(error)throw new Error(error.message);refresh();
+  const{data:session,error:readError}=await supabase.from("table_sessions").select("expires_at").eq("id",parsed.data).eq("restaurant_id",restaurant.id).eq("status","open").maybeSingle();
+  if(readError||!session)throw new Error("La sesión ya no está abierta.");
+  const base=new Date(Math.max(Date.now(),new Date(session.expires_at).getTime()));
+  const{error}=await supabase.from("table_sessions").update({expires_at:sessionExpiresAt(base).toISOString()}).eq("id",parsed.data).eq("restaurant_id",restaurant.id).eq("status","open");if(error)throw new Error(error.message);refresh();
 }
 
 export async function transitionDiningOrder(orderId:string,nextStatus:string){
