@@ -166,6 +166,16 @@ const checks=[
       return {error:results.find(result=>result.error)?.error??null};
     },
   },
+  {
+    migration:"202608190001_ordering_relationships.sql",
+    run:async()=>{
+      const results=await Promise.all([
+        supabase.from("dining_orders").select("id,restaurant_tables(name)",{head:true}).limit(1),
+        supabase.from("dining_orders").select("id,dining_order_items(id)",{head:true}).limit(1),
+      ]);
+      return {error:results.find(result=>result.error)?.error??null};
+    },
+  },
 ];
 
 const pending=[];
