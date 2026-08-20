@@ -4,6 +4,29 @@
 alter table public.restaurants alter column subscription_status set default 'trialing';
 alter table public.subscriptions alter column status set default 'trialing';
 
+alter table public.restaurants add column if not exists signup_plan_interest text not null default 'carta';
+alter table public.restaurants drop constraint if exists restaurants_signup_plan_interest_check;
+alter table public.restaurants add constraint restaurants_signup_plan_interest_check
+  check (signup_plan_interest in ('carta', 'pedidos', 'configuracion'));
+
+create or replace function public.protect_restaurant_system_fields()
+returns trigger language plpgsql set search_path = public as $$
+begin
+  if coalesce(auth.role(), '') <> 'service_role'
+     and current_user not in ('postgres', 'supabase_admin')
+     and (
+       new.owner_id is distinct from old.owner_id
+       or new.plan is distinct from old.plan
+       or new.subscription_status is distinct from old.subscription_status
+       or new.ordering_enabled is distinct from old.ordering_enabled
+       or new.signup_plan_interest is distinct from old.signup_plan_interest
+     ) then
+    raise exception 'Protected restaurant fields cannot be changed by this role' using errcode = '42501';
+  end if;
+  return new;
+end;
+$$;
+
 create index if not exists subscriptions_trial_expiration_idx
 on public.subscriptions(current_period_end) where status = 'trialing';
 

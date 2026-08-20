@@ -263,7 +263,7 @@ export default function Home() {
                 "Equipo y soporte",
               ]}
               cta="Probar 30 días gratis"
-              href="/register"
+              href="/register?plan=carta"
             />
             <PriceCard
               featured
@@ -281,7 +281,7 @@ export default function Home() {
                 "Estados, avisos e historial de pedidos",
               ]}
               cta="Probar 30 días gratis"
-              href="/register"
+              href="/register?plan=pedidos"
             />
             <PriceCard
               badge="Segundo mes gratis"
@@ -297,8 +297,8 @@ export default function Home() {
                 "Segundo mes de Plan Carta gratis",
                 "Desde el tercer mes: plan elegido",
               ]}
-              cta="Quiero la configuración completa"
-              href="#contacto"
+              cta="Elegir configuración completa"
+              href="/register?plan=configuracion"
             />
           </div>
           <p className="mx-auto mt-5 max-w-3xl text-xs leading-relaxed text-slate-500">

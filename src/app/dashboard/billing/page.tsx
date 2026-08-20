@@ -77,7 +77,7 @@ export default async function Page({
       )}
       {trialing && (
         <div className="mt-5 border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-950">
-          <strong>Tu prueba de {signupPlanName(subscription?.plan)} está activa{trialDays!==null?` · ${trialDays} días restantes`:""}.</strong>
+          <strong>Tu prueba de {signupPlanName(restaurant.signup_plan_interest??subscription?.plan)} está activa{trialDays!==null?` · ${trialDays} días restantes`:""}.</strong>
           <span className="mt-1 block text-emerald-800">Puedes crear y publicar tu carta con normalidad hasta el final del periodo indicado.</span>
         </div>
       )}

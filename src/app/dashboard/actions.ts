@@ -143,6 +143,7 @@ export async function createRestaurant(form: FormData) {
   const name = String(form.get("name") || "").trim();
   const slug = normalizePublicSlug(String(form.get("slug") || ""));
   const selectedPlan = signupPlan(user.user_metadata?.plan_interest ?? form.get("plan"));
+  const entitlementPlan=selectedPlan==="pedidos"?"pedidos":"carta";
   const trialEnd = trialEndsAt().toISOString();
   const {count:existingMemberships}=await s.from("restaurant_members").select("restaurant_id",{count:"exact",head:true}).eq("user_id",user.id);
   if((existingMemberships??0)>0)throw new Error("Tu cuenta ya tiene un restaurante. Abre el panel para gestionarlo.");
@@ -154,7 +155,7 @@ export async function createRestaurant(form: FormData) {
     throw new Error("Revisa el nombre y el slug.");
   const { data: created, error } = await s
     .from("restaurants")
-    .insert({ name, slug, currency: "EUR", locale: "es-ES", owner_id: user.id, plan:selectedPlan, subscription_status: "trialing", ordering_enabled:selectedPlan==="pedidos", publication_suspended_for_payment:false })
+    .insert({ name, slug, currency: "EUR", locale: "es-ES", owner_id: user.id, plan:entitlementPlan, signup_plan_interest:selectedPlan, subscription_status: "trialing", ordering_enabled:selectedPlan==="pedidos", publication_suspended_for_payment:false })
     .select("id")
     .single();
   if (error)
@@ -169,7 +170,7 @@ export async function createRestaurant(form: FormData) {
     const { error: subscriptionError } = await s.from("subscriptions").insert({
       restaurant_id: created.id,
       provider: "manual",
-      plan: selectedPlan,
+      plan: entitlementPlan,
       status: "trialing",
       current_period_end: trialEnd,
     });

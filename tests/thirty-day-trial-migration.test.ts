@@ -11,4 +11,9 @@ describe("thirty day signup trial migration",()=>{
     expect(migration).not.toContain("delete from public.restaurants");
   });
   it("exposes its database policy version",()=>expect(migration).toContain("select 20260820"));
+  it("stores and protects the commercial interest selected at signup",()=>{
+    expect(migration).toContain("signup_plan_interest");
+    expect(migration).toContain("'configuracion'");
+    expect(migration).toContain("new.signup_plan_interest is distinct from old.signup_plan_interest");
+  });
 });

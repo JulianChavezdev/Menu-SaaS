@@ -20,6 +20,7 @@ import { SupportContentEditor } from "@/components/superadmin/support-content-ed
 import { ManualPaymentPanel } from "@/components/superadmin/manual-payment-panel";
 import { RestaurantRestorePanel } from "@/components/superadmin/restaurant-restore-panel";
 import { DeleteRestaurantPanel } from "@/components/superadmin/delete-restaurant-panel";
+import {signupPlanName} from "@/lib/signup-plans";
 
 export default async function ManagedRestaurantPage({
   params,
@@ -112,6 +113,7 @@ export default async function ManagedRestaurantPage({
           <p className="mt-2 text-sm text-slate-600">
             Propietario: {owner.data.user?.email ?? restaurant.owner_id}
           </p>
+          <p className="mt-1 text-sm text-slate-600">Interés indicado en el alta: <strong>{signupPlanName(restaurant.signup_plan_interest)}</strong></p>
         </div>
         <div className="flex flex-wrap gap-2">
           <a

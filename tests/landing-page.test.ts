@@ -8,6 +8,7 @@ const publicMenu=readFileSync("src/app/r/[slug]/page.tsx","utf8");
 describe("landing pública",()=>{
   it("incluye todas las secciones comerciales",()=>{for(const id of["inicio","producto","como-funciona","precios","faq","contacto"])expect(page).toContain(`id="${id}"`);expect(page).not.toContain('id="nosotros"')});
   it("ofrece navegación mobile y llamadas a demo, registro y acceso",()=>{expect(nav).toContain('aria-label="Navegación principal"');expect(nav).toContain('aria-expanded={open}');expect(page).toContain('href="/r/bistro-nube"');expect(page).toContain('href="/register"');expect(nav).toContain('href="/login"')});
+  it("abre el alta con el plan comercial correspondiente",()=>{for(const plan of["carta","pedidos","configuracion"])expect(page).toContain(`href="/register?plan=${plan}"`)});
   it("no publica un correo personal y usa una variable explícita",()=>{expect(page).toContain("NEXT_PUBLIC_CONTACT_EMAIL");expect(page).not.toMatch(/[\w.+-]+@hotmail\.com/i)});
   it("incluye metadatos específicos y un enlace de salto",()=>{expect(page).toContain("export const metadata");expect(page).toContain('href="#contenido"')});
   it("publica los planes y la prueba de treinta días",()=>{for(const copy of["Plan Carta","34,99 €","344,30 €/año","ahorra un 18%","Configuración completa","149,99 €","Segundo mes gratis","Edición de vídeos con IA","Primer mes de Plan Carta incluido","Probar 30 días gratis","30 días gratis"])expect(page).toContain(copy)});
