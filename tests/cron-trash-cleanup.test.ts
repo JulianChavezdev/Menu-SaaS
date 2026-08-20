@@ -29,6 +29,8 @@ describe("purga programada de papelera",()=>{
   });
 
   it("registra cada ejecución para mostrar su estado al superadmin",()=>{
+    expect(runner).toContain('rpc("process_expired_trials")');
+    expect(runner).toContain("trialsExpired");
     expect(runner).toContain("platform.trash_cleanup_completed");
     expect(runner).toContain("platform.trash_cleanup_failed");
     expect(runner).toContain("duration_ms");

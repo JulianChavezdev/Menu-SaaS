@@ -10,7 +10,10 @@ function diagnostic(error:unknown){
 export async function executeTrashCleanup(admin:SupabaseClient,now=new Date()){
   const startedAt=Date.now();
   try{
-    const result=await purgeExpiredRestaurantTrash(admin,now);
+    const {data:expired,error:trialError}=await admin.rpc("process_expired_trials");
+    if(trialError)throw trialError;
+    const cleanup=await purgeExpiredRestaurantTrash(admin,now);
+    const result={...cleanup,trialsExpired:Number(expired??0)};
     await admin.from("superadmin_audit_log").insert({actor_user_id:null,restaurant_id:null,action:"platform.trash_cleanup_completed",details:{...result,duration_ms:Date.now()-startedAt}}).throwOnError();
     return result;
   }catch(error){
