@@ -201,6 +201,13 @@ const checks=[
       return {error:error??(data===20260820?null:new Error("Unexpected targeted expiration policy version"))};
     },
   },
+  {
+    migration:"202608200005_first_free_month.sql",
+    run:async()=>{
+      const {error}=await supabase.rpc("grant_first_free_month",{target_restaurant:randomId,actor_user:randomId});
+      return {error:error?.code==="P0002"?null:(error??new Error("First free month validation did not run"))};
+    },
+  },
 ];
 
 const pending=[];
