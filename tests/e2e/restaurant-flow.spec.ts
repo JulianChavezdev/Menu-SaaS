@@ -68,7 +68,8 @@ test.describe("restaurant owner journey",()=>{
     expect(remainingDays).toBeLessThanOrEqual(30.1);
 
     await page.getByRole("link",{name:"Carta",exact:true}).click();
-    await page.locator("details#categorias > summary").click();
+    const categoriesDetails=page.locator("details#categorias");
+    if(!(await categoriesDetails.evaluate(element=>(element as HTMLDetailsElement).open)))await categoriesDetails.locator(":scope > summary").click();
     const categoryForm=page.locator("details#categorias form");
     await categoryForm.getByLabel("Nombre").fill("Entrantes");
     await categoryForm.getByRole("button",{name:"Crear categoría"}).click();

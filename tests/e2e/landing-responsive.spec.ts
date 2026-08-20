@@ -51,7 +51,7 @@ test.describe("landing responsive contract",()=>{
       await expect(page.locator(`#${id}`)).toHaveCount(1);
     }
     await expect(page.getByRole("link",{name:"Probar la demo",exact:true})).toBeVisible();
-    await expect(page.locator("#contenido").getByRole("link",{name:"Crear mi carta",exact:true})).toBeVisible();
+    await expect(page.locator("#contenido").getByRole("link",{name:"Crear cuenta",exact:true})).toBeVisible();
     await expect(page.locator('iframe[title="Vista móvil real de Menuly"]')).toHaveAttribute("src","/r/bistro-nube?preview=landing");
     const preview=page.frameLocator('iframe[title="Vista móvil real de Menuly"]');
     await expect(preview.locator("video").first()).toHaveAttribute("src",/c_limit,w_480\/q_auto:eco/);

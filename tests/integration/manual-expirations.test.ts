@@ -10,7 +10,7 @@ const suite=url&&serviceKey?describe:describe.skip;
 suite("manual expiration lifecycle",()=>{
   it("respects grace, marks pending, suspends explicitly and remains idempotent",async context=>{
     const admin=createClient(url!,serviceKey!,{auth:{persistSession:false,autoRefreshToken:false}});
-    const probe=await admin.rpc("process_manual_expirations",{grace_days:-1,suspend_access:false,actor_user:crypto.randomUUID()});
+    const probe=await admin.rpc("process_manual_expiration_target",{target_restaurant:crypto.randomUUID(),grace_days:-1,suspend_access:false,actor_user:crypto.randomUUID()});
     if(probe.error?.code==="PGRST202"){context.skip();return}
     expect(probe.error?.code).toBe("22023");
 
@@ -30,20 +30,20 @@ suite("manual expiration lifecycle",()=>{
       ]);
       if(subscriptions.error)throw subscriptions.error;
 
-      const mark=await admin.rpc("process_manual_expirations",{grace_days:3,suspend_access:false,actor_user:userId});
+      const mark=await admin.rpc("process_manual_expiration_target",{target_restaurant:restaurantIds[0],grace_days:3,suspend_access:false,actor_user:userId});
       if(mark.error)throw mark.error;expect(mark.data).toBe(1);
       const afterMark=await admin.from("restaurants").select("id,subscription_status,access_suspended").in("id",restaurantIds).order("name");
       const overdue=afterMark.data?.find(item=>item.id===restaurantIds[0]);const protectedByGrace=afterMark.data?.find(item=>item.id===restaurantIds[1]);
       expect(overdue).toMatchObject({subscription_status:"past_due",access_suspended:false});
       expect(protectedByGrace).toMatchObject({subscription_status:"active",access_suspended:false});
 
-      const repeatedMark=await admin.rpc("process_manual_expirations",{grace_days:3,suspend_access:false,actor_user:userId});
+      const repeatedMark=await admin.rpc("process_manual_expiration_target",{target_restaurant:restaurantIds[0],grace_days:3,suspend_access:false,actor_user:userId});
       if(repeatedMark.error)throw repeatedMark.error;expect(repeatedMark.data).toBe(0);
-      const suspend=await admin.rpc("process_manual_expirations",{grace_days:3,suspend_access:true,actor_user:userId});
+      const suspend=await admin.rpc("process_manual_expiration_target",{target_restaurant:restaurantIds[0],grace_days:3,suspend_access:true,actor_user:userId});
       if(suspend.error)throw suspend.error;expect(suspend.data).toBe(1);
       const afterSuspend=await admin.from("restaurants").select("subscription_status,access_suspended,suspension_reason").eq("id",restaurantIds[0]).single();
       expect(afterSuspend.data).toMatchObject({subscription_status:"canceled",access_suspended:true,suspension_reason:"Suscripción manual vencida."});
-      const repeatedSuspend=await admin.rpc("process_manual_expirations",{grace_days:3,suspend_access:true,actor_user:userId});
+      const repeatedSuspend=await admin.rpc("process_manual_expiration_target",{target_restaurant:restaurantIds[0],grace_days:3,suspend_access:true,actor_user:userId});
       if(repeatedSuspend.error)throw repeatedSuspend.error;expect(repeatedSuspend.data).toBe(0);
 
       const audit=await admin.from("superadmin_audit_log").select("action").eq("restaurant_id",restaurantIds[0]).in("action",["payment.expired_marked","access.expired_suspended"]).order("created_at");

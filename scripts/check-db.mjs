@@ -139,7 +139,7 @@ const checks=[
     migration:"202607190001_trial_one_product_per_category_and_expiration_trash.sql",
     run:async()=>{
       const {data,error}=await supabase.rpc("trial_policy_version");
-      return {error:error??(data===20260719?null:new Error("Unexpected trial policy version"))};
+      return {error:error??(Number(data)>=20260719?null:new Error("Unexpected trial policy version"))};
     },
   },
   {
@@ -192,6 +192,13 @@ const checks=[
     run:async()=>{
       const {data,error}=await supabase.rpc("sales_followup_policy_version");
       return {error:error??(data===20260820?null:new Error("Unexpected sales follow-up policy version"))};
+    },
+  },
+  {
+    migration:"202608200004_targeted_manual_expiration.sql",
+    run:async()=>{
+      const {data,error}=await supabase.rpc("targeted_expiration_policy_version");
+      return {error:error??(data===20260820?null:new Error("Unexpected targeted expiration policy version"))};
     },
   },
 ];

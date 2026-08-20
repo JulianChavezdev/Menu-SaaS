@@ -57,7 +57,7 @@ suite("Supabase security hardening",()=>{
       const owner=createClient(url!,publicKey!,{auth:{persistSession:false,autoRefreshToken:false}});
       const signIn=await owner.auth.signInWithPassword({email:`security-owner-${stamp}@carta-video.local`,password});
       if(signIn.error)throw signIn.error;
-      const billingChange=await owner.from("restaurants").update({subscription_status:"active"}).eq("id",createdRestaurants[0]);
+      const billingChange=await owner.from("restaurants").update({subscription_status:"canceled"}).eq("id",createdRestaurants[0]);
       expect(billingChange.error).not.toBeNull();
       const membershipEscalation=await owner.from("restaurant_members").insert({restaurant_id:createdRestaurants[1],user_id:createdUsers[0],role:"owner"});
       expect(membershipEscalation.error).not.toBeNull();

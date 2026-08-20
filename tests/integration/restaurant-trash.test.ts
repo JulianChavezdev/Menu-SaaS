@@ -25,8 +25,8 @@ suite("restaurant trash restore schema",()=>{
       expect((await admin.from("products").select("id").eq("restaurant_id",restaurantId)).data).toEqual([]);
       expect((await admin.from("superadmin_audit_log").select("restaurant_id").eq("id",auditId).single()).data?.restaurant_id).toBeNull();
 
-      await admin.from("restaurants").insert({...backup.restaurant,is_published:false,access_suspended:true,subscription_status:"canceled"}).throwOnError();
-      await admin.from("categories").insert(backup.categories).throwOnError();await admin.from("products").insert(backup.products).throwOnError();await admin.from("restaurant_members").insert(backup.memberships).throwOnError();await admin.from("subscriptions").insert(backup.subscriptions.map(item=>({...item,status:"canceled"}))).throwOnError();
+      await admin.from("restaurants").insert({...backup.restaurant,is_published:false,access_suspended:true,subscription_status:"active"}).throwOnError();
+      await admin.from("categories").insert(backup.categories).throwOnError();await admin.from("products").insert(backup.products).throwOnError();await admin.from("restaurant_members").insert(backup.memberships).throwOnError();await admin.from("subscriptions").insert(backup.subscriptions.map(item=>({...item,status:"canceled"}))).throwOnError();await admin.from("restaurants").update({subscription_status:"canceled"}).eq("id",restaurantId).throwOnError();
       const restored=await admin.from("restaurants").select("is_published,access_suspended,subscription_status,products(count),restaurant_members(count)").eq("id",restaurantId).single();
       expect(restored.data).toMatchObject({is_published:false,access_suspended:true,subscription_status:"canceled"});
       expect(restored.data?.products).toEqual([{count:1}]);expect(restored.data?.restaurant_members).toEqual([{count:1}]);
