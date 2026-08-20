@@ -122,6 +122,15 @@ export async function recordPaymentReminder(form:FormData){
   revalidatePath("/superadmin/finance");
 }
 
+export async function recordTrialFollowup(form:FormData){
+  const parsed=z.object({restaurant_id:uuid,channel:z.enum(["copy","whatsapp","email"]),period_end:z.string().datetime()}).safeParse(Object.fromEntries(form));
+  if(!parsed.success)throw new Error("Seguimiento de prueba no válido.");
+  const {admin,user}=await requireSuperadmin();
+  await audit(admin,user.id,parsed.data.restaurant_id,"trial.reminder_prepared",{channel:parsed.data.channel,period_end:parsed.data.period_end});
+  revalidatePath("/superadmin");
+  revalidatePath(`/superadmin/restaurants/${parsed.data.restaurant_id}`);
+}
+
 export async function updateManagedRestaurant(form:FormData){
   const parsed=restaurantInput.safeParse(Object.fromEntries(form));
   if(!parsed.success)throw new Error("Revisa los datos del restaurante.");

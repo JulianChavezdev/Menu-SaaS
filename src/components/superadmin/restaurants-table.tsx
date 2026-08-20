@@ -6,7 +6,7 @@ import {ExternalLink,Search} from "lucide-react";
 import type {ManualBillingState} from "@/lib/manual-billing";
 import {signupPlanName} from "@/lib/signup-plans";
 
-export type ManagedRestaurant={id:string;name:string;slug:string;isPublished:boolean;isSuspended:boolean;orderingEnabled:boolean;status:string;planInterest:string;template:string;products:number;categories:number;members:number;createdAt:string;paymentProvider:string|null;periodEnd:string|null;billingState:ManualBillingState};
+export type ManagedRestaurant={id:string;name:string;slug:string;email:string|null;phone:string|null;isPublished:boolean;isSuspended:boolean;orderingEnabled:boolean;status:string;planInterest:string;template:string;products:number;categories:number;members:number;createdAt:string;paymentProvider:string|null;periodEnd:string|null;billingState:ManualBillingState};
 
 export function RestaurantsTable({restaurants}:{restaurants:ManagedRestaurant[]}){
   const[query,setQuery]=useState("");

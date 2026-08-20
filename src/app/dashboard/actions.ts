@@ -155,7 +155,7 @@ export async function createRestaurant(form: FormData) {
     throw new Error("Revisa el nombre y el slug.");
   const { data: created, error } = await s
     .from("restaurants")
-    .insert({ name, slug, currency: "EUR", locale: "es-ES", owner_id: user.id, plan:entitlementPlan, signup_plan_interest:selectedPlan, subscription_status: "trialing", ordering_enabled:selectedPlan==="pedidos", publication_suspended_for_payment:false })
+    .insert({ name, slug, email:user.email??null, currency: "EUR", locale: "es-ES", owner_id: user.id, plan:entitlementPlan, signup_plan_interest:selectedPlan, subscription_status: "trialing", ordering_enabled:selectedPlan==="pedidos", publication_suspended_for_payment:false })
     .select("id")
     .single();
   if (error)
