@@ -37,6 +37,7 @@ export default async function Page({
   const active = plan === "carta";
   const trialing = status === "trialing";
   const trialDays=trialing&&subscription?.current_period_end?trialDaysRemaining(subscription.current_period_end):null;
+  const activationUrl=`https://wa.me/34643663194?text=${encodeURIComponent(`Hola, quiero activar ${signupPlanName(restaurant.signup_plan_interest??subscription?.plan)} para ${restaurant.name}.`)}`;
   const ordering = Boolean(restaurant.ordering_enabled) && active;
   const productProgress = Math.min(
     100,
@@ -76,9 +77,9 @@ export default async function Page({
         </div>
       )}
       {trialing && (
-        <div className="mt-5 border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-950">
-          <strong>Tu prueba de {signupPlanName(restaurant.signup_plan_interest??subscription?.plan)} está activa{trialDays!==null?` · ${trialDays} días restantes`:""}.</strong>
-          <span className="mt-1 block text-emerald-800">Puedes crear y publicar tu carta con normalidad hasta el final del periodo indicado.</span>
+        <div className="mt-5 flex flex-col gap-3 border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-950 sm:flex-row sm:items-center sm:justify-between">
+          <div><strong>Tu prueba de {signupPlanName(restaurant.signup_plan_interest??subscription?.plan)} está activa{trialDays!==null?` · ${trialDays} días restantes`:""}.</strong><span className="mt-1 block text-emerald-800">Puedes crear y publicar tu carta con normalidad hasta el final del periodo indicado.</span></div>
+          <a href={activationUrl} target="_blank" rel="noreferrer" className="shrink-0 bg-emerald-800 px-4 py-2.5 text-center font-bold text-white">Activar por WhatsApp</a>
         </div>
       )}
       {!active && (
@@ -180,11 +181,13 @@ export default async function Page({
                 </li>
               ))}
             </ul>
-            {active ? (
+            {active&&!trialing ? (
               <div className="mt-7 flex items-center gap-2 rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm text-emerald-800">
                 <Check size={18} />
                 Tu restaurante ya tiene acceso.
               </div>
+            ) : trialing ? (
+              <a href={activationUrl} target="_blank" rel="noreferrer" className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 py-3.5 font-bold text-white"><LockKeyhole size={18}/>Mantener mi carta activa</a>
             ) : (
               <form action={startCheckout} className="mt-7">
                 <button

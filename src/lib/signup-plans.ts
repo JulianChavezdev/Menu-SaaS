@@ -42,6 +42,15 @@ export function trialDaysRemaining(end: string | Date, now = new Date()) {
   return Math.max(0, Math.ceil(milliseconds / 86_400_000));
 }
 
+export type TrialUrgency = "normal" | "soon" | "urgent" | "last-day";
+
+export function trialUrgency(days: number): TrialUrgency {
+  if (days <= 1) return "last-day";
+  if (days <= 3) return "urgent";
+  if (days <= 7) return "soon";
+  return "normal";
+}
+
 export function signupPlanName(value: unknown) {
   const id = signupPlan(value);
   return SIGNUP_PLANS.find((plan) => plan.id === id)!.name;
