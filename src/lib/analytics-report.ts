@@ -22,6 +22,18 @@ export function analyticsChange(current:number,previous:number){
   const value=Math.round((current-previous)/previous*100);return{label:`${value>0?"+":""}${value}%`,tone:value>0?"up" as const:value<0?"down" as const:"flat" as const};
 }
 
+export function analyticsGuidance(summary:ReturnType<typeof summarizeAnalytics>){
+  const {menuViews,productViews,cartAdds}=summary.totals;
+  const addRate=productViews?Math.round(cartAdds/productViews*100):0;
+  const productsPerVisit=menuViews?productViews/menuViews:0;
+  const top=[...summary.products].sort((a,b)=>b.cartAdds-a.cartAdds||b.views-a.views)[0];
+  if(!menuViews)return{tone:"attention" as const,title:"Consigue las primeras visitas",explanation:"Todavía no hay aperturas de la carta en este periodo.",action:"Comprueba que esté publicada y coloca o comparte su código QR."};
+  if(productsPerVisit<1)return{tone:"attention" as const,title:"Los clientes ven pocos productos",explanation:`Cada visita genera ${productsPerVisit.toFixed(1)} visualizaciones de producto de media.`,action:"Haz más visibles las categorías y coloca primero tus platos más atractivos."};
+  if(productViews>=3&&!cartAdds)return{tone:"attention" as const,title:"Hay interés, pero ningún añadido",explanation:`Tus productos se han visto ${productViews} veces, pero todavía no se han añadido al carrito.`,action:"Revisa precios, fotografías, vídeos y el texto del botón de tus productos principales."};
+  if(addRate<15)return{tone:"attention" as const,title:"Puedes convertir mejor las visualizaciones",explanation:`Ahora se añaden ${addRate} de cada 100 productos vistos.`,action:`Mejora primero ${top?.name??"el producto más visto"}: portada clara, descripción breve y una recomendación relacionada.`};
+  return{tone:"positive" as const,title:"La carta está generando intención de compra",explanation:`Se añaden ${addRate} productos por cada 100 visualizaciones${top?` y ${top.name} destaca sobre el resto`:""}.`,action:"Mantén visible lo que funciona y prueba una mejora cada vez para poder medir su efecto."};
+}
+
 const csvCell=(value:unknown)=>{let text=String(value??"");if(/^[=+\-@]/.test(text.trimStart()))text=`'${text}`;return`"${text.replaceAll('"','""')}"`};
 
 export function analyticsReportCsv(summary:ReturnType<typeof summarizeAnalytics>,restaurantName:string,days:number){
