@@ -14,7 +14,7 @@ const admin=enabled?createClient(url!,serviceKey!,{auth:{persistSession:false,au
 test.describe("restaurant owner journey",()=>{
   test.skip(!enabled,"Supabase server credentials are required");
   test.beforeAll(async()=>{
-    const {data,error}=await admin!.auth.admin.createUser({email,password,email_confirm:true});
+    const {data,error}=await admin!.auth.admin.createUser({email,password,email_confirm:true,user_metadata:{plan_interest:"pedidos"}});
     if(error)throw error;
     userId=data.user.id;
   });
@@ -31,7 +31,13 @@ test.describe("restaurant owner journey",()=>{
     await admin.auth.admin.deleteUser(userId);
   });
 
-  test("login, onboarding, logo, product creation and public menu",async({page})=>{
+  test("preselects the requested plan on the public registration form",async({page})=>{
+    await page.goto("/register?plan=pedidos");
+    await expect(page.getByRole("radio",{name:/Menuly Pedidos/})).toBeChecked();
+    await expect(page.getByRole("checkbox",{name:/Acepto las/})).not.toBeChecked();
+  });
+
+  test("login, trial onboarding, guide, product creation and public menu",async({page})=>{
     await page.goto("/login");
     await page.waitForLoadState("networkidle");
     await page.getByLabel("Correo electrónico").fill(email);
@@ -43,16 +49,23 @@ test.describe("restaurant owner journey",()=>{
     await page.getByRole("button",{name:"Entrar al panel"}).click();
     await expect(page).toHaveURL(/\/(dashboard|onboarding)$/,{timeout:15_000});
 
-    await page.goto("/onboarding");
+    await page.goto("/onboarding?plan=pedidos");
+    await expect(page.getByText("Menuly Pedidos",{exact:true})).toBeVisible();
     await page.getByLabel("Nombre").fill("Restaurante E2E");
     await page.getByLabel("Slug público").fill(slug);
     await page.getByRole("button",{name:"Crear restaurante"}).click();
-    await expect(page).toHaveURL(/\/dashboard$/);
+    await expect(page).toHaveURL(/\/dashboard\/getting-started$/);
+    await expect(page.getByRole("heading",{name:"Tu carta puede estar publicada en pocos minutos"})).toBeVisible();
+    await expect(page.getByText("Ya puedes disfrutar de Menuly durante un mes.")).toBeVisible();
 
-    const created=await admin!.from("restaurants").select("id,subscription_status").eq("slug",slug).single();
-    expect(created.data?.subscription_status).toBe("past_due");
-    await admin!.from("restaurants").update({subscription_status:"active",publication_suspended_for_payment:false}).eq("id",created.data!.id).throwOnError();
-    await admin!.from("subscriptions").update({status:"active",provider:"manual",current_period_end:new Date(Date.now()+60*24*60*60*1000).toISOString()}).eq("restaurant_id",created.data!.id).throwOnError();
+    const created=await admin!.from("restaurants").select("id,subscription_status,signup_plan_interest,ordering_enabled,email").eq("slug",slug).single();
+    expect(created.data).toMatchObject({subscription_status:"trialing",signup_plan_interest:"pedidos",ordering_enabled:true,email});
+    const subscription=await admin!.from("subscriptions").select("status,plan,current_period_end").eq("restaurant_id",created.data!.id).single();
+    expect(subscription.data?.status).toBe("trialing");
+    expect(subscription.data?.plan).toBe("pedidos");
+    const remainingDays=(new Date(subscription.data!.current_period_end!).getTime()-Date.now())/86_400_000;
+    expect(remainingDays).toBeGreaterThan(29);
+    expect(remainingDays).toBeLessThanOrEqual(30.1);
 
     await page.getByRole("link",{name:"Carta",exact:true}).click();
     await page.locator("details#categorias > summary").click();
@@ -102,5 +115,8 @@ test.describe("restaurant owner journey",()=>{
     await expect(page.getByRole("heading",{name:"Producto E2E"})).toBeVisible();
     await page.getByText("Description",{exact:true}).click();
     await expect(page.getByText("Producto creado mediante el flujo completo.")).toBeVisible();
+
+    await page.goto("/dashboard/getting-started");
+    await expect(page.getByText("3/3 completados")).toBeVisible();
   });
 });
