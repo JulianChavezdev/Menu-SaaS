@@ -5,6 +5,7 @@ import { PLAN_LIMITS, planForStatus } from "@/lib/plans";
 import { checkoutIsConfigured } from "@/lib/billing";
 import { startCheckout } from "@/app/dashboard/actions";
 import { FeedbackBox } from "@/components/dashboard/feedback-box";
+import {signupPlanName,trialDaysRemaining} from "@/lib/signup-plans";
 
 export default async function Page({
   searchParams,
@@ -35,6 +36,7 @@ export default async function Page({
   const limits = PLAN_LIMITS[plan];
   const active = plan === "carta";
   const trialing = status === "trialing";
+  const trialDays=trialing&&subscription?.current_period_end?trialDaysRemaining(subscription.current_period_end):null;
   const ordering = Boolean(restaurant.ordering_enabled) && active;
   const productProgress = Math.min(
     100,
@@ -75,7 +77,7 @@ export default async function Page({
       )}
       {trialing && (
         <div className="mt-5 border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-950">
-          <strong>Tu mes de prueba está activo.</strong>
+          <strong>Tu prueba de {signupPlanName(subscription?.plan)} está activa{trialDays!==null?` · ${trialDays} días restantes`:""}.</strong>
           <span className="mt-1 block text-emerald-800">Puedes crear y publicar tu carta con normalidad hasta el final del periodo indicado.</span>
         </div>
       )}

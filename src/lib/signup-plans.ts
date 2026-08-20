@@ -37,3 +37,12 @@ export function trialEndsAt(now = new Date()) {
   return end;
 }
 
+export function trialDaysRemaining(end: string | Date, now = new Date()) {
+  const milliseconds = new Date(end).getTime() - now.getTime();
+  return Math.max(0, Math.ceil(milliseconds / 86_400_000));
+}
+
+export function signupPlanName(value: unknown) {
+  const id = signupPlan(value);
+  return SIGNUP_PLANS.find((plan) => plan.id === id)!.name;
+}

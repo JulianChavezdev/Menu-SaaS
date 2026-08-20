@@ -4,6 +4,7 @@ import { activeRestaurant } from "@/lib/permissions";
 import { OnboardingChecklist } from "@/components/dashboard/onboarding-checklist";
 import { ActionCenter } from "@/components/dashboard/action-center";
 import { restaurantAlerts } from "@/lib/restaurant-alerts";
+import {trialDaysRemaining,signupPlanName} from "@/lib/signup-plans";
 
 export default async function Dashboard() {
   const { restaurant, supabase } = await activeRestaurant();
@@ -45,7 +46,7 @@ export default async function Dashboard() {
       .is("image_url", null),
     supabase
       .from("subscriptions")
-      .select("status,current_period_end")
+      .select("plan,status,current_period_end")
       .eq("restaurant_id", restaurant.id)
       .maybeSingle(),
     supabase
@@ -59,6 +60,7 @@ export default async function Dashboard() {
       .filter((row) => row.event_type === type)
       .reduce((total, row) => total + Number(row.event_count || 0), 0);
   const status = subscription?.status ?? restaurant.subscription_status;
+  const trialDays=subscription?.status==="trialing"&&subscription.current_period_end?trialDaysRemaining(subscription.current_period_end):null;
   const alerts = restaurantAlerts({
     subscriptionStatus: status,
     published: restaurant.is_published,
@@ -105,6 +107,11 @@ export default async function Dashboard() {
           </span>
         </div>
       </div>
+
+      {trialDays!==null&&<section className="mt-5 flex flex-col gap-4 border border-emerald-200 bg-emerald-50 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div><p className="text-xs font-bold uppercase tracking-[.15em] text-emerald-700">Prueba de {signupPlanName(subscription?.plan)}</p><h2 className="mt-1 text-lg font-bold text-emerald-950">Te quedan {trialDays} {trialDays===1?"día":"días"} gratis</h2><p className="mt-1 text-xs text-emerald-900/75">Tu carta y sus funciones permanecen disponibles durante todo el periodo.</p></div>
+        <div className="flex flex-wrap gap-2"><Link href="/dashboard/getting-started" className="bg-white px-4 py-2.5 text-center text-sm font-bold text-emerald-900 ring-1 ring-emerald-300">Abrir guía</Link><Link href="/dashboard/billing" className="bg-emerald-800 px-4 py-2.5 text-center text-sm font-bold text-white">Ver suscripción</Link></div>
+      </section>}
 
       <OnboardingChecklist
         input={{
