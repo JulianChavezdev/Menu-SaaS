@@ -37,7 +37,7 @@ const orderedIds = z
   .min(1)
   .max(500)
   .refine((ids) => new Set(ids).size === ids.length);
-const category = z.object({ name: z.string().min(2).max(60) });
+const category = z.object({ name: z.string().trim().min(2).max(60) });
 const product = z.object({
   id: uuid.optional(),
   name: z.string().min(2).max(100),
@@ -185,11 +185,13 @@ export async function saveCategory(form: FormData) {
   if (!p.success) throw new Error("El nombre de categoría no es válido");
   const translated = await translateFieldsToEnglish({ name: p.data.name });
   const id = String(form.get("id") || "");
-  const slug = p.data.name
+  const normalizedSlug = p.data.name
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-");
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  const slug = normalizedSlug || `categoria-${id.slice(0, 8) || crypto.randomUUID().slice(0, 8)}`;
   if (id) {
     const { data: current } = await supabase
       .from("categories")
@@ -197,7 +199,7 @@ export async function saveCategory(form: FormData) {
       .eq("id", id)
       .eq("restaurant_id", restaurant.id)
       .single();
-    await supabase
+    const { error } = await supabase
       .from("categories")
       .update({
         name: p.data.name,
@@ -209,8 +211,9 @@ export async function saveCategory(form: FormData) {
         ),
       })
       .eq("id", id)
-      .eq("restaurant_id", restaurant.id)
-      .throwOnError();
+      .eq("restaurant_id", restaurant.id);
+    if (error)
+      throw new Error(error.code === "23505" ? "Ya existe una categoría con ese nombre." : error.message);
   } else {
     if (!(await canAddCategory(restaurant.id)))
       throw new Error("Activa el Plan Carta para añadir categorías.");
@@ -218,7 +221,7 @@ export async function saveCategory(form: FormData) {
       .from("categories")
       .select("id", { count: "exact", head: true })
       .eq("restaurant_id", restaurant.id);
-    await supabase
+    const { error } = await supabase
       .from("categories")
       .insert({
         restaurant_id: restaurant.id,
@@ -226,8 +229,9 @@ export async function saveCategory(form: FormData) {
         slug,
         translations: automaticTranslationMap(undefined, translated, true),
         sort_order: count ?? 0,
-      })
-      .throwOnError();
+      });
+    if (error)
+      throw new Error(error.code === "23505" ? "Ya existe una categoría con ese nombre." : error.message);
   }
   refresh(restaurant.slug);
   return { translationStatus: translated.status };
