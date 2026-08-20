@@ -34,7 +34,8 @@ test.describe("restaurant owner journey",()=>{
   test("preselects the requested plan on the public registration form",async({page})=>{
     await page.goto("/register?plan=pedidos");
     await expect(page.getByRole("radio",{name:/Menuly Pedidos/})).toBeChecked();
-    await expect(page.getByRole("checkbox",{name:/Acepto las/})).not.toBeChecked();
+    await expect(page.locator('input[name="legal_acceptance"]')).toHaveCount(0);
+    await expect(page.locator('a[href="/condiciones"],a[href="/privacidad"]')).toHaveCount(0);
   });
 
   test("login, trial onboarding, guide, product creation and public menu",async({page})=>{
