@@ -176,6 +176,10 @@ const checks=[
       return {error:results.find(result=>result.error)?.error??null};
     },
   },
+  {
+    migration:"202608200001_order_idempotency.sql",
+    run:()=>supabase.from("dining_orders").select("client_request_id",{head:true}).limit(1),
+  },
 ];
 
 const pending=[];

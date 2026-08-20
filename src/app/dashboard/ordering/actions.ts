@@ -67,7 +67,11 @@ export async function transitionDiningOrder(orderId:string,nextStatus:string){
   const{supabase,restaurant}=await orderingRestaurant();
   const{data:current,error:readError}=await supabase.from("dining_orders").select("status,table_session_id").eq("id",order.data).eq("restaurant_id",restaurant.id).maybeSingle();if(readError||!current)throw new Error("Pedido no encontrado.");
   const from=orderStatusSchema.parse(current.status);if(!canTransitionOrder(from,next.data))throw new Error("Ese cambio de estado no está permitido.");
-  const now=new Date().toISOString();const timestamps=next.data==="accepted"?{accepted_at:now}:next.data==="ready"?{ready_at:now}:next.data==="delivered"?{delivered_at:now}:{};
+  if(next.data==="pending"){
+    const{data:session}=await supabase.from("table_sessions").select("status,expires_at").eq("id",current.table_session_id).eq("restaurant_id",restaurant.id).maybeSingle();
+    if(!session||session.status!=="open"||new Date(session.expires_at)<=new Date())throw new Error("Abre de nuevo la mesa antes de reabrir este pedido.");
+  }
+  const now=new Date().toISOString();const timestamps=next.data==="pending"?{accepted_at:null,ready_at:null,delivered_at:null}:next.data==="accepted"?{accepted_at:now}:next.data==="ready"?{ready_at:now}:next.data==="delivered"?{delivered_at:now}:{};
   const{data:updated,error}=await supabase.from("dining_orders").update({status:next.data,...timestamps}).eq("id",order.data).eq("restaurant_id",restaurant.id).eq("status",from).select("id").maybeSingle();if(error||!updated)throw new Error("El pedido ya cambió de estado. Actualiza la pantalla.");
   if(next.data==="accepted")await supabase.from("table_sessions").update({expires_at:sessionExpiresAt().toISOString()}).eq("id",current.table_session_id).eq("status","open");
   refresh();

@@ -7,6 +7,7 @@ export type OrderStatus=z.infer<typeof orderStatusSchema>;
 
 export const publicOrderSchema=z.object({
   tableCode:z.string().uuid(),
+  requestId:z.string().uuid(),
   lines:z.array(z.object({
     productId:z.string().uuid(),
     quantity:z.number().int().min(1).max(20),
@@ -23,10 +24,9 @@ const transitions:Record<OrderStatus,readonly OrderStatus[]>={
   accepted:["preparing","cancelled"],
   preparing:["ready","cancelled"],
   ready:["delivered"],
-  delivered:[],rejected:[],cancelled:[],
+  delivered:[],rejected:["pending"],cancelled:["pending"],
 };
 
 export function canTransitionOrder(from:OrderStatus,to:OrderStatus){return transitions[from].includes(to)}
 export function sessionExpiresAt(now=new Date(),minutes=ORDERING_SESSION_MINUTES){return new Date(now.getTime()+minutes*60_000)}
 export function isOpenSession(session:{status:string;expires_at:string},now=new Date()){return session.status==="open"&&new Date(session.expires_at)>now}
-

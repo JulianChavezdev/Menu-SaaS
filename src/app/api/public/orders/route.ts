@@ -31,6 +31,8 @@ export async function POST(request:Request){
   if(!restaurant?.is_published||restaurant.access_suspended||restaurant.subscription_status!=="active"||!restaurant.ordering_enabled)return reply({error:"El restaurante no está aceptando pedidos desde la carta."},403);
   const{data:session}=await admin.from("table_sessions").select("id,status,expires_at").eq("table_id",table.id).eq("restaurant_id",restaurant.id).eq("status","open").gt("expires_at",now.toISOString()).order("started_at",{ascending:false}).limit(1).maybeSingle();
   if(!session)return reply({error:"La sesión de esta mesa está cerrada. Pide al personal que la active."},409);
+  const{data:existing}=await admin.from("dining_orders").select("id,public_token,status,created_at").eq("table_session_id",session.id).eq("client_request_id",parsed.data.requestId).maybeSingle();
+  if(existing)return reply({ok:true,replayed:true,order:{number:existing.id.slice(0,6).toUpperCase(),token:existing.public_token,status:existing.status,createdAt:existing.created_at},table:{name:table.name}});
   const minuteAgo=new Date(now.getTime()-60_000).toISOString();
   const{count:recent}=await admin.from("dining_orders").select("id",{count:"exact",head:true}).eq("table_session_id",session.id).gte("created_at",minuteAgo);
   if((recent??0)>=5)return reply({error:"Se han enviado demasiados pedidos seguidos. Espera un minuto."},429);
@@ -40,9 +42,8 @@ export async function POST(request:Request){
   const byId=new Map(products.map(product=>[product.id,product]));
   const items=parsed.data.lines.map(line=>{const product=byId.get(line.productId)!;return{restaurant_id:restaurant.id,product_id:product.id,product_name:product.name,unit_price_cents:product.price_cents,quantity:line.quantity,note:line.note||null,line_total_cents:product.price_cents*line.quantity}});
   const subtotal=items.reduce((sum,item)=>sum+item.line_total_cents,0);
-  const{data:order,error:orderError}=await admin.from("dining_orders").insert({restaurant_id:restaurant.id,table_id:table.id,table_session_id:session.id,status:"pending",subtotal_cents:subtotal,customer_note:parsed.data.customerNote||null}).select("id,public_token,status,created_at").single();
+  const{data:created,error:orderError}=await admin.rpc("create_public_dining_order",{target_restaurant:restaurant.id,target_table:table.id,target_session:session.id,target_request:parsed.data.requestId,target_subtotal:subtotal,target_customer_note:parsed.data.customerNote,target_items:items});
+  const order=Array.isArray(created)?created[0]:created;
   if(orderError||!order)return reply({error:"No se pudo registrar el pedido."},503);
-  const{error:itemError}=await admin.from("dining_order_items").insert(items.map(item=>({...item,order_id:order.id})));
-  if(itemError){await admin.from("dining_orders").delete().eq("id",order.id);return reply({error:"No se pudieron guardar los productos."},503)}
-  return reply({ok:true,order:{number:order.id.slice(0,6).toUpperCase(),token:order.public_token,status:order.status,createdAt:order.created_at},table:{name:table.name}},201);
+  return reply({ok:true,replayed:Boolean(order.replayed),order:{number:order.order_id.slice(0,6).toUpperCase(),token:order.order_public_token,status:order.order_status,createdAt:order.order_created_at},table:{name:table.name}},order.replayed?200:201);
 }
