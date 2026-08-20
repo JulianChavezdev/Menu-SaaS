@@ -101,10 +101,6 @@ export default function Register() {
             </div>
           </fieldset>
 
-          <label className="flex items-start gap-2 text-xs leading-relaxed text-slate-600">
-            <input name="legal_acceptance" required type="checkbox" className="mt-0.5" />
-            <span>Acepto las <Link href="/condiciones" target="_blank" className="font-semibold text-orange-700 underline">condiciones</Link> y la <Link href="/privacidad" target="_blank" className="font-semibold text-orange-700 underline">política de privacidad</Link>.</span>
-          </label>
         </div>
 
      
