@@ -32,10 +32,11 @@ export default async function ManagedRestaurantPage({
   searchParams: Promise<{
     saved?: string;
     payment?: string;
+    free_month?: string;
     restored?: string;
   }>;
 }) {
-  const [{ id }, { saved, payment, restored }] = await Promise.all([
+  const [{ id }, { saved, payment, free_month, restored }] = await Promise.all([
     params,
     searchParams,
   ]);
@@ -49,6 +50,7 @@ export default async function ManagedRestaurantPage({
     { data: payments },
     { data: backups },
     { data: salesStatus },
+    { data: freeMonthGrant },
   ] = await Promise.all([
     admin.from("restaurants").select("*").eq("id", id).maybeSingle(),
     admin
@@ -89,6 +91,7 @@ export default async function ManagedRestaurantPage({
       .order("created_at", { ascending: false })
       .limit(20),
     admin.from("restaurant_sales_status").select("stage,note").eq("restaurant_id",id).maybeSingle(),
+    admin.from("superadmin_audit_log").select("created_at").eq("restaurant_id",id).eq("action","subscription.first_free_month_granted").maybeSingle(),
   ]);
   if (error || !restaurant) notFound();
   const owner = await admin.auth.admin.getUserById(restaurant.owner_id);
@@ -164,6 +167,12 @@ export default async function ManagedRestaurantPage({
         <div className="mt-5 flex items-center gap-2 rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-3 text-sm text-emerald-800">
           <CheckCircle2 size={18} />
           Pago registrado y acceso premium activado.
+        </div>
+      )}
+      {free_month && (
+        <div className="mt-5 flex items-center gap-2 rounded-xl border border-orange-300 bg-orange-50 p-3 text-sm text-orange-950">
+          <CheckCircle2 size={18} />
+          Primer mes gratis concedido sin registrar ningún ingreso.
         </div>
       )}
       {restored && (
@@ -463,6 +472,7 @@ export default async function ManagedRestaurantPage({
         currency={restaurant.currency}
         subscription={subscription}
         payments={payments ?? []}
+        freeMonthGrantedAt={freeMonthGrant?.created_at ?? null}
       />
       <DeleteRestaurantPanel
         restaurantId={restaurant.id}

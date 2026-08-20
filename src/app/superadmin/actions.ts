@@ -104,6 +104,16 @@ export async function recordManualPayment(form:FormData){
   redirect(`/superadmin/restaurants/${parsed.data.restaurant_id}?payment=recorded`);
 }
 
+export async function grantFirstFreeMonth(form:FormData){
+  const parsed=z.object({restaurant_id:uuid,confirmation:z.literal("grant")}).safeParse(Object.fromEntries(form));
+  if(!parsed.success)throw new Error("Confirma la concesión del primer mes gratis.");
+  const {admin,user}=await requireSuperadmin();
+  const {error}=await admin.rpc("grant_first_free_month",{target_restaurant:parsed.data.restaurant_id,actor_user:user.id});
+  if(error)throw new Error(error.message);
+  refresh(parsed.data.restaurant_id);
+  redirect(`/superadmin/restaurants/${parsed.data.restaurant_id}?free_month=granted`);
+}
+
 export async function processManualExpirations(form:FormData){
   const parsed=z.object({grace_days:z.coerce.number().int().min(0).max(30),operation:z.enum(["mark","suspend"])}).safeParse(Object.fromEntries(form));
   if(!parsed.success)throw new Error("Revisa los días de cortesía.");
