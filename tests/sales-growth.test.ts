@@ -25,7 +25,7 @@ describe("sales growth features",()=>{
     expect(analytics).toContain("Intención de compra");
     expect(analytics).toContain("no ventas confirmadas");
     expect(analytics).toContain("Tasa de añadido");
-    expect(analytics).toContain("Oportunidad detectada");
+    expect(analytics).toContain("Qué deberías hacer ahora");
   });
 
   it("guides restaurants to the next incomplete setup step",()=>{
