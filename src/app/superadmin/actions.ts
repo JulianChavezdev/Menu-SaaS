@@ -13,6 +13,7 @@ import {automaticTranslationMap,translateFieldsToEnglish} from "@/lib/automatic-
 const uuid=z.string().uuid();
 const status=z.enum(["trialing","active","past_due","canceled"]);
 const paymentMethod=z.enum(["bizum","cash","bank_transfer","other"]);
+const salesStage=z.enum(["new","contacted","interested","converted","not_continuing"]);
 const restaurantInput=z.object({
   restaurant_id:uuid,name:z.string().trim().min(2).max(80),slug:z.string().trim().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   description:z.string().trim().max(500),email:z.string().trim().max(200),phone:z.string().trim().max(60),address:z.string().trim().max(250),
@@ -97,6 +98,8 @@ export async function recordManualPayment(form:FormData){
   const {error}=await admin.rpc("record_manual_payment",{target_restaurant:parsed.data.restaurant_id,payment_amount_cents:Math.round(parsed.data.amount*100),payment_currency:parsed.data.currency,payment_method:parsed.data.method,payment_paid_at:paidAt.toISOString(),payment_period_end:periodEnd.toISOString(),payment_reference:parsed.data.reference,payment_notes:parsed.data.notes,actor_user:user.id});
   if(error)throw new Error(error.message);
   await audit(admin,user.id,parsed.data.restaurant_id,"payment.manual_recorded",{amount_cents:Math.round(parsed.data.amount*100),currency:parsed.data.currency,method:parsed.data.method,period_end:periodEnd.toISOString(),reference:parsed.data.reference||null});
+  await admin.from("restaurant_sales_status").upsert({restaurant_id:parsed.data.restaurant_id,stage:"converted",updated_by:user.id},{onConflict:"restaurant_id"}).throwOnError();
+  await audit(admin,user.id,parsed.data.restaurant_id,"trial.sales_stage_updated",{stage:"converted",automatic:true});
   refresh(parsed.data.restaurant_id);
   redirect(`/superadmin/restaurants/${parsed.data.restaurant_id}?payment=recorded`);
 }
@@ -126,7 +129,19 @@ export async function recordTrialFollowup(form:FormData){
   const parsed=z.object({restaurant_id:uuid,channel:z.enum(["copy","whatsapp","email"]),period_end:z.string().datetime()}).safeParse(Object.fromEntries(form));
   if(!parsed.success)throw new Error("Seguimiento de prueba no válido.");
   const {admin,user}=await requireSuperadmin();
+  const {data:current}=await admin.from("restaurant_sales_status").select("stage").eq("restaurant_id",parsed.data.restaurant_id).maybeSingle();
+  if(!current||current.stage==="new")await admin.from("restaurant_sales_status").upsert({restaurant_id:parsed.data.restaurant_id,stage:"contacted",updated_by:user.id},{onConflict:"restaurant_id"}).throwOnError();
   await audit(admin,user.id,parsed.data.restaurant_id,"trial.reminder_prepared",{channel:parsed.data.channel,period_end:parsed.data.period_end});
+  revalidatePath("/superadmin");
+  revalidatePath(`/superadmin/restaurants/${parsed.data.restaurant_id}`);
+}
+
+export async function updateTrialSalesStage(form:FormData){
+  const parsed=z.object({restaurant_id:uuid,stage:salesStage,note:z.string().trim().max(1000)}).safeParse(Object.fromEntries(form));
+  if(!parsed.success)throw new Error("Seguimiento comercial no válido.");
+  const {admin,user}=await requireSuperadmin();
+  await admin.from("restaurant_sales_status").upsert({restaurant_id:parsed.data.restaurant_id,stage:parsed.data.stage,note:parsed.data.note||null,updated_by:user.id},{onConflict:"restaurant_id"}).throwOnError();
+  await audit(admin,user.id,parsed.data.restaurant_id,"trial.sales_stage_updated",{stage:parsed.data.stage,has_note:Boolean(parsed.data.note)});
   revalidatePath("/superadmin");
   revalidatePath(`/superadmin/restaurants/${parsed.data.restaurant_id}`);
 }

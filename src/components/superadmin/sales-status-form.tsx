@@ -1,0 +1,5 @@
+import {updateTrialSalesStage} from "@/app/superadmin/actions";
+import {SALES_STAGES,SALES_STAGE_LABELS,type SalesStage} from "@/lib/sales-stages";
+
+export function SalesStatusForm({restaurantId,stage="new",note="",compact=false}:{restaurantId:string;stage?:SalesStage;note?:string;compact?:boolean}){return <form action={updateTrialSalesStage} className={`grid gap-2 ${compact?"mt-3 sm:grid-cols-[150px_1fr_auto]":"mt-4"}`}><input type="hidden" name="restaurant_id" value={restaurantId}/><label className="text-xs font-semibold text-slate-600">Estado<select name="stage" defaultValue={stage} className="mt-1 w-full border border-stone-300 bg-white p-2 text-sm">{SALES_STAGES.map(value=><option key={value} value={value}>{SALES_STAGE_LABELS[value]}</option>)}</select></label><label className="text-xs font-semibold text-slate-600">Nota interna<input name="note" maxLength={1000} defaultValue={note} placeholder="Próximo paso o contexto" className="mt-1 w-full border border-stone-300 bg-white p-2 text-sm"/></label><button className={`${compact?"self-end":"mt-1"} bg-slate-900 px-4 py-2.5 text-sm font-bold text-white`}>Guardar seguimiento</button></form>}
+

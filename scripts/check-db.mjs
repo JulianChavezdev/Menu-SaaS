@@ -187,6 +187,13 @@ const checks=[
       return {error:error??(data===20260820?null:new Error("Unexpected trial policy version"))};
     },
   },
+  {
+    migration:"202608200003_restaurant_sales_followup.sql",
+    run:async()=>{
+      const {data,error}=await supabase.rpc("sales_followup_policy_version");
+      return {error:error??(data===20260820?null:new Error("Unexpected sales follow-up policy version"))};
+    },
+  },
 ];
 
 const pending=[];

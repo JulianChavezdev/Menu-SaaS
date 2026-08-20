@@ -22,6 +22,7 @@ export function describeAuditEvent(action:string,rawDetails:unknown):Description
     case"payment.expired_marked":return{title:"Pago pendiente",description:"La suscripción vencida se marcó para revisión.",group:"payments",tone:"warning"};
     case"payment.reminder_prepared":return{title:"Recordatorio preparado",description:"Se preparó un aviso de vencimiento para el restaurante.",group:"payments",tone:"neutral"};
     case"trial.reminder_prepared":return{title:"Seguimiento de prueba preparado",description:"Se preparó un contacto comercial para el restaurante en prueba.",group:"payments",tone:"neutral"};
+    case"trial.sales_stage_updated":return{title:"Estado comercial actualizado",description:`El seguimiento pasó a ${text(details,"stage")??"un nuevo estado"}.`,group:"payments",tone:text(details,"stage")==="converted"?"success":"neutral"};
     case"restaurant.deleted":return{title:"Restaurante eliminado",description:`${text(details,"restaurant_name")??"El restaurante"} se movió a la papelera.`,group:"restaurants",tone:"danger"};
     case"restaurant.deletion_backup_created":return{title:"Copia de eliminación creada",description:"Se guardó una copia recuperable antes de eliminar el restaurante.",group:"restaurants",tone:"warning"};
     case"restaurant.trial_expired_deleted":return{title:"Prueba finalizada",description:"La carta de prueba se eliminó y pasó temporalmente a la papelera.",group:"restaurants",tone:"danger"};
