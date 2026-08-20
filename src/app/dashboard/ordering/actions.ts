@@ -10,7 +10,7 @@ const tableName=z.string().trim().min(1).max(40);
 
 async function orderingRestaurant(){
   const context=await activeRestaurant();
-  if(!context.restaurant.ordering_enabled||context.restaurant.subscription_status!=="active")throw new Error("Menuly Pedidos no está activo para este restaurante.");
+  if(!context.restaurant.ordering_enabled||!["active","trialing"].includes(context.restaurant.subscription_status))throw new Error("Menuly Pedidos no está activo para este restaurante.");
   return context;
 }
 

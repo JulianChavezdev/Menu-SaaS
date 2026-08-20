@@ -262,8 +262,8 @@ export default function Home() {
                 "Vídeo, carrito, idiomas y analíticas",
                 "Equipo y soporte",
               ]}
-              cta="Solicitar activación"
-              href="#contacto"
+              cta="Probar 30 días gratis"
+              href="/register"
             />
             <PriceCard
               featured
@@ -280,8 +280,8 @@ export default function Home() {
                 "Pantalla de cocina en tiempo real",
                 "Estados, avisos e historial de pedidos",
               ]}
-              cta="Quiero Menuly Pedidos"
-              href="#contacto"
+              cta="Probar 30 días gratis"
+              href="/register"
             />
             <PriceCard
               badge="Segundo mes gratis"
@@ -302,7 +302,7 @@ export default function Home() {
             />
           </div>
           <p className="mx-auto mt-5 max-w-3xl text-xs leading-relaxed text-slate-500">
-            La activación y los pagos se gestionan manualmente.
+            Los nuevos restaurantes disfrutan de 30 días gratis. La activación posterior y los pagos se gestionan manualmente.
             No se realizará ningún cargo automático.
           </p>
         </div>

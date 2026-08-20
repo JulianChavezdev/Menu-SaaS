@@ -210,6 +210,7 @@ export default async function ManagedRestaurantPage({
                 name="subscription_status"
                 defaultValue={restaurant.subscription_status}
               >
+                <option value="trialing">Prueba de 30 días</option>
                 <option value="active">Activo / acceso premium</option>
                 <option value="past_due">Pago pendiente</option>
                 <option value="canceled">Cancelado</option>

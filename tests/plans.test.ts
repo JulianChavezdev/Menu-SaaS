@@ -1,5 +1,5 @@
 import {describe,expect,it} from "vitest";
-import {PLAN_LIMITS,canCreateProduct,planForStatus} from "../src/lib/plans";
+import {PLAN_LIMITS,canCreateProduct,planForStatus,subscriptionHasAccess} from "../src/lib/plans";
 
 describe("Carta plan",()=>{
   it("allows products below the paid limit",()=>expect(canCreateProduct(99)).toBe(true));
@@ -12,7 +12,8 @@ describe("Carta plan",()=>{
   it("defines one restaurant",()=>expect(PLAN_LIMITS.carta.restaurants).toBe(1));
   it("only unlocks the paid plan for active subscriptions",()=>{
     expect(planForStatus("active")).toBe("carta");
-    expect(planForStatus("trialing")).toBe("pending");
+    expect(planForStatus("trialing")).toBe("carta");
+    expect(subscriptionHasAccess("trialing")).toBe(true);
     expect(planForStatus("past_due")).toBe("pending");
     expect(planForStatus("canceled")).toBe("pending");
   });

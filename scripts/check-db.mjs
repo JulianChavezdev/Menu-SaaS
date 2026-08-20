@@ -180,6 +180,13 @@ const checks=[
     migration:"202608200001_order_idempotency.sql",
     run:()=>supabase.from("dining_orders").select("client_request_id",{head:true}).limit(1),
   },
+  {
+    migration:"202608200002_thirty_day_signup_trial.sql",
+    run:async()=>{
+      const {data,error}=await supabase.rpc("trial_policy_version");
+      return {error:error??(data===20260820?null:new Error("Unexpected trial policy version"))};
+    },
+  },
 ];
 
 const pending=[];

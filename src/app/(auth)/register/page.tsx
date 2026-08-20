@@ -1,27 +1,38 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
 import { PasswordInput } from "@/components/ui/password-input";
 import { BrandLogo } from "@/components/brand/brand-logo";
+import { SIGNUP_PLANS, signupPlan } from "@/lib/signup-plans";
 
 export default function Register() {
   const [message, setMessage] = useState("");
   const [pending, setPending] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState("carta");
+  const router = useRouter();
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if(pending)return;
     setPending(true);
     const f = new FormData(e.currentTarget);
-    const { error } = await createClient().auth.signUp({
+    const plan = signupPlan(f.get("plan"));
+    const { data, error } = await createClient().auth.signUp({
       email: String(f.get("email")),
       password: String(f.get("password")),
       options: {
-        emailRedirectTo: `${location.origin}/auth/callback?next=/dashboard`,
+        emailRedirectTo: `${location.origin}/auth/callback?next=${encodeURIComponent(`/onboarding?plan=${plan}`)}`,
+        data: { plan_interest: plan },
       },
     });
+    if (!error && data.session) {
+      router.push(`/onboarding?plan=${plan}`);
+      router.refresh();
+      return;
+    }
     setMessage(error ? error.message : "Revisa tu correo para confirmar la cuenta.");
     setPending(false);
   }
@@ -44,7 +55,7 @@ export default function Register() {
             Crea tu cuenta
           </h1>
           <p className="mt-2 text-sm text-slate-600">
-            Empieza a transformar tu menú en vídeos irresistibles.
+            Elige tu plan y disfruta de Menuly gratis durante el primer mes.
           </p>
         </div>
 
@@ -74,11 +85,30 @@ export default function Register() {
               className="w-full rounded-xl border border-stone-300 bg-stone-100 px-4 py-3 text-slate-950 placeholder-slate-400 transition-all duration-200 hover:border-stone-400 focus:border-orange-500 focus:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
             />
           </div>
+
+          <fieldset>
+            <legend className="text-sm font-semibold text-slate-800">¿Qué plan te interesa?</legend>
+            <div className="mt-2 grid gap-2">
+              {SIGNUP_PLANS.map((plan) => (
+                <label key={plan.id} className={`cursor-pointer rounded-xl border p-3 transition ${selectedPlan===plan.id?"border-orange-500 bg-orange-50":"border-stone-200 bg-white hover:border-stone-400"}`}>
+                  <span className="flex items-start gap-3">
+                    <input name="plan" type="radio" value={plan.id} checked={selectedPlan===plan.id} onChange={()=>setSelectedPlan(plan.id)} className="mt-1" />
+                    <span className="min-w-0"><strong className="flex flex-wrap justify-between gap-2 text-sm text-slate-950"><span>{plan.name}</span><span className="text-orange-700">{plan.price}</span></strong><span className="mt-1 block text-xs leading-relaxed text-slate-600">{plan.description}</span></span>
+                  </span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+
+          <label className="flex items-start gap-2 text-xs leading-relaxed text-slate-600">
+            <input name="legal_acceptance" required type="checkbox" className="mt-0.5" />
+            <span>Acepto las <Link href="/condiciones" target="_blank" className="font-semibold text-orange-700 underline">condiciones</Link> y la <Link href="/privacidad" target="_blank" className="font-semibold text-orange-700 underline">política de privacidad</Link>.</span>
+          </label>
         </div>
 
      
         <button disabled={pending} className="mt-6 w-full rounded-xl bg-orange-600 py-3.5 font-semibold text-white shadow-lg  transition-all duration-200 hover:bg-orange-600  focus:outline-none focus:ring-2 focus:ring-orange-500/50 disabled:cursor-wait disabled:opacity-60">
-          {pending?"Creando cuenta…":"Registrarme"}
+          {pending?"Creando cuenta…":"Crear cuenta y empezar gratis"}
         </button>
 
    

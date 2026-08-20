@@ -46,8 +46,10 @@ export default function TermsPage() {
       </LegalSection>
       <LegalSection title="4. Planes y precios">
         <p>
-          Menuly no ofrece un periodo de prueba gratuito. El Plan Carta cuesta
-          34,99 € al mes. Menuly Pedidos cuesta 59,99 € al mes e incorpora QR
+          Las nuevas cuentas disponen de una prueba gratuita de 30 días del plan
+          seleccionado. Finalizado ese periodo, la publicación se suspenderá si
+          no existe un plan de pago activo; el contenido creado se conservará.
+          El Plan Carta cuesta 34,99 € al mes. Menuly Pedidos cuesta 59,99 € al mes e incorpora QR
           por mesa, sesiones temporales, envío de comandas y pantalla de cocina.
           Las modalidades anuales mostradas aplican un ahorro aproximado del
           18 %. El servicio Configuración completa cuesta

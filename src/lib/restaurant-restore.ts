@@ -74,7 +74,7 @@ export function buildRestorePreview(backup:RestaurantRestoreBackup,current:Curre
   const backupProductIds=new Set(backup.products.map(item=>item.id));
   const changedSettings=comparedFields.filter(field=>backup.restaurant[field]!==current[field]);
   const mediaReferences=backup.products.filter(product=>product.video_url||product.video_path||product.image_url||product.image_path).length+(backup.restaurant.logo_url?1:0);
-  const exceedsPlan=current.subscription_status!=="active"&&(backup.categories.length>0||backup.products.length>0);
+  const exceedsPlan=!["active","trialing"].includes(current.subscription_status)&&(backup.categories.length>0||backup.products.length>0);
   return{
     exportedAt:backup.exportedAt,
     sourceName:backup.restaurant.name,

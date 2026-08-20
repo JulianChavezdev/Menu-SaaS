@@ -23,7 +23,7 @@ export default async function Page(){
       <div className="mt-5 border-t border-stone-200 pt-5"><CategoriesManager categories={categories??[]}/></div>
     </details>
     <div className="mt-5 grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
-      <section className="min-w-0 rounded-3xl border border-stone-200 bg-white p-4 md:p-5"><h2 className="mb-4 text-lg font-bold">Productos</h2><ProductsManager categories={categories??[]} products={list}/></section>
+      <section id="productos" className="min-w-0 scroll-mt-6 rounded-3xl border border-stone-200 bg-white p-4 md:p-5"><h2 className="mb-4 text-lg font-bold">Productos</h2><ProductsManager categories={categories??[]} products={list}/></section>
       <aside className="space-y-4 rounded-3xl border border-stone-200 bg-white p-4 xl:sticky xl:top-5"><div><h2 className="mb-1 font-semibold">Contenido visual</h2><p className="mb-4 text-xs text-slate-500">Al subir un vídeo se genera una miniatura para la carta listada. Puedes sustituirla cuando quieras subiendo una foto propia.</p><MediaUpload restaurantId={restaurant.id} kind="product-image" products={options}/></div><MediaUpload restaurantId={restaurant.id} kind="product-video" products={options}/></aside>
     </div>
   </main>;

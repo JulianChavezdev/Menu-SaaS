@@ -34,10 +34,10 @@ describe("restaurant backup restore",()=>{
     expect(preview.warnings.join(" ")).toContain("miembros");
   });
 
-  it("blocks content restoration without an active plan",()=>{
+  it("allows content restoration during the trial",()=>{
     const parsed=parseRestaurantBackup(backup,restaurantId);
     const trialPreview=buildRestorePreview({...parsed,products:Array.from({length:2},(_,index)=>({...parsed.products[0],id:`0000000${index}-0000-4000-8000-00000000000${index}`}))},{...current,subscription_status:"trialing"},[],[]);
-    expect(trialPreview.canApply).toBe(false);
-    expect(trialPreview.warnings.at(-1)).toContain("Plan Carta");
+    expect(trialPreview.canApply).toBe(true);
+    expect(trialPreview.warnings.join(" ")).not.toContain("Activa el Plan Carta");
   });
 });

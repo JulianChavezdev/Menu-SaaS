@@ -1,14 +1,21 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { createRestaurant } from "@/app/dashboard/actions";
 import { BrandLogo } from "@/components/brand/brand-logo";
+import { SIGNUP_PLANS, signupPlan } from "@/lib/signup-plans";
 
 export default function Onboarding() {
+  return <Suspense fallback={<main className="grid min-h-screen place-items-center bg-stone-50"><p className="text-sm text-slate-600">Preparando tu alta…</p></main>}><OnboardingForm/></Suspense>;
+}
+
+function OnboardingForm() {
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const plan = signupPlan(searchParams.get("plan"));
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -17,7 +24,7 @@ export default function Onboarding() {
     setError("");
     try {
       await createRestaurant(new FormData(e.currentTarget));
-      router.push("/dashboard");
+      router.push("/dashboard/getting-started");
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo crear el restaurante");
@@ -46,12 +53,14 @@ export default function Onboarding() {
             Crea tu restaurante
           </h1>
           <p className="mt-2 text-sm text-slate-600">
-            Paso 1 de 5. Después te guiaremos para añadir logo, productos, contenido visual y publicar.
+            Tu primer mes es gratis. Después te guiaremos para crear y publicar la carta.
           </p>
         </div>
 
         {/* Inputs Estilizados */}
         <div className="space-y-5">
+          <input type="hidden" name="plan" value={plan}/>
+          <div className="rounded-xl border border-orange-200 bg-orange-50 p-3 text-sm text-slate-700"><span className="block text-xs font-bold uppercase tracking-wide text-orange-700">Plan elegido</span><strong>{SIGNUP_PLANS.find(item=>item.id===plan)?.name}</strong><span className="ml-2 text-xs">30 días de prueba</span></div>
           <label className="block text-sm font-medium text-slate-700">
             Nombre
             <input 

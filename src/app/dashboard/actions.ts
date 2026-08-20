@@ -31,6 +31,7 @@ import {
   destroyCloudinaryVideo,
   optimizedCloudinaryVideoUrl,
 } from "@/lib/cloudinary";
+import {signupPlan,trialEndsAt} from "@/lib/signup-plans";
 const uuid = z.string().uuid();
 const orderedIds = z
   .array(uuid)
@@ -141,6 +142,10 @@ export async function createRestaurant(form: FormData) {
   });
   const name = String(form.get("name") || "").trim();
   const slug = normalizePublicSlug(String(form.get("slug") || ""));
+  const selectedPlan = signupPlan(user.user_metadata?.plan_interest ?? form.get("plan"));
+  const trialEnd = trialEndsAt().toISOString();
+  const {count:existingMemberships}=await s.from("restaurant_members").select("restaurant_id",{count:"exact",head:true}).eq("user_id",user.id);
+  if((existingMemberships??0)>0)throw new Error("Tu cuenta ya tiene un restaurante. Abre el panel para gestionarlo.");
   if (
     name.length < 2 ||
     name.length > 80 ||
@@ -149,7 +154,7 @@ export async function createRestaurant(form: FormData) {
     throw new Error("Revisa el nombre y el slug.");
   const { data: created, error } = await s
     .from("restaurants")
-    .insert({ name, slug, currency: "EUR", locale: "es-ES", owner_id: user.id, subscription_status: "past_due" })
+    .insert({ name, slug, currency: "EUR", locale: "es-ES", owner_id: user.id, plan:selectedPlan, subscription_status: "trialing", ordering_enabled:selectedPlan==="pedidos", publication_suspended_for_payment:false })
     .select("id")
     .single();
   if (error)
@@ -164,9 +169,9 @@ export async function createRestaurant(form: FormData) {
     const { error: subscriptionError } = await s.from("subscriptions").insert({
       restaurant_id: created.id,
       provider: "manual",
-      plan: "carta",
-      status: "past_due",
-      current_period_end: null,
+      plan: selectedPlan,
+      status: "trialing",
+      current_period_end: trialEnd,
     });
     if (subscriptionError) throw subscriptionError;
   } catch (setupError) {
@@ -178,6 +183,7 @@ export async function createRestaurant(form: FormData) {
     );
   }
   revalidatePath("/dashboard");
+  revalidatePath("/dashboard/getting-started");
 }
 export async function saveCategory(form: FormData) {
   const { supabase, restaurant } = await activeRestaurant();
@@ -571,7 +577,7 @@ export async function updateAppearancePreferences(form: FormData) {
     throw new Error("La plantilla seleccionada no es válida.");
   if (
     MENU_TEMPLATES[menuTemplate].tier === "premium" &&
-    restaurant.subscription_status !== "active"
+    !["active","trialing"].includes(restaurant.subscription_status)
   )
     throw new Error("Esta plantilla requiere una suscripción activa.");
   const languageSwitcher = form.get("language_switcher_enabled") === "on";
@@ -592,7 +598,7 @@ export async function startCheckout() {
   const { restaurant, user, member } = await activeRestaurant();
   if (!["owner", "admin"].includes(String(member.role)))
     throw new Error("No tienes permisos para gestionar la suscripción.");
-  if (restaurant.subscription_status === "active")
+  if (["active","trialing"].includes(restaurant.subscription_status))
     redirect("/dashboard/billing");
   const secretKey = process.env.STRIPE_SECRET_KEY;
   const priceId = process.env.STRIPE_PLAN_PRICE_ID;

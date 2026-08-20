@@ -34,6 +34,7 @@ export default async function Page({
   const plan = planForStatus(status);
   const limits = PLAN_LIMITS[plan];
   const active = plan === "carta";
+  const trialing = status === "trialing";
   const ordering = Boolean(restaurant.ordering_enabled) && active;
   const productProgress = Math.min(
     100,
@@ -72,6 +73,12 @@ export default async function Page({
           </span>
         </div>
       )}
+      {trialing && (
+        <div className="mt-5 border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-950">
+          <strong>Tu mes de prueba está activo.</strong>
+          <span className="mt-1 block text-emerald-800">Puedes crear y publicar tu carta con normalidad hasta el final del periodo indicado.</span>
+        </div>
+      )}
       {!active && (
         <div className="mt-5 border border-amber-300 bg-amber-50 p-4 text-sm text-amber-950">
           <strong>Activación pendiente.</strong>
@@ -99,14 +106,14 @@ export default async function Page({
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <span className="rounded-full border border-orange-500/30 bg-orange-100 px-3 py-1 text-xs font-semibold uppercase text-orange-700">
-                {active ? "Plan activo" : "Pendiente"}
+                {trialing ? "Prueba activa" : active ? "Plan activo" : "Pendiente"}
               </span>
               <h2 className="mt-3 text-2xl font-bold">
                 {ordering ? "Menuly Pedidos" : active ? "Plan Carta" : "Sin plan activo"}
               </h2>
               <p className="mt-1 text-sm text-slate-600">
                 {active
-                  ? "Tu carta dispone de las funciones profesionales."
+                  ? trialing ? "Estás disfrutando de Menuly gratis durante un mes." : "Tu carta dispone de las funciones profesionales."
                   : "Activa un plan para gestionar y publicar la carta."}
               </p>
             </div>

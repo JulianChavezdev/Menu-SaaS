@@ -13,7 +13,7 @@ export default async function Page(){
     <div className="my-6"><h1 className="text-2xl font-extrabold">Apariencia</h1><p className="mt-1 text-sm text-slate-600">Configura el logo, previsualiza las plantillas y elige los controles de la carta pública.</p></div>
     <div className="grid gap-5 lg:grid-cols-[320px_1fr]">
       <MediaUpload restaurantId={restaurant.id} kind="logo" label="Logo del restaurante" currentUrl={restaurant.logo_url}/>
-      <AppearancePreferences enabled={Boolean(restaurant.language_switcher_enabled)} template={restaurant.menu_template} canUsePremium={restaurant.subscription_status==="active"} restaurantName={restaurant.name} logoUrl={restaurant.logo_url} currency={restaurant.currency} previewProduct={previewProduct}/>
+      <AppearancePreferences enabled={Boolean(restaurant.language_switcher_enabled)} template={restaurant.menu_template} canUsePremium={["active","trialing"].includes(restaurant.subscription_status)} restaurantName={restaurant.name} logoUrl={restaurant.logo_url} currency={restaurant.currency} previewProduct={previewProduct}/>
     </div>
   </main>;
 }

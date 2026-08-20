@@ -56,7 +56,7 @@ export function VideoMenu({restaurant,products,analyticsEnabled=true,introEnable
   const[playbackBlocked,setPlaybackBlocked]=useState<Set<number>>(()=>new Set());
   const[language,setLanguage]=useState<"es"|"en">(restaurant.locale.startsWith("en")?"en":"es");
   const text=copy[language];
-  const template=resolveMenuTemplate(restaurant.menu_template,restaurant.subscription_status==="active");
+  const template=resolveMenuTemplate(restaurant.menu_template,["active","trialing"].includes(restaurant.subscription_status??""));
   const framed=template.layout==="framed";
   const primaryTemplate=template.key==="cinematic";
   const colors=template.colors;

@@ -28,7 +28,7 @@ export async function POST(request:Request){
   const{data:table,error:tableError}=await admin.from("restaurant_tables").select("id,restaurant_id,name,is_active").eq("public_code",parsed.data.tableCode).maybeSingle();
   if(tableError||!table?.is_active)return reply({error:"El código de esta mesa no está activo."},404);
   const{data:restaurant}=await admin.from("restaurants").select("id,is_published,access_suspended,subscription_status,ordering_enabled").eq("id",table.restaurant_id).maybeSingle();
-  if(!restaurant?.is_published||restaurant.access_suspended||restaurant.subscription_status!=="active"||!restaurant.ordering_enabled)return reply({error:"El restaurante no está aceptando pedidos desde la carta."},403);
+  if(!restaurant?.is_published||restaurant.access_suspended||!["active","trialing"].includes(restaurant.subscription_status)||!restaurant.ordering_enabled)return reply({error:"El restaurante no está aceptando pedidos desde la carta."},403);
   const{data:session}=await admin.from("table_sessions").select("id,status,expires_at").eq("table_id",table.id).eq("restaurant_id",restaurant.id).eq("status","open").gt("expires_at",now.toISOString()).order("started_at",{ascending:false}).limit(1).maybeSingle();
   if(!session)return reply({error:"La sesión de esta mesa está cerrada. Pide al personal que la active."},409);
   const{data:existing}=await admin.from("dining_orders").select("id,public_token,status,created_at").eq("table_session_id",session.id).eq("client_request_id",parsed.data.requestId).maybeSingle();
