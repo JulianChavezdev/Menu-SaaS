@@ -208,6 +208,10 @@ const checks=[
       return {error:error?.code==="P0002"?null:(error??new Error("First free month validation did not run"))};
     },
   },
+  {
+    migration:"202608210001_remove_legacy_menu_templates.sql",
+    run:()=>supabase.from("restaurants").select("menu_template",{head:true}).limit(1),
+  },
 ];
 
 const pending=[];
