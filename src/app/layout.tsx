@@ -6,7 +6,7 @@ import {SaasNavigationTracker} from "@/components/navigation/saas-navigation-tra
 import {Jost,Playfair_Display} from "next/font/google";
 
 const baseUrl=normalizedAppUrl();
-const noirSans=Jost({subsets:["latin"],weight:["300","400","500","700"],style:["normal"],display:"swap",variable:"--font-noir-sans"});
+const noirSans=Jost({subsets:["latin"],weight:["300","400","500","700","900"],style:["normal"],display:"swap",variable:"--font-noir-sans"});
 const noirSerif=Playfair_Display({subsets:["latin"],weight:["400"],style:["normal","italic"],display:"swap",variable:"--font-noir-serif"});
 export const metadata:Metadata={
   metadataBase:new URL(baseUrl),

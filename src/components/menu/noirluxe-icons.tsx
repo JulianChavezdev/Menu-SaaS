@@ -9,10 +9,10 @@ export function NoirLuxeBasketIcon(){
 }
 
 export function NoirLuxeHamburgerIcon(){
-  return <span aria-hidden="true" className="flex w-5 flex-col gap-1"><span className="h-[3px] bg-[#c9a96e]"/><span className="h-[3px] bg-[#c9a96e]"/><span className="h-[3px] bg-[#c9a96e]"/></span>;
+  return <span aria-hidden="true" className="flex w-5 flex-col gap-1"><span className="h-[3px] bg-[#C9A96E]"/><span className="h-[3px] bg-[#C9A96E]"/><span className="h-[3px] bg-[#C9A96E]"/></span>;
 }
 
 export function NoirLuxeProgress({active,total}:{active:number;total:number}){
   const current=Math.min(2,Math.floor(active/Math.max(1,total)*3));
-  return <span aria-hidden="true" className="flex items-center gap-1">{[0,1,2].map(index=><span key={index} className={`h-1 bg-[#f0e9db] ${index===current?"w-7 bg-[#c9a96e]":"w-4"}`}/>)}</span>;
+  return <span aria-hidden="true" className="flex items-center gap-1">{[0,1,2].map(index=><span key={index} className={`h-1 bg-[#F0E9DB] ${index===current?"w-7 bg-[#C9A96E]":"w-4"}`}/>)}</span>;
 }

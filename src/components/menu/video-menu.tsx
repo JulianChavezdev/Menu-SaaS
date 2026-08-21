@@ -51,6 +51,7 @@ import {
   NoirLuxeHamburgerIcon,
   NoirLuxeProgress,
 } from "@/components/menu/noirluxe-icons";
+import { NOIRLUXE_TOKENS } from "@/lib/noirluxe-design-tokens";
 
 const copy = {
   es: {
@@ -710,7 +711,7 @@ export function VideoMenu({
       data-template={template.key}
       data-hydrated={hydrated ? "true" : "false"}
       style={themeStyle}
-      className={`public-menu relative h-svh snap-y snap-mandatory overflow-y-auto overscroll-none scroll-smooth bg-[var(--theme-bg)] text-white [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-auto md:max-w-[402px] ${noirLuxe ? "[&_h2]:[font-family:var(--font-noir-serif)] [&_[data-product-details]>div:last-child>strong]:[font-family:var(--font-noir-serif)]" : ""}`}
+      className="public-menu relative h-svh snap-y snap-mandatory overflow-y-auto overscroll-none scroll-smooth bg-[var(--theme-bg)] text-white [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-auto md:max-w-[402px]"
     >
       <h1 className="sr-only">{restaurant.name}: carta en vídeo</h1>
       {introVisible && restaurant.logo_url && (
@@ -739,7 +740,8 @@ export function VideoMenu({
       {noirLuxe ? (
         <header
           style={{
-            background: `linear-gradient(to bottom,${colors.background}e8,${colors.background}75,transparent)`,
+            background:
+              "linear-gradient(to bottom,rgba(17,17,17,.4),rgba(17,17,17,.4),transparent)",
           }}
           className="pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-start justify-between px-6 pb-12 pt-[max(2.5rem,calc(env(safe-area-inset-top)+1rem))] [font-family:var(--font-noir-sans)] md:max-w-[402px]"
         >
@@ -857,8 +859,7 @@ export function VideoMenu({
                   {restaurant.name}
                 </p>
                 <h2
-                  style={{ fontFamily: "var(--font-noir-serif)" }}
-                  className="mt-1 text-2xl font-normal italic"
+                  className={`mt-1 ${NOIRLUXE_TOKENS.typography.title}`}
                 >
                   {text.controls}
                 </h2>
@@ -924,7 +925,7 @@ export function VideoMenu({
                 onClick={() =>
                   setLanguage((value) => (value === "es" ? "en" : "es"))
                 }
-                className="mt-3 w-full py-2 text-xs font-bold uppercase tracking-[.18em] text-[#c9a96e]"
+                className={`mt-3 w-full py-2 uppercase text-[#C9A96E] ${NOIRLUXE_TOKENS.typography.label}`}
               >
                 {language === "es" ? "English" : "Español"}
               </button>
@@ -1320,7 +1321,7 @@ export function VideoMenu({
                   className={`absolute z-[1] ${framed ? "inset-3 bottom-16 rounded-xl" : "inset-0"}`}
                   style={{
                     background: noirLuxe
-                      ? "linear-gradient(180deg,rgba(17,17,17,.78) 0%,rgba(17,17,17,.08) 30%,rgba(17,17,17,.08) 46%,rgba(17,17,17,.96) 83%,#111 100%)"
+                      ? "linear-gradient(180deg,rgba(17,17,17,.4) 0%,rgba(17,17,17,.08) 42%,rgba(17,17,17,.4) 62%,#111111 100%)"
                       : `linear-gradient(180deg,${colors.background}66 0%,transparent 32%,transparent 45%,${colors.background}f2 100%)`,
                   }}
                 />
@@ -1345,7 +1346,7 @@ export function VideoMenu({
                 {noirLuxe ? (
                   <>
                     <div className="flex min-h-11 items-center justify-between gap-4">
-                      <span className="bg-black/40 px-2.5 py-1.5 text-[8px] font-medium uppercase text-white/80">
+                      <span className={`bg-[#111111]/40 px-2 py-1 uppercase text-white ${NOIRLUXE_TOKENS.typography.badge}`}>
                         {product.is_featured ? text.featured : categoryName}
                       </span>
                       <button
@@ -1359,12 +1360,12 @@ export function VideoMenu({
                     </div>
                     <h2
                       style={{ color: colors.accent }}
-                      className="mt-5 max-w-[21rem] font-[var(--font-noir-serif)] text-[clamp(1.8rem,8vw,2.15rem)] font-normal italic leading-[1.15]"
+                      className={`mt-5 max-w-[21rem] ${NOIRLUXE_TOKENS.typography.dishName}`}
                     >
                       {translatedField(product, "name", language, product.name)}
                     </h2>
                     {description && (
-                      <p className="mt-2 max-w-[22rem] text-xs font-light leading-5 text-[#f0e9db]">
+                      <p className={`mt-2 max-w-[22rem] text-[#F0E9DB] ${NOIRLUXE_TOKENS.typography.body}`}>
                         {description}
                       </p>
                     )}
@@ -1375,7 +1376,7 @@ export function VideoMenu({
                         }
                         className="group mt-2"
                       >
-                        <summary className="flex cursor-pointer list-none items-center gap-1 text-[10px] font-medium text-[#f0e9db]/70">
+                        <summary className={`flex cursor-pointer list-none items-center gap-1 text-[#F0E9DB] ${NOIRLUXE_TOKENS.typography.label}`}>
                           {allergens.length > 0
                             ? text.allergens
                             : text.pairings}
@@ -1385,25 +1386,25 @@ export function VideoMenu({
                           />
                         </summary>
                         {allergens.length > 0 && (
-                          <div className="mt-2 border-t border-[#c9a96e]/20 pt-2">
+                          <div className="mt-2 border-t border-[#C9A96E]/30 pt-2">
                             <div className="flex flex-wrap gap-1.5">
                               {allergens.map((code) => (
                                 <span
                                   key={code}
-                                  className="border border-[#c9a96e]/30 bg-black/40 px-2 py-1 text-[9px] font-medium text-[#f0e9db]"
+                                  className={`border border-[#C9A96E] bg-[#111111]/40 px-2 py-1 text-white ${NOIRLUXE_TOKENS.typography.tag}`}
                                 >
                                   {allergenLabel(code, language)}
                                 </span>
                               ))}
                             </div>
-                            <p className="mt-2 text-[9px] leading-snug text-[#f0e9db]/50">
+                            <p className={`mt-2 text-[#F0E9DB]/70 ${NOIRLUXE_TOKENS.typography.label}`}>
                               {text.allergenNotice}
                             </p>
                           </div>
                         )}
                         {recommendations.length > 0 && (
-                          <div className="mt-2 border-t border-[#c9a96e]/20 pt-2">
-                            <p className="text-[9px] font-medium text-[#f0e9db]/65">
+                          <div className="mt-2 border-t border-[#C9A96E]/30 pt-2">
+                            <p className={`text-[#F0E9DB] ${NOIRLUXE_TOKENS.typography.label}`}>
                               {text.pairings}
                             </p>
                             <div className="mt-1 grid gap-1">
@@ -1444,7 +1445,7 @@ export function VideoMenu({
                                       type="button"
                                       aria-label={`${text.add} ${item.name}`}
                                       onClick={() => addRecommendation(item.id)}
-                                      className={`grid h-7 w-7 shrink-0 place-items-center bg-[#c9a96e] text-[#111111] transition ${added ? "scale-110" : "active:scale-90"}`}
+                                    className={`grid h-7 w-7 shrink-0 place-items-center bg-[#C9A96E] text-[#111111] transition ${added ? "scale-110" : "active:scale-90"}`}
                                     >
                                       {added ? (
                                         <Check size={14} />
@@ -1463,7 +1464,7 @@ export function VideoMenu({
                     <div className="mt-5 flex items-center justify-between">
                       <strong
                         style={{ color: colors.accent }}
-                        className="px-2 font-[var(--font-noir-serif)] text-[28px] font-normal leading-8 tabular-nums"
+                        className={`px-2 tabular-nums ${NOIRLUXE_TOKENS.typography.price}`}
                       >
                         {currency.format(product.price_cents / 100)}
                       </strong>
@@ -1640,7 +1641,7 @@ export function VideoMenu({
         <nav
           ref={categoryNavRef}
           aria-label={text.categories}
-          className="fixed left-1/2 top-[calc(max(2.5rem,calc(env(safe-area-inset-top)+1rem))+4.75rem)] z-40 flex w-full max-w-[430px] -translate-x-1/2 touch-pan-x gap-7 overflow-x-auto overscroll-x-contain px-6 font-[var(--font-noir-sans)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:max-w-[402px]"
+          className="fixed left-1/2 top-[calc(max(2.5rem,calc(env(safe-area-inset-top)+1rem))+4.75rem)] z-40 flex w-full max-w-[430px] -translate-x-1/2 touch-pan-x gap-7 overflow-x-auto overscroll-x-contain px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:max-w-[402px]"
         >
           {categoryGroups.map((group) => {
             const selected = activeCategory === group.id;
@@ -1661,7 +1662,7 @@ export function VideoMenu({
                   if (index >= 0) setActive(index);
                   go(`product-${group.products[0].id}`, true);
                 }}
-                className={`shrink-0 border-b pb-1 text-sm font-normal uppercase tracking-[.16em] transition-colors ${selected ? "border-[#c9a96e] text-[#c9a96e]" : "border-transparent text-[#f0e9db]/80"}`}
+                className={`shrink-0 border-b pb-1 uppercase transition-colors ${NOIRLUXE_TOKENS.typography.category} ${selected ? "border-[#C9A96E] text-white" : "border-[#111111] text-[#F0E9DB]"}`}
               >
                 {group.name}
               </button>

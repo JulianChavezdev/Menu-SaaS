@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 const menu = readFileSync("src/components/menu/video-menu.tsx", "utf8");
 const media = readFileSync("src/components/menu/product-media.tsx", "utf8");
 const vectors = readFileSync("src/components/menu/theme-vectors.tsx", "utf8");
+const noirTokens = readFileSync("src/lib/noirluxe-design-tokens.ts", "utf8");
 
 describe("virtualización del feed de vídeo", () => {
   it("hidrata exclusivamente el producto actual y sus vecinos", () => {
@@ -58,7 +59,14 @@ describe("virtualización del feed de vídeo", () => {
     expect(menu).toContain('onClick={() => setPanel("menu")}');
     expect(menu).toContain('onClick={() => setPanel("cart")}');
     expect(menu).toContain('fontFamily: noirLuxe ? "var(--font-noir-sans)"');
-    expect(menu).toContain("[&_h2]:[font-family:var(--font-noir-serif)]");
+    expect(menu).toContain("NOIRLUXE_TOKENS.typography.dishName");
+    expect(noirTokens).toContain('dishName:');
+    expect(noirTokens).toContain('text-[32px]');
+    expect(noirTokens).toContain('leading-[38px]');
+    expect(noirTokens).toContain('price:');
+    expect(noirTokens).toContain('text-[28px]');
+    expect(noirTokens).toContain('category:');
+    expect(noirTokens).toContain('tracking-[.16em]');
   });
   it("mantiene productos por categoría y cambia de categoría con gestos laterales o al terminar", () => {
     expect(menu).toContain("const visibleProducts =");

@@ -13,7 +13,7 @@ type MenuTemplate={
 };
 
 const cinematicTemplate:MenuTemplate&{key:"cinematic"}={key:"cinematic",name:"Cinemática",description:"Vídeo limpio a pantalla completa con el HUD flotante como único elemento visual.",tier:"free",layout:"fullscreen",motif:"cinema",colors:{background:"#0b0b0a",panel:"#171715",nav:"#171715",accent:"#fcd34d",accent2:"#fb7185",frame:"rgba(255,255,255,.14)"}};
-const noirLuxeTemplate:MenuTemplate&{key:"noirluxe"}={key:"noirluxe",name:"NoirLuxe",description:"Fotografía protagonista, negro profundo y tipografía editorial dorada para una carta gastronómica sofisticada.",tier:"premium",layout:"fullscreen",motif:"noirluxe",colors:{background:"#111111",panel:"#111111",nav:"#111111",accent:"#c9a96e",accent2:"#f0e9db",frame:"rgba(201,169,110,.34)"}};
+const noirLuxeTemplate:MenuTemplate&{key:"noirluxe"}={key:"noirluxe",name:"NoirLuxe",description:"Fotografía protagonista, negro profundo y tipografía editorial dorada para una carta gastronómica sofisticada.",tier:"premium",layout:"fullscreen",motif:"noirluxe",colors:{background:"#111111",panel:"#111111",nav:"#111111",accent:"#C9A96E",accent2:"#F0E9DB",frame:"rgba(201,169,110,.33)"}};
 
 export const MENU_TEMPLATES={cinematic:cinematicTemplate,noirluxe:noirLuxeTemplate} as const;
 
