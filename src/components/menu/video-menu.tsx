@@ -914,14 +914,6 @@ export function VideoMenu({
               className="mt-5 flex w-full flex-col items-center gap-2"
             >
               <button
-                aria-label="Volver"
-                title="Volver"
-                onClick={back}
-                className="grid size-12 place-items-center border border-[#C9A96E]/25 bg-[#111111] text-[#C9A96E] transition active:scale-95"
-              >
-                <ArrowLeft size={23} />
-              </button>
-              <button
                 aria-label={text.menu}
                 title={text.menu}
                 onClick={() => setPanel("menu")}
