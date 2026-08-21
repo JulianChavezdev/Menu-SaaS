@@ -175,6 +175,10 @@ export function VideoMenu({
   const catalogFeedbackTimer = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
+  const categorySwapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const categoryFinishTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const categoryAnimationFrame = useRef<number | null>(null);
+  const categoryAnimating = useRef(false);
   const gestureStart = useRef<{ x: number; y: number } | null>(null);
   const [muted, setMuted] = useState(true);
   const [panel, setPanel] = useState<
@@ -189,6 +193,9 @@ export function VideoMenu({
     Boolean(restaurant.logo_url) && introEnabled,
   );
   const [active, setActive] = useState(0);
+  const [categorySlide, setCategorySlide] = useState<
+    "idle" | "exit-left" | "exit-right" | "enter-left" | "enter-right"
+  >("idle");
   const [expandedDetails, setExpandedDetails] = useState<Set<string>>(
     () => new Set(),
   );
@@ -257,6 +264,13 @@ export function VideoMenu({
     categoryGroups.find((group) => group.id === activeCategory)?.products ??
     categoryGroups[0]?.products ??
     [];
+  const categorySlideClass = {
+    idle: "translate-x-0 opacity-100",
+    "exit-left": "-translate-x-[105%] opacity-20",
+    "exit-right": "translate-x-[105%] opacity-20",
+    "enter-left": "-translate-x-[105%] opacity-20",
+    "enter-right": "translate-x-[105%] opacity-20",
+  }[categorySlide];
   const restaurantDescription = translatedField(
     restaurant,
     "description",
@@ -432,6 +446,11 @@ export function VideoMenu({
     () => () => {
       if (catalogFeedbackTimer.current)
         clearTimeout(catalogFeedbackTimer.current);
+      if (categorySwapTimer.current) clearTimeout(categorySwapTimer.current);
+      if (categoryFinishTimer.current)
+        clearTimeout(categoryFinishTimer.current);
+      if (categoryAnimationFrame.current)
+        cancelAnimationFrame(categoryAnimationFrame.current);
     },
     [],
   );
@@ -526,16 +545,50 @@ export function VideoMenu({
     }
     setPanel(null);
   };
-  const openCategory = (categoryId: string) => {
+  const openCategory = (categoryId: string, requestedDirection?: -1 | 1) => {
     const index = products.findIndex(
       (product) => product.category_id === categoryId,
     );
-    if (index < 0) return;
-    setActive(index);
-    requestAnimationFrame(() =>
-      feedRef.current?.scrollTo({ top: 0, behavior: "smooth" }),
+    if (index < 0 || categoryAnimating.current) return false;
+    const currentCategoryIndex = Math.max(
+      0,
+      categoryGroups.findIndex((group) => group.id === activeCategory),
     );
+    const targetCategoryIndex = categoryGroups.findIndex(
+      (group) => group.id === categoryId,
+    );
+    if (targetCategoryIndex === currentCategoryIndex) {
+      feedRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+      setPanel(null);
+      return false;
+    }
+    const direction =
+      requestedDirection ?? (targetCategoryIndex > currentCategoryIndex ? 1 : -1);
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setActive(index);
+      requestAnimationFrame(() =>
+        feedRef.current?.scrollTo({ top: 0, behavior: "instant" }),
+      );
+      setPanel(null);
+      return true;
+    }
+    categoryAnimating.current = true;
+    setCategorySlide(direction === 1 ? "exit-left" : "exit-right");
+    categorySwapTimer.current = setTimeout(() => {
+      setActive(index);
+      feedRef.current?.scrollTo({ top: 0, behavior: "instant" });
+      setCategorySlide(direction === 1 ? "enter-right" : "enter-left");
+      categoryAnimationFrame.current = requestAnimationFrame(() => {
+        categoryAnimationFrame.current = requestAnimationFrame(() =>
+          setCategorySlide("idle"),
+        );
+      });
+      categoryFinishTimer.current = setTimeout(() => {
+        categoryAnimating.current = false;
+      }, 280);
+    }, 240);
     setPanel(null);
+    return true;
   };
   const changeCategory = (direction: -1 | 1) => {
     const current = Math.max(
@@ -547,8 +600,7 @@ export function VideoMenu({
       Math.min(categoryGroups.length - 1, current + direction),
     );
     if (next === current) return false;
-    openCategory(categoryGroups[next].id);
-    return true;
+    return openCategory(categoryGroups[next].id, direction);
   };
   const handleTouchStart = (event: React.TouchEvent<HTMLElement>) => {
     const touch = event.touches[0];
@@ -1253,7 +1305,10 @@ export function VideoMenu({
         </div>
       )}
 
-      <div>
+      <div
+        data-category-slide={categorySlide}
+        className={`will-change-transform ${categorySlide.startsWith("enter-") ? "transition-none" : "transition-[transform,opacity] duration-[240ms] ease-out"} ${categorySlideClass}`}
+      >
         {visibleProducts.map((product) => {
           const index = products.findIndex((item) => item.id === product.id);
           const description = translatedField(
@@ -1641,13 +1696,7 @@ export function VideoMenu({
                 key={group.id}
                 type="button"
                 aria-current={selected ? "true" : undefined}
-                onClick={() => {
-                  const index = products.findIndex(
-                    (product) => product.id === group.products[0].id,
-                  );
-                  if (index >= 0) setActive(index);
-                  go(`product-${group.products[0].id}`, true);
-                }}
+                onClick={() => openCategory(group.id)}
                 className={`shrink-0 border-b pb-1 uppercase transition-colors ${NOIRLUXE_TOKENS.typography.category} ${selected ? "border-[#C9A96E] text-white" : "border-[#111111] text-[#F0E9DB]"}`}
               >
                 {group.name}
@@ -1677,13 +1726,7 @@ export function VideoMenu({
                 key={group.id}
                 type="button"
                 aria-current={selected ? "true" : undefined}
-                onClick={() => {
-                  const index = products.findIndex(
-                    (product) => product.id === group.products[0].id,
-                  );
-                  if (index >= 0) setActive(index);
-                  go(`product-${group.products[0].id}`, true);
-                }}
+                onClick={() => openCategory(group.id)}
                 style={
                   selected
                     ? {

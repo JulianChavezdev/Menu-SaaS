@@ -16,7 +16,7 @@ describe("virtualización del feed de vídeo", () => {
   it("usa portadas estáticas en el catálogo y ofrece acceso directo por categoría", () => {
     expect(menu).not.toContain('src={`${product.video_url}#t=0.1`}');
     expect(menu).toContain("aria-label={text.categories}");
-    expect(menu).toContain('go(`product-${group.products[0].id}`, true)');
+    expect(menu).toContain("onClick={() => openCategory(group.id)}");
     expect(menu).toContain('behavior: "instant"');
   });
   it("publica una señal estable y renderiza los primeros vídeos desde el HTML", () => {
@@ -74,6 +74,13 @@ describe("virtualización del feed de vídeo", () => {
     expect(menu).toContain("Math.abs(dx) > 50");
     expect(menu).toContain("dy < -55 && atBottom");
     expect(menu).toContain("changeCategory(1)");
+  });
+  it("anima horizontalmente el vídeo completo al cambiar de categoría", () => {
+    expect(menu).toContain('setCategorySlide(direction === 1 ? "exit-left" : "exit-right")');
+    expect(menu).toContain('setCategorySlide(direction === 1 ? "enter-right" : "enter-left")');
+    expect(menu).toContain("data-category-slide={categorySlide}");
+    expect(menu).toContain("transition-[transform,opacity] duration-[240ms] ease-out");
+    expect(menu).toContain('matchMedia("(prefers-reduced-motion: reduce)")');
   });
   it("abre los controles de NoirLuxe como sidebar vertical y no los duplica en Carta", () => {
     expect(menu).toContain("items-stretch justify-start");
