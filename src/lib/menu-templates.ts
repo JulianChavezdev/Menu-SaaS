@@ -1,6 +1,6 @@
 export type TemplateTier="free"|"premium";
 export type TemplateLayout="fullscreen"|"framed"|"editorial";
-export type TemplateMotif="cinema"|"constellation"|"mediterranean"|"sakura"|"sol"|"deco"|"neon";
+export type TemplateMotif="cinema"|"constellation"|"mediterranean"|"sakura"|"sol"|"deco"|"neon"|"noirluxe";
 
 type MenuTemplate={
   key:string;
@@ -20,6 +20,7 @@ export const MENU_TEMPLATES={
   taqueria:{key:"taqueria",name:"Taquería Solar",description:"Sol, papel picado y turquesa intenso para una experiencia alegre y callejera.",tier:"premium",layout:"fullscreen",motif:"sol",colors:{background:"#32140b",panel:"#642311",nav:"#4b1b10",accent:"#fde047",accent2:"#2dd4bf",frame:"rgba(253,224,71,.3)"}},
   artdeco:{key:"artdeco",name:"Bistró Art Déco",description:"Geometría dorada y verde botella para cartas sofisticadas con aire clásico.",tier:"premium",layout:"framed",motif:"deco",colors:{background:"#061d19",panel:"#0b3027",nav:"#08271f",accent:"#f5d78e",accent2:"#34d399",frame:"rgba(245,215,142,.34)"}},
   neon:{key:"neon",name:"Neón Urbano",description:"Retícula, magenta eléctrico y lima para burgers, cócteles y conceptos nocturnos.",tier:"premium",layout:"framed",motif:"neon",colors:{background:"#10051d",panel:"#210a36",nav:"#19082b",accent:"#f0abfc",accent2:"#bef264",frame:"rgba(240,171,252,.34)"}},
+  noirluxe:{key:"noirluxe",name:"NoirLuxe",description:"Fotografía protagonista, negro profundo y tipografía editorial dorada para una carta gastronómica sofisticada.",tier:"premium",layout:"fullscreen",motif:"noirluxe",colors:{background:"#111111",panel:"#111111",nav:"#111111",accent:"#c9a96e",accent2:"#f0e9db",frame:"rgba(201,169,110,.34)"}},
 } as const satisfies Record<string,MenuTemplate>;
 
 export type MenuTemplateKey=keyof typeof MENU_TEMPLATES;

@@ -3,8 +3,11 @@ import {Toaster} from "sonner";
 import type {Metadata,Viewport} from "next";
 import {normalizedAppUrl} from "@/lib/app-url";
 import {SaasNavigationTracker} from "@/components/navigation/saas-navigation-tracker";
+import {Jost,Playfair_Display} from "next/font/google";
 
 const baseUrl=normalizedAppUrl();
+const noirSans=Jost({subsets:["latin"],weight:["300","400","500","700"],style:["normal"],display:"swap",variable:"--font-noir-sans"});
+const noirSerif=Playfair_Display({subsets:["latin"],weight:["400"],style:["normal","italic"],display:"swap",variable:"--font-noir-serif"});
 export const metadata:Metadata={
   metadataBase:new URL(baseUrl),
   title:{default:"Menuly",template:"%s | Menuly"},
@@ -20,5 +23,5 @@ export const viewport:Viewport={width:"device-width",initialScale:1,viewportFit:
 
 export default function Layout({children}:{children:React.ReactNode}){
   const mediaOrigins=["https://videos.pexels.com","https://res.cloudinary.com",process.env.NEXT_PUBLIC_SUPABASE_URL].filter((origin):origin is string=>Boolean(origin));
-  return <html lang="es"><head>{mediaOrigins.map(origin=><link key={origin} rel="preconnect" href={origin} crossOrigin="anonymous"/>)}</head><body><SaasNavigationTracker/>{children}<Toaster richColors/></body></html>;
+  return <html lang="es" className={`${noirSans.variable} ${noirSerif.variable}`}><head>{mediaOrigins.map(origin=><link key={origin} rel="preconnect" href={origin} crossOrigin="anonymous"/>)}</head><body><SaasNavigationTracker/>{children}<Toaster richColors/></body></html>;
 }

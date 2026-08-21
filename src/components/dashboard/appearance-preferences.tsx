@@ -8,6 +8,7 @@ import {translateEntireMenu,updateAppearancePreferences} from "@/app/dashboard/a
 import {MENU_TEMPLATES,resolveMenuTemplate,type MenuTemplateKey} from "@/lib/menu-templates";
 import {ThemeVectors} from "@/components/menu/theme-vectors";
 import {notifyAutomaticTranslation} from "@/components/dashboard/automatic-translation";
+import {NoirLuxeAddIcon,NoirLuxeBasketIcon,NoirLuxeHamburgerIcon,NoirLuxeProgress} from "@/components/menu/noirluxe-icons";
 
 type PreviewProduct={name:string;priceCents:number;videoUrl:string|null;category:string};
 type PreviewProps={kind:MenuTemplateKey;restaurantName:string;logoUrl:string|null;currency:string;product?:PreviewProduct;large?:boolean};
@@ -18,6 +19,13 @@ function TemplatePreview({kind,restaurantName,logoUrl,currency,product,large=fal
   const framed=template.layout==="framed";
   const card=template.layout!=="fullscreen";
   const price=new Intl.NumberFormat("es-ES",{style:"currency",currency}).format((product?.priceCents??1290)/100);
+  if(kind==="noirluxe")return <div className={`relative isolate mx-auto w-full overflow-hidden bg-[#111111] text-[#f0e9db] shadow-2xl font-[var(--font-noir-sans)] ${large?"h-[min(70dvh,620px)] max-w-[350px]":"aspect-[9/12]"}`}>
+    <div className="absolute inset-0 z-0 overflow-hidden bg-[#22221f]">{product?.videoUrl?<video src={product.videoUrl} muted loop autoPlay playsInline className="h-full w-full object-cover"/>:<div className="h-full w-full bg-[radial-gradient(circle_at_65%_25%,#765f3d,#25201a_48%,#111111)]"/>}</div>
+    <div className="absolute inset-0 z-[1] bg-[linear-gradient(180deg,rgba(17,17,17,.82)_0%,rgba(17,17,17,.08)_34%,rgba(17,17,17,.18)_48%,#111111_100%)]"/>
+    <header className={`absolute inset-x-0 top-0 z-10 flex items-start justify-between ${large?"px-6 pt-8":"px-3 pt-3"}`}><NoirLuxeHamburgerIcon/><div className="min-w-0 flex-1 px-2 text-center">{logoUrl?<span role="img" aria-label={`Logo de ${restaurantName}`} className={`mx-auto block bg-contain bg-center bg-no-repeat ${large?"h-8 w-28":"h-5 w-16"}`} style={{backgroundImage:`url(${logoUrl})`}}/>:<strong className={`block truncate font-bold text-[#c9a96e] ${large?"text-base":"text-[9px]"}`}>{restaurantName}</strong>}<span className={`block truncate font-medium text-[#f0e9db]/60 ${large?"text-xs":"text-[6px]"}`}>Carta gastronómica</span></div><span className={large?"scale-100 origin-top-right":"scale-50 origin-top-right"}><NoirLuxeBasketIcon/></span></header>
+    <nav aria-label="Vista de categorías" className={`absolute inset-x-0 z-10 flex overflow-hidden uppercase tracking-[.16em] text-[#f0e9db]/80 ${large?"top-24 gap-7 px-6 text-xs":"top-12 gap-3 px-3 text-[6px]"}`}><span className="shrink-0 border-b border-[#c9a96e] pb-1 text-[#c9a96e]">{product?.category??"Entrantes"}</span><span className="shrink-0">Principales</span><span className="shrink-0">Postres</span></nav>
+    <div className={`absolute inset-x-0 bottom-0 z-10 ${large?"p-6":"p-3"}`}><div className="flex items-center justify-between gap-2"><span className={`bg-black/40 font-medium uppercase text-white/80 ${large?"px-2.5 py-1.5 text-[8px]":"px-1.5 py-1 text-[5px]"}`}>{product?.category??"Especialidades"}</span><span className={large?"scale-100":"scale-50 origin-right"}><NoirLuxeAddIcon/></span></div><p className={`font-[var(--font-noir-serif)] font-normal italic leading-[1.1] text-[#c9a96e] ${large?"mt-4 text-[32px]":"mt-2 text-base"}`}>{product?.name??"Producto destacado"}</p><p className={`font-light text-[#f0e9db] ${large?"mt-2 text-xs leading-5":"mt-1 text-[6px] leading-3"}`}>Una propuesta especial de nuestra cocina.</p><div className={`flex items-center justify-between ${large?"mt-5":"mt-2"}`}><strong className={`font-[var(--font-noir-serif)] font-normal text-[#c9a96e] ${large?"text-[28px]":"text-sm"}`}>{price}</strong><span className={large?"scale-100 origin-right":"scale-50 origin-right"}><NoirLuxeProgress active={0} total={3}/></span></div></div>
+  </div>;
   return <div style={{background:colors.background}} className={`relative isolate mx-auto w-full overflow-hidden text-white shadow-2xl ${large?"h-[min(70dvh,620px)] max-w-[350px] rounded-xl":"aspect-[9/12] rounded-2xl"}`}>
     <div style={{borderColor:colors.frame}} className={`absolute z-0 overflow-hidden ${framed?"inset-2 bottom-14 rounded-lg border":"inset-0"}`}>
       {product?.videoUrl
