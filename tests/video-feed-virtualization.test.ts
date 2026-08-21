@@ -77,8 +77,9 @@ describe("virtualización del feed de vídeo", () => {
   });
   it("abre los controles de NoirLuxe como sidebar vertical y no los duplica en Carta", () => {
     expect(menu).toContain("items-stretch justify-start");
-    expect(menu).toContain("w-[min(82%,320px)]");
-    expect(menu).toContain("flex w-14 flex-col");
+    expect(menu).toContain("w-[104px]");
+    expect(menu).toContain("mt-5 flex w-full flex-col items-center gap-2");
+    expect(menu).toContain("grid size-12 place-items-center");
     expect(menu).not.toContain("mb-4 grid grid-cols-5");
   });
 });

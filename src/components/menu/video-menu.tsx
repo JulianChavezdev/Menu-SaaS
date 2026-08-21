@@ -847,89 +847,75 @@ export function VideoMenu({
           <aside
             aria-label={text.controls}
             style={{ background: colors.panel, borderColor: colors.frame }}
-            className="h-full w-[min(82%,320px)] border-r p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-[max(2rem,calc(env(safe-area-inset-top)+1rem))] shadow-2xl"
+            className="flex h-full w-[104px] flex-col items-center border-r px-3 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1.25rem,calc(env(safe-area-inset-top)+.75rem))] shadow-2xl"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <p
-                  style={{ color: colors.accent }}
-                  className="text-xs font-bold uppercase tracking-[.2em]"
-                >
-                  {restaurant.name}
-                </p>
-                <h2
-                  className={`mt-1 ${NOIRLUXE_TOKENS.typography.title}`}
-                >
-                  {text.controls}
-                </h2>
-              </div>
-              <button
-                aria-label={text.close}
-                onClick={() => setPanel(null)}
-                className="grid h-10 w-10 place-items-center rounded-full bg-white/10"
-              >
-                <X size={20} />
-              </button>
-            </div>
+            <button
+              aria-label={text.close}
+              onClick={() => setPanel(null)}
+              className="grid size-12 place-items-center border border-[#C9A96E]/30 bg-[#111111] text-[#F0E9DB] transition active:scale-95"
+            >
+              <X size={23} />
+            </button>
             <nav
               aria-label={text.controls}
-              className="mt-6 flex w-14 flex-col border-y border-[#c9a96e]/25 py-3"
+              className="mt-5 flex w-full flex-col items-center gap-2"
             >
               <button
                 aria-label="Volver"
                 title="Volver"
                 onClick={back}
-                className="grid min-h-14 place-items-center text-[#c9a96e]"
+                className="grid size-12 place-items-center border border-[#C9A96E]/25 bg-[#111111] text-[#C9A96E] transition active:scale-95"
               >
-                <ArrowLeft size={21} />
+                <ArrowLeft size={23} />
               </button>
               <button
                 aria-label={text.menu}
                 title={text.menu}
                 onClick={() => setPanel("menu")}
-                className="grid min-h-14 place-items-center text-[#c9a96e]"
+                className="grid size-12 place-items-center border border-[#C9A96E]/25 bg-[#111111] text-[#C9A96E] transition active:scale-95"
               >
-                <List size={21} />
+                <List size={23} />
               </button>
               <button
                 aria-label={muted ? text.soundOn : text.soundOff}
                 title={muted ? text.soundOn : text.soundOff}
                 onClick={() => setMuted((value) => !value)}
-                className="grid min-h-14 place-items-center text-[#c9a96e]"
+                className="grid size-12 place-items-center border border-[#C9A96E]/25 bg-[#111111] text-[#C9A96E] transition active:scale-95"
               >
-                {muted ? <VolumeX size={21} /> : <Volume2 size={21} />}
+                {muted ? <VolumeX size={23} /> : <Volume2 size={23} />}
               </button>
               <button
                 aria-label={text.info}
                 title={text.info}
                 onClick={() => setPanel("info")}
-                className="grid min-h-14 place-items-center text-[#c9a96e]"
+                className="grid size-12 place-items-center border border-[#C9A96E]/25 bg-[#111111] text-[#C9A96E] transition active:scale-95"
               >
-                <Info size={21} />
+                <Info size={23} />
               </button>
               <button
                 aria-label={text.share}
                 title={text.share}
                 onClick={share}
-                className="grid min-h-14 place-items-center text-[#c9a96e]"
+                className="grid size-12 place-items-center border border-[#C9A96E]/25 bg-[#111111] text-[#C9A96E] transition active:scale-95"
               >
-                <Share2 size={21} />
+                <Share2 size={23} />
               </button>
+              {restaurant.language_switcher_enabled && (
+                <button
+                  aria-label={
+                    language === "es" ? "Cambiar a inglés" : "Switch to Spanish"
+                  }
+                  title={language === "es" ? "English" : "Español"}
+                  onClick={() =>
+                    setLanguage((value) => (value === "es" ? "en" : "es"))
+                  }
+                  className="grid size-12 place-items-center border border-[#C9A96E]/25 bg-[#111111] text-[#C9A96E] transition active:scale-95"
+                >
+                  <Languages size={23} />
+                </button>
+              )}
             </nav>
-            {restaurant.language_switcher_enabled && (
-              <button
-                aria-label={
-                  language === "es" ? "Cambiar a inglés" : "Switch to Spanish"
-                }
-                onClick={() =>
-                  setLanguage((value) => (value === "es" ? "en" : "es"))
-                }
-                className={`mt-3 w-full py-2 uppercase text-[#C9A96E] ${NOIRLUXE_TOKENS.typography.label}`}
-              >
-                {language === "es" ? "English" : "Español"}
-              </button>
-            )}
           </aside>
         </div>
       )}
