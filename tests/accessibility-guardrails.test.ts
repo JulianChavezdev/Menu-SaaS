@@ -11,7 +11,7 @@ describe("accessibility guardrails",()=>{
   it("uses one restaurant heading and product subheadings",()=>{
     expect(menu).toContain('<h1 className="sr-only">');
     expect(menu).toContain("<h2 className=");
-    expect(menu).toContain("document.documentElement.lang=language");
+    expect(menu).toContain("document.documentElement.lang = language");
   });
 
   it("respects reduced motion on the landing video",()=>{

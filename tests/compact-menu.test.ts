@@ -10,13 +10,13 @@ describe("ficha compacta de producto",()=>{
     expect(menu).toContain("max-h-[calc(100dvh-11rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))]");
     expect(menu).toContain("revealExpandedDetails");
     expect(menu).toContain("h-svh");
-    expect(menu).toContain('hydrated={Math.abs(index-active)<=1}');
-    expect(menu).toContain('preload={Math.abs(index-active)<=1?"auto":"metadata"}');
+    expect(menu).toContain('hydrated={Math.abs(index - active) <= 1}');
+    expect(menu).toContain('preload={Math.abs(index - active) <= 1 ? "auto" : "metadata"}');
     expect(menu).toContain('aria-label={text.categories}');
     expect(menu).toContain("top-[calc(max(1rem,env(safe-area-inset-top))+3.25rem)]");
     expect(menu).toContain("pb-[var(--controls-clearance)]");
     expect(menu).toContain("controlsRef");
-    expect(menu).toContain("feedBox.bottom-controlsBox.top+16");
+    expect(menu).toContain("feedBox.bottom - controlsBox.top + 16");
     expect(menu).not.toContain("bottom-[calc(max(.75rem,env(safe-area-inset-bottom))+4.75rem)]");
     expect(menu).toContain("line-clamp-1");
     expect(menu).toContain("line-clamp-2");

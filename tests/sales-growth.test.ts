@@ -16,8 +16,8 @@ describe("sales growth features",()=>{
 
   it("limits contextual recommendations and tracks attributed additions",()=>{
     expect(manager).toContain("Máximo 3 recomendaciones");
-    expect(menu).toContain('event:"recommendation_add"');
-    expect(menu).toContain('event:"detail_open"');
+    expect(menu).toContain('event: "recommendation_add"');
+    expect(menu).toContain('event: "detail_open"');
     expect(menu).toContain("Combina bien con");
   });
 
