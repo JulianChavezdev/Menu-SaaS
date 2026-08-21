@@ -1,9 +1,9 @@
 update public.restaurants
-set menu_template = 'noirluxe'
-where menu_template is distinct from 'noirluxe';
+set menu_template = 'cinematic'
+where menu_template not in ('cinematic', 'noirluxe');
 
 alter table public.restaurants
-alter column menu_template set default 'noirluxe';
+alter column menu_template set default 'cinematic';
 
 comment on column public.restaurants.menu_template is
-'Plantilla pública única de Menuly. El valor vigente es noirluxe.';
+'Plantilla pública de Menuly. Valores vigentes: cinematic y noirluxe.';

@@ -1,5 +1,5 @@
 import {z} from "zod";
-import {DEFAULT_MENU_TEMPLATE} from "./menu-templates";
+import {DEFAULT_MENU_TEMPLATE,isMenuTemplateKey} from "./menu-templates";
 import {ALLERGEN_CODES} from "./allergens";
 
 export const MAX_BACKUP_BYTES=5*1024*1024;
@@ -24,7 +24,7 @@ const restaurantSchema=z.object({
   timezone:z.string().min(1).max(100),
   is_published:z.boolean(),
   language_switcher_enabled:z.boolean().default(false),
-  menu_template:z.string().max(100).transform(()=>DEFAULT_MENU_TEMPLATE),
+  menu_template:z.string().max(100).transform(value=>isMenuTemplateKey(value)?value:DEFAULT_MENU_TEMPLATE),
   translations,
 }).strip();
 

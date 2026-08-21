@@ -1,10 +1,11 @@
 "use client";
 
 import {useEffect,useState,useTransition} from "react";
-import {Eye,Languages,X} from "lucide-react";
+import Link from "next/link";
+import {Eye,Languages,Lock,X} from "lucide-react";
 import {toast} from "sonner";
 import {translateEntireMenu,updateAppearancePreferences} from "@/app/dashboard/actions";
-import {DEFAULT_MENU_TEMPLATE,MENU_TEMPLATES,type MenuTemplateKey} from "@/lib/menu-templates";
+import {MENU_TEMPLATES,resolveMenuTemplate,type MenuTemplateKey} from "@/lib/menu-templates";
 import {ThemeVectors} from "@/components/menu/theme-vectors";
 import {notifyAutomaticTranslation} from "@/components/dashboard/automatic-translation";
 import {NoirLuxeAddIcon,NoirLuxeBasketIcon,NoirLuxeHamburgerIcon,NoirLuxeProgress} from "@/components/menu/noirluxe-icons";
@@ -44,7 +45,9 @@ function TemplatePreview({kind,restaurantName,logoUrl,currency,product,large=fal
   </div>;
 }
 
-export function AppearancePreferences({enabled,restaurantName,logoUrl,currency,previewProduct}:{enabled:boolean;restaurantName:string;logoUrl:string|null;currency:string;previewProduct?:PreviewProduct}){
+export function AppearancePreferences({enabled,template,canUsePremium,restaurantName,logoUrl,currency,previewProduct}:{enabled:boolean;template?:string;canUsePremium:boolean;restaurantName:string;logoUrl:string|null;currency:string;previewProduct?:PreviewProduct}){
+  const current=resolveMenuTemplate(template,canUsePremium);
+  const[selected,setSelected]=useState<MenuTemplateKey>(current.key);
   const[preview,setPreview]=useState<MenuTemplateKey|null>(null);
   const[translating,startTranslation]=useTransition();
   useEffect(()=>{
@@ -56,14 +59,15 @@ export function AppearancePreferences({enabled,restaurantName,logoUrl,currency,p
   return <>
     <form action={async form=>{try{const result=await updateAppearancePreferences(form);toast.success("Preferencias guardadas");notifyAutomaticTranslation(result.translationStatus)}catch(error){toast.error(error instanceof Error?error.message:"No se pudo guardar")}}} className="space-y-6 rounded-2xl border border-stone-200 bg-white shadow-sm p-5">
       <section>
-        <div><h2 className="font-bold">Diseño principal</h2><p className="mt-1 text-sm text-slate-600">Esta es la identidad visual actual de todas las cartas Menuly.</p></div>
-        <div className="mt-4">
-          {Object.values(MENU_TEMPLATES).map(item=><article key={item.key} className="rounded-2xl border border-orange-500 bg-orange-50 p-3">
+        <div className="flex items-end justify-between gap-4"><div><h2 className="font-bold">Plantillas de la carta</h2><p className="mt-1 text-sm text-slate-600">Elige entre Cinemática y NoirLuxe.</p></div><span className="text-xs text-slate-500">2 disponibles</span></div>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          {Object.values(MENU_TEMPLATES).map(item=>{const locked=item.tier==="premium"&&!canUsePremium;return <article key={item.key} className={`rounded-2xl border p-3 transition ${item.key===selected?"border-orange-500 bg-orange-50":"border-stone-200 bg-stone-50"}`}>
             <TemplatePreview kind={item.key} restaurantName={restaurantName} logoUrl={logoUrl} currency={currency} product={previewProduct}/>
-            <input type="hidden" name="menu_template" value={DEFAULT_MENU_TEMPLATE}/><div className="mt-3"><strong className="block">{item.name}</strong><span className="mt-1 block text-xs leading-relaxed text-slate-600">{item.description}</span></div>
+            <div className="mt-3 flex items-start gap-2"><label className={`flex min-w-0 flex-1 gap-2 ${locked?"cursor-not-allowed opacity-60":"cursor-pointer"}`}><input aria-label={`Seleccionar plantilla ${item.name}`} type="radio" name="menu_template" value={item.key} checked={item.key===selected} onChange={()=>setSelected(item.key)} disabled={locked} className="mt-1 h-4 w-4 shrink-0 accent-orange-600"/><span className="min-w-0"><strong className="block">{item.name}</strong><span className="mt-1 block text-xs leading-relaxed text-slate-600">{item.description}</span></span></label>{item.tier==="premium"&&<span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-400/15 px-2 py-1 text-[9px] font-bold uppercase text-amber-700"><Lock size={10}/>Pro</span>}</div>
             <button type="button" onClick={()=>setPreview(item.key)} aria-label={`Vista previa de ${item.name}`} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-stone-300 px-3 py-2 text-xs font-semibold hover:bg-stone-100"><Eye size={15}/>Vista previa</button>
-          </article>)}
+          </article>})}
         </div>
+        {!canUsePremium&&<div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-400/30 bg-amber-50 p-3 text-xs text-slate-600"><span>NoirLuxe está incluida en los planes de pago.</span><Link href="/dashboard/billing?from=templates" className="font-semibold text-amber-800">Ver planes →</Link></div>}
       </section>
       <section className="border-t border-stone-200 pt-5"><h2 className="font-bold">Idiomas de la carta</h2><p className="mt-1 text-sm text-slate-600">Permite cambiar los controles públicos entre español e inglés. El restaurante solo escribe en español.</p><label className="mt-4 flex items-center gap-3"><input name="language_switcher_enabled" type="checkbox" defaultChecked={enabled} className="h-5 w-5 accent-orange-600"/><span>Mostrar selector de idioma</span></label><button type="button" disabled={translating} onClick={()=>startTranslation(async()=>{try{const result=await translateEntireMenu();notifyAutomaticTranslation(result.translationStatus);if(result.translationStatus==="translated")toast.success(`${result.translatedCount} elementos traducidos`)}catch(error){toast.error(error instanceof Error?error.message:"No se pudo traducir la carta")}})} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-400/20 bg-cyan-400/[.06] px-4 py-3 text-sm font-semibold text-cyan-800 disabled:opacity-50"><Languages size={17}/>{translating?"Traduciendo carta…":"Traducir ahora toda la carta"}</button></section>
       <button className="w-full rounded-lg bg-orange-600 text-white px-4 py-3 font-semibold">Guardar preferencias</button>
