@@ -5,6 +5,7 @@ const menu = readFileSync("src/components/menu/video-menu.tsx", "utf8");
 const media = readFileSync("src/components/menu/product-media.tsx", "utf8");
 const vectors = readFileSync("src/components/menu/theme-vectors.tsx", "utf8");
 const noirTokens = readFileSync("src/lib/noirluxe-design-tokens.ts", "utf8");
+const mareTheme = readFileSync("src/components/menu/mare-nostrum.tsx", "utf8");
 
 describe("virtualización del feed de vídeo", () => {
   it("hidrata exclusivamente el producto actual y sus vecinos", () => {
@@ -125,5 +126,16 @@ describe("virtualización del feed de vídeo", () => {
       'const sidebarPanel = cozyCorner ? "#C92F27" : colors.panel',
     );
     expect(menu).toContain("background: sidebarAccent");
+  });
+  it("integra Mare Nostrum con navegación, assets y oleaje propios", () => {
+    expect(menu).toContain('template.key === "mare-nostrum"');
+    expect(menu).toContain("MareNostrumHamburger");
+    expect(menu).toContain("MareNostrumBasket");
+    expect(menu).toContain("MareNostrumAdd");
+    expect(menu).toContain("MareNostrumWave");
+    expect(menu).toContain("azulejo-corner.svg");
+    expect(menu).toContain("school-of-fish.svg");
+    expect(mareTheme).toContain('transform: "translateX(-50%)"');
+    expect(vectors).toContain('motif === "mare-nostrum"');
   });
 });

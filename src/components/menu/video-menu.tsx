@@ -64,6 +64,13 @@ import {
   TokyoPulseHamburger,
   TokyoPulseTicker,
 } from "@/components/menu/tokyo-pulse";
+import {
+  MareNostrumAdd,
+  MareNostrumBasket,
+  MareNostrumHamburger,
+  MareNostrumSeal,
+  MareNostrumWave,
+} from "@/components/menu/mare-nostrum";
 
 const copy = {
   es: {
@@ -244,8 +251,9 @@ export function VideoMenu({
   const street = template.key === "street";
   const cozyCorner = template.key === "cozy-corner";
   const tokyoPulse = template.key === "tokyo-pulse";
+  const mareNostrum = template.key === "mare-nostrum";
   const figmaTheme = street || cozyCorner;
-  const menuRailTheme = noirLuxe || figmaTheme || tokyoPulse;
+  const menuRailTheme = noirLuxe || figmaTheme || tokyoPulse || mareNostrum;
   const figmaThemeKey = street ? "street" : "cozy-corner";
   const colors = template.colors;
   const sidebarPanel = cozyCorner ? "#C92F27" : colors.panel;
@@ -268,7 +276,9 @@ export function VideoMenu({
           ? "var(--font-cozy-sans)"
           : tokyoPulse
             ? "var(--font-tokyo-sans)"
-            : undefined,
+            : mareNostrum
+              ? "var(--font-mare-sans)"
+              : undefined,
   } as CSSProperties;
   const categoryGroups = [
     ...products
@@ -831,9 +841,11 @@ export function VideoMenu({
                 ? "linear-gradient(to bottom,rgba(17,17,17,.4),rgba(17,17,17,.4),transparent)"
                 : tokyoPulse
                   ? "linear-gradient(to bottom,rgba(26,13,20,.96),rgba(26,13,20,.72),transparent)"
-                  : "linear-gradient(to bottom,rgba(17,17,17,.68),rgba(17,17,17,.28),transparent)",
+                  : mareNostrum
+                    ? "linear-gradient(to bottom,rgba(11,59,96,.94),rgba(11,59,96,.62),transparent)"
+                    : "linear-gradient(to bottom,rgba(17,17,17,.68),rgba(17,17,17,.28),transparent)",
           }}
-          className={`pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-start justify-between px-6 md:max-w-[402px] ${cozyCorner ? "h-[max(88px,calc(env(safe-area-inset-top)+52px))] pb-2 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]" : tokyoPulse ? "pb-3 pt-[max(.65rem,calc(env(safe-area-inset-top)+.15rem))]" : "pb-6 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]"}`}
+          className={`pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-start justify-between px-6 md:max-w-[402px] ${cozyCorner ? "h-[max(88px,calc(env(safe-area-inset-top)+52px))] pb-2 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]" : tokyoPulse ? "pb-3 pt-[max(.65rem,calc(env(safe-area-inset-top)+.15rem))]" : mareNostrum ? "pb-4 pt-[max(.65rem,calc(env(safe-area-inset-top)+.15rem))]" : "pb-6 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]"}`}
         >
           <button
             aria-label={text.controls}
@@ -844,6 +856,8 @@ export function VideoMenu({
               <NoirLuxeHamburgerIcon />
             ) : tokyoPulse ? (
               <TokyoPulseHamburger />
+            ) : mareNostrum ? (
+              <MareNostrumHamburger />
             ) : (
               <FigmaThemeHamburger theme={figmaThemeKey} />
             )}
@@ -853,7 +867,7 @@ export function VideoMenu({
               <span
                 role="img"
                 aria-label={`Logo de ${restaurant.name}`}
-                className={`mx-auto block bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)] ${tokyoPulse ? "h-9 w-40" : "h-12 w-48"}`}
+                className={`mx-auto block bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)] ${tokyoPulse ? "h-9 w-40" : mareNostrum ? "h-10 w-40" : "h-12 w-48"}`}
                 style={{ backgroundImage: `url(${restaurant.logo_url})` }}
               />
             )}
@@ -867,6 +881,8 @@ export function VideoMenu({
               <NoirLuxeBasketIcon />
             ) : tokyoPulse ? (
               <TokyoPulseBasket />
+            ) : mareNostrum ? (
+              <MareNostrumBasket />
             ) : (
               <FigmaThemeBasket theme={figmaThemeKey} />
             )}
@@ -960,6 +976,15 @@ export function VideoMenu({
             おすすめ
           </span>
         </div>
+      )}
+      {mareNostrum && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none fixed left-3 top-[42%] z-20 h-[72px] w-[170px] -translate-y-1/2 bg-contain bg-left bg-no-repeat opacity-35 md:left-[calc((100vw-402px)/2+12px)]"
+          style={{
+            backgroundImage: "url('/themes/mare-nostrum/school-of-fish.svg')",
+          }}
+        />
       )}
 
       {panel === "controls" && (
@@ -1404,7 +1429,7 @@ export function VideoMenu({
               data-index={index}
               id={`product-${product.id}`}
               key={product.id}
-              className={`relative isolate flex h-svh snap-start snap-always items-end overflow-hidden bg-[var(--theme-bg)] ${noirLuxe ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-40 [font-family:var(--font-noir-sans)]" : figmaTheme ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-44" : tokyoPulse ? "px-6 pb-[max(1rem,env(safe-area-inset-bottom))] pt-36" : "px-4 pb-[var(--controls-clearance)] pt-24"}`}
+              className={`relative isolate flex h-svh snap-start snap-always items-end overflow-hidden bg-[var(--theme-bg)] ${noirLuxe ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-40 [font-family:var(--font-noir-sans)]" : figmaTheme ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-44" : tokyoPulse || mareNostrum ? "px-6 pb-[max(1rem,env(safe-area-inset-bottom))] pt-36" : "px-4 pb-[var(--controls-clearance)] pt-24"}`}
             >
               <div
                 style={{ borderColor: colors.frame }}
@@ -1438,12 +1463,27 @@ export function VideoMenu({
                           ? "linear-gradient(180deg,rgba(17,17,17,.2) 17%,rgba(17,17,17,.02) 42%,rgba(17,17,17,.08) 58%,rgba(17,17,17,.94) 100%)"
                           : tokyoPulse
                             ? "linear-gradient(180deg,rgba(26,13,20,.58) 0%,rgba(26,13,20,.03) 38%,rgba(26,13,20,.25) 58%,#1A0D14 100%)"
-                            : `linear-gradient(180deg,${colors.background}66 0%,transparent 32%,transparent 45%,${colors.background}f2 100%)`,
+                            : mareNostrum
+                              ? "linear-gradient(180deg,rgba(11,59,96,.48) 0%,rgba(11,59,96,.02) 38%,rgba(11,59,96,.18) 58%,#0B3B60 100%)"
+                              : `linear-gradient(180deg,${colors.background}66 0%,transparent 32%,transparent 45%,${colors.background}f2 100%)`,
                   }}
                 />
               )}
               {cozyCorner && (
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 top-[max(88px,calc(env(safe-area-inset-top)+52px))] z-[2] border-y-[8px] border-dashed border-[#FF3B30]" />
+              )}
+              {mareNostrum && (
+                <>
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute right-0 top-0 z-[2] size-40 bg-contain bg-right-top bg-no-repeat opacity-65"
+                    style={{
+                      backgroundImage:
+                        "url('/themes/mare-nostrum/azulejo-corner.svg')",
+                    }}
+                  />
+                  <MareNostrumWave className="pointer-events-none absolute inset-x-0 bottom-[25%] z-[2] opacity-45" />
+                </>
               )}
               <ThemeVectors
                 motif={template.motif}
@@ -1462,7 +1502,128 @@ export function VideoMenu({
                 data-product-details
                 className={`relative z-10 w-full overflow-y-auto overscroll-contain pb-0.5 text-shadow-lg [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${noirLuxe ? "max-h-[calc(100dvh-10.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))]" : "max-h-[calc(100dvh-11rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))]"}`}
               >
-                {tokyoPulse ? (
+                {mareNostrum ? (
+                  <>
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex min-w-0 items-center gap-2.5">
+                        <MareNostrumSeal />
+                        <div className="min-w-0">
+                          <span className="block font-[var(--font-mare-sans)] text-[8px] font-bold uppercase tracking-[.24em] text-[#78B7BC]">
+                            Costa mediterránea
+                          </span>
+                          <span className="mt-0.5 block truncate font-[var(--font-mare-sans)] text-[10px] font-bold uppercase tracking-[.12em] text-[#F7F0DF]">
+                            {product.is_featured ? text.featured : categoryName}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        aria-label={`${text.add} ${product.name}`}
+                        title={text.add}
+                        onClick={() => addProduct(product.id)}
+                        className="shrink-0 transition active:scale-90"
+                      >
+                        <MareNostrumAdd />
+                      </button>
+                    </div>
+                    <h2 className="mt-1 max-w-[21rem] font-[var(--font-mare-serif)] text-[33px] font-semibold italic leading-[34px] text-[#F7F0DF]">
+                      {translatedField(product, "name", language, product.name)}
+                    </h2>
+                    {(description ||
+                      allergens.length > 0 ||
+                      recommendations.length > 0) && (
+                      <details
+                        onToggle={(event) =>
+                          toggleDetails(product.id, event.currentTarget)
+                        }
+                        className="group mt-1.5 text-[#F7F0DF]"
+                      >
+                        <summary className="flex cursor-pointer list-none items-center justify-between border-y border-[#78B7BC]/45 py-1.5 font-[var(--font-mare-sans)] text-[9px] font-bold uppercase tracking-[.18em] text-[#F7F0DF]">
+                          <span>{text.description}</span>
+                          <ChevronDown
+                            size={13}
+                            className="text-[#E5745D] transition-transform group-open:rotate-180"
+                          />
+                        </summary>
+                        {description && (
+                          <p className="mt-2 font-[var(--font-mare-sans)] text-[11px] leading-4 text-[#F7F0DF]/85">
+                            {description}
+                          </p>
+                        )}
+                        {allergens.length > 0 && (
+                          <div className="mt-2 border-t border-[#78B7BC]/35 pt-2">
+                            <p className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-[.12em] text-[#E5745D]">
+                              <TriangleAlert size={11} />
+                              {text.allergens} · {allergens.length}
+                            </p>
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              {allergens.map((code) => (
+                                <span
+                                  key={code}
+                                  className="rounded-full border border-[#78B7BC]/65 bg-[#0B3B60]/70 px-2 py-0.5 text-[9px] font-semibold"
+                                >
+                                  {allergenLabel(code, language)}
+                                </span>
+                              ))}
+                            </div>
+                            <p className="mt-1 text-[9px] leading-3 text-[#F7F0DF]/55">
+                              {text.allergenNotice}
+                            </p>
+                          </div>
+                        )}
+                        {recommendations.length > 0 && (
+                          <div className="mt-2 border-t border-[#78B7BC]/35 pt-2">
+                            <p className="text-[9px] font-bold uppercase tracking-[.14em] text-[#78B7BC]">
+                              {text.pairings}
+                            </p>
+                            <div className="mt-1 grid gap-1">
+                              {recommendations.map((item) => {
+                                const added = catalogAdded === item.id;
+                                return (
+                                  <div
+                                    key={item.id}
+                                    className="flex items-center gap-2 rounded-full border border-[#78B7BC]/35 bg-[#0B3B60]/70 py-1 pl-3 pr-1"
+                                  >
+                                    <span className="min-w-0 flex-1 truncate text-[10px] font-semibold">
+                                      {translatedField(
+                                        item,
+                                        "name",
+                                        language,
+                                        item.name,
+                                      )}
+                                    </span>
+                                    <strong className="text-[10px] tabular-nums text-[#E5745D]">
+                                      {currency.format(item.price_cents / 100)}
+                                    </strong>
+                                    <button
+                                      type="button"
+                                      aria-label={`${text.add} ${item.name}`}
+                                      onClick={() => addRecommendation(item.id)}
+                                      className={`grid size-7 place-items-center rounded-full bg-[#E5745D] text-[#F7F0DF] transition ${added ? "scale-110" : "active:scale-90"}`}
+                                    >
+                                      {added ? (
+                                        <Check size={14} />
+                                      ) : (
+                                        <Plus size={13} />
+                                      )}
+                                    </button>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </details>
+                    )}
+                    <div className="mt-2 flex items-end justify-between gap-4">
+                      <strong className="font-[var(--font-mare-serif)] text-[27px] font-bold tabular-nums text-[#E5745D]">
+                        {currency.format(product.price_cents / 100)}
+                      </strong>
+                      <span className="border-b border-[#F7F0DF]/55 pb-1 font-[var(--font-mare-serif)] text-[13px] italic text-[#F7F0DF]/80">
+                        sabor de nuestra costa
+                      </span>
+                    </div>
+                  </>
+                ) : tokyoPulse ? (
                   <>
                     <div className="flex min-h-10 items-center justify-between gap-4">
                       <span className="border-l-4 border-[#FF5A36] pl-2 font-[var(--font-tokyo-sans)] text-[9px] font-bold uppercase tracking-[.2em] text-[#7CC7A1]">
@@ -2001,7 +2162,47 @@ export function VideoMenu({
         })}
       </div>
 
-      {tokyoPulse ? (
+      {mareNostrum ? (
+        <>
+          <nav
+            ref={categoryNavRef}
+            aria-label={text.categories}
+            className="fixed left-1/2 top-[max(58px,calc(env(safe-area-inset-top)+44px))] z-40 flex w-[calc(100%-2rem)] max-w-[370px] -translate-x-1/2 touch-pan-x snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            <span
+              aria-hidden="true"
+              className="w-[calc((100%-1rem)/3)] shrink-0"
+            />
+            {categoryGroups.map((group) => {
+              const selected = activeCategory === group.id;
+              return (
+                <button
+                  ref={(element) => {
+                    if (element)
+                      categoryButtonRefs.current.set(group.id, element);
+                    else categoryButtonRefs.current.delete(group.id);
+                  }}
+                  key={group.id}
+                  type="button"
+                  aria-current={selected ? "true" : undefined}
+                  onClick={() => openCategory(group.id)}
+                  className={`relative w-[calc((100%-1rem)/3)] shrink-0 snap-center truncate rounded-full border px-3 py-1.5 font-[var(--font-mare-sans)] text-[9px] font-bold uppercase tracking-[.1em] transition duration-300 ${selected ? "border-[#F7F0DF] bg-[#F7F0DF] text-[#0B3B60]" : "border-[#78B7BC]/60 bg-[#0B3B60]/65 text-[#F7F0DF] opacity-55"}`}
+                >
+                  {selected && (
+                    <span className="mr-1 inline-block size-1.5 rounded-full bg-[#E5745D] align-middle" />
+                  )}
+                  {group.name}
+                </button>
+              );
+            })}
+            <span
+              aria-hidden="true"
+              className="w-[calc((100%-1rem)/3)] shrink-0"
+            />
+          </nav>
+          <MareNostrumWave className="pointer-events-none fixed left-1/2 top-[max(92px,calc(env(safe-area-inset-top)+78px))] z-[39] w-full max-w-[430px] -translate-x-1/2 opacity-80 md:max-w-[402px]" />
+        </>
+      ) : tokyoPulse ? (
         <>
           <TokyoPulseTicker
             items={categoryGroups.map((group) => group.name)}
