@@ -193,7 +193,7 @@ function TemplatePreview({
           />
         )}
         <header
-          className={`absolute inset-x-0 top-0 z-10 flex items-center justify-between px-5 ${street ? (large ? "pt-8" : "pt-3") : large ? "h-[66px] bg-[#FF3B30]" : "h-[42px] bg-[#FF3B30]"}`}
+          className={`absolute inset-x-0 top-0 z-10 flex items-center justify-between px-5 ${street ? (large ? "pt-4" : "pt-2") : large ? "h-[66px] bg-[#FF3B30]" : "h-[42px] bg-[#FF3B30]"}`}
         >
           <span className={large ? "" : "scale-75"}>
             <FigmaThemeHamburger theme={iconTheme} />
@@ -219,7 +219,7 @@ function TemplatePreview({
           </span>
         </header>
         <nav
-          className={`absolute inset-x-4 z-10 flex gap-2 overflow-hidden ${street ? (large ? "top-24" : "top-12") : large ? "top-[78px]" : "top-[50px]"}`}
+          className={`absolute inset-x-4 z-10 flex gap-2 overflow-hidden ${street ? (large ? "top-[72px]" : "top-[40px]") : large ? "top-[78px]" : "top-[50px]"}`}
         >
           {[product?.category ?? "Entrantes", "Principales", "Postres"].map(
             (category, index) => (

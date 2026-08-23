@@ -818,7 +818,7 @@ export function VideoMenu({
                 ? "linear-gradient(to bottom,rgba(17,17,17,.4),rgba(17,17,17,.4),transparent)"
                 : "linear-gradient(to bottom,rgba(17,17,17,.68),rgba(17,17,17,.28),transparent)",
           }}
-          className={`pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-start justify-between px-6 md:max-w-[402px] ${cozyCorner ? "h-[max(88px,calc(env(safe-area-inset-top)+52px))] pb-2 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]" : "pb-12 pt-[max(2.5rem,calc(env(safe-area-inset-top)+1rem))]"}`}
+          className={`pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-start justify-between px-6 md:max-w-[402px] ${cozyCorner ? "h-[max(88px,calc(env(safe-area-inset-top)+52px))] pb-2 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]" : street ? "pb-6 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]" : "pb-12 pt-[max(2.5rem,calc(env(safe-area-inset-top)+1rem))]"}`}
         >
           <button
             aria-label={text.controls}
@@ -1858,7 +1858,7 @@ export function VideoMenu({
         <nav
           ref={categoryNavRef}
           aria-label={text.categories}
-          className={`fixed left-1/2 z-40 flex w-[calc(100%-2rem)] max-w-[370px] -translate-x-1/2 touch-pan-x snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain [mask-image:linear-gradient(to_right,transparent,black_9%,black_91%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${street ? "top-[calc(max(2.5rem,calc(env(safe-area-inset-top)+1rem))+5.75rem)]" : "top-[max(100px,calc(env(safe-area-inset-top)+64px))]"}`}
+          className={`fixed left-1/2 z-40 flex w-[calc(100%-2rem)] max-w-[370px] -translate-x-1/2 touch-pan-x snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain [mask-image:linear-gradient(to_right,transparent,black_9%,black_91%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${street ? "top-[max(76px,calc(env(safe-area-inset-top)+60px))]" : "top-[max(100px,calc(env(safe-area-inset-top)+64px))]"}`}
         >
           <span
             aria-hidden="true"
