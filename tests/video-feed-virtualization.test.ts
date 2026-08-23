@@ -117,4 +117,13 @@ describe("virtualización del feed de vídeo", () => {
     expect(menu).toContain("grid size-12 place-items-center");
     expect(menu).not.toContain("mb-4 grid grid-cols-5");
   });
+  it("mantiene visibles los controles de Cozy Corner sobre su panel rojo", () => {
+    expect(menu).toContain(
+      'const sidebarAccent = cozyCorner ? "#FFD600" : colors.accent',
+    );
+    expect(menu).toContain(
+      'const sidebarPanel = cozyCorner ? "#C92F27" : colors.panel',
+    );
+    expect(menu).toContain("background: sidebarAccent");
+  });
 });

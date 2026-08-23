@@ -248,6 +248,10 @@ export function VideoMenu({
   const menuRailTheme = noirLuxe || figmaTheme || tokyoPulse;
   const figmaThemeKey = street ? "street" : "cozy-corner";
   const colors = template.colors;
+  const sidebarPanel = cozyCorner ? "#C92F27" : colors.panel;
+  const sidebarAccent = cozyCorner ? "#FFD600" : colors.accent;
+  const sidebarFrame = cozyCorner ? "#FFD600" : colors.frame;
+  const sidebarOnAccent = cozyCorner ? "#111111" : colors.background;
   const themeStyle = {
     "--theme-bg": colors.background,
     "--theme-panel": colors.panel,
@@ -829,7 +833,7 @@ export function VideoMenu({
                   ? "linear-gradient(to bottom,rgba(26,13,20,.96),rgba(26,13,20,.72),transparent)"
                   : "linear-gradient(to bottom,rgba(17,17,17,.68),rgba(17,17,17,.28),transparent)",
           }}
-          className={`pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-start justify-between px-6 md:max-w-[402px] ${cozyCorner ? "h-[max(88px,calc(env(safe-area-inset-top)+52px))] pb-2 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]" : "pb-6 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]"}`}
+          className={`pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-start justify-between px-6 md:max-w-[402px] ${cozyCorner ? "h-[max(88px,calc(env(safe-area-inset-top)+52px))] pb-2 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]" : tokyoPulse ? "pb-3 pt-[max(.65rem,calc(env(safe-area-inset-top)+.15rem))]" : "pb-6 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]"}`}
         >
           <button
             aria-label={text.controls}
@@ -849,7 +853,7 @@ export function VideoMenu({
               <span
                 role="img"
                 aria-label={`Logo de ${restaurant.name}`}
-                className="mx-auto block h-12 w-48 bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)]"
+                className={`mx-auto block bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)] ${tokyoPulse ? "h-9 w-40" : "h-12 w-48"}`}
                 style={{ backgroundImage: `url(${restaurant.logo_url})` }}
               />
             )}
@@ -868,7 +872,10 @@ export function VideoMenu({
             )}
             {cartQuantity > 0 && (
               <span
-                style={{ background: colors.accent, color: colors.background }}
+                style={{
+                  background: sidebarAccent,
+                  color: sidebarOnAccent,
+                }}
                 className="absolute right-0 top-0 grid h-4 min-w-4 place-items-center px-1 text-[9px] font-bold"
               >
                 {cartQuantity}
@@ -962,14 +969,14 @@ export function VideoMenu({
         >
           <aside
             aria-label={text.controls}
-            style={{ background: colors.panel, borderColor: colors.frame }}
+            style={{ background: sidebarPanel, borderColor: sidebarFrame }}
             className="flex h-full w-[104px] flex-col items-center border-r px-3 pb-[max(1rem,env(safe-area-inset-bottom))] pt-[max(1.25rem,calc(env(safe-area-inset-top)+.75rem))] shadow-2xl"
             onClick={(event) => event.stopPropagation()}
           >
             <button
               aria-label={text.close}
               onClick={() => setPanel(null)}
-              style={{ borderColor: colors.frame, color: colors.accent2 }}
+              style={{ borderColor: sidebarFrame, color: sidebarAccent }}
               className="grid size-12 place-items-center border bg-[var(--theme-panel)] transition active:scale-95"
             >
               <X size={23} />
@@ -982,7 +989,7 @@ export function VideoMenu({
                 aria-label={text.menu}
                 title={text.menu}
                 onClick={() => setPanel("menu")}
-                style={{ borderColor: colors.frame, color: colors.accent }}
+                style={{ borderColor: sidebarFrame, color: sidebarAccent }}
                 className="grid size-12 place-items-center border bg-[var(--theme-panel)] transition active:scale-95"
               >
                 <List size={23} />
@@ -991,7 +998,7 @@ export function VideoMenu({
                 aria-label={muted ? text.soundOn : text.soundOff}
                 title={muted ? text.soundOn : text.soundOff}
                 onClick={() => setMuted((value) => !value)}
-                style={{ borderColor: colors.frame, color: colors.accent }}
+                style={{ borderColor: sidebarFrame, color: sidebarAccent }}
                 className="grid size-12 place-items-center border bg-[var(--theme-panel)] transition active:scale-95"
               >
                 {muted ? <VolumeX size={23} /> : <Volume2 size={23} />}
@@ -1000,7 +1007,7 @@ export function VideoMenu({
                 aria-label={text.info}
                 title={text.info}
                 onClick={() => setPanel("info")}
-                style={{ borderColor: colors.frame, color: colors.accent }}
+                style={{ borderColor: sidebarFrame, color: sidebarAccent }}
                 className="grid size-12 place-items-center border bg-[var(--theme-panel)] transition active:scale-95"
               >
                 <Info size={23} />
@@ -1009,7 +1016,7 @@ export function VideoMenu({
                 aria-label={text.share}
                 title={text.share}
                 onClick={share}
-                style={{ borderColor: colors.frame, color: colors.accent }}
+                style={{ borderColor: sidebarFrame, color: sidebarAccent }}
                 className="grid size-12 place-items-center border bg-[var(--theme-panel)] transition active:scale-95"
               >
                 <Share2 size={23} />
@@ -1023,7 +1030,7 @@ export function VideoMenu({
                   onClick={() =>
                     setLanguage((value) => (value === "es" ? "en" : "es"))
                   }
-                  style={{ borderColor: colors.frame, color: colors.accent }}
+                  style={{ borderColor: sidebarFrame, color: sidebarAccent }}
                   className="grid size-12 place-items-center border bg-[var(--theme-panel)] transition active:scale-95"
                 >
                   <Languages size={23} />
@@ -1047,14 +1054,14 @@ export function VideoMenu({
                   ? text.cart
                   : text.info
             }
-            style={{ background: colors.panel, borderColor: colors.frame }}
+            style={{ background: sidebarPanel, borderColor: sidebarFrame }}
             className="flex max-h-[88vh] max-h-[88dvh] w-full flex-col rounded-xl border p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-2xl"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex shrink-0 items-center justify-between">
               <div>
                 <p
-                  style={{ color: colors.accent }}
+                  style={{ color: sidebarAccent }}
                   className="text-xs font-bold uppercase tracking-[.2em]"
                 >
                   {restaurant.name}
@@ -1089,7 +1096,7 @@ export function VideoMenu({
                   {categoryGroups.map((group) => (
                     <section key={group.id}>
                       <h3
-                        style={{ color: colors.accent }}
+                        style={{ color: sidebarAccent }}
                         className="mb-2 text-[10px] font-bold uppercase tracking-[.14em]"
                       >
                         {group.name}
@@ -1139,7 +1146,7 @@ export function VideoMenu({
                                 </button>
                                 <div className="mt-1.5 flex items-center justify-between gap-2">
                                   <strong
-                                    style={{ color: colors.accent }}
+                                    style={{ color: sidebarAccent }}
                                     className="text-xs tabular-nums"
                                   >
                                     {currency.format(product.price_cents / 100)}
@@ -1153,8 +1160,8 @@ export function VideoMenu({
                                     }
                                     onClick={() => addFromCatalog(product.id)}
                                     style={{
-                                      background: colors.accent,
-                                      color: colors.background,
+                                      background: sidebarAccent,
+                                      color: sidebarOnAccent,
                                     }}
                                     className={`grid h-7 w-7 shrink-0 place-items-center rounded-full transition-transform duration-200 ${added ? "scale-110" : "active:scale-90"}`}
                                   >
@@ -1199,7 +1206,7 @@ export function VideoMenu({
                               )}
                             </h3>
                             <p
-                              style={{ color: colors.accent }}
+                              style={{ color: sidebarAccent }}
                               className="mt-1 text-sm font-semibold"
                             >
                               {currency.format(product.price_cents / 100)}
@@ -1268,7 +1275,7 @@ export function VideoMenu({
                   <div className="sticky bottom-0 mt-4 border-t border-white/15 bg-[var(--theme-panel)] pt-4">
                     <div className="flex items-center justify-between text-lg">
                       <span>{text.total}</span>
-                      <strong style={{ color: colors.accent }}>
+                      <strong style={{ color: sidebarAccent }}>
                         {currency.format(cartTotal / 100)}
                       </strong>
                     </div>
@@ -1277,7 +1284,7 @@ export function VideoMenu({
                         context={tableOrdering}
                         lines={cart}
                         language={language}
-                        accent={colors.accent}
+                        accent={sidebarAccent}
                         background={colors.background}
                         onSent={() => setCart([])}
                       />
@@ -1295,7 +1302,7 @@ export function VideoMenu({
                 {restaurant.address && (
                   <p className="flex gap-3">
                     <MapPin
-                      style={{ color: colors.accent }}
+                      style={{ color: sidebarAccent }}
                       className="mt-0.5 shrink-0"
                       size={18}
                     />
@@ -1316,7 +1323,7 @@ export function VideoMenu({
                     }
                   >
                     <Phone
-                      style={{ color: colors.accent }}
+                      style={{ color: sidebarAccent }}
                       className="shrink-0"
                       size={18}
                     />
@@ -1397,7 +1404,7 @@ export function VideoMenu({
               data-index={index}
               id={`product-${product.id}`}
               key={product.id}
-              className={`relative isolate flex h-svh snap-start snap-always items-end overflow-hidden bg-[var(--theme-bg)] ${noirLuxe ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-40 [font-family:var(--font-noir-sans)]" : figmaTheme || tokyoPulse ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-44" : "px-4 pb-[var(--controls-clearance)] pt-24"}`}
+              className={`relative isolate flex h-svh snap-start snap-always items-end overflow-hidden bg-[var(--theme-bg)] ${noirLuxe ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-40 [font-family:var(--font-noir-sans)]" : figmaTheme ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-44" : tokyoPulse ? "px-6 pb-[max(1rem,env(safe-area-inset-bottom))] pt-36" : "px-4 pb-[var(--controls-clearance)] pt-24"}`}
             >
               <div
                 style={{ borderColor: colors.frame }}
@@ -1457,7 +1464,7 @@ export function VideoMenu({
               >
                 {tokyoPulse ? (
                   <>
-                    <div className="flex min-h-11 items-center justify-between gap-4">
+                    <div className="flex min-h-10 items-center justify-between gap-4">
                       <span className="border-l-4 border-[#FF5A36] pl-2 font-[var(--font-tokyo-sans)] text-[9px] font-bold uppercase tracking-[.2em] text-[#7CC7A1]">
                         {product.is_featured ? text.featured : categoryName}
                       </span>
@@ -1470,7 +1477,7 @@ export function VideoMenu({
                         <TokyoPulseAdd />
                       </button>
                     </div>
-                    <h2 className="mt-1 max-w-[20rem] font-[var(--font-tokyo-serif)] text-[30px] font-semibold leading-[36px] text-[#FFF1D7]">
+                    <h2 className="max-w-[20rem] font-[var(--font-tokyo-serif)] text-[27px] font-semibold leading-8 text-[#FFF1D7]">
                       {translatedField(product, "name", language, product.name)}
                     </h2>
                     {(description ||
@@ -1480,7 +1487,7 @@ export function VideoMenu({
                         onToggle={(event) =>
                           toggleDetails(product.id, event.currentTarget)
                         }
-                        className="group mt-2 text-[#FFF1D7]"
+                        className="group mt-1 text-[#FFF1D7]"
                       >
                         <summary className="flex cursor-pointer list-none items-center gap-1 font-[var(--font-tokyo-sans)] text-[10px] font-bold uppercase tracking-[.16em] text-[#7CC7A1]">
                           {text.description}
@@ -1559,8 +1566,8 @@ export function VideoMenu({
                         )}
                       </details>
                     )}
-                    <div className="mt-3 flex items-end justify-between gap-4">
-                      <strong className="border-b-2 border-[#FF5A36] pb-1 font-[var(--font-tokyo-serif)] text-[26px] font-bold tabular-nums text-[#FF5A36]">
+                    <div className="mt-2 flex items-end justify-between gap-4">
+                      <strong className="border-b-2 border-[#FF5A36] pb-0.5 font-[var(--font-tokyo-serif)] text-[23px] font-bold tabular-nums text-[#FF5A36]">
                         {currency.format(product.price_cents / 100)}
                       </strong>
                       <span className="pb-1 font-[var(--font-tokyo-sans)] text-[8px] font-bold uppercase tracking-[.2em] text-[#7CC7A1]">
@@ -1998,12 +2005,12 @@ export function VideoMenu({
         <>
           <TokyoPulseTicker
             items={categoryGroups.map((group) => group.name)}
-            className="fixed left-1/2 top-[max(72px,calc(env(safe-area-inset-top)+56px))] z-40 w-full max-w-[430px] -translate-x-1/2 md:max-w-[402px]"
+            className="fixed left-1/2 top-[max(58px,calc(env(safe-area-inset-top)+44px))] z-40 w-full max-w-[430px] -translate-x-1/2 md:max-w-[402px]"
           />
           <nav
             ref={categoryNavRef}
             aria-label={text.categories}
-            className="fixed left-1/2 top-[max(106px,calc(env(safe-area-inset-top)+90px))] z-40 flex w-[calc(100%-2rem)] max-w-[370px] -translate-x-1/2 touch-pan-x snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain [mask-image:linear-gradient(to_right,transparent,black_9%,black_91%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            className="fixed left-1/2 top-[max(88px,calc(env(safe-area-inset-top)+74px))] z-40 flex w-[calc(100%-2rem)] max-w-[370px] -translate-x-1/2 touch-pan-x snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain [mask-image:linear-gradient(to_right,transparent,black_9%,black_91%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
             <span
               aria-hidden="true"

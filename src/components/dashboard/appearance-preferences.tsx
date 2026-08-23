@@ -186,7 +186,7 @@ function TemplatePreview({
         </div>
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(26,13,20,.58)_0%,transparent_38%,rgba(26,13,20,.3)_58%,#1A0D14_100%)]" />
         <header
-          className={`absolute inset-x-0 top-0 z-20 flex items-start justify-between bg-gradient-to-b from-[#1A0D14] via-[#1A0D14]/75 to-transparent ${large ? "px-6 pb-6 pt-4" : "px-3 pb-4 pt-2"}`}
+          className={`absolute inset-x-0 top-0 z-20 flex items-start justify-between bg-gradient-to-b from-[#1A0D14] via-[#1A0D14]/75 to-transparent ${large ? "px-6 pb-3 pt-2.5" : "px-3 pb-2 pt-1.5"}`}
         >
           <span className={large ? "" : "origin-top-left scale-50"}>
             <TokyoPulseHamburger />
@@ -196,7 +196,7 @@ function TemplatePreview({
               <span
                 role="img"
                 aria-label={`Logo de ${restaurantName}`}
-                className={`mx-auto block bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)] ${large ? "h-12 w-44" : "h-7 w-28"}`}
+                className={`mx-auto block bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)] ${large ? "h-9 w-40" : "h-6 w-24"}`}
                 style={{ backgroundImage: `url(${logoUrl})` }}
               />
             ) : (
@@ -212,10 +212,10 @@ function TemplatePreview({
         <TokyoPulseTicker
           items={[product?.category ?? "Sushi", "Ramen", "Izakaya"]}
           compact={!large}
-          className={`absolute inset-x-0 z-20 ${large ? "top-[72px]" : "top-[38px]"}`}
+          className={`absolute inset-x-0 z-20 ${large ? "top-[58px]" : "top-[34px]"}`}
         />
         <nav
-          className={`absolute inset-x-4 z-20 flex gap-2 overflow-hidden ${large ? "top-[108px]" : "top-[64px]"}`}
+          className={`absolute inset-x-4 z-20 flex gap-2 overflow-hidden ${large ? "top-[88px]" : "top-[56px]"}`}
         >
           {[product?.category ?? "Sushi", "Ramen", "Izakaya"].map(
             (category, index) => (
@@ -242,7 +242,7 @@ function TemplatePreview({
             </span>
           </div>
           <p
-            className={`font-[var(--font-tokyo-serif)] font-semibold text-[#FFF1D7] ${large ? "mt-1 text-[30px] leading-9" : "mt-0.5 text-base leading-[18px]"}`}
+            className={`font-[var(--font-tokyo-serif)] font-semibold text-[#FFF1D7] ${large ? "text-[27px] leading-8" : "text-[15px] leading-[17px]"}`}
           >
             {product?.name ?? "Producto destacado"}
           </p>
@@ -250,7 +250,7 @@ function TemplatePreview({
             className={`flex items-end justify-between ${large ? "mt-3" : "mt-1"}`}
           >
             <strong
-              className={`border-b border-[#FF5A36] font-[var(--font-tokyo-serif)] text-[#FF5A36] ${large ? "pb-1 text-2xl" : "text-sm"}`}
+              className={`border-b border-[#FF5A36] font-[var(--font-tokyo-serif)] text-[#FF5A36] ${large ? "pb-0.5 text-[22px]" : "text-[13px]"}`}
             >
               {price}
             </strong>

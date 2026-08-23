@@ -38,7 +38,7 @@ export function TokyoPulseTicker({
     >
       <div
         ref={trackRef}
-        className={`flex w-max items-center whitespace-nowrap font-[var(--font-tokyo-sans)] font-bold uppercase tracking-[.18em] ${compact ? "h-5 text-[6px]" : "h-7 text-[9px]"}`}
+        className={`flex w-max items-center whitespace-nowrap font-[var(--font-tokyo-sans)] font-bold uppercase tracking-[.18em] ${compact ? "h-4 text-[6px]" : "h-6 text-[8px]"}`}
       >
         {[...labels, ...labels].map((label, index) => (
           <span key={`${label}-${index}`} className={compact ? "px-2" : "px-4"}>
@@ -53,23 +53,23 @@ export function TokyoPulseTicker({
 
 export function TokyoPulseHamburger() {
   return (
-    <span className="grid size-11 place-items-center border border-[#FF5A36] bg-[#1A0D14]/75 text-[#FFF1D7]">
-      <Menu aria-hidden="true" size={22} strokeWidth={1.7} />
+    <span className="grid size-9 place-items-center border border-[#FF5A36] bg-[#1A0D14]/75 text-[#FFF1D7]">
+      <Menu aria-hidden="true" size={20} strokeWidth={1.7} />
     </span>
   );
 }
 
 export function TokyoPulseBasket() {
   return (
-    <span className="grid size-11 place-items-center border border-[#7CC7A1] bg-[#1A0D14]/75 text-[#7CC7A1]">
-      <ShoppingBasket aria-hidden="true" size={22} strokeWidth={1.7} />
+    <span className="grid size-9 place-items-center border border-[#7CC7A1] bg-[#1A0D14]/75 text-[#7CC7A1]">
+      <ShoppingBasket aria-hidden="true" size={20} strokeWidth={1.7} />
     </span>
   );
 }
 
 export function TokyoPulseAdd() {
   return (
-    <span className="relative block size-11">
+    <span className="relative block size-10">
       <span className="absolute inset-1 translate-x-1 translate-y-1 border border-[#7CC7A1]" />
       <span className="absolute inset-1 grid place-items-center bg-[#FF5A36] text-[#1A0D14]">
         <Plus aria-hidden="true" size={23} strokeWidth={2.4} />
