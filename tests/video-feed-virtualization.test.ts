@@ -14,7 +14,7 @@ describe("virtualización del feed de vídeo", () => {
     expect(menu).toContain("threshold: [0.35]");
   });
   it("usa portadas estáticas en el catálogo y ofrece acceso directo por categoría", () => {
-    expect(menu).not.toContain('src={`${product.video_url}#t=0.1`}');
+    expect(menu).not.toContain("src={`${product.video_url}#t=0.1`}");
     expect(menu).toContain("aria-label={text.categories}");
     expect(menu).toContain("onClick={() => openCategory(group.id)}");
     expect(menu).toContain('behavior: "instant"');
@@ -26,13 +26,19 @@ describe("virtualización del feed de vídeo", () => {
   });
   it("centra tres categorías arriba y atenúa las laterales", () => {
     expect(menu).toContain("categoryNavRef");
-    expect(menu).toContain("button.offsetLeft - (nav.clientWidth - button.offsetWidth) / 2");
+    expect(menu).toContain(
+      "button.offsetLeft - (nav.clientWidth - button.offsetWidth) / 2",
+    );
     expect(menu).toContain("w-[calc((100%-1rem)/3)]");
     expect(menu).toContain('selected ? "opacity-100" : "opacity-[.45]"');
-    expect(menu).toContain("top-[calc(max(1rem,env(safe-area-inset-top))+3.25rem)]");
+    expect(menu).toContain(
+      "top-[calc(max(1rem,env(safe-area-inset-top))+3.25rem)]",
+    );
   });
   it("precarga ambos vídeos vecinos y reintenta tras gestos, conexión o regreso a la app", () => {
-    expect(menu).toContain('preload={Math.abs(index - active) <= 1 ? "auto" : "metadata"}');
+    expect(menu).toContain(
+      'preload={Math.abs(index - active) <= 1 ? "auto" : "metadata"}',
+    );
     expect(media).toContain('video.preload="auto"');
     expect(media).toContain("HTMLMediaElement.NETWORK_EMPTY");
     expect(menu).toContain("onTouchEnd={handleTouchEnd}");
@@ -41,32 +47,48 @@ describe("virtualización del feed de vídeo", () => {
   });
   it("reproduce el primer vídeo detrás de la apertura de marca para mostrarlo ya cargado", () => {
     expect(menu).toContain("active={index === active}");
-    expect(menu).not.toContain("if(introVisible){video.pause();video.currentTime=0;return}");
+    expect(menu).not.toContain(
+      "if(introVisible){video.pause();video.currentTime=0;return}",
+    );
     expect(menu).toContain("if (introVisible) return");
   });
   it("reserva una zona segura para desplegar descripción y alérgenos", () => {
-    expect(menu).toContain("100dvh-11rem-env(safe-area-inset-top)-env(safe-area-inset-bottom)");
+    expect(menu).toContain(
+      "100dvh-11rem-env(safe-area-inset-top)-env(safe-area-inset-bottom)",
+    );
     expect(menu).toContain("revealExpandedDetails");
     expect(menu).toContain("overscroll-contain");
   });
   it("deja la plantilla principal NoirLuxe sin vectores decorativos", () => {
     expect(menu).toContain('template.key === "noirluxe"');
-    expect(vectors).toContain('if(motif==="noirluxe")return null');
+    expect(vectors).toContain('motif === "noirluxe"');
+  });
+  it("integra Street y Cozy Corner con sus controles y tipografías de Figma", () => {
+    expect(menu).toContain('template.key === "street"');
+    expect(menu).toContain('template.key === "cozy-corner"');
+    expect(menu).toContain("FigmaThemeHamburger");
+    expect(menu).toContain("FigmaThemeBasket");
+    expect(menu).toContain("FigmaThemeAdd");
+    expect(menu).toContain("font-[var(--font-street-condensed)]");
+    expect(menu).toContain("font-[var(--font-cozy-display)]");
+    expect(vectors).toContain('motif === "street"');
+    expect(vectors).toContain('motif === "cozy-corner"');
   });
   it("mueve los controles de NoirLuxe al menú superior y conserva el carrito separado", () => {
     expect(menu).toContain('onClick={() => setPanel("controls")}');
     expect(menu).toContain('panel === "controls"');
     expect(menu).toContain('onClick={() => setPanel("menu")}');
     expect(menu).toContain('onClick={() => setPanel("cart")}');
-    expect(menu).toContain('fontFamily: noirLuxe ? "var(--font-noir-sans)"');
+    expect(menu).toContain("fontFamily: noirLuxe");
+    expect(menu).toContain('? "var(--font-noir-sans)"');
     expect(menu).toContain("NOIRLUXE_TOKENS.typography.dishName");
-    expect(noirTokens).toContain('dishName:');
-    expect(noirTokens).toContain('text-[32px]');
-    expect(noirTokens).toContain('leading-[38px]');
-    expect(noirTokens).toContain('price:');
-    expect(noirTokens).toContain('text-[28px]');
-    expect(noirTokens).toContain('category:');
-    expect(noirTokens).toContain('tracking-[.16em]');
+    expect(noirTokens).toContain("dishName:");
+    expect(noirTokens).toContain("text-[32px]");
+    expect(noirTokens).toContain("leading-[38px]");
+    expect(noirTokens).toContain("price:");
+    expect(noirTokens).toContain("text-[28px]");
+    expect(noirTokens).toContain("category:");
+    expect(noirTokens).toContain("tracking-[.16em]");
   });
   it("mantiene productos por categoría y cambia de categoría con gestos laterales o al terminar", () => {
     expect(menu).toContain("const visibleProducts =");
@@ -76,10 +98,16 @@ describe("virtualización del feed de vídeo", () => {
     expect(menu).toContain("changeCategory(1)");
   });
   it("anima horizontalmente el vídeo completo al cambiar de categoría", () => {
-    expect(menu).toContain('setCategorySlide(direction === 1 ? "exit-left" : "exit-right")');
-    expect(menu).toContain('setCategorySlide(direction === 1 ? "enter-right" : "enter-left")');
+    expect(menu).toContain(
+      'setCategorySlide(direction === 1 ? "exit-left" : "exit-right")',
+    );
+    expect(menu).toContain(
+      'setCategorySlide(direction === 1 ? "enter-right" : "enter-left")',
+    );
     expect(menu).toContain("data-category-slide={categorySlide}");
-    expect(menu).toContain("transition-[transform,opacity] duration-[240ms] ease-out");
+    expect(menu).toContain(
+      "transition-[transform,opacity] duration-[240ms] ease-out",
+    );
     expect(menu).toContain('matchMedia("(prefers-reduced-motion: reduce)")');
   });
   it("abre los controles de NoirLuxe como sidebar vertical y no los duplica en Carta", () => {

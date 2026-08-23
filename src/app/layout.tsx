@@ -1,27 +1,108 @@
 import "./globals.css";
-import {Toaster} from "sonner";
-import type {Metadata,Viewport} from "next";
-import {normalizedAppUrl} from "@/lib/app-url";
-import {SaasNavigationTracker} from "@/components/navigation/saas-navigation-tracker";
-import {Jost,Playfair_Display} from "next/font/google";
+import { Toaster } from "sonner";
+import type { Metadata, Viewport } from "next";
+import { normalizedAppUrl } from "@/lib/app-url";
+import { SaasNavigationTracker } from "@/components/navigation/saas-navigation-tracker";
+import {
+  Barlow,
+  Barlow_Condensed,
+  Jost,
+  Nunito,
+  Playfair_Display,
+  Righteous,
+} from "next/font/google";
 
-const baseUrl=normalizedAppUrl();
-const noirSans=Jost({subsets:["latin"],weight:["300","400","500","700","900"],style:["normal"],display:"swap",variable:"--font-noir-sans"});
-const noirSerif=Playfair_Display({subsets:["latin"],weight:["400"],style:["normal","italic"],display:"swap",variable:"--font-noir-serif"});
-export const metadata:Metadata={
-  metadataBase:new URL(baseUrl),
-  title:{default:"Menuly",template:"%s | Menuly"},
-  description:"Cartas digitales en vídeo para hostelería",
-  applicationName:"Menuly",
-  alternates:{canonical:"/"},
-  robots:{index:true,follow:true},
-  openGraph:{type:"website",siteName:"Menuly",locale:"es_ES"},
-  twitter:{card:"summary",title:"Menuly",description:"Cartas digitales en vídeo para hostelería"},
-  icons:{icon:"/brand/menuly-mark.png",apple:"/brand/menuly-mark.png"},
+const baseUrl = normalizedAppUrl();
+const noirSans = Jost({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "700", "900"],
+  style: ["normal"],
+  display: "swap",
+  variable: "--font-noir-sans",
+});
+const noirSerif = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
+  display: "swap",
+  variable: "--font-noir-serif",
+});
+const streetSans = Barlow({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  style: ["normal"],
+  display: "swap",
+  variable: "--font-street-sans",
+});
+const streetCondensed = Barlow_Condensed({
+  subsets: ["latin"],
+  weight: ["700", "800", "900"],
+  style: ["normal"],
+  display: "swap",
+  variable: "--font-street-condensed",
+});
+const cozyDisplay = Righteous({
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal"],
+  display: "swap",
+  variable: "--font-cozy-display",
+});
+const cozySans = Nunito({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+  style: ["normal"],
+  display: "swap",
+  variable: "--font-cozy-sans",
+});
+export const metadata: Metadata = {
+  metadataBase: new URL(baseUrl),
+  title: { default: "Menuly", template: "%s | Menuly" },
+  description: "Cartas digitales en vídeo para hostelería",
+  applicationName: "Menuly",
+  alternates: { canonical: "/" },
+  robots: { index: true, follow: true },
+  openGraph: { type: "website", siteName: "Menuly", locale: "es_ES" },
+  twitter: {
+    card: "summary",
+    title: "Menuly",
+    description: "Cartas digitales en vídeo para hostelería",
+  },
+  icons: { icon: "/brand/menuly-mark.png", apple: "/brand/menuly-mark.png" },
 };
-export const viewport:Viewport={width:"device-width",initialScale:1,viewportFit:"cover",themeColor:"#0C1F30"};
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0C1F30",
+};
 
-export default function Layout({children}:{children:React.ReactNode}){
-  const mediaOrigins=["https://videos.pexels.com","https://res.cloudinary.com",process.env.NEXT_PUBLIC_SUPABASE_URL].filter((origin):origin is string=>Boolean(origin));
-  return <html lang="es" className={`${noirSans.variable} ${noirSerif.variable}`}><head>{mediaOrigins.map(origin=><link key={origin} rel="preconnect" href={origin} crossOrigin="anonymous"/>)}</head><body><SaasNavigationTracker/>{children}<Toaster richColors/></body></html>;
+export default function Layout({ children }: { children: React.ReactNode }) {
+  const mediaOrigins = [
+    "https://videos.pexels.com",
+    "https://res.cloudinary.com",
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+  ].filter((origin): origin is string => Boolean(origin));
+  return (
+    <html
+      lang="es"
+      className={`${noirSans.variable} ${noirSerif.variable} ${streetSans.variable} ${streetCondensed.variable} ${cozyDisplay.variable} ${cozySans.variable}`}
+    >
+      <head>
+        {mediaOrigins.map((origin) => (
+          <link
+            key={origin}
+            rel="preconnect"
+            href={origin}
+            crossOrigin="anonymous"
+          />
+        ))}
+      </head>
+      <body>
+        <SaasNavigationTracker />
+        {children}
+        <Toaster richColors />
+      </body>
+    </html>
+  );
 }

@@ -52,6 +52,12 @@ import {
   NoirLuxeProgress,
 } from "@/components/menu/noirluxe-icons";
 import { NOIRLUXE_TOKENS } from "@/lib/noirluxe-design-tokens";
+import {
+  FigmaThemeAdd,
+  FigmaThemeBasket,
+  FigmaThemeHamburger,
+  FigmaThemeProgress,
+} from "@/components/menu/figma-theme-icons";
 
 const copy = {
   es: {
@@ -176,7 +182,9 @@ export function VideoMenu({
     null,
   );
   const categorySwapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const categoryFinishTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const categoryFinishTimer = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
   const categoryAnimationFrame = useRef<number | null>(null);
   const categoryAnimating = useRef(false);
   const gestureStart = useRef<{ x: number; y: number } | null>(null);
@@ -227,6 +235,11 @@ export function VideoMenu({
   const framed = template.layout === "framed";
   const primaryTemplate = template.key === "cinematic";
   const noirLuxe = template.key === "noirluxe";
+  const street = template.key === "street";
+  const cozyCorner = template.key === "cozy-corner";
+  const figmaTheme = street || cozyCorner;
+  const menuRailTheme = noirLuxe || figmaTheme;
+  const figmaThemeKey = street ? "street" : "cozy-corner";
   const colors = template.colors;
   const themeStyle = {
     "--theme-bg": colors.background,
@@ -236,7 +249,13 @@ export function VideoMenu({
     "--theme-accent-2": colors.accent2,
     "--theme-frame": colors.frame,
     "--controls-clearance": `${controlsClearance}px`,
-    fontFamily: noirLuxe ? "var(--font-noir-sans)" : undefined,
+    fontFamily: noirLuxe
+      ? "var(--font-noir-sans)"
+      : street
+        ? "var(--font-street-sans)"
+        : cozyCorner
+          ? "var(--font-cozy-sans)"
+          : undefined,
   } as CSSProperties;
   const categoryGroups = [
     ...products
@@ -563,7 +582,8 @@ export function VideoMenu({
       return false;
     }
     const direction =
-      requestedDirection ?? (targetCategoryIndex > currentCategoryIndex ? 1 : -1);
+      requestedDirection ??
+      (targetCategoryIndex > currentCategoryIndex ? 1 : -1);
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setActive(index);
       requestAnimationFrame(() =>
@@ -789,20 +809,27 @@ export function VideoMenu({
           </button>
         </div>
       )}
-      {noirLuxe ? (
+      {menuRailTheme ? (
         <header
           style={{
-            background:
-              "linear-gradient(to bottom,rgba(17,17,17,.4),rgba(17,17,17,.4),transparent)",
+            background: cozyCorner
+              ? "#FF3B30"
+              : noirLuxe
+                ? "linear-gradient(to bottom,rgba(17,17,17,.4),rgba(17,17,17,.4),transparent)"
+                : "linear-gradient(to bottom,rgba(17,17,17,.68),rgba(17,17,17,.28),transparent)",
           }}
-          className="pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-start justify-between px-6 pb-12 pt-[max(2.5rem,calc(env(safe-area-inset-top)+1rem))] [font-family:var(--font-noir-sans)] md:max-w-[402px]"
+          className={`pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-start justify-between px-6 md:max-w-[402px] ${cozyCorner ? "h-[146px] pb-6 pt-[max(3.75rem,calc(env(safe-area-inset-top)+1rem))]" : "pb-12 pt-[max(2.5rem,calc(env(safe-area-inset-top)+1rem))]"}`}
         >
           <button
             aria-label={text.controls}
             onClick={() => setPanel("controls")}
             className="pointer-events-auto grid size-11 place-items-center"
           >
-            <NoirLuxeHamburgerIcon />
+            {noirLuxe ? (
+              <NoirLuxeHamburgerIcon />
+            ) : (
+              <FigmaThemeHamburger theme={figmaThemeKey} />
+            )}
           </button>
           <div className="min-w-0 flex-1 px-2 text-center">
             {restaurant.logo_url && (
@@ -819,9 +846,16 @@ export function VideoMenu({
             onClick={() => setPanel("cart")}
             className="pointer-events-auto relative grid size-11 place-items-center"
           >
-            <NoirLuxeBasketIcon />
+            {noirLuxe ? (
+              <NoirLuxeBasketIcon />
+            ) : (
+              <FigmaThemeBasket theme={figmaThemeKey} />
+            )}
             {cartQuantity > 0 && (
-              <span className="absolute right-0 top-0 grid h-4 min-w-4 place-items-center bg-[#c9a96e] px-1 text-[9px] font-bold text-[#111111]">
+              <span
+                style={{ background: colors.accent, color: colors.background }}
+                className="absolute right-0 top-0 grid h-4 min-w-4 place-items-center px-1 text-[9px] font-bold"
+              >
                 {cartQuantity}
               </span>
             )}
@@ -870,7 +904,7 @@ export function VideoMenu({
         </header>
       )}
 
-      {!noirLuxe && (
+      {!menuRailTheme && (
         <div
           aria-hidden="true"
           className="pointer-events-none fixed right-3 top-1/2 z-20 flex -translate-y-1/2 flex-col gap-1.5 md:right-[calc((100vw-402px)/2+12px)]"
@@ -890,6 +924,11 @@ export function VideoMenu({
           })}
         </div>
       )}
+      {figmaTheme && (
+        <div className="pointer-events-none fixed right-3 top-1/2 z-20 -translate-y-1/2 md:right-[calc((100vw-402px)/2+12px)]">
+          <FigmaThemeProgress theme={figmaThemeKey} />
+        </div>
+      )}
 
       {panel === "controls" && (
         <div
@@ -905,7 +944,8 @@ export function VideoMenu({
             <button
               aria-label={text.close}
               onClick={() => setPanel(null)}
-              className="grid size-12 place-items-center border border-[#C9A96E]/30 bg-[#111111] text-[#F0E9DB] transition active:scale-95"
+              style={{ borderColor: colors.frame, color: colors.accent2 }}
+              className="grid size-12 place-items-center border bg-[var(--theme-panel)] transition active:scale-95"
             >
               <X size={23} />
             </button>
@@ -917,7 +957,8 @@ export function VideoMenu({
                 aria-label={text.menu}
                 title={text.menu}
                 onClick={() => setPanel("menu")}
-                className="grid size-12 place-items-center border border-[#C9A96E]/25 bg-[#111111] text-[#C9A96E] transition active:scale-95"
+                style={{ borderColor: colors.frame, color: colors.accent }}
+                className="grid size-12 place-items-center border bg-[var(--theme-panel)] transition active:scale-95"
               >
                 <List size={23} />
               </button>
@@ -925,7 +966,8 @@ export function VideoMenu({
                 aria-label={muted ? text.soundOn : text.soundOff}
                 title={muted ? text.soundOn : text.soundOff}
                 onClick={() => setMuted((value) => !value)}
-                className="grid size-12 place-items-center border border-[#C9A96E]/25 bg-[#111111] text-[#C9A96E] transition active:scale-95"
+                style={{ borderColor: colors.frame, color: colors.accent }}
+                className="grid size-12 place-items-center border bg-[var(--theme-panel)] transition active:scale-95"
               >
                 {muted ? <VolumeX size={23} /> : <Volume2 size={23} />}
               </button>
@@ -933,7 +975,8 @@ export function VideoMenu({
                 aria-label={text.info}
                 title={text.info}
                 onClick={() => setPanel("info")}
-                className="grid size-12 place-items-center border border-[#C9A96E]/25 bg-[#111111] text-[#C9A96E] transition active:scale-95"
+                style={{ borderColor: colors.frame, color: colors.accent }}
+                className="grid size-12 place-items-center border bg-[var(--theme-panel)] transition active:scale-95"
               >
                 <Info size={23} />
               </button>
@@ -941,7 +984,8 @@ export function VideoMenu({
                 aria-label={text.share}
                 title={text.share}
                 onClick={share}
-                className="grid size-12 place-items-center border border-[#C9A96E]/25 bg-[#111111] text-[#C9A96E] transition active:scale-95"
+                style={{ borderColor: colors.frame, color: colors.accent }}
+                className="grid size-12 place-items-center border bg-[var(--theme-panel)] transition active:scale-95"
               >
                 <Share2 size={23} />
               </button>
@@ -954,7 +998,8 @@ export function VideoMenu({
                   onClick={() =>
                     setLanguage((value) => (value === "es" ? "en" : "es"))
                   }
-                  className="grid size-12 place-items-center border border-[#C9A96E]/25 bg-[#111111] text-[#C9A96E] transition active:scale-95"
+                  style={{ borderColor: colors.frame, color: colors.accent }}
+                  className="grid size-12 place-items-center border bg-[var(--theme-panel)] transition active:scale-95"
                 >
                   <Languages size={23} />
                 </button>
@@ -1327,7 +1372,7 @@ export function VideoMenu({
               data-index={index}
               id={`product-${product.id}`}
               key={product.id}
-              className={`relative isolate flex h-svh snap-start snap-always items-end overflow-hidden bg-[var(--theme-bg)] ${noirLuxe ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-40 [font-family:var(--font-noir-sans)]" : "px-4 pb-[var(--controls-clearance)] pt-24"}`}
+              className={`relative isolate flex h-svh snap-start snap-always items-end overflow-hidden bg-[var(--theme-bg)] ${noirLuxe ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-40 [font-family:var(--font-noir-sans)]" : figmaTheme ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-44" : "px-4 pb-[var(--controls-clearance)] pt-24"}`}
             >
               <div
                 style={{ borderColor: colors.frame }}
@@ -1355,9 +1400,16 @@ export function VideoMenu({
                   style={{
                     background: noirLuxe
                       ? "linear-gradient(180deg,rgba(17,17,17,.4) 0%,rgba(17,17,17,.08) 42%,rgba(17,17,17,.4) 62%,#111111 100%)"
-                      : `linear-gradient(180deg,${colors.background}66 0%,transparent 32%,transparent 45%,${colors.background}f2 100%)`,
+                      : street
+                        ? "linear-gradient(180deg,rgba(17,17,17,.52) 0%,rgba(17,17,17,.04) 38%,rgba(17,17,17,.12) 52%,#111111 100%)"
+                        : cozyCorner
+                          ? "linear-gradient(180deg,rgba(17,17,17,.2) 17%,rgba(17,17,17,.02) 42%,rgba(17,17,17,.08) 58%,rgba(17,17,17,.94) 100%)"
+                          : `linear-gradient(180deg,${colors.background}66 0%,transparent 32%,transparent 45%,${colors.background}f2 100%)`,
                   }}
                 />
+              )}
+              {cozyCorner && (
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 top-[146px] z-[2] border-y-[8px] border-dashed border-[#FF3B30]" />
               )}
               <ThemeVectors
                 motif={template.motif}
@@ -1376,10 +1428,134 @@ export function VideoMenu({
                 data-product-details
                 className={`relative z-10 w-full overflow-y-auto overscroll-contain pb-0.5 text-shadow-lg [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${noirLuxe ? "max-h-[calc(100dvh-10.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))]" : "max-h-[calc(100dvh-11rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))]"}`}
               >
-                {noirLuxe ? (
+                {figmaTheme ? (
+                  <>
+                    <h2
+                      className={`max-w-[21rem] text-[24px] leading-6 ${street ? "font-[var(--font-street-sans)] font-bold tracking-[2px] text-[#FFD600]" : "font-[var(--font-cozy-display)] font-normal tracking-[1.92px] text-[#FF3B30]"}`}
+                    >
+                      {translatedField(product, "name", language, product.name)}
+                    </h2>
+                    {(description ||
+                      allergens.length > 0 ||
+                      recommendations.length > 0) && (
+                      <details
+                        onToggle={(event) =>
+                          toggleDetails(product.id, event.currentTarget)
+                        }
+                        className="group mt-2 text-white"
+                      >
+                        <summary
+                          className={`flex cursor-pointer list-none items-center gap-1 text-[11px] font-bold uppercase tracking-[1px] ${street ? "font-[var(--font-street-condensed)]" : "font-[var(--font-cozy-display)]"}`}
+                        >
+                          {text.description}
+                          <ChevronDown
+                            size={12}
+                            className="transition-transform group-open:rotate-180"
+                          />
+                        </summary>
+                        {description && (
+                          <p className="mt-1 text-[11px] leading-4 text-white/80">
+                            {description}
+                          </p>
+                        )}
+                        {allergens.length > 0 && (
+                          <div className="mt-2 border-t border-white/25 pt-2">
+                            <p className="flex items-center gap-1 text-[10px] font-bold uppercase">
+                              <TriangleAlert size={11} />
+                              {text.allergens} · {allergens.length}
+                            </p>
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              {allergens.map((code) => (
+                                <span
+                                  key={code}
+                                  className="rounded-full border border-white/35 bg-black/25 px-2 py-0.5 text-[9px] font-bold"
+                                >
+                                  {allergenLabel(code, language)}
+                                </span>
+                              ))}
+                            </div>
+                            <p className="mt-1 text-[9px] leading-3 text-white/60">
+                              {text.allergenNotice}
+                            </p>
+                          </div>
+                        )}
+                        {recommendations.length > 0 && (
+                          <div className="mt-2 border-t border-white/25 pt-2">
+                            <p className="text-[10px] font-bold uppercase">
+                              {text.pairings}
+                            </p>
+                            <div className="mt-1 grid gap-1">
+                              {recommendations.map((item) => {
+                                const added = catalogAdded === item.id;
+                                return (
+                                  <div
+                                    key={item.id}
+                                    className="flex items-center gap-2 bg-black/30 p-1.5"
+                                  >
+                                    <span className="min-w-0 flex-1 truncate text-[10px] font-semibold">
+                                      {translatedField(
+                                        item,
+                                        "name",
+                                        language,
+                                        item.name,
+                                      )}
+                                    </span>
+                                    <strong
+                                      className="text-[10px] tabular-nums"
+                                      style={{
+                                        color: street ? "#FFD600" : "#FF3B30",
+                                      }}
+                                    >
+                                      {currency.format(item.price_cents / 100)}
+                                    </strong>
+                                    <button
+                                      type="button"
+                                      aria-label={`${text.add} ${item.name}`}
+                                      onClick={() => addRecommendation(item.id)}
+                                      className={`grid size-7 place-items-center rounded-full transition ${added ? "scale-110" : "active:scale-90"}`}
+                                      style={{
+                                        background: street
+                                          ? "#FFD600"
+                                          : "#FF3B30",
+                                        color: "#111111",
+                                      }}
+                                    >
+                                      {added ? (
+                                        <Check size={14} />
+                                      ) : (
+                                        <Plus size={13} />
+                                      )}
+                                    </button>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </details>
+                    )}
+                    <div className="mt-3 flex min-h-11 items-center justify-between gap-4">
+                      <strong
+                        className={`px-4 py-2 text-[32px] leading-8 tabular-nums ${street ? "bg-[#FFD600] font-[var(--font-street-condensed)] font-extrabold text-[#111111]" : "rounded-lg bg-[#FF3B30] font-[var(--font-street-condensed)] font-extrabold text-white"}`}
+                      >
+                        {currency.format(product.price_cents / 100)}
+                      </strong>
+                      <button
+                        aria-label={`${text.add} ${product.name}`}
+                        title={text.add}
+                        onClick={() => addProduct(product.id)}
+                        className="shrink-0 transition active:scale-90"
+                      >
+                        <FigmaThemeAdd theme={figmaThemeKey} />
+                      </button>
+                    </div>
+                  </>
+                ) : noirLuxe ? (
                   <>
                     <div className="flex min-h-11 items-center justify-between gap-4">
-                      <span className={`bg-[#111111]/40 px-2 py-1 uppercase text-white ${NOIRLUXE_TOKENS.typography.badge}`}>
+                      <span
+                        className={`bg-[#111111]/40 px-2 py-1 uppercase text-white ${NOIRLUXE_TOKENS.typography.badge}`}
+                      >
                         {product.is_featured ? text.featured : categoryName}
                       </span>
                       <button
@@ -1398,7 +1574,9 @@ export function VideoMenu({
                       {translatedField(product, "name", language, product.name)}
                     </h2>
                     {description && (
-                      <p className={`mt-2 max-w-[22rem] text-[#F0E9DB] ${NOIRLUXE_TOKENS.typography.body}`}>
+                      <p
+                        className={`mt-2 max-w-[22rem] text-[#F0E9DB] ${NOIRLUXE_TOKENS.typography.body}`}
+                      >
                         {description}
                       </p>
                     )}
@@ -1409,7 +1587,9 @@ export function VideoMenu({
                         }
                         className="group mt-2"
                       >
-                        <summary className={`flex cursor-pointer list-none items-center gap-1 text-[#F0E9DB] ${NOIRLUXE_TOKENS.typography.label}`}>
+                        <summary
+                          className={`flex cursor-pointer list-none items-center gap-1 text-[#F0E9DB] ${NOIRLUXE_TOKENS.typography.label}`}
+                        >
                           {allergens.length > 0
                             ? text.allergens
                             : text.pairings}
@@ -1430,14 +1610,18 @@ export function VideoMenu({
                                 </span>
                               ))}
                             </div>
-                            <p className={`mt-2 text-[#F0E9DB]/70 ${NOIRLUXE_TOKENS.typography.label}`}>
+                            <p
+                              className={`mt-2 text-[#F0E9DB]/70 ${NOIRLUXE_TOKENS.typography.label}`}
+                            >
                               {text.allergenNotice}
                             </p>
                           </div>
                         )}
                         {recommendations.length > 0 && (
                           <div className="mt-2 border-t border-[#C9A96E]/30 pt-2">
-                            <p className={`text-[#F0E9DB] ${NOIRLUXE_TOKENS.typography.label}`}>
+                            <p
+                              className={`text-[#F0E9DB] ${NOIRLUXE_TOKENS.typography.label}`}
+                            >
                               {text.pairings}
                             </p>
                             <div className="mt-1 grid gap-1">
@@ -1478,7 +1662,7 @@ export function VideoMenu({
                                       type="button"
                                       aria-label={`${text.add} ${item.name}`}
                                       onClick={() => addRecommendation(item.id)}
-                                    className={`grid h-7 w-7 shrink-0 place-items-center bg-[#C9A96E] text-[#111111] transition ${added ? "scale-110" : "active:scale-90"}`}
+                                      className={`grid h-7 w-7 shrink-0 place-items-center bg-[#C9A96E] text-[#111111] transition ${added ? "scale-110" : "active:scale-90"}`}
                                     >
                                       {added ? (
                                         <Check size={14} />
@@ -1670,7 +1854,58 @@ export function VideoMenu({
         })}
       </div>
 
-      {noirLuxe ? (
+      {figmaTheme ? (
+        <nav
+          ref={categoryNavRef}
+          aria-label={text.categories}
+          className={`fixed left-1/2 z-40 flex w-[calc(100%-2rem)] max-w-[370px] -translate-x-1/2 touch-pan-x snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain [mask-image:linear-gradient(to_right,transparent,black_9%,black_91%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${street ? "top-[calc(max(2.5rem,calc(env(safe-area-inset-top)+1rem))+5.75rem)]" : "top-[170px]"}`}
+        >
+          <span
+            aria-hidden="true"
+            className="w-[calc((100%-1rem)/3)] shrink-0"
+          />
+          {categoryGroups.map((group) => {
+            const selected = activeCategory === group.id;
+            return (
+              <button
+                ref={(element) => {
+                  if (element)
+                    categoryButtonRefs.current.set(group.id, element);
+                  else categoryButtonRefs.current.delete(group.id);
+                }}
+                key={group.id}
+                type="button"
+                aria-current={selected ? "true" : undefined}
+                onClick={() => openCategory(group.id)}
+                style={
+                  street
+                    ? selected
+                      ? {
+                          background: "#FFD600",
+                          color: "#111111",
+                          borderColor: "#FFD600",
+                        }
+                      : {
+                          background: "rgba(17,17,17,.4)",
+                          color: "#F5F5F0",
+                          borderColor: "#FFD600",
+                        }
+                    : selected
+                      ? { background: "#FF3B30", color: "#FFD600" }
+                      : { background: "rgba(255,59,48,.72)", color: "#FFFFFF" }
+                }
+                className={`w-[calc((100%-1rem)/3)] shrink-0 snap-center truncate border-2 px-2 py-[5px] text-[12px] uppercase transition-opacity duration-300 ${street ? "font-[var(--font-street-condensed)] font-bold leading-3 tracking-[1px]" : "rounded-full border-transparent font-[var(--font-cozy-display)] leading-none"} ${selected ? "opacity-100" : "opacity-60"}`}
+              >
+                {group.name}
+              </button>
+            );
+          })}
+          <span
+            aria-hidden="true"
+            className="w-[calc((100%-1rem)/3)] shrink-0"
+          />
+        </nav>
+      ) : noirLuxe ? (
         <nav
           ref={categoryNavRef}
           aria-label={text.categories}
@@ -1744,7 +1979,7 @@ export function VideoMenu({
         </nav>
       )}
 
-      {!noirLuxe && (
+      {!menuRailTheme && (
         <nav
           ref={controlsRef}
           aria-label="Controles de la carta"
