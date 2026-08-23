@@ -201,7 +201,7 @@ function TemplatePreview({
               <span
                 role="img"
                 aria-label={`Logo de ${restaurantName}`}
-                className={`mx-auto block bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)] ${large ? "h-9 w-40" : "h-6 w-24"}`}
+                className={`mx-auto block bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)] ${large ? "h-12 w-52" : "h-8 w-32"}`}
                 style={{ backgroundImage: `url(${logoUrl})` }}
               />
             ) : (

@@ -866,7 +866,7 @@ export function VideoMenu({
               <span
                 role="img"
                 aria-label={`Logo de ${restaurant.name}`}
-                className={`mx-auto block bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)] ${tokyoPulse || socialHud ? "h-9 w-40" : "h-12 w-48"}`}
+                className={`mx-auto block bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)] ${socialHud ? "h-12 w-52" : tokyoPulse ? "h-9 w-40" : "h-12 w-48"}`}
                 style={{ backgroundImage: `url(${restaurant.logo_url})` }}
               />
             )}
