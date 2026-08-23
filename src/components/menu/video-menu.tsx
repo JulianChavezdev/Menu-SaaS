@@ -818,7 +818,7 @@ export function VideoMenu({
                 ? "linear-gradient(to bottom,rgba(17,17,17,.4),rgba(17,17,17,.4),transparent)"
                 : "linear-gradient(to bottom,rgba(17,17,17,.68),rgba(17,17,17,.28),transparent)",
           }}
-          className={`pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-start justify-between px-6 md:max-w-[402px] ${cozyCorner ? "h-[max(88px,calc(env(safe-area-inset-top)+52px))] pb-2 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]" : street ? "pb-6 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]" : "pb-12 pt-[max(2.5rem,calc(env(safe-area-inset-top)+1rem))]"}`}
+          className={`pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-start justify-between px-6 md:max-w-[402px] ${cozyCorner ? "h-[max(88px,calc(env(safe-area-inset-top)+52px))] pb-2 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]" : "pb-6 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]"}`}
         >
           <button
             aria-label={text.controls}
@@ -1909,7 +1909,7 @@ export function VideoMenu({
         <nav
           ref={categoryNavRef}
           aria-label={text.categories}
-          className="fixed left-1/2 top-[calc(max(2.5rem,calc(env(safe-area-inset-top)+1rem))+4.75rem)] z-40 flex w-full max-w-[430px] -translate-x-1/2 touch-pan-x gap-7 overflow-x-auto overscroll-x-contain px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:max-w-[402px]"
+          className="fixed left-1/2 top-[max(76px,calc(env(safe-area-inset-top)+60px))] z-40 flex w-full max-w-[430px] -translate-x-1/2 touch-pan-x gap-7 overflow-x-auto overscroll-x-contain px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:max-w-[402px]"
         >
           {categoryGroups.map((group) => {
             const selected = activeCategory === group.id;

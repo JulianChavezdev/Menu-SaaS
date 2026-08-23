@@ -81,7 +81,7 @@ function TemplatePreview({
         </div>
         <div className="absolute inset-0 z-[1] bg-[linear-gradient(180deg,rgba(17,17,17,.4)_0%,rgba(17,17,17,.08)_42%,rgba(17,17,17,.4)_62%,#111111_100%)]" />
         <header
-          className={`absolute inset-x-0 top-0 z-10 flex items-start justify-between bg-gradient-to-b from-[#111111]/40 to-transparent ${large ? "px-6 pb-12 pt-8" : "px-3 pb-6 pt-3"}`}
+          className={`absolute inset-x-0 top-0 z-10 flex items-start justify-between bg-gradient-to-b from-[#111111]/40 to-transparent ${large ? "px-6 pb-6 pt-4" : "px-3 pb-4 pt-2"}`}
         >
           <NoirLuxeHamburgerIcon />
           <div className="min-w-0 flex-1 px-2 text-center">
@@ -104,7 +104,7 @@ function TemplatePreview({
         </header>
         <nav
           aria-label="Vista de categorías"
-          className={`absolute inset-x-0 z-10 flex overflow-hidden uppercase ${large ? `top-24 gap-7 px-6 ${NOIRLUXE_TOKENS.typography.category}` : "top-12 gap-3 px-3 text-[6px] leading-[8px] tracking-[.16em]"}`}
+          className={`absolute inset-x-0 z-10 flex overflow-hidden uppercase ${large ? `top-[72px] gap-7 px-6 ${NOIRLUXE_TOKENS.typography.category}` : "top-[40px] gap-3 px-3 text-[6px] leading-[8px] tracking-[.16em]"}`}
         >
           <span className="shrink-0 border-b border-[#C9A96E] pb-1 text-white">
             {product?.category ?? "Entrantes"}
