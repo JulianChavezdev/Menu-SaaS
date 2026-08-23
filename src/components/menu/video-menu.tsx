@@ -64,6 +64,12 @@ import {
   TokyoPulseHamburger,
   TokyoPulseTicker,
 } from "@/components/menu/tokyo-pulse";
+import {
+  SocialHudAdd,
+  SocialHudBasket,
+  SocialHudHamburger,
+  SocialHudMarquee,
+} from "@/components/menu/social-hud";
 
 const copy = {
   es: {
@@ -244,8 +250,9 @@ export function VideoMenu({
   const street = template.key === "street";
   const cozyCorner = template.key === "cozy-corner";
   const tokyoPulse = template.key === "tokyo-pulse";
+  const socialHud = template.key === "social-hud";
   const figmaTheme = street || cozyCorner;
-  const menuRailTheme = noirLuxe || figmaTheme || tokyoPulse;
+  const menuRailTheme = noirLuxe || figmaTheme || tokyoPulse || socialHud;
   const figmaThemeKey = street ? "street" : "cozy-corner";
   const colors = template.colors;
   const sidebarPanel = cozyCorner ? "#C92F27" : colors.panel;
@@ -268,7 +275,9 @@ export function VideoMenu({
           ? "var(--font-cozy-sans)"
           : tokyoPulse
             ? "var(--font-tokyo-sans)"
-            : undefined,
+            : socialHud
+              ? "ui-sans-serif, system-ui, sans-serif"
+              : undefined,
   } as CSSProperties;
   const categoryGroups = [
     ...products
@@ -831,9 +840,11 @@ export function VideoMenu({
                 ? "linear-gradient(to bottom,rgba(17,17,17,.4),rgba(17,17,17,.4),transparent)"
                 : tokyoPulse
                   ? "linear-gradient(to bottom,rgba(26,13,20,.96),rgba(26,13,20,.72),transparent)"
-                  : "linear-gradient(to bottom,rgba(17,17,17,.68),rgba(17,17,17,.28),transparent)",
+                  : socialHud
+                    ? "linear-gradient(to bottom,rgba(0,0,0,.48),transparent)"
+                    : "linear-gradient(to bottom,rgba(17,17,17,.68),rgba(17,17,17,.28),transparent)",
           }}
-          className={`pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-start justify-between px-6 md:max-w-[402px] ${cozyCorner ? "h-[max(88px,calc(env(safe-area-inset-top)+52px))] pb-2 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]" : tokyoPulse ? "pb-3 pt-[max(.65rem,calc(env(safe-area-inset-top)+.15rem))]" : "pb-6 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]"}`}
+          className={`pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-start justify-between px-6 md:max-w-[402px] ${cozyCorner ? "h-[max(88px,calc(env(safe-area-inset-top)+52px))] pb-2 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]" : tokyoPulse || socialHud ? "pb-3 pt-[max(.65rem,calc(env(safe-area-inset-top)+.15rem))]" : "pb-6 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]"}`}
         >
           <button
             aria-label={text.controls}
@@ -844,6 +855,8 @@ export function VideoMenu({
               <NoirLuxeHamburgerIcon />
             ) : tokyoPulse ? (
               <TokyoPulseHamburger />
+            ) : socialHud ? (
+              <SocialHudHamburger />
             ) : (
               <FigmaThemeHamburger theme={figmaThemeKey} />
             )}
@@ -853,7 +866,7 @@ export function VideoMenu({
               <span
                 role="img"
                 aria-label={`Logo de ${restaurant.name}`}
-                className={`mx-auto block bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)] ${tokyoPulse ? "h-9 w-40" : "h-12 w-48"}`}
+                className={`mx-auto block bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)] ${tokyoPulse || socialHud ? "h-9 w-40" : "h-12 w-48"}`}
                 style={{ backgroundImage: `url(${restaurant.logo_url})` }}
               />
             )}
@@ -867,6 +880,8 @@ export function VideoMenu({
               <NoirLuxeBasketIcon />
             ) : tokyoPulse ? (
               <TokyoPulseBasket />
+            ) : socialHud ? (
+              <SocialHudBasket />
             ) : (
               <FigmaThemeBasket theme={figmaThemeKey} />
             )}
@@ -1404,7 +1419,7 @@ export function VideoMenu({
               data-index={index}
               id={`product-${product.id}`}
               key={product.id}
-              className={`relative isolate flex h-svh snap-start snap-always items-end overflow-hidden bg-[var(--theme-bg)] ${noirLuxe ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-40 [font-family:var(--font-noir-sans)]" : figmaTheme ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-44" : tokyoPulse ? "px-6 pb-[max(1rem,env(safe-area-inset-bottom))] pt-36" : "px-4 pb-[var(--controls-clearance)] pt-24"}`}
+              className={`relative isolate flex h-svh snap-start snap-always items-end overflow-hidden bg-[var(--theme-bg)] ${noirLuxe ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-40 [font-family:var(--font-noir-sans)]" : figmaTheme ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-44" : tokyoPulse ? "px-6 pb-[max(1rem,env(safe-area-inset-bottom))] pt-36" : socialHud ? "px-4 pb-[max(.75rem,env(safe-area-inset-bottom))] pt-28" : "px-4 pb-[var(--controls-clearance)] pt-24"}`}
             >
               <div
                 style={{ borderColor: colors.frame }}
@@ -1438,7 +1453,9 @@ export function VideoMenu({
                           ? "linear-gradient(180deg,rgba(17,17,17,.2) 17%,rgba(17,17,17,.02) 42%,rgba(17,17,17,.08) 58%,rgba(17,17,17,.94) 100%)"
                           : tokyoPulse
                             ? "linear-gradient(180deg,rgba(26,13,20,.58) 0%,rgba(26,13,20,.03) 38%,rgba(26,13,20,.25) 58%,#1A0D14 100%)"
-                            : `linear-gradient(180deg,${colors.background}66 0%,transparent 32%,transparent 45%,${colors.background}f2 100%)`,
+                            : socialHud
+                              ? "linear-gradient(180deg,rgba(0,0,0,.3) 0%,transparent 34%,rgba(0,0,0,.08) 54%,rgba(0,0,0,.88) 100%)"
+                              : `linear-gradient(180deg,${colors.background}66 0%,transparent 32%,transparent 45%,${colors.background}f2 100%)`,
                   }}
                 />
               )}
@@ -1451,6 +1468,42 @@ export function VideoMenu({
                 accent2={colors.accent2}
                 className="absolute inset-0 z-[2] h-full w-full"
               />
+              {socialHud && (
+                <div className="absolute bottom-[max(6.25rem,calc(env(safe-area-inset-bottom)+5.5rem))] right-3 z-20 flex flex-col items-center gap-3">
+                  <button
+                    type="button"
+                    aria-label={muted ? text.soundOn : text.soundOff}
+                    onClick={() => setMuted((value) => !value)}
+                    className="grid size-10 place-items-center rounded-full bg-black/45 text-white shadow-lg backdrop-blur-md transition active:scale-90"
+                  >
+                    {muted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={text.info}
+                    onClick={() => setPanel("info")}
+                    className="grid size-10 place-items-center rounded-full bg-black/45 text-white shadow-lg backdrop-blur-md transition active:scale-90"
+                  >
+                    <Info size={20} />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={text.share}
+                    onClick={share}
+                    className="grid size-10 place-items-center rounded-full bg-black/45 text-white shadow-lg backdrop-blur-md transition active:scale-90"
+                  >
+                    <Share2 size={20} />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`${text.add} ${product.name}`}
+                    onClick={() => addProduct(product.id)}
+                    className="transition active:scale-90"
+                  >
+                    <SocialHudAdd />
+                  </button>
+                </div>
+              )}
               {primaryTemplate && expandedDetails.has(product.id) && (
                 <div
                   data-description-backdrop
@@ -1460,9 +1513,112 @@ export function VideoMenu({
               )}
               <div
                 data-product-details
-                className={`relative z-10 w-full overflow-y-auto overscroll-contain pb-0.5 text-shadow-lg [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${noirLuxe ? "max-h-[calc(100dvh-10.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))]" : "max-h-[calc(100dvh-11rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))]"}`}
+                className={`relative z-10 w-full overflow-y-auto overscroll-contain pb-0.5 text-shadow-lg [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${socialHud ? "pr-14" : ""} ${noirLuxe ? "max-h-[calc(100dvh-10.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))]" : "max-h-[calc(100dvh-11rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))]"}`}
               >
-                {tokyoPulse ? (
+                {socialHud ? (
+                  <>
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-black/45 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[.12em] text-white backdrop-blur-md">
+                      <span className="size-1.5 rounded-full bg-[#25F4EE] shadow-[2px_0_0_#FE2C55]" />
+                      {product.is_featured ? text.featured : categoryName}
+                    </span>
+                    <h2 className="mt-1.5 max-w-[18rem] text-[26px] font-extrabold leading-[29px] tracking-[-.02em] text-white">
+                      {translatedField(product, "name", language, product.name)}
+                    </h2>
+                    {(description ||
+                      allergens.length > 0 ||
+                      recommendations.length > 0) && (
+                      <details
+                        onToggle={(event) =>
+                          toggleDetails(product.id, event.currentTarget)
+                        }
+                        className="group mt-1.5 text-white"
+                      >
+                        <summary className="flex w-fit cursor-pointer list-none items-center gap-1 text-[10px] font-semibold text-white/85">
+                          {text.description}
+                          <ChevronDown
+                            size={12}
+                            className="transition-transform group-open:rotate-180"
+                          />
+                        </summary>
+                        {description && (
+                          <p className="mt-1 max-w-[18rem] text-[11px] leading-4 text-white/80">
+                            {description}
+                          </p>
+                        )}
+                        {allergens.length > 0 && (
+                          <div className="mt-2 border-t border-white/20 pt-2">
+                            <p className="flex items-center gap-1 text-[9px] font-bold uppercase text-[#25F4EE]">
+                              <TriangleAlert size={11} />
+                              {text.allergens} · {allergens.length}
+                            </p>
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              {allergens.map((code) => (
+                                <span
+                                  key={code}
+                                  className="rounded-full bg-white/15 px-2 py-0.5 text-[9px] font-semibold backdrop-blur-md"
+                                >
+                                  {allergenLabel(code, language)}
+                                </span>
+                              ))}
+                            </div>
+                            <p className="mt-1 text-[9px] leading-3 text-white/55">
+                              {text.allergenNotice}
+                            </p>
+                          </div>
+                        )}
+                        {recommendations.length > 0 && (
+                          <div className="mt-2 border-t border-white/20 pt-2">
+                            <p className="text-[9px] font-bold uppercase text-[#25F4EE]">
+                              {text.pairings}
+                            </p>
+                            <div className="mt-1 grid gap-1">
+                              {recommendations.map((item) => {
+                                const added = catalogAdded === item.id;
+                                return (
+                                  <div
+                                    key={item.id}
+                                    className="flex items-center gap-2 rounded-full bg-black/40 py-1 pl-3 pr-1 backdrop-blur-md"
+                                  >
+                                    <span className="min-w-0 flex-1 truncate text-[10px] font-semibold">
+                                      {translatedField(
+                                        item,
+                                        "name",
+                                        language,
+                                        item.name,
+                                      )}
+                                    </span>
+                                    <strong className="text-[10px] tabular-nums text-[#25F4EE]">
+                                      {currency.format(item.price_cents / 100)}
+                                    </strong>
+                                    <button
+                                      type="button"
+                                      aria-label={`${text.add} ${item.name}`}
+                                      onClick={() => addRecommendation(item.id)}
+                                      className={`grid size-7 place-items-center rounded-full bg-white text-black transition ${added ? "scale-110" : "active:scale-90"}`}
+                                    >
+                                      {added ? (
+                                        <Check size={14} />
+                                      ) : (
+                                        <Plus size={13} />
+                                      )}
+                                    </button>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </details>
+                    )}
+                    <strong className="mt-1.5 block text-[21px] font-extrabold tabular-nums text-white">
+                      {currency.format(product.price_cents / 100)}
+                    </strong>
+                    <SocialHudMarquee
+                      label={`${categoryName} · ${translatedField(product, "name", language, product.name)}`}
+                      className="mt-1.5 max-w-[18rem]"
+                    />
+                  </>
+                ) : tokyoPulse ? (
                   <>
                     <div className="flex min-h-10 items-center justify-between gap-4">
                       <span className="border-l-4 border-[#FF5A36] pl-2 font-[var(--font-tokyo-sans)] text-[9px] font-bold uppercase tracking-[.2em] text-[#7CC7A1]">
@@ -2001,7 +2157,38 @@ export function VideoMenu({
         })}
       </div>
 
-      {tokyoPulse ? (
+      {socialHud ? (
+        <nav
+          ref={categoryNavRef}
+          aria-label={text.categories}
+          className="fixed left-1/2 top-[max(52px,calc(env(safe-area-inset-top)+38px))] z-40 flex w-[calc(100%-5rem)] max-w-[330px] -translate-x-1/2 touch-pan-x snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain px-2 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          <span aria-hidden="true" className="w-[30%] shrink-0" />
+          {categoryGroups.map((group) => {
+            const selected = activeCategory === group.id;
+            return (
+              <button
+                ref={(element) => {
+                  if (element)
+                    categoryButtonRefs.current.set(group.id, element);
+                  else categoryButtonRefs.current.delete(group.id);
+                }}
+                key={group.id}
+                type="button"
+                aria-current={selected ? "true" : undefined}
+                onClick={() => openCategory(group.id)}
+                className={`relative shrink-0 snap-center pb-2 text-[11px] font-bold transition duration-300 ${selected ? "text-white" : "text-white/50"}`}
+              >
+                {group.name}
+                {selected && (
+                  <span className="absolute inset-x-1 bottom-0 h-0.5 bg-white shadow-[-2px_0_0_#25F4EE,2px_0_0_#FE2C55]" />
+                )}
+              </button>
+            );
+          })}
+          <span aria-hidden="true" className="w-[30%] shrink-0" />
+        </nav>
+      ) : tokyoPulse ? (
         <>
           <TokyoPulseTicker
             items={categoryGroups.map((group) => group.name)}

@@ -5,6 +5,7 @@ const menu = readFileSync("src/components/menu/video-menu.tsx", "utf8");
 const media = readFileSync("src/components/menu/product-media.tsx", "utf8");
 const vectors = readFileSync("src/components/menu/theme-vectors.tsx", "utf8");
 const noirTokens = readFileSync("src/lib/noirluxe-design-tokens.ts", "utf8");
+const socialHud = readFileSync("src/components/menu/social-hud.tsx", "utf8");
 
 describe("virtualización del feed de vídeo", () => {
   it("hidrata exclusivamente el producto actual y sus vecinos", () => {
@@ -125,5 +126,15 @@ describe("virtualización del feed de vídeo", () => {
       'const sidebarPanel = cozyCorner ? "#C92F27" : colors.panel',
     );
     expect(menu).toContain("background: sidebarAccent");
+  });
+  it("integra Social HUD con acciones laterales y ticker animado", () => {
+    expect(menu).toContain('template.key === "social-hud"');
+    expect(menu).toContain("SocialHudHamburger");
+    expect(menu).toContain("SocialHudBasket");
+    expect(menu).toContain("SocialHudAdd");
+    expect(menu).toContain("SocialHudMarquee");
+    expect(menu).toContain('onClick={() => setPanel("info")}');
+    expect(socialHud).toContain('transform: "translateX(-50%)"');
+    expect(vectors).toContain('motif === "social-hud"');
   });
 });

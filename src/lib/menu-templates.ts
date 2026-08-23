@@ -11,7 +11,8 @@ export type TemplateMotif =
   | "noirluxe"
   | "street"
   | "cozy-corner"
-  | "tokyo-pulse";
+  | "tokyo-pulse"
+  | "social-hud";
 
 type MenuTemplate = {
   key: string;
@@ -115,6 +116,23 @@ const tokyoPulseTemplate: MenuTemplate & { key: "tokyo-pulse" } = {
     frame: "#7CC7A1",
   },
 };
+const socialHudTemplate: MenuTemplate & { key: "social-hud" } = {
+  key: "social-hud",
+  name: "Social HUD",
+  description:
+    "Interfaz ultraligera inspirada en los feeds verticales: vídeo dominante, acciones laterales y navegación inmediata.",
+  tier: "premium",
+  layout: "fullscreen",
+  motif: "social-hud",
+  colors: {
+    background: "#08080A",
+    panel: "#151519",
+    nav: "#111114",
+    accent: "#FE2C55",
+    accent2: "#25F4EE",
+    frame: "rgba(255,255,255,.24)",
+  },
+};
 
 export const MENU_TEMPLATES = {
   cinematic: cinematicTemplate,
@@ -122,6 +140,7 @@ export const MENU_TEMPLATES = {
   street: streetTemplate,
   "cozy-corner": cozyCornerTemplate,
   "tokyo-pulse": tokyoPulseTemplate,
+  "social-hud": socialHudTemplate,
 } as const;
 
 export type MenuTemplateKey = keyof typeof MENU_TEMPLATES;

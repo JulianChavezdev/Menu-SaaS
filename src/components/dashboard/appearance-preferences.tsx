@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
-import { Eye, Languages, Lock, X } from "lucide-react";
+import { Eye, Info, Languages, Lock, Share2, VolumeX, X } from "lucide-react";
 import { toast } from "sonner";
 import {
   translateEntireMenu,
@@ -33,6 +33,12 @@ import {
   TokyoPulseHamburger,
   TokyoPulseTicker,
 } from "@/components/menu/tokyo-pulse";
+import {
+  SocialHudAdd,
+  SocialHudBasket,
+  SocialHudHamburger,
+  SocialHudMarquee,
+} from "@/components/menu/social-hud";
 
 type PreviewProduct = {
   name: string;
@@ -161,6 +167,107 @@ function TemplatePreview({
               <NoirLuxeProgress active={0} total={3} />
             </span>
           </div>
+        </div>
+      </div>
+    );
+  if (kind === "social-hud")
+    return (
+      <div
+        className={`relative isolate mx-auto w-full overflow-hidden bg-[#08080A] font-sans text-white shadow-2xl ${large ? "h-[min(70dvh,620px)] max-w-[350px]" : "aspect-[9/12]"}`}
+      >
+        <div className="absolute inset-0 bg-[#22221f]">
+          {product?.videoUrl ? (
+            <video
+              src={product.videoUrl}
+              muted
+              loop
+              autoPlay
+              playsInline
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="h-full w-full bg-[radial-gradient(circle_at_60%_30%,#a56754,#3e302b_45%,#08080A)]" />
+          )}
+        </div>
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,.32)_0%,transparent_38%,rgba(0,0,0,.1)_55%,rgba(0,0,0,.9)_100%)]" />
+        <header
+          className={`absolute inset-x-0 top-0 z-20 flex items-start justify-between bg-gradient-to-b from-black/45 to-transparent ${large ? "px-6 pb-3 pt-2.5" : "px-3 pb-2 pt-1.5"}`}
+        >
+          <span className={large ? "" : "origin-top-left scale-50"}>
+            <SocialHudHamburger />
+          </span>
+          <div className="min-w-0 flex-1 px-2">
+            {logoUrl ? (
+              <span
+                role="img"
+                aria-label={`Logo de ${restaurantName}`}
+                className={`mx-auto block bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)] ${large ? "h-9 w-40" : "h-6 w-24"}`}
+                style={{ backgroundImage: `url(${logoUrl})` }}
+              />
+            ) : (
+              <strong className="block truncate text-center">
+                {restaurantName}
+              </strong>
+            )}
+          </div>
+          <span className={large ? "" : "origin-top-right scale-50"}>
+            <SocialHudBasket />
+          </span>
+        </header>
+        <nav
+          className={`absolute inset-x-10 z-20 flex justify-center gap-4 overflow-hidden ${large ? "top-[52px]" : "top-[31px]"}`}
+        >
+          {[product?.category ?? "Para ti", "Favoritos", "Postres"].map(
+            (category, index) => (
+              <span
+                key={category}
+                className={`relative shrink-0 pb-1.5 font-bold ${index === 0 ? "text-white" : "text-white/50"} ${large ? "text-[10px]" : "text-[5px]"}`}
+              >
+                {category}
+                {index === 0 && (
+                  <span className="absolute inset-x-1 bottom-0 h-px bg-white shadow-[-1px_0_0_#25F4EE,1px_0_0_#FE2C55]" />
+                )}
+              </span>
+            ),
+          )}
+        </nav>
+        <div
+          className={`absolute right-3 z-20 flex flex-col items-center ${large ? "bottom-24 gap-3" : "bottom-12 gap-1.5"}`}
+        >
+          {[VolumeX, Info, Share2].map((Icon, index) => (
+            <span
+              key={index}
+              className={`grid place-items-center rounded-full bg-black/45 backdrop-blur-md ${large ? "size-10" : "size-5"}`}
+            >
+              <Icon size={large ? 19 : 10} />
+            </span>
+          ))}
+          <SocialHudAdd compact={!large} />
+        </div>
+        <div
+          className={`absolute bottom-0 left-0 right-14 z-10 ${large ? "p-6" : "p-3"}`}
+        >
+          <span
+            className={`inline-flex items-center gap-1 rounded-full bg-black/45 px-2 py-1 font-bold uppercase backdrop-blur-md ${large ? "text-[8px]" : "text-[4px]"}`}
+          >
+            <span className="size-1 rounded-full bg-[#25F4EE] shadow-[1px_0_0_#FE2C55]" />
+            {product?.category ?? "Especialidades"}
+          </span>
+          <p
+            className={`font-extrabold tracking-[-.02em] ${large ? "mt-1.5 text-[26px] leading-7" : "mt-1 text-sm leading-[15px]"}`}
+          >
+            {product?.name ?? "Producto destacado"}
+          </p>
+          <strong
+            className={`block font-extrabold ${large ? "mt-1 text-xl" : "mt-0.5 text-xs"}`}
+          >
+            {price}
+          </strong>
+          <SocialHudMarquee
+            label={`${product?.category ?? "Carta"} · ${product?.name ?? "Producto destacado"}`}
+            compact={!large}
+            className={large ? "mt-1.5" : "mt-0.5"}
+          />
         </div>
       </div>
     );
@@ -513,7 +620,7 @@ export function AppearancePreferences({
                 Elige el estilo que mejor representa al restaurante.
               </p>
             </div>
-            <span className="text-xs text-slate-500">5 disponibles</span>
+            <span className="text-xs text-slate-500">6 disponibles</span>
           </div>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {Object.values(MENU_TEMPLATES).map((item) => {
