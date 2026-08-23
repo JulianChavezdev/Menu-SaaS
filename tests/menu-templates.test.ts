@@ -23,20 +23,19 @@ describe("menu templates", () => {
       DEFAULT_MENU_TEMPLATE,
     );
   });
-  it("validates the six current templates", () => {
+  it("validates the five current templates", () => {
     expect(isMenuTemplateKey("cinematic")).toBe(true);
     expect(isMenuTemplateKey("noirluxe")).toBe(true);
     expect(isMenuTemplateKey("street")).toBe(true);
     expect(isMenuTemplateKey("cozy-corner")).toBe(true);
     expect(isMenuTemplateKey("tokyo-pulse")).toBe(true);
-    expect(isMenuTemplateKey("mare-nostrum")).toBe(true);
     expect(isMenuTemplateKey("midnight")).toBe(false);
   });
-  it("keeps one free and five premium templates", () => {
+  it("keeps one free and four premium templates", () => {
     const templates = Object.values(MENU_TEMPLATES);
-    expect(templates).toHaveLength(6);
+    expect(templates).toHaveLength(5);
     expect(templates.filter((item) => item.tier === "free")).toHaveLength(1);
-    expect(templates.filter((item) => item.tier === "premium")).toHaveLength(5);
+    expect(templates.filter((item) => item.tier === "premium")).toHaveLength(4);
     expect(MENU_TEMPLATES.noirluxe).toMatchObject({
       name: "NoirLuxe",
       tier: "premium",
@@ -56,11 +55,6 @@ describe("menu templates", () => {
       name: "Tokyo Pulse",
       tier: "premium",
       motif: "tokyo-pulse",
-    });
-    expect(MENU_TEMPLATES["mare-nostrum"]).toMatchObject({
-      name: "Mare Nostrum",
-      tier: "premium",
-      motif: "mare-nostrum",
     });
   });
 });

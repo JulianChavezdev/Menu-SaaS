@@ -6,9 +6,7 @@ import { SaasNavigationTracker } from "@/components/navigation/saas-navigation-t
 import {
   Barlow,
   Barlow_Condensed,
-  Cormorant_Garamond,
   Jost,
-  Manrope,
   Noto_Sans_JP,
   Noto_Serif_JP,
   Nunito,
@@ -71,19 +69,6 @@ const tokyoSerif = Noto_Serif_JP({
   display: "swap",
   variable: "--font-tokyo-serif",
 });
-const mareSans = Manrope({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  display: "swap",
-  variable: "--font-mare-sans",
-});
-const mareSerif = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
-  style: ["normal", "italic"],
-  display: "swap",
-  variable: "--font-mare-serif",
-});
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: { default: "Menuly", template: "%s | Menuly" },
@@ -115,7 +100,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="es"
-      className={`${noirSans.variable} ${noirSerif.variable} ${streetSans.variable} ${streetCondensed.variable} ${cozyDisplay.variable} ${cozySans.variable} ${tokyoSans.variable} ${tokyoSerif.variable} ${mareSans.variable} ${mareSerif.variable}`}
+      className={`${noirSans.variable} ${noirSerif.variable} ${streetSans.variable} ${streetCondensed.variable} ${cozyDisplay.variable} ${cozySans.variable} ${tokyoSans.variable} ${tokyoSerif.variable}`}
     >
       <head>
         {mediaOrigins.map((origin) => (

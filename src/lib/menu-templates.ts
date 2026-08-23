@@ -11,8 +11,7 @@ export type TemplateMotif =
   | "noirluxe"
   | "street"
   | "cozy-corner"
-  | "tokyo-pulse"
-  | "mare-nostrum";
+  | "tokyo-pulse";
 
 type MenuTemplate = {
   key: string;
@@ -116,23 +115,6 @@ const tokyoPulseTemplate: MenuTemplate & { key: "tokyo-pulse" } = {
     frame: "#7CC7A1",
   },
 };
-const mareNostrumTemplate: MenuTemplate & { key: "mare-nostrum" } = {
-  key: "mare-nostrum",
-  name: "Mare Nostrum",
-  description:
-    "Horizonte mediterráneo, azulejos, oleaje en movimiento y composición editorial para cocina de costa.",
-  tier: "premium",
-  layout: "fullscreen",
-  motif: "mare-nostrum",
-  colors: {
-    background: "#0B3B60",
-    panel: "#0B3B60",
-    nav: "#0B3B60",
-    accent: "#E5745D",
-    accent2: "#F7F0DF",
-    frame: "#78B7BC",
-  },
-};
 
 export const MENU_TEMPLATES = {
   cinematic: cinematicTemplate,
@@ -140,7 +122,6 @@ export const MENU_TEMPLATES = {
   street: streetTemplate,
   "cozy-corner": cozyCornerTemplate,
   "tokyo-pulse": tokyoPulseTemplate,
-  "mare-nostrum": mareNostrumTemplate,
 } as const;
 
 export type MenuTemplateKey = keyof typeof MENU_TEMPLATES;

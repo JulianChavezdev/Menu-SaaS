@@ -22,8 +22,7 @@ export function ThemeVectors({
     motif === "noirluxe" ||
     motif === "street" ||
     motif === "cozy-corner" ||
-    motif === "tokyo-pulse" ||
-    motif === "mare-nostrum"
+    motif === "tokyo-pulse"
   )
     return null;
   if (motif === "mediterranean")

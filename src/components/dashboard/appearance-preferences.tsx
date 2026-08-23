@@ -33,13 +33,6 @@ import {
   TokyoPulseHamburger,
   TokyoPulseTicker,
 } from "@/components/menu/tokyo-pulse";
-import {
-  MareNostrumAdd,
-  MareNostrumBasket,
-  MareNostrumHamburger,
-  MareNostrumSeal,
-  MareNostrumWave,
-} from "@/components/menu/mare-nostrum";
 
 type PreviewProduct = {
   name: string;
@@ -166,124 +159,6 @@ function TemplatePreview({
               }
             >
               <NoirLuxeProgress active={0} total={3} />
-            </span>
-          </div>
-        </div>
-      </div>
-    );
-  if (kind === "mare-nostrum")
-    return (
-      <div
-        style={{ fontFamily: "var(--font-mare-sans)" }}
-        className={`relative isolate mx-auto w-full overflow-hidden bg-[#0B3B60] text-[#F7F0DF] shadow-2xl ${large ? "h-[min(70dvh,620px)] max-w-[350px]" : "aspect-[9/12]"}`}
-      >
-        <div className="absolute inset-0 bg-[#174d67]">
-          {product?.videoUrl ? (
-            <video
-              src={product.videoUrl}
-              muted
-              loop
-              autoPlay
-              playsInline
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="h-full w-full bg-[radial-gradient(circle_at_58%_30%,#d5b694,#547c81_46%,#0B3B60)]" />
-          )}
-        </div>
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,59,96,.5)_0%,transparent_38%,rgba(11,59,96,.2)_58%,#0B3B60_100%)]" />
-        <div
-          aria-hidden="true"
-          className="absolute right-0 top-0 size-40 bg-contain bg-right-top bg-no-repeat opacity-65"
-          style={{
-            backgroundImage: "url('/themes/mare-nostrum/azulejo-corner.svg')",
-          }}
-        />
-        <div
-          aria-hidden="true"
-          className="absolute left-2 top-[40%] h-[72px] w-[170px] bg-contain bg-left bg-no-repeat opacity-35"
-          style={{
-            backgroundImage: "url('/themes/mare-nostrum/school-of-fish.svg')",
-          }}
-        />
-        <header
-          className={`absolute inset-x-0 top-0 z-20 flex items-start justify-between bg-gradient-to-b from-[#0B3B60] via-[#0B3B60]/70 to-transparent ${large ? "px-6 pb-4 pt-2.5" : "px-3 pb-2 pt-1.5"}`}
-        >
-          <span className={large ? "" : "origin-top-left scale-50"}>
-            <MareNostrumHamburger />
-          </span>
-          <div className="min-w-0 flex-1 px-2">
-            {logoUrl ? (
-              <span
-                role="img"
-                aria-label={`Logo de ${restaurantName}`}
-                className={`mx-auto block bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)] ${large ? "h-10 w-40" : "h-6 w-24"}`}
-                style={{ backgroundImage: `url(${logoUrl})` }}
-              />
-            ) : (
-              <strong className="block truncate text-center font-[var(--font-mare-serif)] text-lg italic">
-                {restaurantName}
-              </strong>
-            )}
-          </div>
-          <span className={large ? "" : "origin-top-right scale-50"}>
-            <MareNostrumBasket />
-          </span>
-        </header>
-        <nav
-          className={`absolute inset-x-4 z-20 flex gap-2 overflow-hidden ${large ? "top-[58px]" : "top-[34px]"}`}
-        >
-          {[product?.category ?? "Arroces", "Mar", "Huerta"].map(
-            (category, index) => (
-              <span
-                key={category}
-                className={`min-w-0 flex-1 truncate rounded-full border px-2 py-1 text-center font-bold uppercase tracking-[.1em] ${index === 0 ? "border-[#F7F0DF] bg-[#F7F0DF] text-[#0B3B60]" : "border-[#78B7BC]/60 bg-[#0B3B60]/65 text-[#F7F0DF] opacity-55"} ${large ? "text-[9px]" : "text-[5px]"}`}
-              >
-                {index === 0 && (
-                  <span className="mr-1 inline-block size-1 rounded-full bg-[#E5745D]" />
-                )}
-                {category}
-              </span>
-            ),
-          )}
-        </nav>
-        <MareNostrumWave
-          compact={!large}
-          className={`absolute inset-x-0 z-20 opacity-80 ${large ? "top-[92px]" : "top-[55px]"}`}
-        />
-        <div
-          className={`absolute inset-x-0 bottom-0 z-10 ${large ? "p-6" : "p-3"}`}
-        >
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex min-w-0 items-center gap-2">
-              <MareNostrumSeal compact={!large} />
-              <span
-                className={`truncate font-bold uppercase tracking-[.16em] text-[#78B7BC] ${large ? "text-[9px]" : "text-[5px]"}`}
-              >
-                Costa · {product?.category ?? "Especialidades"}
-              </span>
-            </div>
-            <span className={large ? "" : "origin-right scale-50"}>
-              <MareNostrumAdd />
-            </span>
-          </div>
-          <p
-            className={`font-[var(--font-mare-serif)] font-semibold italic text-[#F7F0DF] ${large ? "mt-1 text-[32px] leading-8" : "text-[17px] leading-[18px]"}`}
-          >
-            {product?.name ?? "Producto destacado"}
-          </p>
-          <div
-            className={`flex items-end justify-between ${large ? "mt-2" : "mt-1"}`}
-          >
-            <strong
-              className={`font-[var(--font-mare-serif)] font-bold text-[#E5745D] ${large ? "text-[26px]" : "text-sm"}`}
-            >
-              {price}
-            </strong>
-            <span
-              className={`border-b border-[#F7F0DF]/50 italic text-[#F7F0DF]/80 ${large ? "pb-1 font-[var(--font-mare-serif)] text-xs" : "text-[5px]"}`}
-            >
-              sabor de nuestra costa
             </span>
           </div>
         </div>
@@ -638,7 +513,7 @@ export function AppearancePreferences({
                 Elige el estilo que mejor representa al restaurante.
               </p>
             </div>
-            <span className="text-xs text-slate-500">6 disponibles</span>
+            <span className="text-xs text-slate-500">5 disponibles</span>
           </div>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {Object.values(MENU_TEMPLATES).map((item) => {
