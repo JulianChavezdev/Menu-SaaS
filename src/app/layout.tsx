@@ -7,6 +7,8 @@ import {
   Barlow,
   Barlow_Condensed,
   Jost,
+  Noto_Sans_JP,
+  Noto_Serif_JP,
   Nunito,
   Playfair_Display,
   Righteous,
@@ -55,6 +57,18 @@ const cozySans = Nunito({
   display: "swap",
   variable: "--font-cozy-sans",
 });
+const tokyoSans = Noto_Sans_JP({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+  display: "swap",
+  variable: "--font-tokyo-sans",
+});
+const tokyoSerif = Noto_Serif_JP({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  display: "swap",
+  variable: "--font-tokyo-serif",
+});
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: { default: "Menuly", template: "%s | Menuly" },
@@ -86,7 +100,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="es"
-      className={`${noirSans.variable} ${noirSerif.variable} ${streetSans.variable} ${streetCondensed.variable} ${cozyDisplay.variable} ${cozySans.variable}`}
+      className={`${noirSans.variable} ${noirSerif.variable} ${streetSans.variable} ${streetCondensed.variable} ${cozyDisplay.variable} ${cozySans.variable} ${tokyoSans.variable} ${tokyoSerif.variable}`}
     >
       <head>
         {mediaOrigins.map((origin) => (

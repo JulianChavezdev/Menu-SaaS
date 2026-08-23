@@ -58,6 +58,12 @@ import {
   FigmaThemeHamburger,
   FigmaThemeProgress,
 } from "@/components/menu/figma-theme-icons";
+import {
+  TokyoPulseAdd,
+  TokyoPulseBasket,
+  TokyoPulseHamburger,
+  TokyoPulseTicker,
+} from "@/components/menu/tokyo-pulse";
 
 const copy = {
   es: {
@@ -237,8 +243,9 @@ export function VideoMenu({
   const noirLuxe = template.key === "noirluxe";
   const street = template.key === "street";
   const cozyCorner = template.key === "cozy-corner";
+  const tokyoPulse = template.key === "tokyo-pulse";
   const figmaTheme = street || cozyCorner;
-  const menuRailTheme = noirLuxe || figmaTheme;
+  const menuRailTheme = noirLuxe || figmaTheme || tokyoPulse;
   const figmaThemeKey = street ? "street" : "cozy-corner";
   const colors = template.colors;
   const themeStyle = {
@@ -255,7 +262,9 @@ export function VideoMenu({
         ? "var(--font-street-sans)"
         : cozyCorner
           ? "var(--font-cozy-sans)"
-          : undefined,
+          : tokyoPulse
+            ? "var(--font-tokyo-sans)"
+            : undefined,
   } as CSSProperties;
   const categoryGroups = [
     ...products
@@ -816,7 +825,9 @@ export function VideoMenu({
               ? "#FF3B30"
               : noirLuxe
                 ? "linear-gradient(to bottom,rgba(17,17,17,.4),rgba(17,17,17,.4),transparent)"
-                : "linear-gradient(to bottom,rgba(17,17,17,.68),rgba(17,17,17,.28),transparent)",
+                : tokyoPulse
+                  ? "linear-gradient(to bottom,rgba(26,13,20,.96),rgba(26,13,20,.72),transparent)"
+                  : "linear-gradient(to bottom,rgba(17,17,17,.68),rgba(17,17,17,.28),transparent)",
           }}
           className={`pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-start justify-between px-6 md:max-w-[402px] ${cozyCorner ? "h-[max(88px,calc(env(safe-area-inset-top)+52px))] pb-2 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]" : "pb-6 pt-[max(1rem,calc(env(safe-area-inset-top)+.25rem))]"}`}
         >
@@ -827,6 +838,8 @@ export function VideoMenu({
           >
             {noirLuxe ? (
               <NoirLuxeHamburgerIcon />
+            ) : tokyoPulse ? (
+              <TokyoPulseHamburger />
             ) : (
               <FigmaThemeHamburger theme={figmaThemeKey} />
             )}
@@ -848,6 +861,8 @@ export function VideoMenu({
           >
             {noirLuxe ? (
               <NoirLuxeBasketIcon />
+            ) : tokyoPulse ? (
+              <TokyoPulseBasket />
             ) : (
               <FigmaThemeBasket theme={figmaThemeKey} />
             )}
@@ -927,6 +942,16 @@ export function VideoMenu({
       {figmaTheme && (
         <div className="pointer-events-none fixed right-3 top-1/2 z-20 -translate-y-1/2 md:right-[calc((100vw-402px)/2+12px)]">
           <FigmaThemeProgress theme={figmaThemeKey} />
+        </div>
+      )}
+      {tokyoPulse && (
+        <div className="pointer-events-none fixed right-3 top-1/2 z-20 -translate-y-1/2 md:right-[calc((100vw-402px)/2+12px)]">
+          <span
+            style={{ writingMode: "vertical-rl" }}
+            className="border-l border-[#7CC7A1] pl-2 font-[var(--font-tokyo-sans)] text-[9px] font-bold tracking-[.3em] text-[#FFF1D7]"
+          >
+            おすすめ
+          </span>
         </div>
       )}
 
@@ -1372,7 +1397,7 @@ export function VideoMenu({
               data-index={index}
               id={`product-${product.id}`}
               key={product.id}
-              className={`relative isolate flex h-svh snap-start snap-always items-end overflow-hidden bg-[var(--theme-bg)] ${noirLuxe ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-40 [font-family:var(--font-noir-sans)]" : figmaTheme ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-44" : "px-4 pb-[var(--controls-clearance)] pt-24"}`}
+              className={`relative isolate flex h-svh snap-start snap-always items-end overflow-hidden bg-[var(--theme-bg)] ${noirLuxe ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-40 [font-family:var(--font-noir-sans)]" : figmaTheme || tokyoPulse ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-44" : "px-4 pb-[var(--controls-clearance)] pt-24"}`}
             >
               <div
                 style={{ borderColor: colors.frame }}
@@ -1404,7 +1429,9 @@ export function VideoMenu({
                         ? "linear-gradient(180deg,rgba(17,17,17,.52) 0%,rgba(17,17,17,.04) 38%,rgba(17,17,17,.12) 52%,#111111 100%)"
                         : cozyCorner
                           ? "linear-gradient(180deg,rgba(17,17,17,.2) 17%,rgba(17,17,17,.02) 42%,rgba(17,17,17,.08) 58%,rgba(17,17,17,.94) 100%)"
-                          : `linear-gradient(180deg,${colors.background}66 0%,transparent 32%,transparent 45%,${colors.background}f2 100%)`,
+                          : tokyoPulse
+                            ? "linear-gradient(180deg,rgba(26,13,20,.58) 0%,rgba(26,13,20,.03) 38%,rgba(26,13,20,.25) 58%,#1A0D14 100%)"
+                            : `linear-gradient(180deg,${colors.background}66 0%,transparent 32%,transparent 45%,${colors.background}f2 100%)`,
                   }}
                 />
               )}
@@ -1428,7 +1455,120 @@ export function VideoMenu({
                 data-product-details
                 className={`relative z-10 w-full overflow-y-auto overscroll-contain pb-0.5 text-shadow-lg [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${noirLuxe ? "max-h-[calc(100dvh-10.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))]" : "max-h-[calc(100dvh-11rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))]"}`}
               >
-                {figmaTheme ? (
+                {tokyoPulse ? (
+                  <>
+                    <div className="flex min-h-11 items-center justify-between gap-4">
+                      <span className="border-l-4 border-[#FF5A36] pl-2 font-[var(--font-tokyo-sans)] text-[9px] font-bold uppercase tracking-[.2em] text-[#7CC7A1]">
+                        {product.is_featured ? text.featured : categoryName}
+                      </span>
+                      <button
+                        aria-label={`${text.add} ${product.name}`}
+                        title={text.add}
+                        onClick={() => addProduct(product.id)}
+                        className="shrink-0 transition active:scale-90"
+                      >
+                        <TokyoPulseAdd />
+                      </button>
+                    </div>
+                    <h2 className="mt-1 max-w-[20rem] font-[var(--font-tokyo-serif)] text-[30px] font-semibold leading-[36px] text-[#FFF1D7]">
+                      {translatedField(product, "name", language, product.name)}
+                    </h2>
+                    {(description ||
+                      allergens.length > 0 ||
+                      recommendations.length > 0) && (
+                      <details
+                        onToggle={(event) =>
+                          toggleDetails(product.id, event.currentTarget)
+                        }
+                        className="group mt-2 text-[#FFF1D7]"
+                      >
+                        <summary className="flex cursor-pointer list-none items-center gap-1 font-[var(--font-tokyo-sans)] text-[10px] font-bold uppercase tracking-[.16em] text-[#7CC7A1]">
+                          {text.description}
+                          <ChevronDown
+                            size={12}
+                            className="transition-transform group-open:rotate-180"
+                          />
+                        </summary>
+                        {description && (
+                          <p className="mt-1 text-[11px] leading-4 text-[#FFF1D7]/85">
+                            {description}
+                          </p>
+                        )}
+                        {allergens.length > 0 && (
+                          <div className="mt-2 border-t border-[#7CC7A1]/45 pt-2">
+                            <p className="flex items-center gap-1 text-[9px] font-bold uppercase tracking-[.12em] text-[#FF5A36]">
+                              <TriangleAlert size={11} />
+                              {text.allergens} · {allergens.length}
+                            </p>
+                            <div className="mt-1 flex flex-wrap gap-1">
+                              {allergens.map((code) => (
+                                <span
+                                  key={code}
+                                  className="border border-[#7CC7A1]/60 bg-[#1A0D14]/65 px-2 py-0.5 text-[9px] font-bold"
+                                >
+                                  {allergenLabel(code, language)}
+                                </span>
+                              ))}
+                            </div>
+                            <p className="mt-1 text-[9px] leading-3 text-[#FFF1D7]/55">
+                              {text.allergenNotice}
+                            </p>
+                          </div>
+                        )}
+                        {recommendations.length > 0 && (
+                          <div className="mt-2 border-t border-[#7CC7A1]/45 pt-2">
+                            <p className="text-[9px] font-bold uppercase tracking-[.12em] text-[#7CC7A1]">
+                              {text.pairings}
+                            </p>
+                            <div className="mt-1 grid gap-1">
+                              {recommendations.map((item) => {
+                                const added = catalogAdded === item.id;
+                                return (
+                                  <div
+                                    key={item.id}
+                                    className="flex items-center gap-2 bg-[#1A0D14]/70 p-1.5"
+                                  >
+                                    <span className="min-w-0 flex-1 truncate text-[10px] font-semibold">
+                                      {translatedField(
+                                        item,
+                                        "name",
+                                        language,
+                                        item.name,
+                                      )}
+                                    </span>
+                                    <strong className="text-[10px] tabular-nums text-[#FF5A36]">
+                                      {currency.format(item.price_cents / 100)}
+                                    </strong>
+                                    <button
+                                      type="button"
+                                      aria-label={`${text.add} ${item.name}`}
+                                      onClick={() => addRecommendation(item.id)}
+                                      className={`grid size-7 place-items-center bg-[#FF5A36] text-[#1A0D14] transition ${added ? "scale-110" : "active:scale-90"}`}
+                                    >
+                                      {added ? (
+                                        <Check size={14} />
+                                      ) : (
+                                        <Plus size={13} />
+                                      )}
+                                    </button>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        )}
+                      </details>
+                    )}
+                    <div className="mt-3 flex items-end justify-between gap-4">
+                      <strong className="border-b-2 border-[#FF5A36] pb-1 font-[var(--font-tokyo-serif)] text-[26px] font-bold tabular-nums text-[#FF5A36]">
+                        {currency.format(product.price_cents / 100)}
+                      </strong>
+                      <span className="pb-1 font-[var(--font-tokyo-sans)] text-[8px] font-bold uppercase tracking-[.2em] text-[#7CC7A1]">
+                        旬 · seasonal
+                      </span>
+                    </div>
+                  </>
+                ) : figmaTheme ? (
                   <>
                     <h2
                       className={`max-w-[21rem] text-[24px] leading-6 ${street ? "font-[var(--font-street-sans)] font-bold tracking-[2px] text-[#FFD600]" : "font-[var(--font-cozy-display)] font-normal tracking-[1.92px] text-[#FF3B30]"}`}
@@ -1854,7 +1994,47 @@ export function VideoMenu({
         })}
       </div>
 
-      {figmaTheme ? (
+      {tokyoPulse ? (
+        <>
+          <TokyoPulseTicker
+            items={categoryGroups.map((group) => group.name)}
+            className="fixed left-1/2 top-[max(72px,calc(env(safe-area-inset-top)+56px))] z-40 w-full max-w-[430px] -translate-x-1/2 md:max-w-[402px]"
+          />
+          <nav
+            ref={categoryNavRef}
+            aria-label={text.categories}
+            className="fixed left-1/2 top-[max(106px,calc(env(safe-area-inset-top)+90px))] z-40 flex w-[calc(100%-2rem)] max-w-[370px] -translate-x-1/2 touch-pan-x snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain [mask-image:linear-gradient(to_right,transparent,black_9%,black_91%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
+            <span
+              aria-hidden="true"
+              className="w-[calc((100%-1rem)/3)] shrink-0"
+            />
+            {categoryGroups.map((group) => {
+              const selected = activeCategory === group.id;
+              return (
+                <button
+                  ref={(element) => {
+                    if (element)
+                      categoryButtonRefs.current.set(group.id, element);
+                    else categoryButtonRefs.current.delete(group.id);
+                  }}
+                  key={group.id}
+                  type="button"
+                  aria-current={selected ? "true" : undefined}
+                  onClick={() => openCategory(group.id)}
+                  className={`w-[calc((100%-1rem)/3)] shrink-0 snap-center truncate border px-2 py-1.5 font-[var(--font-tokyo-sans)] text-[10px] font-bold uppercase tracking-[.1em] transition duration-300 ${selected ? "border-[#FF5A36] bg-[#FF5A36] text-[#1A0D14]" : "border-[#7CC7A1]/65 bg-[#1A0D14]/75 text-[#FFF1D7] opacity-55"}`}
+                >
+                  {group.name}
+                </button>
+              );
+            })}
+            <span
+              aria-hidden="true"
+              className="w-[calc((100%-1rem)/3)] shrink-0"
+            />
+          </nav>
+        </>
+      ) : figmaTheme ? (
         <nav
           ref={categoryNavRef}
           aria-label={text.categories}

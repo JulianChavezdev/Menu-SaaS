@@ -27,6 +27,12 @@ import {
   FigmaThemeBasket,
   FigmaThemeHamburger,
 } from "@/components/menu/figma-theme-icons";
+import {
+  TokyoPulseAdd,
+  TokyoPulseBasket,
+  TokyoPulseHamburger,
+  TokyoPulseTicker,
+} from "@/components/menu/tokyo-pulse";
 
 type PreviewProduct = {
   name: string;
@@ -130,17 +136,17 @@ function TemplatePreview({
             </span>
           </div>
           <p
-              className={`text-[#C9A96E] ${large ? `mt-2 ${NOIRLUXE_TOKENS.typography.dishName}` : "mt-1 font-[var(--font-noir-serif)] text-base font-normal italic leading-[18px]"}`}
+            className={`text-[#C9A96E] ${large ? `mt-2 ${NOIRLUXE_TOKENS.typography.dishName}` : "mt-1 font-[var(--font-noir-serif)] text-base font-normal italic leading-[18px]"}`}
           >
             {product?.name ?? "Producto destacado"}
           </p>
           <p
-              className={`text-[#F0E9DB] ${large ? `mt-1 ${NOIRLUXE_TOKENS.typography.body}` : "mt-0.5 text-[6px] font-light leading-3"}`}
+            className={`text-[#F0E9DB] ${large ? `mt-1 ${NOIRLUXE_TOKENS.typography.body}` : "mt-0.5 text-[6px] font-light leading-3"}`}
           >
             Una propuesta especial de nuestra cocina.
           </p>
           <div
-              className={`flex items-center justify-between ${large ? "mt-3" : "mt-1"}`}
+            className={`flex items-center justify-between ${large ? "mt-3" : "mt-1"}`}
           >
             <strong
               className={`text-[#C9A96E] ${large ? NOIRLUXE_TOKENS.typography.price : "font-[var(--font-noir-serif)] text-sm font-normal leading-4"}`}
@@ -153,6 +159,105 @@ function TemplatePreview({
               }
             >
               <NoirLuxeProgress active={0} total={3} />
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  if (kind === "tokyo-pulse")
+    return (
+      <div
+        style={{ fontFamily: "var(--font-tokyo-sans)" }}
+        className={`relative isolate mx-auto w-full overflow-hidden bg-[#1A0D14] text-[#FFF1D7] shadow-2xl ${large ? "h-[min(70dvh,620px)] max-w-[350px]" : "aspect-[9/12]"}`}
+      >
+        <div className="absolute inset-0 bg-[#25141d]">
+          {product?.videoUrl ? (
+            <video
+              src={product.videoUrl}
+              muted
+              loop
+              autoPlay
+              playsInline
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="h-full w-full bg-[radial-gradient(circle_at_55%_36%,#b86f5b,#443029_45%,#1A0D14)]" />
+          )}
+        </div>
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(26,13,20,.58)_0%,transparent_38%,rgba(26,13,20,.3)_58%,#1A0D14_100%)]" />
+        <header
+          className={`absolute inset-x-0 top-0 z-20 flex items-start justify-between bg-gradient-to-b from-[#1A0D14] via-[#1A0D14]/75 to-transparent ${large ? "px-6 pb-6 pt-4" : "px-3 pb-4 pt-2"}`}
+        >
+          <span className={large ? "" : "origin-top-left scale-50"}>
+            <TokyoPulseHamburger />
+          </span>
+          <div className="min-w-0 flex-1 px-2">
+            {logoUrl ? (
+              <span
+                role="img"
+                aria-label={`Logo de ${restaurantName}`}
+                className={`mx-auto block bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)] ${large ? "h-12 w-44" : "h-7 w-28"}`}
+                style={{ backgroundImage: `url(${logoUrl})` }}
+              />
+            ) : (
+              <strong className="block truncate text-center font-[var(--font-tokyo-serif)]">
+                {restaurantName}
+              </strong>
+            )}
+          </div>
+          <span className={large ? "" : "origin-top-right scale-50"}>
+            <TokyoPulseBasket />
+          </span>
+        </header>
+        <TokyoPulseTicker
+          items={[product?.category ?? "Sushi", "Ramen", "Izakaya"]}
+          compact={!large}
+          className={`absolute inset-x-0 z-20 ${large ? "top-[72px]" : "top-[38px]"}`}
+        />
+        <nav
+          className={`absolute inset-x-4 z-20 flex gap-2 overflow-hidden ${large ? "top-[108px]" : "top-[64px]"}`}
+        >
+          {[product?.category ?? "Sushi", "Ramen", "Izakaya"].map(
+            (category, index) => (
+              <span
+                key={category}
+                className={`min-w-0 flex-1 truncate border px-2 py-1 text-center font-bold uppercase tracking-[.1em] ${index === 0 ? "border-[#FF5A36] bg-[#FF5A36] text-[#1A0D14]" : "border-[#7CC7A1]/65 bg-[#1A0D14]/70 text-[#FFF1D7] opacity-60"} ${large ? "text-[9px]" : "text-[5px]"}`}
+              >
+                {category}
+              </span>
+            ),
+          )}
+        </nav>
+        <div
+          className={`absolute inset-x-0 bottom-0 z-10 ${large ? "p-6" : "p-3"}`}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <span
+              className={`border-l-4 border-[#FF5A36] pl-2 font-bold uppercase tracking-[.18em] text-[#7CC7A1] ${large ? "text-[9px]" : "text-[5px]"}`}
+            >
+              {product?.category ?? "Especialidades"}
+            </span>
+            <span className={large ? "" : "origin-right scale-50"}>
+              <TokyoPulseAdd />
+            </span>
+          </div>
+          <p
+            className={`font-[var(--font-tokyo-serif)] font-semibold text-[#FFF1D7] ${large ? "mt-1 text-[30px] leading-9" : "mt-0.5 text-base leading-[18px]"}`}
+          >
+            {product?.name ?? "Producto destacado"}
+          </p>
+          <div
+            className={`flex items-end justify-between ${large ? "mt-3" : "mt-1"}`}
+          >
+            <strong
+              className={`border-b border-[#FF5A36] font-[var(--font-tokyo-serif)] text-[#FF5A36] ${large ? "pb-1 text-2xl" : "text-sm"}`}
+            >
+              {price}
+            </strong>
+            <span
+              className={`font-bold uppercase tracking-[.2em] text-[#7CC7A1] ${large ? "text-[8px]" : "text-[4px]"}`}
+            >
+              旬 · seasonal
             </span>
           </div>
         </div>
@@ -408,7 +513,7 @@ export function AppearancePreferences({
                 Elige el estilo que mejor representa al restaurante.
               </p>
             </div>
-            <span className="text-xs text-slate-500">4 disponibles</span>
+            <span className="text-xs text-slate-500">5 disponibles</span>
           </div>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
             {Object.values(MENU_TEMPLATES).map((item) => {

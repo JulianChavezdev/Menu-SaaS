@@ -18,7 +18,12 @@ export function ThemeVectors({
     "aria-hidden": true,
   };
   if (motif === "cinema") return null;
-  if (motif === "noirluxe" || motif === "street" || motif === "cozy-corner")
+  if (
+    motif === "noirluxe" ||
+    motif === "street" ||
+    motif === "cozy-corner" ||
+    motif === "tokyo-pulse"
+  )
     return null;
   if (motif === "mediterranean")
     return (

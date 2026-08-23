@@ -10,7 +10,8 @@ export type TemplateMotif =
   | "neon"
   | "noirluxe"
   | "street"
-  | "cozy-corner";
+  | "cozy-corner"
+  | "tokyo-pulse";
 
 type MenuTemplate = {
   key: string;
@@ -97,12 +98,30 @@ const cozyCornerTemplate: MenuTemplate & { key: "cozy-corner" } = {
     frame: "#FF3B30",
   },
 };
+const tokyoPulseTemplate: MenuTemplate & { key: "tokyo-pulse" } = {
+  key: "tokyo-pulse",
+  name: "Tokyo Pulse",
+  description:
+    "Ritmo de izakaya contemporánea, banner animado y contraste editorial para cocina asiática.",
+  tier: "premium",
+  layout: "fullscreen",
+  motif: "tokyo-pulse",
+  colors: {
+    background: "#1A0D14",
+    panel: "#1A0D14",
+    nav: "#1A0D14",
+    accent: "#FF5A36",
+    accent2: "#FFF1D7",
+    frame: "#7CC7A1",
+  },
+};
 
 export const MENU_TEMPLATES = {
   cinematic: cinematicTemplate,
   noirluxe: noirLuxeTemplate,
   street: streetTemplate,
   "cozy-corner": cozyCornerTemplate,
+  "tokyo-pulse": tokyoPulseTemplate,
 } as const;
 
 export type MenuTemplateKey = keyof typeof MENU_TEMPLATES;
