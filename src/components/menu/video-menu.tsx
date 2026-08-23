@@ -1552,7 +1552,7 @@ export function VideoMenu({
                   </>
                 ) : noirLuxe ? (
                   <>
-                    <div className="flex min-h-11 items-center justify-between gap-4">
+                    <div className="flex min-h-9 items-center justify-between gap-4">
                       <span
                         className={`bg-[#111111]/40 px-2 py-1 uppercase text-white ${NOIRLUXE_TOKENS.typography.badge}`}
                       >
@@ -1569,13 +1569,13 @@ export function VideoMenu({
                     </div>
                     <h2
                       style={{ color: colors.accent }}
-                      className={`mt-5 max-w-[21rem] ${NOIRLUXE_TOKENS.typography.dishName}`}
+                      className={`mt-3 max-w-[21rem] ${NOIRLUXE_TOKENS.typography.dishName}`}
                     >
                       {translatedField(product, "name", language, product.name)}
                     </h2>
                     {description && (
                       <p
-                        className={`mt-2 max-w-[22rem] text-[#F0E9DB] ${NOIRLUXE_TOKENS.typography.body}`}
+                        className={`mt-1 max-w-[22rem] text-[#F0E9DB] ${NOIRLUXE_TOKENS.typography.body}`}
                       >
                         {description}
                       </p>
@@ -1585,7 +1585,7 @@ export function VideoMenu({
                         onToggle={(event) =>
                           toggleDetails(product.id, event.currentTarget)
                         }
-                        className="group mt-2"
+                        className="group mt-1"
                       >
                         <summary
                           className={`flex cursor-pointer list-none items-center gap-1 text-[#F0E9DB] ${NOIRLUXE_TOKENS.typography.label}`}
@@ -1678,7 +1678,7 @@ export function VideoMenu({
                         )}
                       </details>
                     )}
-                    <div className="mt-5 flex items-center justify-between">
+                    <div className="mt-3 flex items-center justify-between">
                       <strong
                         style={{ color: colors.accent }}
                         className={`px-2 tabular-nums ${NOIRLUXE_TOKENS.typography.price}`}

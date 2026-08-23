@@ -130,17 +130,17 @@ function TemplatePreview({
             </span>
           </div>
           <p
-            className={`text-[#C9A96E] ${large ? `mt-4 ${NOIRLUXE_TOKENS.typography.dishName}` : "mt-2 font-[var(--font-noir-serif)] text-base font-normal italic leading-[18px]"}`}
+              className={`text-[#C9A96E] ${large ? `mt-2 ${NOIRLUXE_TOKENS.typography.dishName}` : "mt-1 font-[var(--font-noir-serif)] text-base font-normal italic leading-[18px]"}`}
           >
             {product?.name ?? "Producto destacado"}
           </p>
           <p
-            className={`text-[#F0E9DB] ${large ? `mt-2 ${NOIRLUXE_TOKENS.typography.body}` : "mt-1 text-[6px] font-light leading-3"}`}
+              className={`text-[#F0E9DB] ${large ? `mt-1 ${NOIRLUXE_TOKENS.typography.body}` : "mt-0.5 text-[6px] font-light leading-3"}`}
           >
             Una propuesta especial de nuestra cocina.
           </p>
           <div
-            className={`flex items-center justify-between ${large ? "mt-5" : "mt-2"}`}
+              className={`flex items-center justify-between ${large ? "mt-3" : "mt-1"}`}
           >
             <strong
               className={`text-[#C9A96E] ${large ? NOIRLUXE_TOKENS.typography.price : "font-[var(--font-noir-serif)] text-sm font-normal leading-4"}`}
