@@ -89,7 +89,7 @@ function TemplatePreview({
               <span
                 role="img"
                 aria-label={`Logo de ${restaurantName}`}
-                className={`mx-auto block bg-contain bg-center bg-no-repeat ${large ? "h-8 w-28" : "h-5 w-16"}`}
+                className={`mx-auto block bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)] ${large ? "h-12 w-40" : "h-7 w-24"}`}
                 style={{ backgroundImage: `url(${logoUrl})` }}
               />
             )}
@@ -189,11 +189,11 @@ function TemplatePreview({
         />
         {!street && (
           <div
-            className={`absolute inset-x-0 bottom-0 border-y-[6px] border-dashed border-[#FF3B30] ${large ? "top-[84px]" : "top-[52px]"}`}
+            className={`absolute inset-x-0 bottom-0 border-y-[6px] border-dashed border-[#FF3B30] ${large ? "top-[66px]" : "top-[42px]"}`}
           />
         )}
         <header
-          className={`absolute inset-x-0 top-0 z-10 flex items-center justify-between px-5 ${street ? (large ? "pt-8" : "pt-3") : large ? "h-[84px] bg-[#FF3B30]" : "h-[52px] bg-[#FF3B30]"}`}
+          className={`absolute inset-x-0 top-0 z-10 flex items-center justify-between px-5 ${street ? (large ? "pt-8" : "pt-3") : large ? "h-[66px] bg-[#FF3B30]" : "h-[42px] bg-[#FF3B30]"}`}
         >
           <span className={large ? "" : "scale-75"}>
             <FigmaThemeHamburger theme={iconTheme} />
@@ -203,7 +203,7 @@ function TemplatePreview({
               <span
                 role="img"
                 aria-label={`Logo de ${restaurantName}`}
-                className={`mx-auto block bg-contain bg-center bg-no-repeat ${large ? "h-9 w-36" : "h-5 w-20"}`}
+                className={`mx-auto block bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)] ${large ? "h-12 w-44" : "h-7 w-28"}`}
                 style={{ backgroundImage: `url(${logoUrl})` }}
               />
             ) : (
@@ -219,7 +219,7 @@ function TemplatePreview({
           </span>
         </header>
         <nav
-          className={`absolute inset-x-4 z-10 flex gap-2 overflow-hidden ${street ? (large ? "top-24" : "top-12") : large ? "top-[96px]" : "top-[62px]"}`}
+          className={`absolute inset-x-4 z-10 flex gap-2 overflow-hidden ${street ? (large ? "top-24" : "top-12") : large ? "top-[78px]" : "top-[50px]"}`}
         >
           {[product?.category ?? "Entrantes", "Principales", "Postres"].map(
             (category, index) => (
@@ -300,7 +300,7 @@ function TemplatePreview({
           <span
             role="img"
             aria-label={`Logo de ${restaurantName}`}
-            className="h-8 w-24 bg-contain bg-center bg-no-repeat drop-shadow-lg"
+            className="h-10 w-36 bg-contain bg-center bg-no-repeat drop-shadow-[0_3px_12px_rgba(0,0,0,.9)]"
             style={{ backgroundImage: `url(${logoUrl})` }}
           />
         ) : (
