@@ -6,6 +6,8 @@ import { SignOut } from "@/components/dashboard/sign-out";
 import { DashboardNavigation } from "@/components/dashboard/dashboard-navigation";
 import { isSuperadminUser } from "@/lib/superadmin";
 import { BrandLogo } from "@/components/brand/brand-logo";
+import { redirect } from "next/navigation";
+import { isOperationalRole, memberHome } from "@/lib/member-roles";
 
 export const metadata: Metadata = {
   title: "Panel",
@@ -22,9 +24,9 @@ const links = [
   ["Suscripción", "/dashboard/billing"],
 ] as const;
 const orderingLinks = [
-  ["Comandero", "/dashboard/pos"],
+  ["Comandero", "/operaciones/comandero"],
   ["Mesas", "/dashboard/tables"],
-  ["Cocina", "/dashboard/kitchen"],
+  ["Cocina", "/operaciones/cocina"],
   ["Historial", "/dashboard/orders"],
 ] as const;
 
@@ -33,7 +35,8 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { supabase, user, restaurant } = await activeRestaurant();
+  const { supabase, user, restaurant, member } = await activeRestaurant();
+  if (isOperationalRole(member.role)) redirect(memberHome(member.role));
   const { data: members } = await supabase
     .from("restaurant_members")
     .select("restaurant_id,restaurants(id,name)")

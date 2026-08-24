@@ -2,14 +2,21 @@
 
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { activeRestaurant } from "@/lib/permissions";
 import { canTransitionOrder, orderStatusSchema } from "@/lib/table-ordering";
+import { canUseKitchen } from "@/lib/member-roles";
+import { getSupabaseSecretKey } from "@/lib/supabase/admin-env";
 
 const uuid = z.string().uuid();
 const tableName = z.string().trim().min(1).max(40);
 
-async function orderingRestaurant() {
+async function orderingRestaurant(operation: "manage" | "kitchen" = "manage") {
   const context = await activeRestaurant();
+  const allowed = operation === "kitchen"
+    ? canUseKitchen(context.member.role)
+    : ["owner", "admin", "editor"].includes(context.member.role);
+  if (!allowed) throw new Error("No tienes permisos para realizar esta acción.");
   if (
     !context.restaurant.ordering_enabled ||
     !["active", "trialing"].includes(context.restaurant.subscription_status)
@@ -22,6 +29,8 @@ function refresh() {
   revalidatePath("/dashboard/tables");
   revalidatePath("/dashboard/pos");
   revalidatePath("/dashboard/kitchen");
+  revalidatePath("/operaciones/comandero");
+  revalidatePath("/operaciones/cocina");
 }
 
 export async function createDiningTable(form: FormData) {
@@ -76,8 +85,13 @@ export async function transitionDiningOrder(
   const order = uuid.safeParse(orderId);
   const next = orderStatusSchema.safeParse(nextStatus);
   if (!order.success || !next.success) throw new Error("Pedido no válido.");
-  const { supabase, restaurant } = await orderingRestaurant();
-  const { data: current, error: readError } = await supabase
+  const { restaurant } = await orderingRestaurant("kitchen");
+  const key = getSupabaseSecretKey();
+  if (!key) throw new Error("Cocina no está disponible.");
+  const admin = createAdminClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  const { data: current, error: readError } = await admin
     .from("dining_orders")
     .select("status,table_session_id")
     .eq("id", order.data)
@@ -98,7 +112,7 @@ export async function transitionDiningOrder(
           : next.data === "delivered"
             ? { delivered_at: now }
             : {};
-  const { data: updated, error } = await supabase
+  const { data: updated, error } = await admin
     .from("dining_orders")
     .update({ status: next.data, ...timestamps })
     .eq("id", order.data)

@@ -14,19 +14,20 @@ export default function Login() {
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
   const router = useRouter();
-  useEffect(()=>{const saved=localStorage.getItem("carta-video:login-email");if(saved)setEmail(saved);void createClient().auth.getUser().then(({data})=>{if(data.user)router.replace("/dashboard")})},[router]);
+  useEffect(()=>{const saved=localStorage.getItem("carta-video:login-email");if(saved)setEmail(saved);void createClient().auth.getUser().then(({data})=>{if(data.user)router.replace("/access")})},[router]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if(pending)return;
     setPending(true);
     setError("");
+    const loginEmail = email.includes("@") ? email.trim() : `${email.trim().toLowerCase()}@staff.menuly.es`;
     const { error } = await createClient().auth.signInWithPassword({
-      email,
+      email: loginEmail,
       password,
     });
     if (error){setError(error.message);setPending(false)}
-    else {if(rememberEmail)localStorage.setItem("carta-video:login-email",email.trim());else localStorage.removeItem("carta-video:login-email");router.replace("/dashboard");router.refresh()}
+    else {if(rememberEmail)localStorage.setItem("carta-video:login-email",email.trim());else localStorage.removeItem("carta-video:login-email");router.replace("/access");router.refresh()}
   }
 
   return (
@@ -55,16 +56,16 @@ export default function Login() {
         {/* Inputs Estilizados */}
         <div className="space-y-5">
           <label className="block text-sm font-medium text-slate-700">
-            Correo electrónico
+            Correo o usuario
             <input 
               required 
               id="login-email"
               name="email"
-              type="email" 
+              type="text"
               autoComplete="username"
               value={email} 
               onChange={e => setEmail(e.target.value)} 
-              placeholder="tu@restaurante.com"
+              placeholder="tu@restaurante.com o camarero1"
               className="mt-2 w-full rounded-xl border border-stone-300 bg-stone-100 px-4 py-3 text-slate-950 placeholder-slate-400 transition-all duration-200 hover:border-stone-400 focus:border-orange-500 focus:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-orange-500/20"
             />
           </label>
@@ -94,7 +95,7 @@ export default function Login() {
 
         {/* Botón de Acción Principal */}
         <button disabled={pending} className="mt-6 w-full rounded-xl bg-orange-600 py-3.5 font-semibold text-white shadow-lg  transition-all duration-200 hover:bg-orange-600  focus:outline-none focus:ring-2 focus:ring-orange-500/50 disabled:cursor-wait disabled:opacity-60">
-          {pending?"Accediendo…":"Entrar al panel"}
+          {pending?"Accediendo…":"Entrar en Menuly"}
         </button>
 
         {/* Links Inferiores */}

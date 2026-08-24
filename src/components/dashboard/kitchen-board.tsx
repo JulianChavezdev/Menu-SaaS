@@ -6,7 +6,6 @@ import {
   ArrowLeft,
   BellRing,
   Check,
-  ChefHat,
   Clock3,
   MessageSquareText,
   MonitorCheck,
@@ -15,6 +14,7 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { transitionDiningOrder } from "@/app/dashboard/ordering/actions";
+import { SignOut } from "@/components/dashboard/sign-out";
 import type { OrderStatus } from "@/lib/table-ordering";
 import type { KitchenOrder } from "@/lib/kitchen-orders";
 
@@ -22,16 +22,10 @@ export type { KitchenOrder } from "@/lib/kitchen-orders";
 
 const columns = [
   {
-    key: "pending",
-    statuses: ["pending"] as OrderStatus[],
+    key: "new",
+    statuses: ["pending", "accepted", "preparing"] as OrderStatus[],
     title: "Nuevos",
     tone: "border-orange-400",
-  },
-  {
-    key: "working",
-    statuses: ["accepted", "preparing"] as OrderStatus[],
-    title: "En preparación",
-    tone: "border-amber-400",
   },
   {
     key: "ready",
@@ -55,13 +49,15 @@ export function KitchenBoard({
   restaurantId,
   currency,
   initialOrders,
+  isManager,
 }: {
   restaurantId: string;
   currency: string;
   initialOrders: KitchenOrder[];
+  isManager: boolean;
 }) {
   const [orders, setOrders] = useState(initialOrders);
-  const [activeColumn, setActiveColumn] = useState<ColumnKey>("pending");
+  const [activeColumn, setActiveColumn] = useState<ColumnKey>("new");
   const [lastSync, setLastSync] = useState(() => new Date());
   const [operationsEnabled, setOperationsEnabled] = useState(false);
   const [screenAwake, setScreenAwake] = useState(false);
@@ -245,22 +241,22 @@ export function KitchenBoard({
   }
 
   return (
-    <section className="min-h-[100dvh] bg-[#eef1f5] text-slate-950">
-      <header className="sticky top-0 z-40 border-b-4 border-orange-500 bg-slate-950 px-3 pb-3 pt-[max(.75rem,env(safe-area-inset-top))] text-white shadow-md md:px-6">
+    <section className="min-h-[100dvh] bg-[#f4f1eb] text-slate-950">
+      <header className="sticky top-0 z-40 border-b-4 border-orange-600 bg-white px-3 pb-3 pt-[max(.75rem,env(safe-area-inset-top))] text-slate-950 shadow-sm md:px-6">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
-            <Link
+            {isManager && <Link
               href="/dashboard"
               aria-label="Volver al panel"
-              className="grid size-10 shrink-0 place-items-center rounded-lg bg-white/10 active:scale-95"
+              className="grid size-10 shrink-0 place-items-center rounded-lg bg-stone-100 active:scale-95"
             >
               <ArrowLeft size={20} />
-            </Link>
+            </Link>}
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[.15em] text-orange-300">
+              <p className="text-[10px] font-bold uppercase tracking-[.15em] text-orange-700">
                 Menuly Comandas
               </p>
-              <h1 className="text-lg font-black uppercase tracking-tight !text-white">
+              <h1 className="text-lg font-black uppercase tracking-tight text-slate-950">
                 Cocina
               </h1>
             </div>
@@ -269,7 +265,7 @@ export function KitchenBoard({
             <button
               type="button"
               onClick={() => void refreshOrders(true)}
-              className="grid size-10 place-items-center rounded-lg bg-white/10 text-slate-200 active:scale-95"
+              className="grid size-10 place-items-center rounded-lg bg-stone-100 text-slate-700 active:scale-95"
               aria-label="Actualizar comandas"
             >
               <RefreshCw
@@ -277,16 +273,16 @@ export function KitchenBoard({
                 className={isPending ? "animate-spin" : ""}
               />
             </button>
-            <Link
-              href="/dashboard/pos"
-              className="inline-flex min-h-10 items-center rounded-lg bg-white/10 px-3 text-xs font-black"
+            {isManager && <Link
+              href="/operaciones/comandero"
+              className="inline-flex min-h-10 items-center rounded-lg bg-stone-100 px-3 text-xs font-black"
             >
               Comandero
-            </Link>
+            </Link>}
             <button
               type="button"
               onClick={() => void enableOperations()}
-              className={`grid size-10 place-items-center rounded-lg ${operationsEnabled ? "bg-emerald-500 text-slate-950" : "bg-orange-500 text-slate-950"}`}
+              className={`grid size-10 place-items-center rounded-lg ${operationsEnabled ? "bg-emerald-600 text-white" : "bg-orange-600 text-white"}`}
               aria-label={
                 operationsEnabled ? "Modo cocina activo" : "Activar modo cocina"
               }
@@ -297,6 +293,7 @@ export function KitchenBoard({
                 <BellRing size={19} />
               )}
             </button>
+            {!isManager && <SignOut compact />}
           </div>
         </div>
       </header>
@@ -321,7 +318,7 @@ export function KitchenBoard({
 
         <nav
           aria-label="Estados de cocina"
-          className="mt-4 grid grid-cols-3 gap-2 lg:hidden"
+          className="mt-4 grid grid-cols-2 gap-2 lg:hidden"
         >
           {columns.map((column) => {
             const count = orders.filter((order) =>
@@ -332,7 +329,7 @@ export function KitchenBoard({
                 key={column.key}
                 type="button"
                 onClick={() => setActiveColumn(column.key)}
-                className={`rounded-xl border px-2 py-3 text-xs font-black ${activeColumn === column.key ? "border-slate-950 bg-slate-950 text-white" : "border-slate-200 bg-white text-slate-600"}`}
+                className={`rounded-xl border px-2 py-3 text-xs font-black ${activeColumn === column.key ? "border-orange-600 bg-orange-600 text-white" : "border-slate-200 bg-white text-slate-600"}`}
               >
                 <span className="block text-lg">{count}</span>
                 {column.title}
@@ -356,7 +353,7 @@ export function KitchenBoard({
           </p>
         )}
 
-        <div className="mt-4 grid min-h-[60vh] gap-4 lg:grid-cols-3">
+        <div className="mt-4 grid min-h-[60vh] gap-4 lg:grid-cols-2">
           {columns.map((column) => {
             const visible = orders.filter((order) =>
               column.statuses.includes(order.status),
@@ -469,46 +466,19 @@ function OrderCard({
           }).format(order.subtotalCents / 100)}
         </p>
         <div className="mt-4 grid gap-2">
-          {order.status === "pending" && (
+          {["pending", "accepted", "preparing"].includes(order.status) && (
             <>
               <button
                 disabled={disabled}
-                onClick={() => move(order.id, "accepted")}
-                className="inline-flex min-h-11 items-center justify-center gap-2 bg-orange-600 px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
+                onClick={() => move(order.id, "ready")}
+                className="inline-flex min-h-11 items-center justify-center gap-2 bg-emerald-700 px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
               >
-                <ChefHat size={17} />
-                Aceptar
-              </button>
-              <button
-                disabled={disabled}
-                onClick={() => move(order.id, "rejected")}
-                className="inline-flex items-center justify-center gap-2 border border-red-300 px-4 py-2 text-xs font-bold text-red-700"
-              >
-                <X size={15} />
-                Rechazar
+                <Check size={17} />
+                Marcar como listo
               </button>
             </>
           )}
-          {order.status === "accepted" && (
-            <button
-              disabled={disabled}
-              onClick={() => move(order.id, "preparing")}
-              className="min-h-11 bg-amber-500 px-4 py-2 text-sm font-bold"
-            >
-              Empezar preparación
-            </button>
-          )}
-          {order.status === "preparing" && (
-            <button
-              disabled={disabled}
-              onClick={() => move(order.id, "ready")}
-              className="inline-flex min-h-11 items-center justify-center gap-2 bg-emerald-700 px-4 py-2 text-sm font-bold text-white"
-            >
-              <Check size={17} />
-              Marcar listo
-            </button>
-          )}
-          {(order.status === "accepted" || order.status === "preparing") && (
+          {["pending", "accepted", "preparing"].includes(order.status) && (
             <button
               disabled={disabled}
               onClick={() => {
@@ -525,7 +495,7 @@ function OrderCard({
             <button
               disabled={disabled}
               onClick={() => move(order.id, "delivered")}
-              className="min-h-11 bg-slate-900 px-4 py-2 text-sm font-bold text-white"
+              className="min-h-11 bg-orange-600 px-4 py-2 text-sm font-bold text-white"
             >
               Entregado
             </button>

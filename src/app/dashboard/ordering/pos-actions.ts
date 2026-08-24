@@ -5,6 +5,7 @@ import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { activeRestaurant } from "@/lib/permissions";
 import { getSupabaseSecretKey } from "@/lib/supabase/admin-env";
+import { canUseWaiter } from "@/lib/member-roles";
 
 const staffOrderSchema = z.object({
   tableId: z.string().uuid(),
@@ -33,7 +34,8 @@ export async function createStaffDiningOrder(input: StaffOrderInput) {
   )
     throw new Error("Hay productos duplicados en la comanda.");
 
-  const { restaurant, user } = await activeRestaurant();
+  const { restaurant, user, member } = await activeRestaurant();
+  if (!canUseWaiter(member.role)) throw new Error("No tienes acceso al comandero.");
   if (
     !restaurant.ordering_enabled ||
     !["active", "trialing"].includes(restaurant.subscription_status)
@@ -143,6 +145,7 @@ export async function createStaffDiningOrder(input: StaffOrderInput) {
   if (error || !order) throw new Error("No se pudo enviar la comanda.");
 
   revalidatePath("/dashboard/kitchen");
+  revalidatePath("/operaciones/cocina");
   revalidatePath("/dashboard/orders");
   return {
     id: order.order_id as string,

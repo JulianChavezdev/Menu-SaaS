@@ -54,7 +54,7 @@ export default async function TablesPage() {
           disponibles en el comandero.
         </p>
         <Link
-          href="/dashboard/pos"
+          href="/operaciones/comandero"
           className="inline-flex min-h-11 items-center gap-2 bg-slate-950 px-4 py-2.5 text-sm font-bold text-white"
         >
           Abrir comandero <ArrowRight size={17} />
@@ -82,7 +82,7 @@ export default async function TablesPage() {
             <div className="mt-4 flex flex-col gap-2">
               {table.is_active && (
                 <Link
-                  href={`/dashboard/pos?table=${table.id}`}
+                  href={`/operaciones/comandero?table=${table.id}`}
                   className="bg-slate-900 px-3 py-2 text-center text-xs font-bold text-white"
                 >
                   Tomar comanda

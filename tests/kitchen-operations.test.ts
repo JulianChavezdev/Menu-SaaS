@@ -16,7 +16,11 @@ describe("kitchen operations", () => {
     expect(board).toContain("visibilitychange"));
   it("resumes audio before sounding a new order", () =>
     expect(board).toContain("context.resume()"));
-  it("allows staff to cancel an accepted or preparing order", () => {
+  it("moves every new order directly to ready and still permits cancellation", () => {
+    expect(board).toContain('move(order.id, "ready")');
+    expect(board).toContain("Marcar como listo");
+    expect(board).not.toContain("Empezar preparación");
+    expect(board).not.toContain(">Aceptar<");
     expect(board).toContain('move(order.id, "cancelled")');
     expect(board).toContain("¿Cancelar esta comanda?");
   });

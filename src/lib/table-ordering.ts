@@ -20,8 +20,8 @@ export const publicOrderSchema=z.object({
 });
 
 const transitions:Record<OrderStatus,readonly OrderStatus[]>={
-  pending:["accepted","rejected","cancelled"],
-  accepted:["preparing","cancelled"],
+  pending:["ready","rejected","cancelled"],
+  accepted:["ready","cancelled"],
   preparing:["ready","cancelled"],
   ready:["delivered"],
   delivered:[],rejected:["pending"],cancelled:["pending"],

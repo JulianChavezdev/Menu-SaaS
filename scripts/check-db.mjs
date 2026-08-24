@@ -212,6 +212,14 @@ const checks=[
     migration:"202608210001_remove_legacy_menu_templates.sql",
     run:()=>supabase.from("restaurants").select("menu_template",{head:true}).limit(1),
   },
+  {
+    migration:"202608240001_add_operational_member_roles.sql",
+    run:()=>supabase.from("restaurant_members").select("role",{head:true}).limit(1),
+  },
+  {
+    migration:"202608240002_restrict_operational_member_data.sql",
+    run:()=>supabase.from("restaurant_analytics_goals").select("restaurant_id",{head:true}).limit(1),
+  },
 ];
 
 const pending=[];

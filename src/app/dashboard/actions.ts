@@ -688,28 +688,40 @@ async function teamAdmin() {
 }
 export async function inviteMember(form: FormData) {
   const { restaurant, admin } = await teamAdmin();
-  const email = String(form.get("email") || "")
-    .trim()
-    .toLowerCase();
   const role = String(form.get("role") || "editor");
-  if (!/^\S+@\S+\.\S+$/.test(email))
+  const password = String(form.get("password") || "");
+  if (!["admin", "editor", "waiter", "kitchen"].includes(role))
+    throw new Error("Rol no válido.");
+  const operational = role === "waiter" || role === "kitchen";
+  const identity = String(form.get("email") || "").trim().toLowerCase();
+  if (operational && !/^[a-z0-9._-]{3,40}$/.test(identity))
+    throw new Error("Usa un usuario de 3 a 40 caracteres, sin espacios.");
+  if (!operational && !/^\S+@\S+\.\S+$/.test(identity))
     throw new Error("Introduce un correo válido.");
-  if (!["admin", "editor"].includes(role)) throw new Error("Rol no válido.");
+  const email = operational ? `${identity}@staff.menuly.es` : identity;
+  if (operational && password.length < 8)
+    throw new Error("La contraseña debe tener al menos 8 caracteres.");
   const { data: list, error: listError } = await admin.auth.admin.listUsers({
     page: 1,
     perPage: 1000,
   });
   if (listError) throw new Error(listError.message);
   let user = list.users.find((item) => item.email?.toLowerCase() === email);
+  if (operational && user)
+    throw new Error("Ese nombre de usuario ya está en uso. Elige otro.");
+  let createdOperationalUser = false;
   if (!user) {
     const appUrl = (
       process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"
     ).replace(/\/$/, "");
-    const { data, error } = await admin.auth.admin.inviteUserByEmail(email, {
-      redirectTo: `${appUrl}/auth/callback?next=/dashboard`,
-    });
+    const { data, error } = operational
+      ? await admin.auth.admin.createUser({ email, password, email_confirm: true })
+      : await admin.auth.admin.inviteUserByEmail(email, {
+          redirectTo: `${appUrl}/auth/callback?next=/access`,
+        });
     if (error) throw new Error(error.message);
     user = data.user;
+    createdOperationalUser = operational;
   }
   if (!user) throw new Error("No se pudo crear la invitación.");
   const { error } = await admin
@@ -718,20 +730,24 @@ export async function inviteMember(form: FormData) {
       { restaurant_id: restaurant.id, user_id: user.id, role },
       { onConflict: "restaurant_id,user_id" },
     );
-  if (error) throw new Error(error.message);
+  if (error) {
+    if (createdOperationalUser) await admin.auth.admin.deleteUser(user.id);
+    throw new Error(error.message);
+  }
   revalidatePath("/dashboard/members");
+  return { directAccess: operational };
 }
 export async function changeMemberRole(
   memberId: string,
-  role: "admin" | "editor",
+  role: "admin" | "editor" | "waiter" | "kitchen",
 ) {
   const parsed = uuid.safeParse(memberId);
-  if (!parsed.success || !["admin", "editor"].includes(role))
+  if (!parsed.success || !["admin", "editor", "waiter", "kitchen"].includes(role))
     throw new Error("Miembro o rol no válido.");
   const { restaurant, admin } = await teamAdmin();
   const { data: target, error: readError } = await admin
     .from("restaurant_members")
-    .select("role")
+    .select("role,user_id")
     .eq("id", parsed.data)
     .eq("restaurant_id", restaurant.id)
     .single();
@@ -752,7 +768,7 @@ export async function removeMember(memberId: string) {
   const { restaurant, admin } = await teamAdmin();
   const { data: target, error: readError } = await admin
     .from("restaurant_members")
-    .select("role")
+    .select("role,user_id")
     .eq("id", parsed.data)
     .eq("restaurant_id", restaurant.id)
     .single();
@@ -765,6 +781,11 @@ export async function removeMember(memberId: string) {
     .eq("id", parsed.data)
     .eq("restaurant_id", restaurant.id);
   if (error) throw new Error(error.message);
+  const { data: authUser } = await admin.auth.admin.getUserById(target.user_id);
+  if (authUser.user?.email?.endsWith("@staff.menuly.es")) {
+    const { count } = await admin.from("restaurant_members").select("id", { count: "exact", head: true }).eq("user_id", target.user_id);
+    if (!count) await admin.auth.admin.deleteUser(target.user_id);
+  }
   revalidatePath("/dashboard/members");
 }
 export async function assignMedia(

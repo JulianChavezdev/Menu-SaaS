@@ -17,6 +17,7 @@ import {
   X,
 } from "lucide-react";
 import { toast } from "sonner";
+import { SignOut } from "@/components/dashboard/sign-out";
 import {
   createStaffDiningOrder,
   type StaffOrderInput,
@@ -47,6 +48,7 @@ export function WaiterPos({
   categories,
   products,
   initialTableId,
+  isManager,
 }: {
   restaurantName: string;
   currency: string;
@@ -54,6 +56,7 @@ export function WaiterPos({
   categories: Category[];
   products: Product[];
   initialTableId?: string;
+  isManager: boolean;
 }) {
   const validInitial = tables.some((table) => table.id === initialTableId)
     ? initialTableId
@@ -177,41 +180,42 @@ export function WaiterPos({
   }
 
   return (
-    <section className="min-h-[100dvh] bg-[#eef1f5] pb-28 text-slate-950 md:min-h-screen md:pb-10">
-      <header className="sticky top-0 z-40 border-b-4 border-orange-500 bg-slate-950 px-3 pb-3 pt-[max(.75rem,env(safe-area-inset-top))] text-white shadow-md md:px-6">
+    <section className="min-h-[100dvh] bg-[#f4f1eb] pb-28 text-slate-950 md:min-h-screen md:pb-10">
+      <header className="sticky top-0 z-40 border-b-4 border-orange-600 bg-white px-3 pb-3 pt-[max(.75rem,env(safe-area-inset-top))] text-slate-950 shadow-sm md:px-6">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
-            <Link
+            {isManager && <Link
               href="/dashboard"
               aria-label="Volver al panel"
-              className="grid size-10 shrink-0 place-items-center rounded-lg bg-white/10 active:scale-95"
+              className="grid size-10 shrink-0 place-items-center rounded-lg bg-stone-100 active:scale-95"
             >
               <ArrowLeft size={20} />
-            </Link>
+            </Link>}
             <div className="min-w-0">
-              <p className="truncate text-[10px] font-bold uppercase tracking-[.15em] text-orange-300">
+              <p className="truncate text-[10px] font-bold uppercase tracking-[.15em] text-orange-700">
                 {restaurantName}
               </p>
-              <h1 className="text-lg font-black uppercase tracking-tight !text-white">
+              <h1 className="text-lg font-black uppercase tracking-tight text-slate-950">
                 Comandero
               </h1>
             </div>
           </div>
           <nav className="flex items-center gap-1" aria-label="Operaciones">
-            <Link
+            {isManager && <Link
               href="/dashboard/tables"
-              className="grid size-10 place-items-center rounded-lg text-slate-300 active:bg-white/10"
+              className="grid size-10 place-items-center rounded-lg text-slate-600 active:bg-stone-100"
               aria-label="Organizar mesas"
             >
               <Table2 size={20} />
-            </Link>
-            <Link
-              href="/dashboard/kitchen"
-              className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-orange-500 px-3 text-xs font-black text-slate-950 active:scale-95"
+            </Link>}
+            {isManager && <Link
+              href="/operaciones/cocina"
+              className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-orange-600 px-3 text-xs font-black text-white active:scale-95"
             >
               <ChefHat size={18} />
               Cocina
-            </Link>
+            </Link>}
+            {!isManager && <SignOut compact />}
           </nav>
         </div>
       </header>
@@ -409,7 +413,7 @@ export function WaiterPos({
                           type="button"
                           onClick={() => add(product.id)}
                           aria-label={`Añadir ${product.name}`}
-                          className="grid size-10 place-items-center rounded-xl bg-slate-950 text-white active:scale-95"
+                          className="grid size-10 place-items-center rounded-xl bg-orange-600 text-white active:scale-95"
                         >
                           <Plus size={19} />
                         </button>
@@ -432,7 +436,7 @@ export function WaiterPos({
         <button
           type="button"
           onClick={() => setCartOpen(true)}
-          className="fixed bottom-[max(.75rem,env(safe-area-inset-bottom))] left-1/2 z-[75] flex w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 items-center justify-between rounded-2xl bg-slate-950 px-5 py-4 text-white shadow-2xl md:left-auto md:right-6 md:translate-x-0"
+          className="fixed bottom-[max(.75rem,env(safe-area-inset-bottom))] left-1/2 z-[75] flex w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 items-center justify-between rounded-2xl bg-orange-600 px-5 py-4 text-white shadow-2xl md:left-auto md:right-6 md:translate-x-0"
         >
           <span className="flex items-center gap-2">
             <ShoppingCart size={20} />
