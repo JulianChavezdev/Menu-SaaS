@@ -39,10 +39,7 @@ export default async function PosPage({
   const requestedTable = (await searchParams).table;
 
   return (
-    <main className="mx-auto max-w-7xl p-3 pb-28 md:p-6 md:pb-10">
-      <div className="mb-3 md:mb-5">
-        <BackButton fallback="/dashboard" />
-      </div>
+    <main className="fixed inset-0 z-[70] overflow-y-auto bg-[#eef1f5] md:relative md:inset-auto md:z-auto md:min-h-screen">
       <WaiterPos
         restaurantName={restaurant.name}
         currency={restaurant.currency}

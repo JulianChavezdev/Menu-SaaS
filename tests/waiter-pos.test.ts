@@ -15,13 +15,20 @@ const publicMenu = readFileSync("src/app/r/[slug]/page.tsx", "utf8");
 describe("mobile waiter POS", () => {
   it("uses the restaurant tables, categories, products and images", () => {
     for (const marker of [
-      "¿En qué mesa?",
+      "Selecciona una mesa",
       "Categorías",
       "product.image_url",
       "Buscar producto o bebida",
       "Comanda actual",
     ])
       expect(component).toContain(marker);
+  });
+
+  it("uses a native mobile flow with table and visual category selection", () => {
+    expect(component).toContain("Mesa de la comanda");
+    expect(component).toContain("categoryCovers");
+    expect(component).toContain("Volver a categorías");
+    expect(component).toContain("min-h-[100dvh]");
   });
 
   it("sends quantities and notes directly to kitchen", () => {

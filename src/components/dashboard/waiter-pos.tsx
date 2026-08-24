@@ -1,9 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useRef, useState, useTransition } from "react";
 import {
+  ArrowLeft,
   Check,
-  ChevronRight,
+  ChefHat,
+  ChevronLeft,
   Minus,
   Plus,
   Search,
@@ -56,7 +59,7 @@ export function WaiterPos({
     ? initialTableId
     : undefined;
   const [tableId, setTableId] = useState<string | undefined>(validInitial);
-  const [categoryId, setCategoryId] = useState(categories[0]?.id ?? "");
+  const [categoryId, setCategoryId] = useState("");
   const [query, setQuery] = useState("");
   const [cart, setCart] = useState<Line[]>([]);
   const [generalNote, setGeneralNote] = useState("");
@@ -77,15 +80,30 @@ export function WaiterPos({
     () => new Map(cart.map((line) => [line.productId, line.quantity])),
     [cart],
   );
-  const visibleProducts = useMemo(() => {
-    const normalized = query.trim().toLocaleLowerCase("es");
-    return products.filter(
-      (product) =>
-        (normalized || !categoryId || product.category_id === categoryId) &&
-        (!normalized ||
-          product.name.toLocaleLowerCase("es").includes(normalized)),
-    );
-  }, [categoryId, products, query]);
+  const categoryCovers = useMemo(
+    () =>
+      new Map(
+        categories.map((category) => [
+          category.id,
+          products.find(
+            (product) =>
+              product.category_id === category.id && product.image_url,
+          )?.image_url ?? null,
+        ]),
+      ),
+    [categories, products],
+  );
+  const normalizedQuery = query.trim().toLocaleLowerCase("es");
+  const visibleProducts = useMemo(
+    () =>
+      products.filter(
+        (product) =>
+          (normalizedQuery || product.category_id === categoryId) &&
+          (!normalizedQuery ||
+            product.name.toLocaleLowerCase("es").includes(normalizedQuery)),
+      ),
+    [categoryId, normalizedQuery, products],
+  );
   const cartDetails = cart.flatMap((line) => {
     const product = products.find((item) => item.id === line.productId);
     return product ? [{ ...line, product }] : [];
@@ -95,6 +113,8 @@ export function WaiterPos({
     (sum, line) => sum + line.product.price_cents * line.quantity,
     0,
   );
+  const selectedCategory = categories.find((item) => item.id === categoryId);
+  const showingProducts = Boolean(categoryId || normalizedQuery);
 
   function add(productId: string) {
     setCart((current) => {
@@ -156,76 +176,95 @@ export function WaiterPos({
     });
   }
 
-  if (!table) {
-    return (
-      <section>
-        <div className="border-b border-stone-200 pb-5">
-          <p className="text-xs font-black uppercase tracking-[.16em] text-orange-700">
-            Menuly Comandas
-          </p>
-          <h1 className="mt-1 text-3xl font-extrabold">¿En qué mesa?</h1>
-          <p className="mt-2 text-sm text-slate-600">
-            Selecciona una mesa para comenzar la comanda. No necesitas abrirla.
-          </p>
-        </div>
-        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-          {tables.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => selectTable(item.id)}
-              className="group flex min-h-28 flex-col items-start justify-between border border-stone-200 bg-white p-4 text-left shadow-sm transition active:scale-[.98]"
-            >
-              <Table2 className="text-orange-600" size={24} />
-              <span className="flex w-full items-end justify-between gap-2">
-                <strong className="text-lg">{item.name}</strong>
-                <ChevronRight
-                  className="text-stone-400 group-hover:text-orange-600"
-                  size={18}
-                />
-              </span>
-            </button>
-          ))}
-          {!tables.length && (
-            <div className="col-span-full border border-dashed border-stone-300 bg-white p-10 text-center text-sm text-slate-500">
-              Primero crea las mesas desde Organización de mesas.
-            </div>
-          )}
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section>
-      <header className="sticky top-0 z-30 -mx-3 border-b border-stone-200 bg-[#f4f1eb]/95 px-3 pb-3 backdrop-blur-md md:-mx-6 md:px-6">
-        <div className="flex items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={() => setTableId(undefined)}
-            className="flex min-w-0 items-center gap-2 text-left"
-          >
-            <span className="grid size-10 shrink-0 place-items-center bg-orange-600 text-white">
+    <section className="min-h-[100dvh] bg-[#eef1f5] pb-28 text-slate-950 md:min-h-screen md:pb-10">
+      <header className="sticky top-0 z-40 border-b-4 border-orange-500 bg-slate-950 px-3 pb-3 pt-[max(.75rem,env(safe-area-inset-top))] text-white shadow-md md:px-6">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-3">
+            <Link
+              href="/dashboard"
+              aria-label="Volver al panel"
+              className="grid size-10 shrink-0 place-items-center rounded-lg bg-white/10 active:scale-95"
+            >
+              <ArrowLeft size={20} />
+            </Link>
+            <div className="min-w-0">
+              <p className="truncate text-[10px] font-bold uppercase tracking-[.15em] text-orange-300">
+                {restaurantName}
+              </p>
+              <h1 className="text-lg font-black uppercase tracking-tight !text-white">
+                Comandero
+              </h1>
+            </div>
+          </div>
+          <nav className="flex items-center gap-1" aria-label="Operaciones">
+            <Link
+              href="/dashboard/tables"
+              className="grid size-10 place-items-center rounded-lg text-slate-300 active:bg-white/10"
+              aria-label="Organizar mesas"
+            >
               <Table2 size={20} />
-            </span>
-            <span className="min-w-0">
-              <span className="block text-[10px] font-bold uppercase tracking-wide text-slate-500">
-                Mesa seleccionada
+            </Link>
+            <Link
+              href="/dashboard/kitchen"
+              className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-orange-500 px-3 text-xs font-black text-slate-950 active:scale-95"
+            >
+              <ChefHat size={18} />
+              Cocina
+            </Link>
+          </nav>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-7xl p-3 md:p-6">
+        <section className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm md:p-4">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-[.15em] text-slate-400">
+                Mesa de la comanda
+              </p>
+              <h2 className="text-sm font-extrabold">
+                {table ? `${table.name} seleccionada` : "Selecciona una mesa"}
+              </h2>
+            </div>
+            {table && (
+              <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[10px] font-black uppercase text-emerald-800">
+                Lista
               </span>
-              <strong className="block truncate text-lg">{table.name}</strong>
-            </span>
-          </button>
-          <div className="text-right">
-            <p className="text-[10px] font-bold uppercase text-slate-500">
-              {restaurantName}
+            )}
+          </div>
+          <div className="grid grid-cols-4 gap-2 sm:grid-cols-6 lg:grid-cols-10">
+            {tables.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => selectTable(item.id)}
+                className={`min-h-12 rounded-xl border px-2 text-sm font-black transition active:scale-95 ${item.id === tableId ? "border-orange-500 bg-orange-500 text-slate-950 shadow-sm" : "border-slate-200 bg-slate-50 text-slate-700"}`}
+              >
+                {item.name}
+              </button>
+            ))}
+          </div>
+          {!tables.length && (
+            <p className="rounded-xl bg-amber-50 p-4 text-sm font-semibold text-amber-900">
+              Primero crea las mesas desde Organización de mesas.
             </p>
-            <p className="text-sm font-black">
-              {units} artículo{units === 1 ? "" : "s"}
+          )}
+        </section>
+
+        {lastOrder && (
+          <div className="mt-3 flex items-center gap-3 rounded-xl border border-emerald-300 bg-emerald-50 p-3 text-emerald-900">
+            <Check size={20} />
+            <p className="text-sm font-bold">
+              Comanda #{lastOrder.number} enviada para {lastOrder.tableName}.
             </p>
           </div>
-        </div>
-        <label className="mt-3 flex items-center gap-2 border border-stone-300 bg-white px-3 py-2.5">
-          <Search size={17} className="text-slate-400" />
+        )}
+
+        <label
+          className={`mt-3 flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-3 shadow-sm ${table ? "" : "pointer-events-none opacity-50"}`}
+        >
+          <Search size={18} className="text-slate-400" />
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -238,92 +277,154 @@ export function WaiterPos({
               onClick={() => setQuery("")}
               aria-label="Borrar búsqueda"
             >
-              <X size={16} />
+              <X size={17} />
             </button>
           )}
         </label>
-        <nav
-          aria-label="Categorías"
-          className="mt-3 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              type="button"
-              onClick={() => setCategoryId(category.id)}
-              className={`shrink-0 border px-3 py-2 text-xs font-bold ${categoryId === category.id ? "border-orange-600 bg-orange-600 text-white" : "border-stone-300 bg-white text-slate-700"}`}
-            >
-              {category.name}
-            </button>
-          ))}
-        </nav>
-      </header>
 
-      {lastOrder && (
-        <div className="mt-4 flex items-center gap-3 border border-emerald-300 bg-emerald-50 p-3 text-emerald-900">
-          <Check size={20} />
-          <p className="text-sm font-bold">
-            Comanda #{lastOrder.number} enviada para {lastOrder.tableName}.
-          </p>
-        </div>
-      )}
-
-      <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-        {visibleProducts.map((product) => {
-          const quantity = quantityByProduct.get(product.id) ?? 0;
-          return (
-            <article
-              key={product.id}
-              className="overflow-hidden border border-stone-200 bg-white shadow-sm"
-            >
-              <button
-                type="button"
-                onClick={() => add(product.id)}
-                className="relative block aspect-[4/3] w-full overflow-hidden bg-stone-100 text-left active:opacity-80"
-              >
-                {product.image_url ? (
-                  <span
-                    role="img"
-                    aria-label={product.name}
-                    className="block h-full w-full bg-cover bg-center"
-                    style={{ backgroundImage: `url(${product.image_url})` }}
-                  />
-                ) : (
-                  <span className="grid h-full place-items-center text-stone-400">
-                    <Utensils size={30} />
-                  </span>
-                )}
-                {quantity > 0 && (
-                  <span className="absolute right-2 top-2 grid size-8 place-items-center rounded-full bg-orange-600 text-sm font-black text-white shadow-lg">
-                    {quantity}
-                  </span>
-                )}
-              </button>
-              <div className="p-3">
-                <h2 className="line-clamp-2 min-h-10 text-sm font-bold leading-5">
-                  {product.name}
-                </h2>
-                <div className="mt-2 flex items-center justify-between gap-2">
-                  <strong className="text-orange-700">
-                    {formatter.format(product.price_cents / 100)}
-                  </strong>
-                  <button
-                    type="button"
-                    onClick={() => add(product.id)}
-                    aria-label={`Añadir ${product.name}`}
-                    className="grid size-9 place-items-center bg-slate-900 text-white active:scale-95"
-                  >
-                    <Plus size={18} />
-                  </button>
-                </div>
-              </div>
-            </article>
-          );
-        })}
-        {!visibleProducts.length && (
-          <div className="col-span-full border border-dashed border-stone-300 bg-white p-10 text-center text-sm text-slate-500">
-            No hay productos en esta categoría.
+        {!table ? (
+          <div className="mt-3 rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center">
+            <Table2 className="mx-auto text-orange-500" size={34} />
+            <h2 className="mt-3 font-extrabold">Elige una mesa para empezar</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Después podrás entrar en una categoría y añadir platos.
+            </p>
           </div>
+        ) : !showingProducts ? (
+          <section className="mt-4">
+            <div className="mb-3 flex items-end justify-between">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[.15em] text-orange-700">
+                  Carta
+                </p>
+                <h2 className="text-xl font-black">Categorías</h2>
+              </div>
+              <span className="text-xs font-bold text-slate-500">
+                {categories.length} disponibles
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-4">
+              {categories.map((category) => {
+                const cover = categoryCovers.get(category.id);
+                const count = products.filter(
+                  (product) => product.category_id === category.id,
+                ).length;
+                return (
+                  <button
+                    key={category.id}
+                    type="button"
+                    onClick={() => setCategoryId(category.id)}
+                    className="group relative aspect-[1.55/1] overflow-hidden rounded-2xl bg-slate-800 text-left shadow-sm active:scale-[.98]"
+                  >
+                    {cover ? (
+                      <span
+                        role="img"
+                        aria-label={category.name}
+                        className="absolute inset-0 bg-cover bg-center transition duration-300 group-hover:scale-105"
+                        style={{ backgroundImage: `url(${cover})` }}
+                      />
+                    ) : (
+                      <span className="absolute inset-0 grid place-items-center text-slate-500">
+                        <Utensils size={36} />
+                      </span>
+                    )}
+                    <span className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/25 to-transparent" />
+                    <span className="absolute inset-x-0 bottom-0 p-4 text-white">
+                      <strong className="block text-lg leading-tight">
+                        {category.name}
+                      </strong>
+                      <span className="mt-1 block text-[10px] font-bold uppercase tracking-wide text-slate-300">
+                        {count} producto{count === 1 ? "" : "s"}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        ) : (
+          <section className="mt-4">
+            <div className="mb-3 flex items-center gap-3">
+              {!normalizedQuery && (
+                <button
+                  type="button"
+                  onClick={() => setCategoryId("")}
+                  className="grid size-10 place-items-center rounded-xl border border-slate-200 bg-white shadow-sm active:scale-95"
+                  aria-label="Volver a categorías"
+                >
+                  <ChevronLeft size={21} />
+                </button>
+              )}
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[.15em] text-orange-700">
+                  {table.name}
+                </p>
+                <h2 className="text-xl font-black">
+                  {normalizedQuery ? "Resultados" : selectedCategory?.name}
+                </h2>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+              {visibleProducts.map((product) => {
+                const quantity = quantityByProduct.get(product.id) ?? 0;
+                return (
+                  <article
+                    key={product.id}
+                    className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => add(product.id)}
+                      className="relative block aspect-[4/3] w-full overflow-hidden bg-slate-100 text-left active:opacity-80"
+                    >
+                      {product.image_url ? (
+                        <span
+                          role="img"
+                          aria-label={product.name}
+                          className="block h-full w-full bg-cover bg-center"
+                          style={{
+                            backgroundImage: `url(${product.image_url})`,
+                          }}
+                        />
+                      ) : (
+                        <span className="grid h-full place-items-center text-slate-400">
+                          <Utensils size={30} />
+                        </span>
+                      )}
+                      {quantity > 0 && (
+                        <span className="absolute right-2 top-2 grid size-8 place-items-center rounded-full bg-orange-500 text-sm font-black text-slate-950 shadow-lg">
+                          {quantity}
+                        </span>
+                      )}
+                    </button>
+                    <div className="p-3">
+                      <h3 className="line-clamp-2 min-h-10 text-sm font-bold leading-5">
+                        {product.name}
+                      </h3>
+                      <div className="mt-2 flex items-center justify-between gap-2">
+                        <strong>
+                          {formatter.format(product.price_cents / 100)}
+                        </strong>
+                        <button
+                          type="button"
+                          onClick={() => add(product.id)}
+                          aria-label={`Añadir ${product.name}`}
+                          className="grid size-10 place-items-center rounded-xl bg-slate-950 text-white active:scale-95"
+                        >
+                          <Plus size={19} />
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+              {!visibleProducts.length && (
+                <div className="col-span-full rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
+                  No hay productos disponibles.
+                </div>
+              )}
+            </div>
+          </section>
         )}
       </div>
 
@@ -331,7 +432,7 @@ export function WaiterPos({
         <button
           type="button"
           onClick={() => setCartOpen(true)}
-          className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-40 flex w-[calc(100%-2rem)] max-w-md -translate-x-1/2 items-center justify-between bg-slate-950 px-5 py-4 text-white shadow-2xl md:left-auto md:right-6 md:translate-x-0"
+          className="fixed bottom-[max(.75rem,env(safe-area-inset-bottom))] left-1/2 z-[75] flex w-[calc(100%-1.5rem)] max-w-md -translate-x-1/2 items-center justify-between rounded-2xl bg-slate-950 px-5 py-4 text-white shadow-2xl md:left-auto md:right-6 md:translate-x-0"
         >
           <span className="flex items-center gap-2">
             <ShoppingCart size={20} />
@@ -345,25 +446,26 @@ export function WaiterPos({
 
       {cartOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-end bg-black/55 backdrop-blur-sm"
+          className="fixed inset-0 z-[80] flex items-end bg-slate-950/60 backdrop-blur-sm"
           onClick={() => setCartOpen(false)}
         >
           <aside
             aria-label="Comanda actual"
-            className="mx-auto flex max-h-[94dvh] w-full max-w-xl flex-col bg-white shadow-2xl"
+            className="mx-auto flex max-h-[94dvh] w-full max-w-xl flex-col rounded-t-3xl bg-white shadow-2xl"
             onClick={(event) => event.stopPropagation()}
           >
-            <div className="flex items-center justify-between border-b border-stone-200 p-4">
+            <div className="flex items-center justify-between border-b border-slate-200 p-4">
               <div>
-                <p className="text-xs font-bold uppercase tracking-wide text-orange-700">
-                  {table.name}
+                <p className="text-xs font-black uppercase tracking-wide text-orange-700">
+                  {table?.name}
                 </p>
-                <h2 className="text-2xl font-extrabold">Comanda actual</h2>
+                <h2 className="text-2xl font-black">Comanda actual</h2>
               </div>
               <button
                 type="button"
                 onClick={() => setCartOpen(false)}
-                className="grid size-10 place-items-center bg-stone-100"
+                className="grid size-10 place-items-center rounded-xl bg-slate-100"
+                aria-label="Cerrar comanda"
               >
                 <X size={20} />
               </button>
@@ -372,7 +474,7 @@ export function WaiterPos({
               {cartDetails.map(({ product, productId, quantity, note }) => (
                 <article
                   key={productId}
-                  className="border-b border-stone-200 pb-4"
+                  className="border-b border-slate-200 pb-4"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -383,11 +485,12 @@ export function WaiterPos({
                         )}
                       </p>
                     </div>
-                    <div className="flex items-center border border-stone-300">
+                    <div className="flex items-center rounded-xl border border-slate-300">
                       <button
                         type="button"
                         onClick={() => change(productId, -1)}
-                        className="grid size-9 place-items-center"
+                        className="grid size-10 place-items-center"
+                        aria-label={`Quitar ${product.name}`}
                       >
                         <Minus size={15} />
                       </button>
@@ -395,7 +498,8 @@ export function WaiterPos({
                       <button
                         type="button"
                         onClick={() => change(productId, 1)}
-                        className="grid size-9 place-items-center"
+                        className="grid size-10 place-items-center"
+                        aria-label={`Añadir otra unidad de ${product.name}`}
                       >
                         <Plus size={15} />
                       </button>
@@ -417,7 +521,7 @@ export function WaiterPos({
                     }
                     maxLength={300}
                     placeholder="Cambios: sin cebolla, punto de carne…"
-                    className="mt-3 w-full border border-stone-300 bg-stone-50 px-3 py-2.5 text-sm outline-none focus:border-orange-500"
+                    className="mt-3 w-full rounded-xl border border-slate-300 bg-slate-50 px-3 py-3 text-sm outline-none focus:border-orange-500"
                   />
                 </article>
               ))}
@@ -430,11 +534,11 @@ export function WaiterPos({
                   }
                   maxLength={300}
                   placeholder="Ej. Sacar entrantes primero"
-                  className="mt-2 min-h-20 w-full resize-none border border-stone-300 bg-stone-50 p-3 text-sm font-normal outline-none focus:border-orange-500"
+                  className="mt-2 min-h-20 w-full resize-none rounded-xl border border-slate-300 bg-slate-50 p-3 text-sm font-normal outline-none focus:border-orange-500"
                 />
               </label>
             </div>
-            <div className="border-t border-stone-200 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <div className="border-t border-slate-200 p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
               <div className="mb-3 flex items-center justify-between text-lg">
                 <span>Total</span>
                 <strong>{formatter.format(total / 100)}</strong>
@@ -443,7 +547,7 @@ export function WaiterPos({
                 type="button"
                 disabled={sending || !cart.length}
                 onClick={submit}
-                className="inline-flex min-h-12 w-full items-center justify-center gap-2 bg-orange-600 px-4 py-3 font-black text-white disabled:opacity-50"
+                className="inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-4 py-3 font-black text-slate-950 disabled:opacity-50"
               >
                 <Send size={19} />
                 {sending ? "Enviando…" : "Enviar a Cocina"}

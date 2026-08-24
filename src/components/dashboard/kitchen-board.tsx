@@ -1,13 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import {
+  ArrowLeft,
   BellRing,
   Check,
   ChefHat,
   Clock3,
   MessageSquareText,
   MonitorCheck,
+  RefreshCw,
   X,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -17,11 +20,27 @@ import type { KitchenOrder } from "@/lib/kitchen-orders";
 
 export type { KitchenOrder } from "@/lib/kitchen-orders";
 
-const columns: [OrderStatus[], string, string][] = [
-  [["pending"], "Nuevos", "border-orange-400"],
-  [["accepted", "preparing"], "En preparación", "border-amber-400"],
-  [["ready"], "Listos", "border-emerald-500"],
+const columns = [
+  {
+    key: "pending",
+    statuses: ["pending"] as OrderStatus[],
+    title: "Nuevos",
+    tone: "border-orange-400",
+  },
+  {
+    key: "working",
+    statuses: ["accepted", "preparing"] as OrderStatus[],
+    title: "En preparación",
+    tone: "border-amber-400",
+  },
+  {
+    key: "ready",
+    statuses: ["ready"] as OrderStatus[],
+    title: "Listos",
+    tone: "border-emerald-500",
+  },
 ];
+type ColumnKey = (typeof columns)[number]["key"];
 
 type WakeLockHandle = {
   released: boolean;
@@ -42,6 +61,8 @@ export function KitchenBoard({
   initialOrders: KitchenOrder[];
 }) {
   const [orders, setOrders] = useState(initialOrders);
+  const [activeColumn, setActiveColumn] = useState<ColumnKey>("pending");
+  const [lastSync, setLastSync] = useState(() => new Date());
   const [operationsEnabled, setOperationsEnabled] = useState(false);
   const [screenAwake, setScreenAwake] = useState(false);
   const audio = useRef<AudioContext | null>(null);
@@ -96,6 +117,7 @@ export function KitchenBoard({
         );
         knownOrders.current = new Set(payload.orders.map((order) => order.id));
         setOrders(payload.orders);
+        setLastSync(new Date());
         if (hasNewOrder) soundAlert();
         if (reportError) setError("");
       } catch (reason) {
@@ -126,8 +148,10 @@ export function KitchenBoard({
 
   useEffect(() => {
     const supabase = createClient();
+    let refreshTimer: number | undefined;
     const delayedRefresh = () => {
-      window.setTimeout(() => void refreshOrders(), 150);
+      window.clearTimeout(refreshTimer);
+      refreshTimer = window.setTimeout(() => void refreshOrders(), 40);
     };
     const channel = supabase
       .channel(`kitchen:${restaurantId}`)
@@ -141,8 +165,18 @@ export function KitchenBoard({
         },
         delayedRefresh,
       )
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "dining_order_items",
+          filter: `restaurant_id=eq.${restaurantId}`,
+        },
+        delayedRefresh,
+      )
       .subscribe();
-    const polling = window.setInterval(() => void refreshOrders(), 3000);
+    const polling = window.setInterval(() => void refreshOrders(), 1000);
     const refreshVisible = () => {
       if (document.visibilityState === "visible") void refreshOrders();
     };
@@ -151,6 +185,7 @@ export function KitchenBoard({
     void refreshOrders();
     return () => {
       window.clearInterval(polling);
+      window.clearTimeout(refreshTimer);
       window.removeEventListener("focus", refreshVisible);
       document.removeEventListener("visibilitychange", refreshVisible);
       void supabase.removeChannel(channel);
@@ -184,11 +219,22 @@ export function KitchenBoard({
 
   function move(id: string, status: OrderStatus) {
     setError("");
+    const previous = orders;
+    setOrders((current) =>
+      current.flatMap((order) =>
+        order.id !== id
+          ? [order]
+          : ["delivered", "rejected", "cancelled"].includes(status)
+            ? []
+            : [{ ...order, status }],
+      ),
+    );
     startTransition(async () => {
       try {
         await transitionDiningOrder(id, status);
         await refreshOrders(true);
       } catch (reason) {
+        setOrders(previous);
         setError(
           reason instanceof Error
             ? reason.message
@@ -199,80 +245,155 @@ export function KitchenBoard({
   }
 
   return (
-    <>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-3xl font-extrabold">Pantalla de cocina</h1>
-          <p className="mt-1 text-sm text-slate-600">
-            Las comandas se sincronizan automáticamente cada pocos segundos.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() => void enableOperations()}
-          className={`inline-flex min-h-11 items-center gap-2 border px-4 py-2 text-sm font-bold ${operationsEnabled ? "border-emerald-300 bg-emerald-50 text-emerald-800" : "border-stone-300 bg-white"}`}
-        >
-          {screenAwake ? <MonitorCheck size={17} /> : <BellRing size={17} />}
-          <span>
-            {operationsEnabled
-              ? screenAwake
-                ? "Avisos y pantalla activos"
-                : "Avisos activos"
-              : "Activar modo cocina"}
-          </span>
-        </button>
-      </div>
-      {operationsEnabled && !screenAwake && (
-        <p className="mt-3 text-xs text-amber-700">
-          Este dispositivo no permite mantener la pantalla encendida. Desactiva
-          el bloqueo automático mientras uses cocina.
-        </p>
-      )}
-      {error && (
-        <p
-          role="alert"
-          className="mt-4 border border-red-300 bg-red-50 p-3 text-sm font-semibold text-red-700"
-        >
-          {error}
-        </p>
-      )}
-      <div className="mt-6 grid min-h-[60vh] gap-4 lg:grid-cols-3">
-        {columns.map(([statuses, title, tone]) => {
-          const visible = orders.filter((order) =>
-            statuses.includes(order.status),
-          );
-          return (
-            <section
-              key={title}
-              className={`border-t-4 ${tone} bg-stone-100 p-3`}
+    <section className="min-h-[100dvh] bg-[#eef1f5] text-slate-950">
+      <header className="sticky top-0 z-40 border-b-4 border-orange-500 bg-slate-950 px-3 pb-3 pt-[max(.75rem,env(safe-area-inset-top))] text-white shadow-md md:px-6">
+        <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-3">
+            <Link
+              href="/dashboard"
+              aria-label="Volver al panel"
+              className="grid size-10 shrink-0 place-items-center rounded-lg bg-white/10 active:scale-95"
             >
-              <div className="mb-3 flex items-center justify-between">
-                <h2 className="font-extrabold">{title}</h2>
-                <span className="grid h-7 min-w-7 place-items-center bg-white px-2 text-xs font-black shadow-sm">
-                  {visible.length}
-                </span>
-              </div>
-              <div className="space-y-3">
-                {visible.map((order) => (
-                  <OrderCard
-                    key={order.id}
-                    order={order}
-                    currency={currency}
-                    disabled={isPending}
-                    move={move}
-                  />
-                ))}
-                {!visible.length && (
-                  <div className="border border-dashed border-stone-300 bg-white p-8 text-center text-sm text-slate-500">
-                    Sin pedidos
-                  </div>
-                )}
-              </div>
-            </section>
-          );
-        })}
+              <ArrowLeft size={20} />
+            </Link>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[.15em] text-orange-300">
+                Menuly Comandas
+              </p>
+              <h1 className="text-lg font-black uppercase tracking-tight !text-white">
+                Cocina
+              </h1>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => void refreshOrders(true)}
+              className="grid size-10 place-items-center rounded-lg bg-white/10 text-slate-200 active:scale-95"
+              aria-label="Actualizar comandas"
+            >
+              <RefreshCw
+                size={18}
+                className={isPending ? "animate-spin" : ""}
+              />
+            </button>
+            <Link
+              href="/dashboard/pos"
+              className="inline-flex min-h-10 items-center rounded-lg bg-white/10 px-3 text-xs font-black"
+            >
+              Comandero
+            </Link>
+            <button
+              type="button"
+              onClick={() => void enableOperations()}
+              className={`grid size-10 place-items-center rounded-lg ${operationsEnabled ? "bg-emerald-500 text-slate-950" : "bg-orange-500 text-slate-950"}`}
+              aria-label={
+                operationsEnabled ? "Modo cocina activo" : "Activar modo cocina"
+              }
+            >
+              {screenAwake ? (
+                <MonitorCheck size={19} />
+              ) : (
+                <BellRing size={19} />
+              )}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-[1600px] p-3 md:p-6">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-2xl font-black">Servicio en curso</h2>
+            <p className="mt-0.5 text-xs font-semibold text-slate-500">
+              Sincronizado a las{" "}
+              {lastSync.toLocaleTimeString("es-ES", {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              })}
+            </p>
+          </div>
+          <span className="rounded-full bg-white px-3 py-1.5 text-xs font-black shadow-sm">
+            {orders.length} activas
+          </span>
+        </div>
+
+        <nav
+          aria-label="Estados de cocina"
+          className="mt-4 grid grid-cols-3 gap-2 lg:hidden"
+        >
+          {columns.map((column) => {
+            const count = orders.filter((order) =>
+              column.statuses.includes(order.status),
+            ).length;
+            return (
+              <button
+                key={column.key}
+                type="button"
+                onClick={() => setActiveColumn(column.key)}
+                className={`rounded-xl border px-2 py-3 text-xs font-black ${activeColumn === column.key ? "border-slate-950 bg-slate-950 text-white" : "border-slate-200 bg-white text-slate-600"}`}
+              >
+                <span className="block text-lg">{count}</span>
+                {column.title}
+              </button>
+            );
+          })}
+        </nav>
+
+        {operationsEnabled && !screenAwake && (
+          <p className="mt-3 rounded-xl bg-amber-50 p-3 text-xs text-amber-800">
+            Este dispositivo no permite mantener la pantalla encendida.
+            Desactiva el bloqueo automático mientras uses Cocina.
+          </p>
+        )}
+        {error && (
+          <p
+            role="alert"
+            className="mt-3 rounded-xl border border-red-300 bg-red-50 p-3 text-sm font-semibold text-red-700"
+          >
+            {error}
+          </p>
+        )}
+
+        <div className="mt-4 grid min-h-[60vh] gap-4 lg:grid-cols-3">
+          {columns.map((column) => {
+            const visible = orders.filter((order) =>
+              column.statuses.includes(order.status),
+            );
+            return (
+              <section
+                key={column.key}
+                className={`${activeColumn === column.key ? "block" : "hidden"} rounded-2xl border-t-4 ${column.tone} bg-slate-100 p-3 lg:block`}
+              >
+                <div className="mb-3 hidden items-center justify-between lg:flex">
+                  <h3 className="font-extrabold">{column.title}</h3>
+                  <span className="grid h-7 min-w-7 place-items-center rounded-lg bg-white px-2 text-xs font-black shadow-sm">
+                    {visible.length}
+                  </span>
+                </div>
+                <div className="space-y-3">
+                  {visible.map((order) => (
+                    <OrderCard
+                      key={order.id}
+                      order={order}
+                      currency={currency}
+                      disabled={isPending}
+                      move={move}
+                    />
+                  ))}
+                  {!visible.length && (
+                    <div className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-sm font-semibold text-slate-400">
+                      Sin comandas
+                    </div>
+                  )}
+                </div>
+              </section>
+            );
+          })}
+        </div>
       </div>
-    </>
+    </section>
   );
 }
 
@@ -292,117 +413,124 @@ function OrderCard({
     Math.floor((Date.now() - new Date(order.createdAt).getTime()) / 60_000),
   );
   return (
-    <article className="border border-stone-200 bg-white p-4 shadow-sm">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-wide text-orange-700">
-            Pedido #{order.number}
-          </p>
-          <h3 className="mt-1 text-xl font-black">{order.tableName}</h3>
+    <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div
+        className={`h-1.5 ${order.status === "pending" ? "bg-orange-500" : order.status === "ready" ? "bg-emerald-500" : "bg-amber-400"}`}
+      />
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs font-black uppercase tracking-wide text-orange-700">
+              Comanda #{order.number}
+            </p>
+            <h3 className="mt-1 text-xl font-black">{order.tableName}</h3>
+          </div>
+          <span className="flex items-center gap-1 text-xs font-bold text-slate-500">
+            <Clock3 size={14} />
+            {age} min
+          </span>
         </div>
-        <span className="flex items-center gap-1 text-xs font-bold text-slate-500">
-          <Clock3 size={14} />
-          {age} min
-        </span>
-      </div>
-      {order.customerNote && (
-        <div className="mt-3 border-l-4 border-amber-500 bg-amber-50 p-3 text-amber-950">
-          <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wide">
-            <MessageSquareText size={14} />
-            Observación general de la mesa
-          </p>
-          <p className="mt-1 text-sm font-bold">{order.customerNote}</p>
-        </div>
-      )}
-      <ul className="mt-4 space-y-3 border-y border-stone-200 py-4">
-        {order.items.map((item) => (
-          <li key={item.id} className="flex gap-2">
-            <strong className="w-6 shrink-0 text-orange-700">
-              {item.quantity}×
-            </strong>
-            <div className="min-w-0">
-              <p className="font-bold">{item.name}</p>
-              {item.note && (
-                <p className="mt-1 border-l-2 border-amber-500 pl-2 text-xs font-bold text-amber-900">
-                  Modificación solicitada: {item.note}
-                </p>
-              )}
-            </div>
-          </li>
-        ))}
-        {!order.items.length && (
-          <li className="text-sm font-semibold text-amber-800">
-            Cargando el detalle del pedido…
-          </li>
+        {order.customerNote && (
+          <div className="mt-3 border-l-4 border-amber-500 bg-amber-50 p-3 text-amber-950">
+            <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wide">
+              <MessageSquareText size={14} />
+              Observación general de la mesa
+            </p>
+            <p className="mt-1 text-sm font-bold">{order.customerNote}</p>
+          </div>
         )}
-      </ul>
-      <p className="mt-3 text-right text-sm font-black">
-        {new Intl.NumberFormat("es-ES", { style: "currency", currency }).format(
-          order.subtotalCents / 100,
-        )}
-      </p>
-      <div className="mt-4 grid gap-2">
-        {order.status === "pending" && (
-          <>
+        <ul className="mt-4 space-y-3 rounded-xl bg-slate-50 p-3">
+          {order.items.map((item) => (
+            <li key={item.id} className="flex gap-2">
+              <strong className="w-6 shrink-0 text-orange-700">
+                {item.quantity}×
+              </strong>
+              <div className="min-w-0">
+                <p className="font-bold">{item.name}</p>
+                {item.note && (
+                  <p className="mt-1 border-l-2 border-amber-500 pl-2 text-xs font-bold text-amber-900">
+                    Modificación solicitada: {item.note}
+                  </p>
+                )}
+              </div>
+            </li>
+          ))}
+          {!order.items.length && (
+            <li className="text-sm font-bold text-red-700">
+              Detalle no disponible. La pantalla volverá a sincronizarlo
+              automáticamente.
+            </li>
+          )}
+        </ul>
+        <p className="mt-3 text-right text-sm font-black">
+          {new Intl.NumberFormat("es-ES", {
+            style: "currency",
+            currency,
+          }).format(order.subtotalCents / 100)}
+        </p>
+        <div className="mt-4 grid gap-2">
+          {order.status === "pending" && (
+            <>
+              <button
+                disabled={disabled}
+                onClick={() => move(order.id, "accepted")}
+                className="inline-flex min-h-11 items-center justify-center gap-2 bg-orange-600 px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
+              >
+                <ChefHat size={17} />
+                Aceptar
+              </button>
+              <button
+                disabled={disabled}
+                onClick={() => move(order.id, "rejected")}
+                className="inline-flex items-center justify-center gap-2 border border-red-300 px-4 py-2 text-xs font-bold text-red-700"
+              >
+                <X size={15} />
+                Rechazar
+              </button>
+            </>
+          )}
+          {order.status === "accepted" && (
             <button
               disabled={disabled}
-              onClick={() => move(order.id, "accepted")}
-              className="inline-flex min-h-11 items-center justify-center gap-2 bg-orange-600 px-4 py-2 text-sm font-bold text-white disabled:opacity-50"
+              onClick={() => move(order.id, "preparing")}
+              className="min-h-11 bg-amber-500 px-4 py-2 text-sm font-bold"
             >
-              <ChefHat size={17} />
-              Aceptar
+              Empezar preparación
             </button>
+          )}
+          {order.status === "preparing" && (
             <button
               disabled={disabled}
-              onClick={() => move(order.id, "rejected")}
+              onClick={() => move(order.id, "ready")}
+              className="inline-flex min-h-11 items-center justify-center gap-2 bg-emerald-700 px-4 py-2 text-sm font-bold text-white"
+            >
+              <Check size={17} />
+              Marcar listo
+            </button>
+          )}
+          {(order.status === "accepted" || order.status === "preparing") && (
+            <button
+              disabled={disabled}
+              onClick={() => {
+                if (confirm("¿Cancelar esta comanda?"))
+                  move(order.id, "cancelled");
+              }}
               className="inline-flex items-center justify-center gap-2 border border-red-300 px-4 py-2 text-xs font-bold text-red-700"
             >
               <X size={15} />
-              Rechazar
+              Cancelar comanda
             </button>
-          </>
-        )}
-        {order.status === "accepted" && (
-          <button
-            disabled={disabled}
-            onClick={() => move(order.id, "preparing")}
-            className="min-h-11 bg-amber-500 px-4 py-2 text-sm font-bold"
-          >
-            Empezar preparación
-          </button>
-        )}
-        {order.status === "preparing" && (
-          <button
-            disabled={disabled}
-            onClick={() => move(order.id, "ready")}
-            className="inline-flex min-h-11 items-center justify-center gap-2 bg-emerald-700 px-4 py-2 text-sm font-bold text-white"
-          >
-            <Check size={17} />
-            Marcar listo
-          </button>
-        )}
-        {(order.status === "accepted" || order.status === "preparing") && (
-          <button
-            disabled={disabled}
-            onClick={() => {
-              if (confirm("¿Cancelar esta comanda?"))
-                move(order.id, "cancelled");
-            }}
-            className="inline-flex items-center justify-center gap-2 border border-red-300 px-4 py-2 text-xs font-bold text-red-700"
-          >
-            <X size={15} />
-            Cancelar comanda
-          </button>
-        )}
-        {order.status === "ready" && (
-          <button
-            disabled={disabled}
-            onClick={() => move(order.id, "delivered")}
-            className="min-h-11 bg-slate-900 px-4 py-2 text-sm font-bold text-white"
-          >
-            Entregado
-          </button>
-        )}
+          )}
+          {order.status === "ready" && (
+            <button
+              disabled={disabled}
+              onClick={() => move(order.id, "delivered")}
+              className="min-h-11 bg-slate-900 px-4 py-2 text-sm font-bold text-white"
+            >
+              Entregado
+            </button>
+          )}
+        </div>
       </div>
     </article>
   );
