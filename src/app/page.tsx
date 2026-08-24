@@ -268,17 +268,18 @@ export default function Home() {
             <PriceCard
               featured
               badge="Más operativo"
-              name="Menuly Pedidos"
+              name="Menuly Comandas"
               price="59,99 €"
               suffix="/mes"
               note="590,30 €/año en un único pago · ahorra un 18%"
-              description="Carta en vídeo y pedidos desde cada mesa directamente a cocina."
+              description="Comandero móvil para camareros conectado directamente con Cocina."
               features={[
                 "Todo lo incluido en Plan Carta",
-                "QR individual por mesa",
-                "Sesiones temporales y comandas",
+                "TPV móvil con la misma carta",
+                "Mesas organizadas sin abrir sesiones",
+                "Productos e imágenes por categorías",
                 "Pantalla de cocina en tiempo real",
-                "Estados, avisos e historial de pedidos",
+                "Observaciones, estados e historial",
               ]}
               cta="Probar 30 días gratis"
               href="/register?plan=pedidos"
@@ -302,8 +303,9 @@ export default function Home() {
             />
           </div>
           <p className="mx-auto mt-5 max-w-3xl text-xs leading-relaxed text-slate-500">
-            Los nuevos restaurantes disfrutan de 30 días gratis. La activación posterior y los pagos se gestionan manualmente.
-            No se realizará ningún cargo automático.
+            Los nuevos restaurantes disfrutan de 30 días gratis. La activación
+            posterior y los pagos se gestionan manualmente. No se realizará
+            ningún cargo automático.
           </p>
         </div>
       </section>

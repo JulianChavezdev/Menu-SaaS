@@ -12,7 +12,7 @@ export async function GET() {
   const { supabase, restaurant } = await activeRestaurant();
   if (!restaurant.ordering_enabled)
     return NextResponse.json(
-      { error: "Menuly Pedidos no está activo." },
+      { error: "Menuly Comandas no está activo." },
       { status: 403 },
     );
 

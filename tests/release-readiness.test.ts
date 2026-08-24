@@ -61,8 +61,8 @@ describe("release readiness", () => {
   });
 
   it("keeps private and authentication routes out of search results", () => {
-    expect(dashboardLayout).toContain("index:false,follow:false");
-    expect(authLayout).toContain("index:false,follow:false");
+    expect(dashboardLayout).toMatch(/index:\s*false,\s*follow:\s*false/);
+    expect(authLayout).toMatch(/index:\s*false,\s*follow:\s*false/);
   });
 
   it("restricts executable and embedded content", () => {

@@ -9,15 +9,17 @@ export const SIGNUP_PLANS = [
   },
   {
     id: "pedidos",
-    name: "Menuly Pedidos",
+    name: "Menuly Comandas",
     price: "59,99 €/mes",
-    description: "Todo el Plan Carta más pedidos por mesa y pantalla de cocina.",
+    description:
+      "Todo el Plan Carta más comandero móvil, mesas y Cocina en tiempo real.",
   },
   {
     id: "configuracion",
     name: "Configuración completa",
     price: "149,99 €",
-    description: "Grabación, edición con IA y puesta en marcha realizada por Menuly.",
+    description:
+      "Grabación, edición con IA y puesta en marcha realizada por Menuly.",
   },
 ] as const;
 

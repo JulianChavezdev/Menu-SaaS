@@ -20,9 +20,9 @@ import { SupportContentEditor } from "@/components/superadmin/support-content-ed
 import { ManualPaymentPanel } from "@/components/superadmin/manual-payment-panel";
 import { RestaurantRestorePanel } from "@/components/superadmin/restaurant-restore-panel";
 import { DeleteRestaurantPanel } from "@/components/superadmin/delete-restaurant-panel";
-import {signupPlanName} from "@/lib/signup-plans";
-import {SalesStatusForm} from "@/components/superadmin/sales-status-form";
-import type {SalesStage} from "@/lib/sales-stages";
+import { signupPlanName } from "@/lib/signup-plans";
+import { SalesStatusForm } from "@/components/superadmin/sales-status-form";
+import type { SalesStage } from "@/lib/sales-stages";
 
 export default async function ManagedRestaurantPage({
   params,
@@ -90,8 +90,17 @@ export default async function ManagedRestaurantPage({
       .eq("restaurant_id", id)
       .order("created_at", { ascending: false })
       .limit(20),
-    admin.from("restaurant_sales_status").select("stage,note").eq("restaurant_id",id).maybeSingle(),
-    admin.from("superadmin_audit_log").select("created_at").eq("restaurant_id",id).eq("action","subscription.first_free_month_granted").maybeSingle(),
+    admin
+      .from("restaurant_sales_status")
+      .select("stage,note")
+      .eq("restaurant_id", id)
+      .maybeSingle(),
+    admin
+      .from("superadmin_audit_log")
+      .select("created_at")
+      .eq("restaurant_id", id)
+      .eq("action", "subscription.first_free_month_granted")
+      .maybeSingle(),
   ]);
   if (error || !restaurant) notFound();
   const owner = await admin.auth.admin.getUserById(restaurant.owner_id);
@@ -120,7 +129,10 @@ export default async function ManagedRestaurantPage({
           <p className="mt-2 text-sm text-slate-600">
             Propietario: {owner.data.user?.email ?? restaurant.owner_id}
           </p>
-          <p className="mt-1 text-sm text-slate-600">Interés indicado en el alta: <strong>{signupPlanName(restaurant.signup_plan_interest)}</strong></p>
+          <p className="mt-1 text-sm text-slate-600">
+            Interés indicado en el alta:{" "}
+            <strong>{signupPlanName(restaurant.signup_plan_interest)}</strong>
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <a
@@ -183,7 +195,21 @@ export default async function ManagedRestaurantPage({
         </div>
       )}
 
-      <section className="mt-5 border border-stone-200 bg-white p-4"><p className="text-xs font-bold uppercase tracking-[.16em] text-orange-700">Historial comercial</p><h2 className="mt-1 text-lg font-bold">Estado del seguimiento</h2><p className="mt-1 text-sm text-slate-600">Los cambios y contactos preparados aparecerán también en la actividad administrativa.</p><SalesStatusForm restaurantId={restaurant.id} stage={(salesStatus?.stage as SalesStage|undefined)??"new"} note={salesStatus?.note??""}/></section>
+      <section className="mt-5 border border-stone-200 bg-white p-4">
+        <p className="text-xs font-bold uppercase tracking-[.16em] text-orange-700">
+          Historial comercial
+        </p>
+        <h2 className="mt-1 text-lg font-bold">Estado del seguimiento</h2>
+        <p className="mt-1 text-sm text-slate-600">
+          Los cambios y contactos preparados aparecerán también en la actividad
+          administrativa.
+        </p>
+        <SalesStatusForm
+          restaurantId={restaurant.id}
+          stage={(salesStatus?.stage as SalesStage | undefined) ?? "new"}
+          note={salesStatus?.note ?? ""}
+        />
+      </section>
 
       <div className="mt-6 grid items-start gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(320px,.6fr)]">
         <section className="rounded-3xl border border-stone-200 bg-white p-5">
@@ -284,7 +310,7 @@ export default async function ManagedRestaurantPage({
                 type="checkbox"
                 defaultChecked={Boolean(restaurant.ordering_enabled)}
               />
-              Menuly Pedidos · 59,99 €
+              Menuly Comandas · 59,99 €
             </label>
             <label className="flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/[.04] p-3">
               <input

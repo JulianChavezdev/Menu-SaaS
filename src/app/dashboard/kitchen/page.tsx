@@ -14,9 +14,9 @@ export default async function KitchenPage() {
       <main className="mx-auto max-w-3xl p-6">
         <BackButton fallback="/dashboard" />
         <section className="mt-6 border border-stone-200 bg-white p-8 text-center">
-          <h1 className="text-2xl font-bold">Menuly Pedidos no está activo</h1>
+          <h1 className="text-2xl font-bold">Menuly Comandas no está activo</h1>
           <p className="mt-2 text-sm text-slate-600">
-            Activa el plan de pedidos para utilizar la pantalla de cocina.
+            Activa el plan de comandas para utilizar la pantalla de cocina.
           </p>
         </section>
       </main>

@@ -5,7 +5,7 @@ import { PLAN_LIMITS, planForStatus } from "@/lib/plans";
 import { checkoutIsConfigured } from "@/lib/billing";
 import { startCheckout } from "@/app/dashboard/actions";
 import { FeedbackBox } from "@/components/dashboard/feedback-box";
-import {signupPlanName,trialDaysRemaining} from "@/lib/signup-plans";
+import { signupPlanName, trialDaysRemaining } from "@/lib/signup-plans";
 
 export default async function Page({
   searchParams,
@@ -36,8 +36,11 @@ export default async function Page({
   const limits = PLAN_LIMITS[plan];
   const active = plan === "carta";
   const trialing = status === "trialing";
-  const trialDays=trialing&&subscription?.current_period_end?trialDaysRemaining(subscription.current_period_end):null;
-  const activationUrl=`https://wa.me/34643663194?text=${encodeURIComponent(`Hola, quiero activar ${signupPlanName(restaurant.signup_plan_interest??subscription?.plan)} para ${restaurant.name}.`)}`;
+  const trialDays =
+    trialing && subscription?.current_period_end
+      ? trialDaysRemaining(subscription.current_period_end)
+      : null;
+  const activationUrl = `https://wa.me/34643663194?text=${encodeURIComponent(`Hola, quiero activar ${signupPlanName(restaurant.signup_plan_interest ?? subscription?.plan)} para ${restaurant.name}.`)}`;
   const ordering = Boolean(restaurant.ordering_enabled) && active;
   const productProgress = Math.min(
     100,
@@ -78,8 +81,28 @@ export default async function Page({
       )}
       {trialing && (
         <div className="mt-5 flex flex-col gap-3 border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-950 sm:flex-row sm:items-center sm:justify-between">
-          <div><strong>Tu prueba de {signupPlanName(restaurant.signup_plan_interest??subscription?.plan)} está activa{trialDays!==null?` · ${trialDays} días restantes`:""}.</strong><span className="mt-1 block text-emerald-800">Puedes crear y publicar tu carta con normalidad hasta el final del periodo indicado.</span></div>
-          <a href={activationUrl} target="_blank" rel="noreferrer" className="shrink-0 bg-emerald-800 px-4 py-2.5 text-center font-bold text-white">Activar por WhatsApp</a>
+          <div>
+            <strong>
+              Tu prueba de{" "}
+              {signupPlanName(
+                restaurant.signup_plan_interest ?? subscription?.plan,
+              )}{" "}
+              está activa
+              {trialDays !== null ? ` · ${trialDays} días restantes` : ""}.
+            </strong>
+            <span className="mt-1 block text-emerald-800">
+              Puedes crear y publicar tu carta con normalidad hasta el final del
+              periodo indicado.
+            </span>
+          </div>
+          <a
+            href={activationUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="shrink-0 bg-emerald-800 px-4 py-2.5 text-center font-bold text-white"
+          >
+            Activar por WhatsApp
+          </a>
         </div>
       )}
       {!active && (
@@ -109,14 +132,24 @@ export default async function Page({
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <span className="rounded-full border border-orange-500/30 bg-orange-100 px-3 py-1 text-xs font-semibold uppercase text-orange-700">
-                {trialing ? "Prueba activa" : active ? "Plan activo" : "Pendiente"}
+                {trialing
+                  ? "Prueba activa"
+                  : active
+                    ? "Plan activo"
+                    : "Pendiente"}
               </span>
               <h2 className="mt-3 text-2xl font-bold">
-                {ordering ? "Menuly Pedidos" : active ? "Plan Carta" : "Sin plan activo"}
+                {ordering
+                  ? "Menuly Comandas"
+                  : active
+                    ? "Plan Carta"
+                    : "Sin plan activo"}
               </h2>
               <p className="mt-1 text-sm text-slate-600">
                 {active
-                  ? trialing ? "Estás disfrutando de Menuly gratis durante un mes." : "Tu carta dispone de las funciones profesionales."
+                  ? trialing
+                    ? "Estás disfrutando de Menuly gratis durante un mes."
+                    : "Tu carta dispone de las funciones profesionales."
                   : "Activa un plan para gestionar y publicar la carta."}
               </p>
             </div>
@@ -181,13 +214,21 @@ export default async function Page({
                 </li>
               ))}
             </ul>
-            {active&&!trialing ? (
+            {active && !trialing ? (
               <div className="mt-7 flex items-center gap-2 rounded-xl border border-emerald-400/20 bg-emerald-400/10 p-4 text-sm text-emerald-800">
                 <Check size={18} />
                 Tu restaurante ya tiene acceso.
               </div>
             ) : trialing ? (
-              <a href={activationUrl} target="_blank" rel="noreferrer" className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 py-3.5 font-bold text-white"><LockKeyhole size={18}/>Mantener mi carta activa</a>
+              <a
+                href={activationUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 py-3.5 font-bold text-white"
+              >
+                <LockKeyhole size={18} />
+                Mantener mi carta activa
+              </a>
             ) : (
               <form action={startCheckout} className="mt-7">
                 <button
@@ -210,8 +251,37 @@ export default async function Page({
           </div>
         </section>
       </div>
-      <section className={`mt-5 border p-5 shadow-sm md:p-7 ${ordering?"border-emerald-300 bg-emerald-50":"border-stone-200 bg-white"}`}>
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"><div><p className="text-xs font-bold uppercase tracking-[.16em] text-emerald-700">Menuly Pedidos · 59,99 €/mes</p><h2 className="mt-1 text-xl font-bold">Pedidos desde la mesa hasta cocina</h2><p className="mt-1 text-sm text-slate-600">QR por mesa, sesiones temporales, comandas en tiempo real y pantalla de cocina.</p></div>{ordering?<span className="shrink-0 bg-emerald-700 px-4 py-2 text-sm font-bold text-white">Plan activo</span>:<a href="https://wa.me/34643663194?text=Hola%2C%20quiero%20activar%20Menuly%20Pedidos" target="_blank" rel="noreferrer" className="shrink-0 bg-slate-900 px-4 py-3 text-center text-sm font-bold text-white">Solicitar activación</a>}</div>
+      <section
+        className={`mt-5 border p-5 shadow-sm md:p-7 ${ordering ? "border-emerald-300 bg-emerald-50" : "border-stone-200 bg-white"}`}
+      >
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[.16em] text-emerald-700">
+              Menuly Comandas · 59,99 €/mes
+            </p>
+            <h2 className="mt-1 text-xl font-bold">
+              Comandero móvil conectado con Cocina
+            </h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Mesas organizadas, carta visual por categorías, observaciones y
+              comandas en tiempo real. Sin abrir sesiones.
+            </p>
+          </div>
+          {ordering ? (
+            <span className="shrink-0 bg-emerald-700 px-4 py-2 text-sm font-bold text-white">
+              Plan activo
+            </span>
+          ) : (
+            <a
+              href="https://wa.me/34643663194?text=Hola%2C%20quiero%20activar%20Menuly%20Comandas"
+              target="_blank"
+              rel="noreferrer"
+              className="shrink-0 bg-slate-900 px-4 py-3 text-center text-sm font-bold text-white"
+            >
+              Solicitar activación
+            </a>
+          )}
+        </div>
       </section>
       <FeedbackBox />
     </main>

@@ -30,10 +30,10 @@ export default function TermsPage() {
         <p>
           Menuly permite gestionar y publicar una carta digital, productos,
           categorías, imágenes o vídeos, plantillas, QR, traducciones, carrito
-          local y analíticas agregadas. Cuando el restaurante contrata Menuly
-          Pedidos, también puede habilitar QR por mesa y transmitir comandas a
-          su pantalla de cocina. Menuly no cobra al comensal, no emite facturas
-          y no sustituye un TPV fiscal.
+          local y analíticas agregadas. Menuly Comandas añade un comandero móvil
+          para el personal, organización de mesas y transmisión de comandas a la
+          pantalla de cocina. Menuly no procesa cobros, no emite facturas y no
+          sustituye un TPV fiscal.
         </p>
       </LegalSection>
       <LegalSection title="3. Alta y cuenta">
@@ -49,14 +49,14 @@ export default function TermsPage() {
           Las nuevas cuentas disponen de una prueba gratuita de 30 días del plan
           seleccionado. Finalizado ese periodo, la publicación se suspenderá si
           no existe un plan de pago activo; el contenido creado se conservará.
-          El Plan Carta cuesta 34,99 € al mes. Menuly Pedidos cuesta 59,99 € al mes e incorpora QR
-          por mesa, sesiones temporales, envío de comandas y pantalla de cocina.
-          Las modalidades anuales mostradas aplican un ahorro aproximado del
-          18 %. El servicio Configuración completa cuesta
-          149,99 € en un pago único e incluye grabación, edición de vídeos
-          con IA, configuración inicial de la carta, el primer mes de Plan Carta
-          y un segundo mes gratuito. Desde el tercer mes se aplica el precio
-          vigente del plan recurrente elegido.
+          El Plan Carta cuesta 34,99 € al mes. Menuly Comandas cuesta 59,99 € al
+          mes e incorpora comandero móvil, organización de mesas, envío de
+          comandas y pantalla de cocina. Las modalidades anuales mostradas
+          aplican un ahorro aproximado del 18 %. El servicio Configuración
+          completa cuesta 149,99 € en un pago único e incluye grabación, edición
+          de vídeos con IA, configuración inicial de la carta, el primer mes de
+          Plan Carta y un segundo mes gratuito. Desde el tercer mes se aplica el
+          precio vigente del plan recurrente elegido.
         </p>
         <p className="mt-3">
           El número de piezas audiovisuales, desplazamiento, impuestos,

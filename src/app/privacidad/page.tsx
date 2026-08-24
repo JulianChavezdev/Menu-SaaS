@@ -48,16 +48,15 @@ export default function PrivacyPage() {
             al restaurante o producto, no a una identidad directa del comensal.
           </li>
           <li>
-            Menuly Pedidos: mesa, sesión, productos, cantidades, observaciones,
-            estado de la comanda y marcas temporales necesarias para enviarla y
-            gestionarla en cocina.
+            Menuly Comandas: mesa, productos, cantidades, observaciones,
+            personal autenticado, estado de la comanda y marcas temporales
+            necesarias para gestionarla en cocina.
           </li>
         </ul>
         <p className="mt-3">
-          El carrito se guarda localmente en el dispositivo. Solo cuando el
-          restaurante tiene Menuly Pedidos activo y el comensal confirma el
-          envío desde un QR de mesa, sus productos y observaciones se transmiten
-          al restaurante como comanda.
+          El carrito de la carta pública se guarda localmente en el dispositivo.
+          En Menuly Comandas, los productos y observaciones seleccionados por el
+          personal se transmiten al restaurante al enviar la comanda.
         </p>
       </LegalSection>
       <LegalSection title="3. Finalidades y bases jurídicas">
