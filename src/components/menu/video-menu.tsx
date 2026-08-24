@@ -144,6 +144,17 @@ function sendAnalytics(payload: AnalyticsEvent) {
   }).catch(() => undefined);
 }
 
+function blocksCategoryGesture(target: EventTarget | null) {
+  return (
+    target instanceof Element &&
+    Boolean(
+      target.closest(
+        "aside,nav,details,summary,button,a,input,textarea,select,[data-product-details],[data-menu-intro],[data-menu-gesture-lock]",
+      ),
+    )
+  );
+}
+
 function revealExpandedDetails(details: HTMLDetailsElement) {
   if (!details.open) return;
   requestAnimationFrame(() => {
@@ -645,6 +656,10 @@ export function VideoMenu({
     return openCategory(categoryGroups[next].id, direction);
   };
   const handleTouchStart = (event: React.TouchEvent<HTMLElement>) => {
+    if (panel || blocksCategoryGesture(event.target)) {
+      gestureStart.current = null;
+      return;
+    }
     const touch = event.touches[0];
     gestureStart.current = touch
       ? { x: touch.clientX, y: touch.clientY }
@@ -673,8 +688,13 @@ export function VideoMenu({
     resumeActiveVideo();
   };
   const handlePointerDown = (event: React.PointerEvent<HTMLElement>) => {
-    if (event.pointerType !== "touch")
+    if (
+      event.pointerType !== "touch" &&
+      !panel &&
+      !blocksCategoryGesture(event.target)
+    )
       gestureStart.current = { x: event.clientX, y: event.clientY };
+    else gestureStart.current = null;
   };
   const handlePointerUp = (event: React.PointerEvent<HTMLElement>) => {
     if (event.pointerType === "touch") {
@@ -701,6 +721,7 @@ export function VideoMenu({
     resumeActiveVideo();
   };
   const handleWheel = (event: React.WheelEvent<HTMLElement>) => {
+    if (panel || blocksCategoryGesture(event.target)) return;
     if (
       Math.abs(event.deltaX) > Math.abs(event.deltaY) &&
       Math.abs(event.deltaX) > 30

@@ -98,6 +98,14 @@ describe("virtualización del feed de vídeo", () => {
     expect(menu).toContain("dy < -55 && atBottom");
     expect(menu).toContain("changeCategory(1)");
   });
+  it("no cambia de categoría al desplazarse dentro de paneles o descripciones", () => {
+    expect(menu).toContain("function blocksCategoryGesture");
+    expect(menu).toContain("[data-product-details]");
+    expect(menu).toContain("if (panel || blocksCategoryGesture(event.target))");
+    expect(menu).toContain(
+      "aside,nav,details,summary,button,a,input,textarea,select",
+    );
+  });
   it("anima horizontalmente el vídeo completo al cambiar de categoría", () => {
     expect(menu).toContain(
       'setCategorySlide(direction === 1 ? "exit-left" : "exit-right")',
