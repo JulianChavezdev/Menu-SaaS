@@ -27,8 +27,8 @@ describe("kitchen operations", () => {
     expect(board).toContain("setOrders(payload.orders)");
     expect(board).toContain('table: "dining_orders"');
   });
-  it("highlights all information sent by the customer", () => {
-    expect(board).toContain("Observación general del cliente");
+  it("highlights all information sent from the table", () => {
+    expect(board).toContain("Observación general de la mesa");
     expect(board).toContain("Modificación solicitada:");
     expect(board).toContain("order.customerNote");
     expect(board).toContain("item.note");

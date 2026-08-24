@@ -309,7 +309,7 @@ function OrderCard({
         <div className="mt-3 border-l-4 border-amber-500 bg-amber-50 p-3 text-amber-950">
           <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wide">
             <MessageSquareText size={14} />
-            Observación general del cliente
+            Observación general de la mesa
           </p>
           <p className="mt-1 text-sm font-bold">{order.customerNote}</p>
         </div>

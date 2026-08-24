@@ -1,7 +1,6 @@
 import { activeRestaurant } from "@/lib/permissions";
 import { QrCard } from "@/components/dashboard/qr-card";
 import { BackButton } from "@/components/ui/back-button";
-import Link from "next/link";
 
 export default async function Page() {
   const { restaurant } = await activeRestaurant();
@@ -17,12 +16,10 @@ export default async function Page() {
             Código QR
           </h1>
           <p className="text-xs text-slate-600">
-            Descarga el acceso general a la carta o gestiona los QR individuales por mesa.
+            Descarga el acceso general a la carta pública.
           </p>
         </div>
       </div>
-      {restaurant.ordering_enabled&&<div className="mt-5 max-w-xl border border-emerald-300 bg-emerald-50 p-5"><h2 className="font-bold text-emerald-950">QR para recibir pedidos</h2><p className="mt-1 text-sm text-emerald-900/75">Cada mesa necesita su propio código para identificar correctamente las comandas.</p><Link href="/dashboard/tables" className="mt-4 inline-flex bg-emerald-700 px-4 py-2.5 text-sm font-bold text-white">Gestionar mesas y QR</Link></div>}
-
       {/* Tarjeta Bento del QR */}
       <div className="mt-8 max-w-xl rounded-xl border border-stone-200 bg-white p-6 md:p-8 shadow-sm  ring-1 ring-stone-200 flex flex-col">
         {/* Encabezado interno */}
@@ -31,7 +28,8 @@ export default async function Page() {
             Acceso directo a la carta
           </h2>
           <p className="text-[11px] text-slate-500">
-            Tus clientes solo tendrán que escanear este código con su móvil para ver los platos en vídeo al instante.
+            Tus clientes solo tendrán que escanear este código con su móvil para
+            ver los platos en vídeo al instante.
           </p>
         </div>
 
