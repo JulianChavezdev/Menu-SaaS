@@ -38,4 +38,13 @@ describe("legal publication safeguards", () => {
       "La información de alérgenos la proporciona y valida exclusivamente el restaurante",
     );
   });
+
+  it("reflects the current activation, pricing and support policy", () => {
+    const terms = read("src/app/condiciones/page.tsx").replace(/\s+/g, " ");
+    expect(terms).toContain("No existe una prueba gratuita general");
+    expect(terms).toContain("34,99 € al mes o 344,30 € al año");
+    expect(terms).toContain("soporte prioritario todos los días");
+    expect(terms).not.toContain("prueba gratuita de 30 días");
+    expect(terms).not.toContain("avisos las 24 horas");
+  });
 });

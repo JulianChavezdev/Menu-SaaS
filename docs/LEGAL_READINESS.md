@@ -37,7 +37,7 @@ Después de guardar las variables es necesario volver a desplegar, porque las va
 ## Límites reflejados en los textos
 
 - No se ofrece prueba gratuita; las cuentas nuevas permanecen pendientes de activación.
-- Plan Carta: 34,99 € al mes; anual con ahorro aproximado del 18 %.
+- Plan Carta: 34,99 € al mes o 344,30 € al año en un único pago.
 - Configuración completa: 149,99 € en pago único, grabación, edición con IA, configuración de carta, primer mes incluido y segundo mes gratis; desde el tercero, Plan Carta a 34,99 €/mes.
 - Pagos manuales durante la beta, sin cargo automático.
 - El carrito es local y no envía comandas ni pedidos a cocina.

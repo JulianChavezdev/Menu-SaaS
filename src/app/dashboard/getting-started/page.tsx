@@ -15,15 +15,15 @@ export default async function GettingStarted(){
     {title:"Publica la carta",description:"Activa la carta y abre la vista del cliente para comprobarla.",href:"/dashboard/restaurant#publicacion",action:"Publicar carta",done:restaurant.is_published,icon:Eye},
   ];
   const completed=steps.filter(step=>step.done).length;
-  const trialEnd=subscription?.current_period_end?new Date(subscription.current_period_end):null;
+  const planActive=subscription?.status==="active"||subscription?.status==="trialing";
   return <main className="mx-auto min-h-screen max-w-4xl p-4 md:p-8">
     <header className="border-b border-stone-200 pb-6">
       <p className="text-xs font-bold uppercase tracking-[.18em] text-orange-700">Bienvenido a Menuly</p>
       <h1 className="mt-2 text-3xl font-extrabold text-slate-950 md:text-4xl">Tu carta puede estar publicada en pocos minutos</h1>
       <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600">Sigue estas tres acciones. La guía se actualizará automáticamente con lo que vayas completando.</p>
-      <div className="mt-5 flex flex-wrap items-center gap-3 border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-950">
-        <Check size={20}/><strong>Ya puedes disfrutar de Menuly durante un mes.</strong>
-        {trialEnd&&<span>Prueba activa hasta el {new Intl.DateTimeFormat("es-ES",{dateStyle:"long"}).format(trialEnd)}.</span>}
+      <div className={`mt-5 flex flex-wrap items-center gap-3 border p-4 text-sm ${planActive?"border-emerald-200 bg-emerald-50 text-emerald-950":"border-amber-200 bg-amber-50 text-amber-950"}`}>
+        <Check size={20}/><strong>{planActive?"Tu plan está activo. Ya puedes configurar y publicar tu carta.":"Tu plan está pendiente de activación."}</strong>
+        {!planActive&&<Link href="/dashboard/billing" className="font-bold underline underline-offset-4">Solicitar activación</Link>}
       </div>
     </header>
     <section className="mt-6">

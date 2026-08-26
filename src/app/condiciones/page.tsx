@@ -46,13 +46,12 @@ export default function TermsPage() {
       </LegalSection>
       <LegalSection title="4. Planes y precios">
         <p>
-          Las nuevas cuentas disponen de una prueba gratuita de 30 días del plan
-          seleccionado. Finalizado ese periodo, la publicación se suspenderá si
-          no existe un plan de pago activo; el contenido creado se conservará.
-          El Plan Carta cuesta 34,99 € al mes. Menuly Comandas cuesta 59,99 € al
+          Las nuevas cuentas permanecen pendientes de activación hasta que se
+          confirme manualmente la contratación. No existe una prueba gratuita
+          general. El Plan Carta cuesta 34,99 € al mes o 344,30 € al año en un
+          único pago. Menuly Comandas cuesta 59,99 € al
           mes e incorpora comandero móvil, organización de mesas, envío de
-          comandas y pantalla de cocina. Las modalidades anuales mostradas
-          aplican un ahorro aproximado del 18 %. El servicio Configuración
+          comandas y pantalla de cocina. El servicio Configuración
           completa cuesta 149,99 € en un pago único e incluye grabación, edición
           de vídeos con IA, configuración inicial de la carta, el primer mes de
           Plan Carta y un segundo mes gratuito. Desde el tercer mes se aplica el
@@ -106,9 +105,10 @@ export default function TermsPage() {
         <p>
           Se procura una disponibilidad continua, pero pueden producirse
           mantenimientos, fallos de red o incidencias de proveedores externos.
-          El canal de soporte puede recibir avisos las 24 horas, todos los días;
-          esto no constituye un plazo garantizado de respuesta o resolución
-          salvo acuerdo de nivel de servicio por escrito.
+          Se ofrece soporte prioritario todos los días. Las incidencias críticas
+          que impidan utilizar la carta se revisarán con la máxima prioridad,
+          sin que exista un plazo garantizado de respuesta o resolución salvo
+          acuerdo de nivel de servicio por escrito.
         </p>
       </LegalSection>
       <LegalSection title="10. Pagos, suspensión y baja">

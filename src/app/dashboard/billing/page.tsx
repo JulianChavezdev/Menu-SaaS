@@ -229,24 +229,31 @@ export default async function Page({
                 <LockKeyhole size={18} />
                 Mantener mi carta activa
               </a>
-            ) : (
+            ) : checkoutReady ? (
               <form action={startCheckout} className="mt-7">
                 <button
-                  disabled={!checkoutReady}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-600 text-white px-5 py-3.5 font-bold text-white shadow-sm disabled:cursor-not-allowed disabled:bg-slate-700 disabled:shadow-none"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 py-3.5 font-bold text-white shadow-sm"
                 >
                   <LockKeyhole size={18} />
-                  {checkoutReady
-                    ? "Mejorar al Plan Carta"
-                    : "Suscripciones no disponibles en la beta"}
+                  Mejorar al Plan Carta
                 </button>
-                {!checkoutReady && (
-                  <p className="mt-3 text-center text-xs text-slate-500">
-                    Seguimos desarrollando el producto; no se realizará ningún
-                    cobro durante esta fase.
-                  </p>
-                )}
               </form>
+            ) : (
+              <div className="mt-7">
+                <a
+                  href={activationUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-orange-600 px-5 py-3.5 font-bold text-white shadow-sm"
+                >
+                  <LockKeyhole size={18} />
+                  Solicitar activación
+                </a>
+                <p className="mt-3 text-center text-xs text-slate-500">
+                  La activación y el pago se gestionan manualmente. No se
+                  realizará ningún cargo automático.
+                </p>
+              </div>
             )}
           </div>
         </section>

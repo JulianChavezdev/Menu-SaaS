@@ -3,10 +3,11 @@ import { describe, expect, it } from "vitest";
 
 const flow = readFileSync("tests/e2e/restaurant-flow.spec.ts", "utf8");
 
-describe("signup trial e2e coverage", () => {
-  it("keeps the trial instead of activating it through test-only database writes", () => {
-    expect(flow).toMatch(/subscription_status:\s*"trialing"/);
-    expect(flow).not.toMatch(/update\(\{\s*subscription_status:\s*"active"/);
+describe("signup activation e2e coverage", () => {
+  it("keeps new restaurants pending until manual activation", () => {
+    expect(flow).toMatch(/subscription_status:\s*"past_due"/);
+    expect(flow).not.toMatch(/subscription_status:\s*"trialing"/);
+    expect(flow).toContain('provider:"manual"');
   });
   it("covers plan preselection, guide and persisted entitlement", () => {
     for (const copy of [
