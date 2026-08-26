@@ -4,6 +4,7 @@ import {describe,expect,it} from "vitest";
 const table=readFileSync("src/components/superadmin/restaurants-table.tsx","utf8");
 const preview=readFileSync("src/app/superadmin-preview/[id]/page.tsx","utf8");
 const detail=readFileSync("src/app/superadmin/restaurants/[id]/page.tsx","utf8");
+const overview=readFileSync("src/app/superadmin/page.tsx","utf8");
 
 describe("vista previa de carta para superadmin",()=>{
   it("muestra el acceso directo junto a gestionar",()=>{
@@ -18,5 +19,12 @@ describe("vista previa de carta para superadmin",()=>{
     expect(preview).toContain("requireSuperadmin()");
     expect(preview).toContain('admin.from("restaurants")');
     expect(preview).toContain("analyticsEnabled={false}");
+  });
+
+  it("muestra el plan efectivo y su estado en el listado",()=>{
+    expect(overview).toContain("subscription_status,plan,signup_plan_interest");
+    expect(table).toContain("Plan actual");
+    expect(table).toContain("signupPlanName(item.currentPlan)");
+    expect(table).toContain("Pendiente de pago");
   });
 });
