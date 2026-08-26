@@ -220,6 +220,13 @@ const checks=[
     migration:"202608240002_restrict_operational_member_data.sql",
     run:()=>supabase.from("restaurant_analytics_goals").select("restaurant_id",{head:true}).limit(1),
   },
+  {
+    migration:"202608260001_disable_new_signup_trials.sql",
+    run:async()=>{
+      const {data,error}=await supabase.rpc("signup_access_policy_version");
+      return {error:error??(data===20260826?null:new Error("Unexpected signup access policy version"))};
+    },
+  },
 ];
 
 const pending=[];

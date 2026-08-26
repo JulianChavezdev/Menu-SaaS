@@ -31,7 +31,8 @@ import {
   destroyCloudinaryVideo,
   optimizedCloudinaryVideoUrl,
 } from "@/lib/cloudinary";
-import {signupPlan,trialEndsAt} from "@/lib/signup-plans";
+import {signupPlan} from "@/lib/signup-plans";
+import {recordPlatformAlert} from "@/lib/platform-alerts";
 const uuid = z.string().uuid();
 const orderedIds = z
   .array(uuid)
@@ -144,7 +145,6 @@ export async function createRestaurant(form: FormData) {
   const slug = normalizePublicSlug(String(form.get("slug") || ""));
   const selectedPlan = signupPlan(user.user_metadata?.plan_interest ?? form.get("plan"));
   const entitlementPlan=selectedPlan==="pedidos"?"pedidos":"carta";
-  const trialEnd = trialEndsAt().toISOString();
   const {count:existingMemberships}=await s.from("restaurant_members").select("restaurant_id",{count:"exact",head:true}).eq("user_id",user.id);
   if((existingMemberships??0)>0)throw new Error("Tu cuenta ya tiene un restaurante. Abre el panel para gestionarlo.");
   if (
@@ -155,7 +155,7 @@ export async function createRestaurant(form: FormData) {
     throw new Error("Revisa el nombre y el slug.");
   const { data: created, error } = await s
     .from("restaurants")
-    .insert({ name, slug, email:user.email??null, currency: "EUR", locale: "es-ES", owner_id: user.id, plan:entitlementPlan, signup_plan_interest:selectedPlan, subscription_status: "trialing", ordering_enabled:selectedPlan==="pedidos", publication_suspended_for_payment:false })
+    .insert({ name, slug, email:user.email??null, currency: "EUR", locale: "es-ES", owner_id: user.id, plan:entitlementPlan, signup_plan_interest:selectedPlan, subscription_status: "past_due", ordering_enabled:false, publication_suspended_for_payment:true })
     .select("id")
     .single();
   if (error)
@@ -171,8 +171,8 @@ export async function createRestaurant(form: FormData) {
       restaurant_id: created.id,
       provider: "manual",
       plan: entitlementPlan,
-      status: "trialing",
-      current_period_end: trialEnd,
+      status: "past_due",
+      current_period_end: null,
     });
     if (subscriptionError) throw subscriptionError;
   } catch (setupError) {
@@ -185,6 +185,7 @@ export async function createRestaurant(form: FormData) {
   }
   revalidatePath("/dashboard");
   revalidatePath("/dashboard/getting-started");
+  await recordPlatformAlert({kind:"menu_created",title:"Nueva carta creada",message:`${name} ha creado su carta en Menuly y está pendiente de activación.`,restaurantId:created.id,details:{slug,plan:selectedPlan}});
 }
 export async function saveCategory(form: FormData) {
   const { supabase, restaurant } = await activeRestaurant();
@@ -484,6 +485,7 @@ export async function updateRestaurant(form: FormData) {
     .update(data)
     .eq("id", restaurant.id);
   if(error)throw new Error(error.code==="23505"?"Esa URL ya está siendo utilizada por otro restaurante.":error.message);
+  if(data.is_published&&!restaurant.is_published)await recordPlatformAlert({kind:"published",title:"Carta publicada",message:`${name} ha publicado su carta en menuly.es/r/${slug}.`,restaurantId:restaurant.id,details:{slug}});
   refresh(restaurant.slug);
   if(slug!==restaurant.slug)refresh(slug);
   return { translationStatus: translated.status };

@@ -37,7 +37,7 @@ describe("landing pública", () => {
     expect(page).toContain("export const metadata");
     expect(page).toContain('href="#contenido"');
   });
-  it("publica los planes y la prueba de treinta días", () => {
+  it("publica los planes sin ofrecer una prueba gratuita", () => {
     for (const copy of [
       "Plan Carta",
       "34,99 €",
@@ -48,14 +48,15 @@ describe("landing pública", () => {
       "Segundo mes gratis",
       "Edición de vídeos con IA",
       "Primer mes de Plan Carta incluido",
-      "Probar 30 días gratis",
-      "30 días gratis",
     ])
       expect(page).toContain(copy);
+    expect(page).toContain('value="6" label="plantillas"');
+    expect(page).not.toContain("30 días gratis");
   });
-  it("ofrece soporte continuo y contacto por WhatsApp", () => {
-    expect(page).toContain("soporte 24/7");
-    expect(page).toContain("todos los días de la semana");
+  it("ofrece soporte prioritario sin prometer disponibilidad 24/7", () => {
+    expect(page).toContain("Soporte prioritario todos los días");
+    expect(page).toContain("incidencias críticas");
+    expect(page).not.toContain("24/7");
     expect(page).toContain("https://wa.me/34643663194");
     expect(page).toContain("+34 643 663 194");
   });

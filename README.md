@@ -83,7 +83,7 @@ El acceso depende exclusivamente de `SUPERADMIN_EMAILS` o `SUPERADMIN_USER_IDS` 
 | Menuly Comandas | 59,99 €/mes | Todo Carta, comandero móvil, mesas, Cocina e historial |
 | Configuración completa | 149,99 € | Grabación, edición con IA, montaje, primer mes incluido y segundo mes gratis |
 
-Las cuentas nuevas pueden probar durante 30 días el plan seleccionado. Los cobros automáticos con Stripe permanecen desactivados; actualmente la activación y los pagos se gestionan manualmente.
+Las cuentas nuevas permanecen pendientes hasta la activación manual. Los cobros automáticos con Stripe permanecen desactivados; actualmente la activación y los pagos se gestionan manualmente. El Plan Carta cuesta 34,99 €/mes o 344,30 €/año en un único pago.
 
 ## Arquitectura
 

@@ -33,8 +33,8 @@ const features = [
   },
   {
     icon: LayoutTemplate,
-    title: "7 plantillas",
-    text: "Dos diseños gratuitos y cinco estilos premium para adaptar la carta a cada concepto gastronómico.",
+    title: "6 plantillas",
+    text: "Dos diseños gratuitos y cuatro estilos premium para adaptar la carta a cada concepto gastronómico.",
   },
   {
     icon: Languages,
@@ -84,7 +84,7 @@ const faqs = [
   },
   {
     q: "¿Qué ocurre si la carta se cae o algo deja de funcionar?",
-    a: "Tendrás soporte 24/7, todos los días de la semana. Revisaremos la incidencia y te ayudaremos a recuperar el servicio lo antes posible.",
+    a: "Tendrás soporte prioritario todos los días. Las incidencias críticas que impidan usar la carta se revisarán con la máxima prioridad.",
   },
 ];
 
@@ -157,7 +157,7 @@ export default function Home() {
           <PhoneShowcase />
         </div>
         <div className="mx-auto grid max-w-7xl grid-cols-2 gap-px border-y border-stone-200 bg-stone-100 md:grid-cols-4">
-          <Stat value="7" label="plantillas" />
+           <Stat value="6" label="plantillas" />
           <Stat value="100" suffix="" label="productos en Plan Carta" />
           <Stat value="2" label="idiomas" />
           <Stat value="0" label="cookies de seguimiento" />
@@ -258,11 +258,11 @@ export default function Home() {
               features={[
                 "Hasta 100 productos",
                 "Categorías ilimitadas",
-                "7 plantillas, incluidas premium",
+                "6 plantillas, incluidas premium",
                 "Vídeo, carrito, idiomas y analíticas",
                 "Equipo y soporte",
               ]}
-              cta="Probar 30 días gratis"
+              cta="Solicitar Plan Carta"
               href="/register?plan=carta"
             />
             <PriceCard
@@ -281,7 +281,7 @@ export default function Home() {
                 "Pantalla de cocina en tiempo real",
                 "Observaciones, estados e historial",
               ]}
-              cta="Probar 30 días gratis"
+              cta="Solicitar Menuly Comandas"
               href="/register?plan=pedidos"
             />
             <PriceCard
@@ -303,8 +303,8 @@ export default function Home() {
             />
           </div>
           <p className="mx-auto mt-5 max-w-3xl text-xs leading-relaxed text-slate-500">
-            Los nuevos restaurantes disfrutan de 30 días gratis. La activación
-            posterior y los pagos se gestionan manualmente. No se realizará
+            El Plan Carta cuesta 34,99 €/mes o 344,30 €/año en un único pago.
+            La activación y los pagos se gestionan manualmente. No se realizará
             ningún cargo automático.
           </p>
         </div>
@@ -384,7 +384,7 @@ export default function Home() {
             )}
           </div>
           <p className="mt-4 text-xs leading-relaxed text-slate-500">
-            WhatsApp: +34 643 663 194 · Soporte disponible 24/7
+            WhatsApp: +34 643 663 194 · Soporte prioritario todos los días
           </p>
         </div>
       </section>

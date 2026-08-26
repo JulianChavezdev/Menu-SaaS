@@ -29,6 +29,13 @@ export default function Register() {
         data: { plan_interest: plan },
       },
     });
+    if (!error && data.user) {
+      await fetch("/api/alerts/registration", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: data.user.id }),
+      }).catch(() => undefined);
+    }
     if (!error && data.session) {
       router.push(`/onboarding?plan=${plan}`);
       router.refresh();
@@ -56,7 +63,7 @@ export default function Register() {
             Crea tu cuenta
           </h1>
           <p className="mt-2 text-sm text-slate-600">
-            Elige tu plan y disfruta de Menuly gratis durante el primer mes.
+            Elige el plan que te interesa. Te ayudaremos a activarlo y ponerlo en marcha.
           </p>
         </div>
 
@@ -105,7 +112,7 @@ export default function Register() {
 
      
         <button disabled={pending} className="mt-6 w-full rounded-xl bg-orange-600 py-3.5 font-semibold text-white shadow-lg  transition-all duration-200 hover:bg-orange-600  focus:outline-none focus:ring-2 focus:ring-orange-500/50 disabled:cursor-wait disabled:opacity-60">
-          {pending?"Creando cuenta…":"Crear cuenta y empezar gratis"}
+          {pending?"Creando cuenta…":"Crear cuenta"}
         </button>
 
    

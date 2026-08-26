@@ -24,7 +24,7 @@ function OnboardingForm() {
     setError("");
     try {
       await createRestaurant(new FormData(e.currentTarget));
-      router.push("/dashboard/getting-started");
+      router.push("/dashboard/billing");
       router.refresh();
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo crear el restaurante");
@@ -53,14 +53,14 @@ function OnboardingForm() {
             Crea tu restaurante
           </h1>
           <p className="mt-2 text-sm text-slate-600">
-            Tu primer mes es gratis. Después te guiaremos para crear y publicar la carta.
+            Crea el espacio de tu restaurante. Después podrás solicitar la activación del plan.
           </p>
         </div>
 
         {/* Inputs Estilizados */}
         <div className="space-y-5">
           <input type="hidden" name="plan" value={plan}/>
-          <div className="rounded-xl border border-orange-200 bg-orange-50 p-3 text-sm text-slate-700"><span className="block text-xs font-bold uppercase tracking-wide text-orange-700">Plan elegido</span><strong>{SIGNUP_PLANS.find(item=>item.id===plan)?.name}</strong><span className="ml-2 text-xs">30 días de prueba</span></div>
+          <div className="rounded-xl border border-orange-200 bg-orange-50 p-3 text-sm text-slate-700"><span className="block text-xs font-bold uppercase tracking-wide text-orange-700">Plan elegido</span><strong>{SIGNUP_PLANS.find(item=>item.id===plan)?.name}</strong><span className="ml-2 text-xs">Activación manual</span></div>
           <label className="block text-sm font-medium text-slate-700">
             Nombre
             <input 

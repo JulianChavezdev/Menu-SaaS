@@ -15,6 +15,10 @@ export function isAuditGroup(value:unknown):value is AuditGroup{return typeof va
 export function describeAuditEvent(action:string,rawDetails:unknown):Description{
   const details=rawDetails&&typeof rawDetails==="object"&&!Array.isArray(rawDetails)?rawDetails as Details:{};
   switch(action){
+    case"alert.registration":return{title:"Nueva cuenta registrada",description:text(details,"message")??"Una nueva cuenta se registró en Menuly.",group:"restaurants",tone:"success"};
+    case"alert.menu_created":return{title:"Nueva carta creada",description:text(details,"message")??"Un restaurante creó su carta en Menuly.",group:"content",tone:"success"};
+    case"alert.published":return{title:"Carta publicada",description:text(details,"message")??"Un restaurante publicó su carta.",group:"content",tone:"success"};
+    case"alert.failure":return{title:"Fallo detectado",description:text(details,"message")??"El servidor registró un error que requiere revisión.",group:"system",tone:"danger"};
     case"access.suspended":return{title:"Acceso suspendido",description:"Se bloqueó temporalmente el acceso del restaurante.",group:"access",tone:"danger"};
     case"access.restored":return{title:"Acceso restaurado",description:"El restaurante recuperó el acceso a su panel.",group:"access",tone:"success"};
     case"access.expired_suspended":return{title:"Acceso suspendido por vencimiento",description:"Terminó el periodo de cortesía de la suscripción manual.",group:"access",tone:"danger"};
