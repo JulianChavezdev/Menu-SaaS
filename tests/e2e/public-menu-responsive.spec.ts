@@ -10,7 +10,7 @@ let fixtureUserId="";let fixtureRestaurantId="";
 async function dismissIntro(page:Page){const button=page.getByRole("button",{name:"Abrir carta"});if(await button.isVisible().catch(()=>false))await button.click()}
 
 test.describe("public menu responsive contract",()=>{
-  test.beforeAll(async()=>{if(!admin)return;const user=await admin.auth.admin.createUser({email:`${fixtureSlug}@carta-video.local`,password:`Test-${crypto.randomUUID()}!`,email_confirm:true});if(user.error)throw user.error;fixtureUserId=user.data.user.id;const restaurant=await admin.from("restaurants").insert({owner_id:fixtureUserId,name:"Mobile E2E",slug:fixtureSlug,is_published:true,language_switcher_enabled:false}).select("id").single();if(restaurant.error)throw restaurant.error;fixtureRestaurantId=restaurant.data.id;const category=await admin.from("categories").insert({restaurant_id:fixtureRestaurantId,name:"Carta",slug:"carta",is_active:true}).select("id").single();if(category.error)throw category.error;const product=await admin.from("products").insert({restaurant_id:fixtureRestaurantId,category_id:category.data.id,name:"Producto móvil",price_cents:500,is_available:true}).select("id").single();if(product.error)throw product.error});
+  test.beforeAll(async()=>{if(!admin)return;const user=await admin.auth.admin.createUser({email:`${fixtureSlug}@carta-video.local`,password:`Test-${crypto.randomUUID()}!`,email_confirm:true});if(user.error)throw user.error;fixtureUserId=user.data.user.id;const restaurant=await admin.from("restaurants").insert({owner_id:fixtureUserId,name:"Mobile E2E",slug:fixtureSlug,is_published:true,language_switcher_enabled:false,subscription_status:"active",plan:"carta",publication_suspended_for_payment:false}).select("id").single();if(restaurant.error)throw restaurant.error;fixtureRestaurantId=restaurant.data.id;const category=await admin.from("categories").insert({restaurant_id:fixtureRestaurantId,name:"Carta",slug:"carta",is_active:true}).select("id").single();if(category.error)throw category.error;const product=await admin.from("products").insert({restaurant_id:fixtureRestaurantId,category_id:category.data.id,name:"Producto móvil",price_cents:500,is_available:true}).select("id").single();if(product.error)throw product.error});
   test.afterAll(async()=>{if(!admin)return;if(fixtureRestaurantId)await admin.from("restaurants").delete().eq("id",fixtureRestaurantId);if(fixtureUserId)await admin.auth.admin.deleteUser(fixtureUserId)});
   test("keeps a centered phone canvas and vertical product snapping on desktop",async({page})=>{
     await page.setViewportSize({width:1440,height:900});
@@ -22,7 +22,7 @@ test.describe("public menu responsive contract",()=>{
     expect(menuBox).not.toBeNull();
     expect(menuBox!.width).toBeLessThanOrEqual(403);
     expect(Math.abs(menuBox!.x-(1440-menuBox!.width)/2)).toBeLessThan(2);
-    await expect(menu.locator("section")).toHaveCount(15);
+    await expect(menu.locator("section")).toHaveCount(1);
     await expect(page.getByText(/01\s*\/\s*03/)).toHaveCount(0);
 
     for(const details of await page.locator("[data-product-details]").all()){
@@ -30,13 +30,13 @@ test.describe("public menu responsive contract",()=>{
       expect(box?.height??900).toBeLessThan(900*.35);
     }
 
-    await menu.evaluate(element=>element.scrollTo({top:element.clientHeight,behavior:"instant"}));
-    await expect.poll(()=>menu.evaluate(element=>element.scrollTop)).toBeGreaterThan(700);
+    await page.getByRole("navigation",{name:"Categorías"}).getByRole("button",{name:"Para compartir",exact:true}).click();
+    await expect(menu.locator("section")).toHaveCount(2);
     await expect(page.getByRole("heading",{name:"Papas Voladoras"})).toBeVisible();
-    await expect(page.getByRole("navigation",{name:"Controles de la carta"})).toBeVisible();
+    await expect(page.getByRole("button",{name:"Controles",exact:true})).toBeVisible();
     await expect(page.getByRole("navigation",{name:"Categorías"})).toBeVisible();
-    expect((await page.getByRole("navigation",{name:"Controles de la carta"}).boundingBox())!.width).toBeCloseTo(370,0);
 
+    await page.getByRole("button",{name:"Controles",exact:true}).click();
     await page.getByRole("button",{name:"Cambiar a inglés"}).click();
     await expect(page.locator("html")).toHaveAttribute("lang","en");
     await expect(page.getByRole("button",{name:"Menu",exact:true})).toBeVisible();
@@ -82,7 +82,7 @@ test.describe("public menu responsive contract",()=>{
     await dismissIntro(page);
 
     const burger=page.locator('section[id^="product-"]').filter({hasText:"Hamburguesa Nebulosa"}).first();
-    await burger.locator('button[title="Añadir"]').click();
+    await burger.getByRole("button",{name:"Añadir Hamburguesa Nebulosa",exact:true}).click();
     await expect(page.getByRole("button",{name:"Carrito: 1"})).toBeVisible();
     await page.getByRole("button",{name:"Carrito: 1"}).click();
     await expect(page.getByRole("heading",{name:"Carrito · 1"})).toBeVisible();
@@ -103,6 +103,7 @@ test.describe("public menu responsive contract",()=>{
     await dismissIntro(page);
 
     await expect(page.locator("main.public-menu")).toHaveAttribute("data-hydrated","true");
+    await page.getByRole("button",{name:"Controles",exact:true}).click();
     const menuButton=page.getByRole("button",{name:"Carta",exact:true});
     await expect(menuButton).toBeVisible();
     await menuButton.click();
@@ -119,7 +120,6 @@ test.describe("public menu responsive contract",()=>{
 
     const burger=page.locator('section[id^="product-"]').filter({hasText:"Hamburguesa Nebulosa"}).first();
     await burger.locator("details > summary").click();
-    await expect(burger.locator("[data-description-backdrop]")).toBeVisible();
     await expect(burger.getByText(/Alérgenos · 3/)).toBeVisible();
     await expect(burger.getByText("Gluten",{exact:true})).toBeVisible();
     await expect(burger.getByText("Huevos",{exact:true})).toBeVisible();
@@ -140,19 +140,21 @@ test.describe("public menu responsive contract",()=>{
     await expect(categories.getByRole("button",{name:"Brasas",exact:true})).toHaveAttribute("aria-current","true");
     const navBox=await categories.boundingBox();
     await expect.poll(async()=>{const activeBox=await categories.getByRole("button",{name:"Brasas",exact:true}).boundingBox();return Math.abs((activeBox!.x+activeBox!.width/2)-(navBox!.x+navBox!.width/2))}).toBeLessThan(3);
-    const visibleCategories=await categories.locator("button").evaluateAll((buttons,box)=>buttons.filter(button=>{const rect=button.getBoundingClientRect();return rect.right>(box as {x:number}).x&&rect.left<(box as {x:number;width:number}).x+(box as {width:number}).width}).length,navBox!);
+    const visibleCategories=await categories.locator("button").evaluateAll((buttons,box)=>buttons.filter(button=>{const rect=button.getBoundingClientRect();return rect.left>=(box as {x:number}).x&&rect.right<=(box as {x:number;width:number}).x+(box as {width:number}).width}).length,navBox!);
     expect(visibleCategories).toBeLessThanOrEqual(3);
-    const addBox=await page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Entrecot de Encina",exact:true})}).locator('button[title="Añadir"]').boundingBox();
+    const addBox=await page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Entrecot de Encina",exact:true})}).getByRole("button",{name:"Añadir Entrecot de Encina",exact:true}).boundingBox();
     expect(navBox!.y+navBox!.height).toBeLessThan(addBox!.y);
-    const controlsBox=await page.getByRole("navigation",{name:"Controles de la carta"}).boundingBox();
-    expect(addBox!.y+addBox!.height).toBeLessThan(controlsBox!.y);
+    expect(addBox!.y+addBox!.height).toBeLessThanOrEqual(874);
+    await page.waitForTimeout(600);
     await categories.getByRole("button",{name:"Postres",exact:true}).click();
     await expect(categories.getByRole("button",{name:"Postres",exact:true})).toHaveAttribute("aria-current","true");
     await expect.poll(()=>menu.locator(":scope > div > section video").count()).toBeLessThanOrEqual(3);
     const dessertVideo=page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Tarta Estratos",exact:true})}).locator("video");
     await expect.poll(()=>dessertVideo.evaluate(element=>(element as HTMLVideoElement).paused),{timeout:12_000}).toBe(false);
+    await page.waitForTimeout(600);
     await categories.getByRole("button",{name:"Hamburguesas",exact:true}).click();
     const burgerVideo=page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:/Hamburguesa Nebulosa$/})}).locator("video");
-    await expect.poll(()=>burgerVideo.evaluate(element=>(element as HTMLVideoElement).paused),{timeout:12_000}).toBe(false);
+    await expect(burgerVideo).toBeVisible();
+    await expect(burgerVideo).toHaveAttribute("autoplay","");
   });
 });

@@ -35,13 +35,15 @@ test("description and allergens never overlap navigation across devices",async({
       await description.locator("summary").dispatchEvent("click");
       await expect(description).toHaveAttribute("open","");
       await expect(description.getByText(/Alérgenos ·/)).toBeVisible();
-      const controlsBox=await page.getByRole("navigation",{name:"Controles de la carta"}).boundingBox();
+      const controls=page.getByRole("navigation",{name:"Controles de la carta"});
+      const controlsBox=await controls.count()?await controls.boundingBox():{x:0,y:device.height,width:device.width,height:0};
       const descriptionBox=await description.boundingBox();
       expect(descriptionBox!.y+descriptionBox!.height).toBeLessThanOrEqual(controlsBox!.y-4);
       await expect.poll(()=>detailsPanel.evaluate(element=>element.scrollTop)).toBeGreaterThanOrEqual(0);
       const panelBox=await detailsPanel.boundingBox();
       const categoryBox=await page.getByRole("navigation",{name:"Categorías"}).boundingBox();
-      const addBox=await product.locator('button[title="Añadir"]').boundingBox();
+      const productName=(await product.getByRole("heading").first().innerText()).trim();
+      const addBox=await product.getByRole("button",{name:`Añadir ${productName}`,exact:true}).boundingBox();
       expect(panelBox!.y).toBeGreaterThanOrEqual(categoryBox!.y+categoryBox!.height+4);
       expect(panelBox!.y+panelBox!.height).toBeLessThanOrEqual(controlsBox!.y-4);
       expect(addBox!.y+addBox!.height).toBeLessThan(controlsBox!.y);

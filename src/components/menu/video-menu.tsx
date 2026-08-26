@@ -2182,9 +2182,9 @@ export function VideoMenu({
         <nav
           ref={categoryNavRef}
           aria-label={text.categories}
-          className="fixed left-1/2 top-[max(52px,calc(env(safe-area-inset-top)+38px))] z-40 flex w-[calc(100%-5rem)] max-w-[330px] -translate-x-1/2 touch-pan-x snap-x snap-mandatory gap-5 overflow-x-auto overscroll-x-contain px-2 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="fixed left-1/2 top-[max(52px,calc(env(safe-area-inset-top)+38px))] z-40 flex w-[calc(100%-5rem)] max-w-[330px] -translate-x-1/2 touch-pan-x snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain px-2 [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          <span aria-hidden="true" className="w-[30%] shrink-0" />
+          <span aria-hidden="true" className="w-[calc((100%-1rem)/3)] shrink-0" />
           {categoryGroups.map((group) => {
             const selected = activeCategory === group.id;
             return (
@@ -2198,7 +2198,7 @@ export function VideoMenu({
                 type="button"
                 aria-current={selected ? "true" : undefined}
                 onClick={() => openCategory(group.id)}
-                className={`relative shrink-0 snap-center pb-2 text-[11px] font-bold transition duration-300 ${selected ? "text-white" : "text-white/50"}`}
+                className={`relative w-[calc((100%-1rem)/3)] shrink-0 snap-center truncate pb-2 text-center text-[11px] font-bold transition duration-300 ${selected ? "text-white" : "text-white/50"}`}
               >
                 {group.name}
                 {selected && (
@@ -2207,7 +2207,7 @@ export function VideoMenu({
               </button>
             );
           })}
-          <span aria-hidden="true" className="w-[30%] shrink-0" />
+          <span aria-hidden="true" className="w-[calc((100%-1rem)/3)] shrink-0" />
         </nav>
       ) : tokyoPulse ? (
         <>

@@ -1,6 +1,6 @@
 # Estado de preparación de Menuly 1.0
 
-Actualizado: 20 de julio de 2026.
+Actualizado: 26 de agosto de 2026.
 
 ## Terminado
 
@@ -9,10 +9,11 @@ Actualizado: 20 de julio de 2026.
 - Cambio de URL pública con reserva del slug anterior y redirección permanente para que los QR ya impresos sigan funcionando.
 - Gestión de categorías, productos, alérgenos, disponibilidad, orden, traducción inglesa automática, fotografías y vídeos MP4/MOV con miniatura automática reemplazable.
 - Carta pública mobile-first con navegación vertical, catálogo listado en dos columnas, carrito local, observaciones, descripción y alérgenos desplegables.
-- Logo único, selector opcional español/inglés y siete plantillas: dos gratuitas y cinco premium.
+- Logo único, selector opcional español/inglés y seis plantillas: dos gratuitas y cuatro premium.
 - Sin prueba gratuita: las cuentas nuevas requieren activación de pago antes de crear o publicar contenido.
-- Configuración completa por 149,99 €: grabación, edición con IA, montaje y dos primeros meses de Plan Carta.
-- Panel de superadmin para métricas, capacidad, soporte, previsualización, suspensión, restauración y eliminación protegida.
+- Plan Carta por 34,99 €/mes o 344,30 €/año en un único pago.
+- Configuración completa por 149,99 €: grabación, edición con IA, montaje, primer mes incluido y segundo mes gratis.
+- Panel de superadmin para métricas, capacidad, planes efectivos, alertas, soporte, previsualización, suspensión, restauración y eliminación protegida.
 - Papelera con restauración temporal, purga diaria auditada y limpieza de archivos asociados.
 - Exportaciones, copias versionadas y copias automáticas diarias con retención.
 - Demo única `Bistro Nube` con 7 categorías, 15 productos y 21 recomendaciones comerciales; los fixtures de prueba se eliminan automáticamente.
@@ -23,7 +24,7 @@ Actualizado: 20 de julio de 2026.
 - Analíticas del restaurante orientadas a intención: detalles abiertos, tasa de añadido, rendimiento por producto, categorías, oportunidades, comparación 7/30/90 días y exportación CSV privada.
 - Venta adicional contextual con hasta tres recomendaciones por producto y atribución agregada de añadidos.
 - Onboarding guiado de cinco pasos con progreso real y siguiente acción directa.
-- Landing pública completa con navegación, producto, precios, equipo, FAQ y contacto configurable.
+- Landing pública completa con navegación, producto, precios, FAQ y contacto configurable.
 - Checkout y webhook de Stripe implementados, pero desactivados mientras no existan todas sus variables.
 - Despliegue operativo en `https://menuly.es`.
 
@@ -33,8 +34,8 @@ Actualizado: 20 de julio de 2026.
 - Pruebas unitarias, integración, TypeScript, lint y build disponibles en los scripts del proyecto.
 - `npm run check:deployment -- https://menuly.es`: salud, portada, demo, manifest, robots, sitemap y cabeceras correctos.
 - Demo remota comprobada: 1 restaurante, 7 categorías, 15 productos y 13 vídeos accesibles por debajo de 15 MB.
-- 269 pruebas unitarias, 16 de integración y 13 pruebas E2E críticas superadas.
-- TypeScript, lint y compilación de producción superados el 20 de julio de 2026.
+- 354 pruebas unitarias, 17 de integración y 14 recorridos E2E superados.
+- TypeScript, lint y compilación de producción superados el 26 de agosto de 2026.
 - La matriz E2E cubre móvil, iPad y escritorio: reproducción automática, solapamientos, carrito, alérgenos, virtualización, alta de restaurante y exportaciones de superadmin.
 - Los secretos no se almacenan en Git y las rutas privadas requieren sesión y rol de superadmin.
 
@@ -43,8 +44,9 @@ Actualizado: 20 de julio de 2026.
 1. Rotar `SUPABASE_SECRET_KEY`, porque una clave anterior se compartió fuera del almacén de secretos, y actualizarla en Supabase, Vercel y `.env.local`.
 2. Confirmar que Vercel contiene `CRON_SECRET`, `NEXT_PUBLIC_APP_URL=https://menuly.es` y la allowlist de superadmin.
 3. Configurar `NEXT_PUBLIC_CONTACT_EMAIL` si se quiere mostrar un correo público en la landing.
-4. Revisar una muestra de las traducciones automáticas antes de incorporar cada restaurante.
-5. Completar la identidad fiscal, revisar los textos legales con un profesional y definir el canal de soporte antes de ofrecer el servicio a terceros.
+4. Configurar `OPERATIONS_ALERT_WEBHOOK_URL` para recibir alertas fuera del superadmin.
+5. Revisar una muestra de las traducciones automáticas antes de incorporar cada restaurante.
+6. Completar la identidad fiscal, revisar los textos legales con un profesional y definir el canal de soporte antes de ofrecer el servicio a terceros.
 
 ## Pospuesto intencionadamente
 

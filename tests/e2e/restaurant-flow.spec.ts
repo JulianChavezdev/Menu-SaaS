@@ -65,12 +65,12 @@ test.describe("restaurant owner journey", () => {
     ).toHaveCount(0);
   });
 
-  test("login, trial onboarding, guide, product creation and public menu", async ({
+  test("login, manual activation, guide, product creation and public menu", async ({
     page,
   }) => {
     await page.goto("/login");
     await page.waitForLoadState("networkidle");
-    await page.getByLabel("Correo electrónico").fill(email);
+    await page.getByLabel("Correo o usuario").fill(email);
     await page.locator("#login-password").fill(password);
     await page.getByRole("button", { name: "Mostrar clave" }).click();
     await expect(page.locator("#login-password")).toHaveAttribute(
@@ -82,7 +82,7 @@ test.describe("restaurant owner journey", () => {
       "type",
       "password",
     );
-    await page.getByRole("button", { name: "Entrar al panel" }).click();
+    await page.getByRole("button", { name: "Entrar en Menuly" }).click();
     await expect(page).toHaveURL(/\/(dashboard|onboarding)$/, {
       timeout: 15_000,
     });
@@ -94,14 +94,9 @@ test.describe("restaurant owner journey", () => {
     await page.getByLabel("Nombre").fill("Restaurante E2E");
     await page.getByLabel("Slug público").fill(slug);
     await page.getByRole("button", { name: "Crear restaurante" }).click();
-    await expect(page).toHaveURL(/\/dashboard\/getting-started$/);
+    await expect(page).toHaveURL(/\/dashboard\/billing$/);
     await expect(
-      page.getByRole("heading", {
-        name: "Tu carta puede estar publicada en pocos minutos",
-      }),
-    ).toBeVisible();
-    await expect(
-      page.getByText("Ya puedes disfrutar de Menuly durante un mes."),
+      page.getByText(/Activación pendiente/),
     ).toBeVisible();
 
     const created = await admin!
@@ -112,9 +107,9 @@ test.describe("restaurant owner journey", () => {
       .eq("slug", slug)
       .single();
     expect(created.data).toMatchObject({
-      subscription_status: "trialing",
+      subscription_status: "past_due",
       signup_plan_interest: "pedidos",
-      ordering_enabled: true,
+      ordering_enabled: false,
       email,
     });
     const subscription = await admin!
@@ -122,14 +117,17 @@ test.describe("restaurant owner journey", () => {
       .select("status,plan,current_period_end")
       .eq("restaurant_id", created.data!.id)
       .single();
-    expect(subscription.data?.status).toBe("trialing");
+    expect(subscription.data?.status).toBe("past_due");
     expect(subscription.data?.plan).toBe("pedidos");
-    const remainingDays =
-      (new Date(subscription.data!.current_period_end!).getTime() -
-        Date.now()) /
-      86_400_000;
-    expect(remainingDays).toBeGreaterThan(29);
-    expect(remainingDays).toBeLessThanOrEqual(30.1);
+    expect(subscription.data?.current_period_end).toBeNull();
+
+    const periodEnd=new Date(Date.now()+31*86_400_000).toISOString();
+    const activated=await admin!.from("restaurants").update({subscription_status:"active",plan:"pedidos",ordering_enabled:true,publication_suspended_for_payment:false}).eq("id",created.data!.id);
+    if(activated.error)throw activated.error;
+    const subscriptionActivated=await admin!.from("subscriptions").update({status:"active",plan:"pedidos",provider:"manual",current_period_end:periodEnd}).eq("restaurant_id",created.data!.id);
+    if(subscriptionActivated.error)throw subscriptionActivated.error;
+    await page.goto("/dashboard/getting-started");
+    await expect(page.getByRole("heading",{name:"Tu carta puede estar publicada en pocos minutos"})).toBeVisible();
 
     await page.getByRole("link", { name: "Carta", exact: true }).click();
     const categoriesDetails = page.locator("details#categorias");
@@ -171,13 +169,13 @@ test.describe("restaurant owner journey", () => {
     await page.goto("/dashboard/appearance");
     await page.waitForLoadState("networkidle");
     await expect(
-      page.getByRole("radio", { name: "Seleccionar plantilla Medianoche" }),
+      page.getByRole("radio", { name: "Seleccionar plantilla Cinemática" }),
     ).toBeEnabled();
     await page
-      .getByRole("button", { name: "Vista previa de Medianoche" })
+      .getByRole("button", { name: "Vista previa de Cinemática" })
       .click();
     await expect(
-      page.getByRole("dialog", { name: "Vista previa de Medianoche" }),
+      page.getByRole("dialog", { name: "Vista previa de Cinemática" }),
     ).toBeVisible();
     await page.getByRole("button", { name: "Cerrar vista previa" }).click();
     await page

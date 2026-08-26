@@ -35,7 +35,7 @@ test.describe("superadmin restaurant exports",()=>{
       if(user.error)throw user.error;
       userId=user.data.user.id;
     }
-    const restaurant=await admin!.from("restaurants").insert({owner_id:userId,name:"Export E2E",slug:`export-e2e-${stamp}`}).select("id").single();
+    const restaurant=await admin!.from("restaurants").insert({owner_id:userId,name:"Export E2E",slug:`export-e2e-${stamp}`,subscription_status:"active",plan:"carta",publication_suspended_for_payment:false}).select("id").single();
     if(restaurant.error)throw restaurant.error;
     restaurantId=restaurant.data.id;
     const member=await admin!.from("restaurant_members").insert({restaurant_id:restaurantId,user_id:userId,role:"owner"});
@@ -60,9 +60,9 @@ test.describe("superadmin restaurant exports",()=>{
     expect(blockedRestore.status()).toBe(401);
 
     await page.goto("/login");
-    await page.getByLabel("Correo electrónico").fill(email);
+    await page.getByLabel("Correo o usuario").fill(email);
     await page.locator("#login-password").fill(password);
-    await page.getByRole("button",{name:"Entrar al panel"}).click();
+    await page.getByRole("button",{name:"Entrar en Menuly"}).click();
     await expect(page).toHaveURL(/\/(dashboard|onboarding)$/,{timeout:30_000});
     await page.goto(`/superadmin/restaurants/${restaurantId}`);
     await expect(page.getByRole("heading",{name:"Export E2E"})).toBeVisible();

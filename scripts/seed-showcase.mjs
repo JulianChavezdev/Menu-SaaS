@@ -101,21 +101,25 @@ if(apply&&recommendationsOnly){const current=await inspect(owner.id);for(const r
 const rows=await inspect(owner.id);
 const legacyRows=await inspectLegacy(owner.id);
 const expected=new Map(data.restaurants.map(item=>[item.slug,item]));
-let complete=legacyRows.length===0&&rows.length===expected.size&&rows.every(row=>{const item=expected.get(row.slug);return item?.template===row.menu_template&&row.is_published&&row.categories?.[0]?.count===item.categories.length&&row.products?.[0]?.count===item.products.length});
+const problems=[];
+if(legacyRows.length)problems.push(`quedan ${legacyRows.length} restaurantes demo antiguos`);
+if(rows.length!==expected.size)problems.push(`se esperaban ${expected.size} restaurantes y existen ${rows.length}`);
+for(const row of rows){const item=expected.get(row.slug);if(!item)problems.push(`slug inesperado: ${row.slug}`);else{if(item.template!==row.menu_template)problems.push(`${row.slug}: plantilla ${row.menu_template}`);if(!row.is_published)problems.push(`${row.slug}: no publicado`);if(row.categories?.[0]?.count!==item.categories.length)problems.push(`${row.slug}: categorías incompletas`);if(row.products?.[0]?.count!==item.products.length)problems.push(`${row.slug}: productos incompletos`)}}
+let complete=problems.length===0;
 for(const row of rows){
   const {data:products,error}=await anonymous.from("products").select("id,name,restaurant_id").eq("restaurant_id",row.id).order("sort_order");
   if(error)throw error;
   const expectedNames=expected.get(row.slug)?.products.map(product=>product.name)??[];
-  if(products?.some(product=>product.restaurant_id!==row.id)||JSON.stringify(products?.map(product=>product.name))!==JSON.stringify(expectedNames))complete=false;
+  if(products?.some(product=>product.restaurant_id!==row.id)||JSON.stringify(products?.map(product=>product.name))!==JSON.stringify(expectedNames)){complete=false;problems.push(`${row.slug}: productos públicos distintos al fixture`)}
   const {data:recommendations,error:recommendationError}=await anonymous.from("product_recommendations").select("source_product_id,recommended_product_id").eq("restaurant_id",row.id);
   if(recommendationError)throw recommendationError;
   const idToName=new Map((products??[]).map(product=>[product.id,product.name]));
   const expectedPairs=new Set((expected.get(row.slug)?.products??[]).flatMap(product=>(product.recommendations??[]).map(recommended=>`${product.name}|${recommended}`)));
   const actualPairs=new Set((recommendations??[]).map(item=>`${idToName.get(item.source_product_id)}|${idToName.get(item.recommended_product_id)}`));
-  if(expectedPairs.size!==actualPairs.size||[...expectedPairs].some(pair=>!actualPairs.has(pair)))complete=false;
+  if(expectedPairs.size!==actualPairs.size||[...expectedPairs].some(pair=>!actualPairs.has(pair))){complete=false;problems.push(`${row.slug}: recomendaciones públicas incompletas (${actualPairs.size}/${expectedPairs.size})`)}
 }
 console.table(rows.map(row=>({slug:row.slug,template:row.menu_template,categories:row.categories?.[0]?.count??0,products:row.products?.[0]?.count??0,published:row.is_published})));
-if(!complete)throw new Error(apply?"El escaparate no quedó completo.":"El escaparate todavía no está sembrado. Ejecuta npm run seed:showcase.");
+if(!complete)throw new Error(`${apply?"El escaparate no quedó completo":"El escaparate todavía no está completo"}: ${problems.join("; ")}.`);
 const categoryCount=data.restaurants.reduce((total,item)=>total+item.categories.length,0);const productCount=data.restaurants.reduce((total,item)=>total+item.products.length,0);
 const recommendationCount=data.restaurants.reduce((total,item)=>total+item.products.reduce((sum,product)=>sum+(product.recommendations?.length??0),0),0);
 console.log(`${apply?"Seed aplicado":"Verificación correcta"}: ${rows.length} restaurante demo, ${categoryCount} categorías, ${productCount} productos y ${recommendationCount} recomendaciones.`);
