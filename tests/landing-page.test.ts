@@ -52,6 +52,9 @@ describe("landing pública", () => {
       expect(page).toContain(copy);
     expect(page).toContain('value="6" label="plantillas"');
     expect(page).not.toContain("30 días gratis");
+    expect(page).toContain("Un diseño incluido y cinco estilos premium");
+    expect(page).toContain("No ofrecemos una prueba gratuita general");
+    expect(page).toContain("Menuly Comandas sí conecta el comandero móvil");
   });
   it("ofrece soporte prioritario sin prometer disponibilidad 24/7", () => {
     expect(page).toContain("Soporte prioritario todos los días");

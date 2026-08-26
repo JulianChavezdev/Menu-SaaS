@@ -26,7 +26,7 @@ export function getLegalIdentity(): LegalIdentity {
   };
 }
 
-export const LEGAL_UPDATED_AT = "17 de julio de 2026";
+export const LEGAL_UPDATED_AT = "26 de agosto de 2026";
 
 export const legalLinks = [
   {href: "/legal", label: "Aviso legal"},

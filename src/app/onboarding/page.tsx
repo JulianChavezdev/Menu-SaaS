@@ -16,6 +16,7 @@ function OnboardingForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const plan = signupPlan(searchParams.get("plan"));
+  const selectedPlan = SIGNUP_PLANS.find((item) => item.id === plan)!;
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -60,7 +61,7 @@ function OnboardingForm() {
         {/* Inputs Estilizados */}
         <div className="space-y-5">
           <input type="hidden" name="plan" value={plan}/>
-          <div className="rounded-xl border border-orange-200 bg-orange-50 p-3 text-sm text-slate-700"><span className="block text-xs font-bold uppercase tracking-wide text-orange-700">Plan elegido</span><strong>{SIGNUP_PLANS.find(item=>item.id===plan)?.name}</strong><span className="ml-2 text-xs">Activación manual</span></div>
+          <div className="rounded-xl border border-orange-200 bg-orange-50 p-3 text-sm text-slate-700"><span className="block text-xs font-bold uppercase tracking-wide text-orange-700">Plan elegido</span><strong>{selectedPlan.name}</strong><span className="ml-2 text-xs">{selectedPlan.price}</span><span className="mt-1 block text-xs text-slate-600">Sin cargo automático · activación manual</span></div>
           <label className="block text-sm font-medium text-slate-700">
             Nombre
             <input 

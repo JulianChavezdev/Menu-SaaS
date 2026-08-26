@@ -20,7 +20,7 @@ import { getLegalIdentity, legalLinks } from "@/lib/legal";
 import { BrandLogo } from "@/components/brand/brand-logo";
 
 export const metadata: Metadata = {
-  title: "Carta Digital",
+  title: "Menuly | Carta digital en vídeo para restaurantes",
   description:
     "Convierte cada plato en una experiencia visual. Carta digital mobile-first con vídeos, QR, carrito, traducción automática y analíticas.",
 };
@@ -34,7 +34,7 @@ const features = [
   {
     icon: LayoutTemplate,
     title: "6 plantillas",
-    text: "Dos diseños gratuitos y cuatro estilos premium para adaptar la carta a cada concepto gastronómico.",
+    text: "Un diseño incluido y cinco estilos premium para adaptar la carta a cada concepto gastronómico.",
   },
   {
     icon: Languages,
@@ -68,7 +68,11 @@ const faqs = [
   },
   {
     q: "¿Los pedidos llegan a cocina?",
-    a: "No. El carrito actual sirve para recordar productos, cantidades y observaciones. No envía comandas ni sustituye un TPV.",
+    a: "En el Plan Carta, el carrito sirve para recordar productos, cantidades y observaciones sin enviar comandas. Menuly Comandas sí conecta el comandero móvil con la pantalla de Cocina, aunque no sustituye un TPV fiscal.",
+  },
+  {
+    q: "¿Hay una prueba gratuita?",
+    a: "No ofrecemos una prueba gratuita general. Puedes crear tu cuenta, elegir el plan que te interesa y conocer la demo sin compromiso; la carta se habilita cuando confirmemos manualmente la activación.",
   },
   {
     q: "¿Puedo usar mis propios vídeos?",
@@ -296,7 +300,7 @@ export default function Home() {
                 "Configuración completa de la carta",
                 "Primer mes de Plan Carta incluido",
                 "Segundo mes de Plan Carta gratis",
-                "Desde el tercer mes: plan elegido",
+                "Desde el tercer mes: Plan Carta a 34,99 €/mes",
               ]}
               cta="Elegir configuración completa"
               href="/register?plan=configuracion"

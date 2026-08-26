@@ -4,9 +4,7 @@ import {
   signupPlan,
   signupPlanName,
   trialDaysRemaining,
-  trialEndsAt,
   trialUrgency,
-  TRIAL_DAYS,
 } from "../src/lib/signup-plans";
 
 describe("signup plans", () => {
@@ -18,10 +16,13 @@ describe("signup plans", () => {
     ]));
   it("rejects an untrusted plan", () =>
     expect(signupPlan("enterprise-inventado")).toBe("carta"));
-  it("creates a thirty-day trial", () => {
-    const start = new Date("2026-08-20T12:00:00.000Z");
-    expect(TRIAL_DAYS).toBe(30);
-    expect(trialEndsAt(start).toISOString()).toBe("2026-09-19T12:00:00.000Z");
+  it("shows the exact monthly and annual prices", () => {
+    expect(SIGNUP_PLANS.find((plan) => plan.id === "carta")?.price).toBe(
+      "34,99 €/mes · 344,30 €/año",
+    );
+    expect(SIGNUP_PLANS.find((plan) => plan.id === "pedidos")?.price).toBe(
+      "59,99 €/mes · 590,30 €/año",
+    );
   });
   it("calculates the remaining whole days without negative values", () => {
     expect(
