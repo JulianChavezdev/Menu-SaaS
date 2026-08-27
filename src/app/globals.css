@@ -34,3 +34,64 @@ body{margin:0;background:#FBF8F3;color:#0C1F30;font-family:Inter,Arial,ui-sans-s
 .saas-light .border-orange-600,.dashboard-light .border-orange-600{border-color:#F0643A!important}
 .saas-light input:focus,.saas-light select:focus,.saas-light textarea:focus,.dashboard-light input:focus,.dashboard-light select:focus,.dashboard-light textarea:focus{border-color:#F0643A!important;box-shadow:0 0 0 3px rgba(240,100,58,.14)!important}
 @media (prefers-reduced-motion:reduce){html:focus-within{scroll-behavior:auto}*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* Menuly application system — aligned with the marketing experience. */
+.menuly-app{
+  --menuly-bg:#0b0b0c;
+  --menuly-surface:#1a1a1a;
+  --menuly-surface-raised:#222120;
+  --menuly-border:rgba(245,240,235,.1);
+  --menuly-text:#f5f0eb;
+  --menuly-muted:#a09890;
+  --menuly-gold:#d4943a;
+  min-height:100dvh;
+  background-color:var(--menuly-bg)!important;
+  background-image:radial-gradient(circle at 85% 0,rgba(212,148,58,.09),transparent 28%);
+  color:var(--menuly-text)!important;
+  font-family:var(--font-marketing-sans),Inter,Arial,sans-serif;
+}
+.menuly-app h1,.menuly-app h2,.menuly-app h3{font-family:var(--font-marketing-sans),Inter,Arial,sans-serif!important;color:var(--menuly-text)!important;letter-spacing:-.025em}
+.menuly-app [class~="bg-white"],.menuly-app [class*="bg-white/"]{background-color:rgba(26,26,26,.96)!important}
+.menuly-app [class~="bg-stone-50"],.menuly-app [class~="bg-stone-100"],.menuly-app [class*="bg-[#f4f1eb]"]{background-color:#121213!important}
+.menuly-app [class*="border-stone-"],.menuly-app [class*="ring-stone-"]{border-color:var(--menuly-border)!important;--tw-ring-color:var(--menuly-border)!important}
+.menuly-app [class*="text-slate-950"],.menuly-app [class*="text-slate-900"],.menuly-app [class*="text-stone-950"]{color:var(--menuly-text)!important}
+.menuly-app [class*="text-slate-800"],.menuly-app [class*="text-slate-700"],.menuly-app [class*="text-slate-600"],.menuly-app [class*="text-slate-500"],.menuly-app [class*="text-stone-700"],.menuly-app [class*="text-stone-600"],.menuly-app [class*="text-stone-500"]{color:var(--menuly-muted)!important}
+.menuly-app [class*="bg-orange-600"],.menuly-app [class*="bg-orange-700"],.menuly-app [class*="bg-orange-800"]{background-color:var(--menuly-gold)!important;color:#0b0b0c!important}
+.menuly-app [class*="bg-orange-50"],.menuly-app [class*="bg-orange-100"]{background-color:rgba(212,148,58,.11)!important}
+.menuly-app [class*="bg-red-50"]{background-color:rgba(127,29,29,.28)!important}
+.menuly-app [class*="bg-amber-50"]{background-color:rgba(120,53,15,.25)!important}
+.menuly-app [class*="bg-emerald-50"]{background-color:rgba(6,78,59,.28)!important}
+.menuly-app [class*="text-orange-"],.menuly-app [class*="text-amber-800"]{color:#e0a34b!important}
+.menuly-app [class*="text-red-950"]{color:#fee2e2!important}
+.menuly-app [class*="text-amber-950"]{color:#fef3c7!important}
+.menuly-app [class*="text-emerald-950"]{color:#d1fae5!important}
+.menuly-app [class*="border-orange-"],.menuly-app [class*="ring-orange-"]{border-color:rgba(212,148,58,.55)!important;--tw-ring-color:rgba(212,148,58,.22)!important}
+.menuly-app .glass{background:rgba(26,26,26,.97);border-color:var(--menuly-border);box-shadow:0 20px 60px rgba(0,0,0,.24);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.menuly-app input:not([type="checkbox"]):not([type="radio"]),.menuly-app select,.menuly-app textarea{
+  border-color:var(--menuly-border)!important;
+  background:#111112!important;
+  color:var(--menuly-text)!important;
+  box-shadow:none!important;
+}
+.menuly-app input::placeholder,.menuly-app textarea::placeholder{color:#68635e!important}
+.menuly-app input:focus,.menuly-app select:focus,.menuly-app textarea:focus{border-color:var(--menuly-gold)!important;box-shadow:0 0 0 3px rgba(212,148,58,.14)!important}
+.menuly-app button,.menuly-app a{transition:color .25s ease,background-color .25s ease,border-color .25s ease,transform .25s ease,opacity .25s ease}
+.menuly-app button:active,.menuly-app a:active{transform:scale(.985)}
+.menuly-app img[alt="Menuly"]{filter:brightness(0) invert(1)}
+.menuly-app .saas-back-button{border-color:var(--menuly-border);background:var(--menuly-surface);color:var(--menuly-text);box-shadow:none}
+.menuly-app .dashboard-sign-out{color:var(--menuly-muted)}
+.menuly-app .dashboard-sign-out:hover,.menuly-app .saas-back-button:hover{background:var(--menuly-surface-raised);color:var(--menuly-text)}
+.menuly-sidebar{background-image:linear-gradient(180deg,rgba(212,148,58,.08),transparent 24%)}
+.menuly-sidebar nav{scrollbar-width:none}
+.menuly-sidebar nav::-webkit-scrollbar{display:none}
+.menuly-sidebar nav a{border-left-width:0;border-radius:10px;color:var(--menuly-muted)}
+.menuly-sidebar nav a:hover{background:rgba(255,255,255,.045);color:var(--menuly-text)}
+.menuly-sidebar nav a[class*="bg-orange-50"]{background:rgba(212,148,58,.13)!important;color:#f2c37d!important;box-shadow:inset 3px 0 0 var(--menuly-gold)}
+.menuly-app header[class*="sticky"]{background:rgba(11,11,12,.92)!important;border-color:var(--menuly-border)!important;box-shadow:0 10px 30px rgba(0,0,0,.12)!important;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+.menuly-app article,.menuly-app section{scroll-margin-top:5rem}
+.menuly-auth main>div.absolute{display:none}
+
+@media (min-width:900px){
+  .menuly-auth main::before{content:"";position:absolute;inset:0 0 0 52%;z-index:0;background:linear-gradient(90deg,#0b0b0c 0,transparent 28%),linear-gradient(0deg,rgba(11,11,12,.58),rgba(11,11,12,.18)),url("/landing/figma/asset-7.png") center/cover no-repeat;opacity:.82}
+  .menuly-auth form{margin-right:46%;z-index:1}
+}

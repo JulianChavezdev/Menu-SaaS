@@ -107,6 +107,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="es"
+      data-scroll-behavior="smooth"
       className={`${noirSans.variable} ${noirSerif.variable} ${streetSans.variable} ${streetCondensed.variable} ${cozyDisplay.variable} ${cozySans.variable} ${tokyoSans.variable} ${tokyoSerif.variable} ${marketingSans.variable}`}
     >
       <head>

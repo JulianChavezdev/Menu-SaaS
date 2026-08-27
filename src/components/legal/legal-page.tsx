@@ -5,7 +5,7 @@ import {LEGAL_UPDATED_AT, legalLinks, type LegalIdentity} from "@/lib/legal";
 import {BrandLogo} from "@/components/brand/brand-logo";
 
 export function LegalPage({title, summary, identity, children}:{title:string;summary:string;identity:LegalIdentity;children:ReactNode}) {
-  return <main className="min-h-screen bg-stone-50 text-stone-950">
+  return <main className="menuly-app min-h-screen bg-stone-50 text-stone-950">
     <header className="border-b border-stone-200 bg-white">
       <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
         <Link href="/" aria-label="Volver a Menuly" className="inline-flex items-center gap-3 text-sm font-semibold text-stone-700 hover:text-orange-800"><ArrowLeft size={16}/><BrandLogo className="w-[112px]"/></Link>

@@ -51,8 +51,8 @@ export default async function DashboardLayout({
     ? [...restaurantNavigation, ["Superadmin", "/superadmin"] as const]
     : restaurantNavigation;
   return (
-    <div className="dashboard-light min-h-screen bg-[#f4f1eb] text-slate-950 md:grid md:grid-cols-[240px_1fr]">
-      <aside className="border-b border-stone-200 bg-white p-4 shadow-sm md:sticky md:top-0 md:flex md:h-screen md:flex-col md:border-b-0 md:border-r">
+    <div className="dashboard-light menuly-app min-h-screen bg-[#f4f1eb] text-slate-950 md:grid md:grid-cols-[248px_1fr]">
+      <aside className="menuly-sidebar border-b border-stone-200 bg-white p-4 shadow-sm md:sticky md:top-0 md:flex md:h-screen md:flex-col md:border-b-0 md:border-r md:p-5">
         <div className="flex items-center justify-between gap-3 md:block">
           <Link
             href="/dashboard"
@@ -62,12 +62,13 @@ export default async function DashboardLayout({
           >
             <BrandLogo priority className="w-[124px] md:w-[142px]" />
           </Link>
-          <div className="md:mt-5">
+          <div className="flex items-center gap-2 md:mt-5">
             <RestaurantSwitcher activeId={restaurant.id} items={items} />
+            <span className="md:hidden"><SignOut compact /></span>
           </div>
         </div>
         <DashboardNavigation links={navigation} />
-        <div className="mt-8 border-t border-stone-200 pt-4 md:mt-auto">
+        <div className="mt-8 hidden border-t border-stone-200 pt-4 md:mt-auto md:block">
           <SignOut />
         </div>
       </aside>
