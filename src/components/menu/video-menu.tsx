@@ -1915,7 +1915,7 @@ export function VideoMenu({
                           className={`flex cursor-pointer list-none items-center gap-1 text-[#F0E9DB] ${NOIRLUXE_TOKENS.typography.label}`}
                         >
                           {allergens.length > 0
-                            ? text.allergens
+                            ? `${text.allergens} · ${allergens.length}`
                             : text.pairings}
                           <ChevronDown
                             size={12}

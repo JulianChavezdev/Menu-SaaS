@@ -6,7 +6,7 @@
     "slug": "bistro-nube",
     "description": "Una demostración completa de carta en vídeo: hamburguesas, pizza, desayunos, brasa, sushi y postres.",
     "logoUrl": "/demo/logos/bistro-nube.svg",
-    "template": "social-hud",
+    "template": "noirluxe",
     "languageSwitcherEnabled": true,
     "categories": [
       {"name": "Hamburguesas", "slug": "hamburguesas"},
