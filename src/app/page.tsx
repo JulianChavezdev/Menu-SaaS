@@ -1,564 +1,93 @@
-import Link from "next/link";
 import type { Metadata } from "next";
-import {
-  ArrowRight,
-  BarChart3,
-  Check,
-  ChevronRight,
-  Languages,
-  LayoutTemplate,
-  MessageCircle,
-  Play,
-  QrCode,
-  ShoppingBag,
-  Sparkles,
-  Users,
-  Video,
-} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, BarChart3, Check, Languages, MessageCircle, Play, QrCode, ShoppingBag, Users } from "lucide-react";
 import { MarketingNav } from "@/components/marketing/marketing-nav";
 import { getLegalIdentity, legalLinks } from "@/lib/legal";
-import { BrandLogo } from "@/components/brand/brand-logo";
 
 export const metadata: Metadata = {
   title: "Menuly | Carta digital en vídeo para restaurantes",
-  description:
-    "Convierte cada plato en una experiencia visual. Carta digital mobile-first con vídeos, QR, carrito, traducción automática y analíticas.",
+  description: "Transforma tu carta en una experiencia visual inmersiva con vídeos verticales, QR, traducción automática y analíticas.",
 };
 
-const features = [
-  {
-    icon: Video,
-    title: "Vídeo vertical",
-    text: "Cada plato se presenta a pantalla completa con una experiencia fluida y pensada para móvil.",
-  },
-  {
-    icon: LayoutTemplate,
-    title: "6 plantillas",
-    text: "Un diseño incluido y cinco estilos premium para adaptar la carta a cada concepto gastronómico.",
-  },
-  {
-    icon: Languages,
-    title: "Traducción automática",
-    text: "El restaurante escribe en español y la versión inglesa se genera automáticamente.",
-  },
-  {
-    icon: ShoppingBag,
-    title: "Carrito local",
-    text: "Los clientes guardan platos, cantidades y observaciones sin enviar pedidos a cocina.",
-  },
-  {
-    icon: BarChart3,
-    title: "Analíticas privadas",
-    text: "Visualizaciones, reproducciones, carrito, compartidos y contactos sin cookies ni seguimiento personal.",
-  },
-  {
-    icon: Users,
-    title: "Equipo y soporte",
-    text: "Roles independientes y asistencia de superadmin sin compartir contraseñas.",
-  },
-];
 const faqs = [
-  {
-    q: "¿Necesito instalar una aplicación?",
-    a: "No. El restaurante gestiona su carta desde el navegador y los clientes la abren escaneando un QR.",
-  },
-  {
-    q: "¿La carta funciona en cualquier móvil?",
-    a: "Sí. Está diseñada mobile-first y en ordenador mantiene un marco de tamaño móvil para conservar la experiencia.",
-  },
-  {
-    q: "¿Los pedidos llegan a cocina?",
-    a: "En el Plan Carta, el carrito sirve para recordar productos, cantidades y observaciones sin enviar comandas. Menuly Comandas sí conecta el comandero móvil con la pantalla de Cocina, aunque no sustituye un TPV fiscal.",
-  },
-  {
-    q: "¿Hay una prueba gratuita?",
-    a: "No ofrecemos una prueba gratuita general. Puedes crear tu cuenta, elegir el plan que te interesa y conocer la demo sin compromiso; la carta se habilita cuando confirmemos manualmente la activación.",
-  },
-  {
-    q: "¿Puedo usar mis propios vídeos?",
-    a: "Sí. Cada producto admite su vídeo vertical, que puede sustituirse desde el panel cuando quieras.",
-  },
-  {
-    q: "¿Tengo que traducir cada plato?",
-    a: "No. Escribes en español y la traducción inglesa se genera automáticamente cuando el servicio está activado.",
-  },
-  {
-    q: "¿Puedo cambiar la carta después de publicarla?",
-    a: "Siempre. Los cambios se reflejan en la misma URL y QR, sin necesidad de volver a imprimirlo.",
-  },
-  {
-    q: "¿Qué ocurre si la carta se cae o algo deja de funcionar?",
-    a: "Tendrás soporte prioritario todos los días. Las incidencias críticas que impidan usar la carta se revisarán con la máxima prioridad.",
-  },
-];
+  ["¿Necesito instalar una aplicación?", "No. Gestionas Menuly desde el navegador y tus clientes abren la carta escaneando un QR."],
+  ["¿La carta funciona en cualquier móvil?", "Sí. Está diseñada mobile-first y se adapta también a tablet y ordenador."],
+  ["¿Los pedidos llegan a cocina?", "En Plan Carta, el carrito no envía comandas. Menuly Comandas sí conecta el comandero móvil con Cocina, aunque no sustituye un TPV fiscal."],
+  ["¿Puedo usar mis propios vídeos?", "Sí. Puedes subir fotos, vídeos verticales y archivos MOV desde el panel del restaurante."],
+  ["¿Tengo que traducir cada plato?", "No. Escribes en español y Menuly genera automáticamente la versión inglesa cuando el servicio está activado."],
+  ["¿Puedo cambiar la carta después de publicarla?", "Sí. Los cambios aparecen en la misma URL y QR sin necesidad de volver a imprimirlo."],
+  ["¿Hay una prueba gratuita?", "No ofrecemos una prueba gratuita general. Puedes crear tu cuenta y conocer la demo sin compromiso; la carta se habilita al confirmar la activación."],
+  ["¿Qué ocurre si la carta deja de funcionar?", "Tendrás soporte prioritario todos los días. Las incidencias críticas se revisan con la máxima prioridad."],
+] as const;
+
+const plans = [
+  {name:"Plan Carta",price:"34,99 €",suffix:"/mes",note:"344,30 €/año · ahorra un 18%",description:"La experiencia completa para gestionar una carta profesional.",features:["Hasta 100 productos","Categorías ilimitadas","6 plantillas","Traducción automática ES/EN","Carrito y analíticas privadas","Soporte prioritario"],href:"/register?plan=carta",cta:"Elegir Plan Carta",featured:true},
+  {name:"Menuly Comandas",price:"59,99 €",suffix:"/mes",note:"590,30 €/año · ahorra un 18%",description:"Comandero móvil conectado en tiempo real con la pantalla de Cocina.",features:["Todo Plan Carta","Comandero para camareros","Organización por mesas","Cocina en tiempo real","Observaciones e historial"],href:"/register?plan=pedidos",cta:"Elegir Comandas"},
+  {name:"Configuración completa",price:"149,99 €",suffix:" pago único",description:"Para restaurantes sin tiempo, vídeos ni equipo audiovisual propio.",features:["Grabación de tus platos","Edición de vídeos con IA","Carta configurada por Menuly","Primer mes de Plan Carta incluido","Segundo mes de Plan Carta gratis"],href:"/register?plan=configuracion",cta:"Contactar con ventas"},
+] as const;
 
 export default function Home() {
   const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim();
   const legalIdentity = getLegalIdentity();
   return (
-    <main className="saas-light min-w-0 overflow-x-clip bg-[#f4f1eb] text-slate-950">
-      <a
-        href="#contenido"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:text-slate-950"
-      >
-        Saltar al contenido
-      </a>
+    <main className="min-w-0 overflow-x-clip bg-[#0b0b0c] font-[var(--font-marketing-sans)] text-[#f5f0eb] selection:bg-[#d4943a] selection:text-[#0b0b0c]">
+      <a href="#contenido" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-[10px] focus:bg-[#f5a623] focus:px-4 focus:py-2 focus:text-[#0b0b0c]">Saltar al contenido</a>
       <MarketingNav />
-      <section
-        id="inicio"
-        className="relative isolate scroll-mt-20 overflow-hidden pt-24 lg:min-h-screen lg:pt-28"
-      >
-        <div className="absolute inset-0 -z-20 bg-orange-50" />
-        <div className="hidden" />
-        <div
-          id="contenido"
-          className="mx-auto grid max-w-7xl min-w-0 items-center gap-10 px-4 pb-14 sm:px-6 sm:pb-16 md:grid-cols-[minmax(0,1.08fr)_minmax(250px,.72fr)] md:gap-6 lg:grid-cols-[1.08fr_.92fr] lg:gap-14 lg:pb-20"
-        >
-          <div className="min-w-0">
-            <span className="inline-flex items-center gap-2 rounded-full border border-orange-300/20 bg-orange-100 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[.14em] text-orange-800 sm:text-xs sm:tracking-[.18em]">
-              <Sparkles size={14} />
-              La carta que entra por los ojos
-            </span>
-            <h1 className="mt-6 max-w-4xl text-[clamp(2.75rem,13vw,4rem)] font-black leading-[.94] tracking-[-.055em] md:text-[clamp(3rem,6.8vw,4.25rem)] lg:mt-7 lg:text-7xl">
-              Haz que tus platos{" "}
-              <span className="text-orange-700">se vendan solos.</span>
-            </h1>
-            <p className="mt-6 max-w-2xl text-base leading-relaxed text-slate-700 sm:text-lg lg:mt-7 lg:text-xl">
-              Una carta digital en vídeo, diseñada para móvil y preparada para
-              convertir curiosidad en ganas de pedir.
-            </p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row md:flex-col lg:mt-9 lg:flex-row">
-              <Link
-                href="/r/bistro-nube"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 font-bold text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:bg-orange-100"
-              >
-                <Play size={18} fill="currentColor" />
-                Probar la demo
-              </Link>
-              <Link
-                href="/register"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-stone-300 bg-white px-6 py-3 font-bold transition hover:border-orange-300/40 hover:bg-orange-50"
-              >
-                Crear cuenta
-                <ArrowRight size={18} />
-              </Link>
-            </div>
-            <div className="mt-7 grid gap-2 text-xs text-slate-600 sm:grid-cols-3 md:grid-cols-1 lg:mt-8 lg:grid-cols-3">
-              <span className="flex items-center gap-1.5">
-                <Check className="shrink-0 text-emerald-500" size={15} />
-                Sin app para el cliente
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Check className="shrink-0 text-emerald-500" size={15} />
-                QR siempre actualizado
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Check className="shrink-0 text-emerald-500" size={15} />
-                Activación asistida
-              </span>
+
+      <section id="inicio" className="scroll-mt-20 px-5 pb-20 pt-28 sm:px-8 lg:min-h-[640px] lg:px-12 lg:pb-24 lg:pt-32">
+        <div id="contenido" className="mx-auto grid max-w-[1344px] items-center gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(520px,1.15fr)] lg:gap-12">
+          <div className="max-w-[600px]">
+            <h1 className="text-[clamp(3rem,13vw,4.5rem)] font-extrabold leading-[1.08] tracking-[-.045em] text-[#f4ede4]">La carta que<br/><span className="text-[#d4943a]">entra por los ojos</span></h1>
+            <p className="mt-8 max-w-[500px] text-base leading-7 text-[#9e8e7e] sm:text-lg sm:leading-8">Transforma tu carta en una experiencia visual inmersiva. Vídeos verticales que seducen, inspiran y convierten visitas en pedidos.</p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link href="/register" className="inline-flex min-h-12 items-center justify-center rounded-[40px] bg-[#d4943a] px-8 py-3.5 text-sm font-semibold text-[#0c0a08] shadow-[0_0_20px_rgba(212,148,58,.3)] transition duration-300 hover:-translate-y-0.5 hover:bg-[#e3a64d]">Crear mi carta</Link>
+              <Link href="/r/bistro-nube" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[40px] border-2 border-[#d4943a] px-7 py-3 text-sm font-medium text-[#f4ede4] transition duration-300 hover:bg-[#d4943a]/10"><Play size={15} fill="#d4943a" className="text-[#d4943a]"/>Probar la demo</Link>
             </div>
           </div>
-          <PhoneShowcase />
-        </div>
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-px border-y border-stone-200 bg-stone-100 md:grid-cols-4">
-           <Stat value="6" label="plantillas" />
-          <Stat value="100" suffix="" label="productos en Plan Carta" />
-          <Stat value="2" label="idiomas" />
-          <Stat value="0" label="cookies de seguimiento" />
+          <HeroCards />
         </div>
       </section>
-      <section
-        id="producto"
-        className="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20 lg:py-24"
-      >
-        <div className="mx-auto max-w-7xl">
-          <Eyebrow>Todo en un solo lugar</Eyebrow>
-          <SectionTitle>Mucho más que un PDF con QR.</SectionTitle>
-          <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-600 sm:text-base">
-            Una experiencia de descubrimiento para el cliente y un panel de
-            control real para el restaurante.
-          </p>
-          <div className="mt-9 grid gap-4 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3">
-            {features.map(({ icon: Icon, title, text }) => (
-              <article
-                key={title}
-                className="group relative min-w-0 overflow-hidden rounded-xl border border-stone-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-orange-300/30 sm:p-6"
-              >
-                <div className="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-orange-100 blur-2xl transition group-hover:bg-orange-100" />
-                <span className="grid h-11 w-11 place-items-center rounded-lg border border-stone-200 bg-stone-100 text-orange-700">
-                  <Icon size={21} />
-                </span>
-                <h3 className="mt-5 text-xl font-bold">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                  {text}
-                </p>
-              </article>
-            ))}
+
+      <section id="producto" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
+        <div className="mx-auto grid max-w-[1344px] items-center gap-14 lg:grid-cols-[1.05fr_.75fr]">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <FeatureCard icon={<Languages size={22}/>} title="Traducción automática" text="Tu carta en español e inglés al instante, sin duplicar trabajo." visual={<div className="text-center"><span className="text-[10px] text-[#77716b]">English</span><p className="mt-1 text-sm font-bold">Tuna tartare with avocado</p><p className="text-[10px] text-[#85817d]">Fresh bluefin tuna, soy, sesame</p><div className="mt-3 flex justify-center gap-5 text-[9px]"><span>ES</span><span className="text-[#d4943a]">EN</span></div></div>}/>
+            <FeatureCard icon={<ShoppingBag size={22}/>} title="Carrito local" text="El cliente prepara su selección antes de decidir qué pedir." visual={<div className="space-y-2 text-[10px]"><div className="flex justify-between border-b border-white/[.06] pb-2"><span><b className="mr-2 rounded-full bg-[#2b2926] px-1.5 py-1 text-[#d4943a]">1</b>Tartar de atún</span><b className="text-[#d4943a]">€14</b></div><div className="flex justify-between border-b border-white/[.06] pb-2"><span><b className="mr-2 rounded-full bg-[#2b2926] px-1.5 py-1 text-[#d4943a]">2</b>Chuletón</span><b className="text-[#d4943a]">€76</b></div><div className="flex justify-between pt-1 text-[#a09890]"><span>Total</span><b className="text-white">€90</b></div></div>}/>
+            <FeatureCard icon={<BarChart3 size={22}/>} title="Analíticas privadas" text="Descubre qué platos generan más interés sin cookies de terceros." visual={<div className="flex h-16 items-end justify-between gap-2">{[22,42,31,58,25,48,20].map((height,index)=><span key={index} className={`w-full rounded-t-[5px] ${index===3?"bg-[#d4a853]":"bg-[#353432]"}`} style={{height}}/>)}</div>}/>
+            <FeatureCard icon={<Users size={22}/>} title="Equipo y soporte" text="Roles separados y soporte humano para gestionar el servicio con seguridad." visual={<div className="flex justify-center gap-3">{[["MA","#d4a853"],["LP","#f0643a"],["JR","#79aee8"]].map(([label,color])=><span key={label} style={{backgroundColor:color}} className="grid size-10 place-items-center rounded-full text-[10px] font-bold text-[#111]">{label}</span>)}</div>}/>
+          </div>
+          <div className="max-w-[470px] text-center lg:justify-self-center"><p className="text-4xl font-extrabold leading-tight tracking-[-.04em] sm:text-5xl">Todo en <span className="text-[#d4943a]">un solo lugar</span></p><p className="mx-auto mt-5 max-w-md text-base leading-7 text-[#a09890]">Mucho más que un PDF con QR: seis estilos visuales, una experiencia de descubrimiento para el cliente y un panel de control real para el restaurante.</p></div>
+        </div>
+      </section>
+
+      <section id="como-funciona" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
+        <div className="mx-auto max-w-[1050px]">
+          <div className="text-center"><h2 className="text-3xl font-extrabold tracking-[-.035em] sm:text-4xl">De cero a <span className="text-[#d4943a]">publicada</span></h2><p className="mt-3 text-[#a09890]">Tres pasos. Un QR. Infinitos cambios.</p></div>
+          <div className="mt-14 grid gap-12 lg:grid-cols-[1fr_360px] lg:items-center lg:gap-20">
+            <div className="space-y-10"><ProcessStep number="01" title="Configura tu restaurante" text="Nombre, datos, idioma y branding en menos de cinco minutos."><SettingsMockup/></ProcessStep><ProcessStep number="02" title="Sube carta y vídeos" text="Añade platos con foto, vídeo, descripción y precio desde cualquier dispositivo."><MenuMockup/></ProcessStep><ProcessStep number="03" title="Comparte tu QR" text="Descárgalo, imprímelo y actualiza la carta sin volver a cambiarlo."><QrMockup/></ProcessStep></div>
+            <div className="relative mx-auto aspect-[9/16] w-full max-w-[340px] overflow-hidden rounded-[22px] border border-[#d4943a]/35 bg-[#181410] shadow-[0_0_45px_rgba(212,148,58,.14)]"><Image src="/landing/figma/asset-8.png" alt="Vista de un plato en Menuly" fill sizes="340px" className="object-cover"/><div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40"/><div className="absolute inset-x-5 top-5 flex items-center justify-between text-xs"><span className="rounded-[8px] border border-white/20 bg-black/35 px-2 py-1">←</span><strong>Menuly</strong><span className="rounded-[8px] border border-white/20 bg-black/35 px-2 py-1">EN</span></div><div className="absolute inset-x-5 bottom-5"><div className="flex items-end justify-between gap-4"><div><h3 className="text-xl font-bold">Hamburguesa Nebulosa</h3><p className="mt-1 text-xs text-white/70">Descripción y alérgenos</p></div><strong className="text-[#fcd34d]">12,90 €</strong></div></div></div>
           </div>
         </div>
       </section>
-      <section
-        id="como-funciona"
-        className="scroll-mt-20 border-y border-stone-200 bg-stone-50 px-4 py-16 sm:px-6 sm:py-20 lg:py-24"
-      >
-        <div className="mx-auto max-w-7xl">
-          <Eyebrow>De cero a publicada</Eyebrow>
-          <SectionTitle>Tres pasos. Un QR. Infinitos cambios.</SectionTitle>
-          <div className="mt-9 grid gap-4 md:grid-cols-3 lg:mt-12 lg:gap-5">
-            {[
-              {
-                n: "01",
-                title: "Crea tu restaurante",
-                text: "Configura tus datos, logo, idioma y el estilo que mejor representa tu marca.",
-              },
-              {
-                n: "02",
-                title: "Sube carta y vídeos",
-                text: "Añade categorías, productos, precios y vídeos verticales desde cualquier dispositivo.",
-              },
-              {
-                n: "03",
-                title: "Comparte tu QR",
-                text: "Publica una vez y actualiza siempre sobre la misma dirección, sin reimprimir.",
-              },
-            ].map((step, index) => (
-              <article
-                key={step.n}
-                className="relative rounded-xl border border-stone-200 bg-white p-5 shadow-sm sm:p-6 lg:p-7"
-              >
-                <span className="text-4xl font-black text-orange-200 lg:text-5xl">
-                  {step.n}
-                </span>
-                <h3 className="mt-4 text-lg font-bold lg:mt-5 lg:text-xl">
-                  {step.title}
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                  {step.text}
-                </p>
-                {index < 2 && (
-                  <ChevronRight className="absolute -right-4 top-1/2 z-10 hidden text-orange-700 lg:block" />
-                )}
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-      <section
-        id="precios"
-        className="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20 lg:py-24"
-      >
-        <div className="mx-auto max-w-7xl text-center">
-          <Eyebrow>Precios claros</Eyebrow>
-          <SectionTitle>
-            Elige cómo quieres poner en marcha tu carta.
-          </SectionTitle>
-          <div className="mx-auto mt-9 grid max-w-7xl gap-5 text-left md:grid-cols-3 lg:mt-12 lg:gap-6">
-            <PriceCard
-              name="Plan Carta"
-              price="34,99 €"
-              suffix="/mes"
-              note="344,30 €/año en un único pago · ahorra un 18%"
-              description="La experiencia completa para gestionar tu carta profesional."
-              features={[
-                "Hasta 100 productos",
-                "Categorías ilimitadas",
-                "6 plantillas, incluidas premium",
-                "Vídeo, carrito, idiomas y analíticas",
-                "Equipo y soporte",
-              ]}
-              cta="Solicitar Plan Carta"
-              href="/register?plan=carta"
-            />
-            <PriceCard
-              featured
-              badge="Más operativo"
-              name="Menuly Comandas"
-              price="59,99 €"
-              suffix="/mes"
-              note="590,30 €/año en un único pago · ahorra un 18%"
-              description="Comandero móvil para camareros conectado directamente con Cocina."
-              features={[
-                "Todo lo incluido en Plan Carta",
-                "TPV móvil con la misma carta",
-                "Mesas organizadas sin abrir sesiones",
-                "Productos e imágenes por categorías",
-                "Pantalla de cocina en tiempo real",
-                "Observaciones, estados e historial",
-              ]}
-              cta="Solicitar Menuly Comandas"
-              href="/register?plan=pedidos"
-            />
-            <PriceCard
-              badge="Segundo mes gratis"
-              name="Configuración completa"
-              price="149,99 €"
-              suffix=" pago único"
-              description="La ponemos en marcha por ti y te entregamos la carta lista para publicar."
-              features={[
-                "Grabación profesional de tus platos",
-                "Edición de vídeos con IA",
-                "Configuración completa de la carta",
-                "Primer mes de Plan Carta incluido",
-                "Segundo mes de Plan Carta gratis",
-                "Desde el tercer mes: Plan Carta a 34,99 €/mes",
-              ]}
-              cta="Elegir configuración completa"
-              href="/register?plan=configuracion"
-            />
-          </div>
-          <p className="mx-auto mt-5 max-w-3xl text-xs leading-relaxed text-slate-500">
-            El Plan Carta cuesta 34,99 €/mes o 344,30 €/año en un único pago.
-            La activación y los pagos se gestionan manualmente. No se realizará
-            ningún cargo automático.
-          </p>
-        </div>
-      </section>
-      <section
-        id="faq"
-        className="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-20 lg:py-24"
-      >
-        <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[.65fr_1fr] lg:gap-10">
-          <div>
-            <Eyebrow>Preguntas frecuentes</Eyebrow>
-            <SectionTitle>Todo lo que necesitas saber.</SectionTitle>
-            <p className="mt-4 text-sm leading-relaxed text-slate-600">
-              Si tu duda no aparece aquí, puedes contactar desde la sección
-              siguiente.
-            </p>
-          </div>
-          <div className="space-y-3">
-            {faqs.map((item) => (
-              <details
-                key={item.q}
-                className="group rounded-xl border border-stone-200 bg-white p-4 shadow-sm sm:p-5"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
-                  <span>{item.q}</span>
-                  <span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-stone-100 text-orange-700 transition group-open:rotate-45">
-                    +
-                  </span>
-                </summary>
-                <p className="mt-4 max-w-2xl text-sm leading-relaxed text-slate-600">
-                  {item.a}
-                </p>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
-      <section
-        id="contacto"
-        className="scroll-mt-20 px-4 pb-16 pt-4 sm:px-6 sm:pb-20 lg:pb-24 lg:pt-8"
-      >
-        <div className="relative mx-auto max-w-6xl overflow-hidden rounded-xl border border-orange-300/20 bg-orange-100 p-6 text-center sm:p-10 md:p-14">
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_0%,rgba(240,100,58,.20),transparent_50%)]" />
-          <span className="inline-flex h-12 w-12 items-center justify-center rounded-lg bg-white text-orange-800">
-            <QrCode />
-          </span>
-          <h2 className="mx-auto mt-6 max-w-3xl text-3xl font-black leading-tight tracking-tight sm:text-5xl">
-            ¿Listo para que tu carta se vea como sabe?
-          </h2>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-slate-700 sm:text-base">
-            Si tienes cualquier pregunta antes de empezar, escríbenos
-            directamente por WhatsApp.
-          </p>
-          <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
-            <a
-              href="https://wa.me/34643663194?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20Menuly"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-emerald-400 px-5 py-3.5 font-bold text-emerald-950 transition hover:bg-emerald-300"
-            >
-              <MessageCircle size={19} />
-              Preguntar por WhatsApp
-            </a>
-            <Link
-              href="/register"
-              className="min-h-12 rounded-xl bg-white px-6 py-3.5 font-bold text-slate-950 hover:bg-orange-100"
-            >
-              Crear cuenta
-            </Link>
-            {contactEmail && (
-              <a
-                href={`mailto:${contactEmail}?subject=${encodeURIComponent("Información sobre Menuly")}`}
-                className="min-h-12 rounded-xl border border-stone-300 bg-white px-6 py-3.5 font-bold hover:bg-stone-100"
-              >
-                Contactar por correo
-              </a>
-            )}
-          </div>
-          <p className="mt-4 text-xs leading-relaxed text-slate-500">
-            WhatsApp: +34 643 663 194 · Soporte prioritario todos los días
-          </p>
-        </div>
-      </section>
-      <footer className="border-t border-stone-200 px-4 py-8 md:px-6">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <BrandLogo className="w-[110px]" />
-            <p>
-              © {new Date().getFullYear()}. Cartas que despiertan el apetito.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-4">
-            <a href="#inicio" className="hover:text-slate-950">
-              Inicio
-            </a>
-            <a href="#precios" className="hover:text-slate-950">
-              Precios
-            </a>
-            <a href="#faq" className="hover:text-slate-950">
-              FAQ
-            </a>
-            <a
-              href="/manual-menuly-restaurantes.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-slate-950"
-            >
-              Manual
-            </a>
-            {legalIdentity.complete &&
-              legalLinks.slice(0, 4).map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="hover:text-slate-950"
-                >
-                  {link.label}
-                </Link>
-              ))}
-            <Link href="/login" className="hover:text-slate-950">
-              Acceder
-            </Link>
-          </div>
-        </div>
-      </footer>
+
+      <section id="precios" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:px-12 lg:py-28"><div className="mx-auto max-w-[1000px]"><div className="text-center"><h2 className="text-3xl font-extrabold tracking-[-.035em] sm:text-4xl"><span className="text-[#d4943a]">Precios</span> claros</h2><p className="mt-3 text-[#a09890]">Elige cómo quieres poner Menuly en marcha.</p></div><div className="mt-12 grid gap-5 lg:grid-cols-3">{plans.map(plan=><PriceCard key={plan.name} {...plan}/>)}</div><p className="mx-auto mt-6 max-w-3xl text-center text-xs leading-6 text-[#77716b]">Activación y pagos gestionados manualmente. No se realizará ningún cargo automático.</p></div></section>
+
+      <section id="faq" className="scroll-mt-20 px-5 py-20 sm:px-8 lg:px-12 lg:py-24"><div className="mx-auto max-w-[700px]"><h2 className="text-center text-3xl font-extrabold tracking-[-.035em] sm:text-4xl">Preguntas frecuentes</h2><div className="mt-10 divide-y divide-white/[.08] border-y border-white/[.08]">{faqs.map(([question,answer])=><details key={question} className="group py-1"><summary className="flex min-h-[68px] cursor-pointer list-none items-center justify-between gap-5 text-sm font-semibold sm:text-base"><span>{question}</span><span className="grid size-8 shrink-0 place-items-center rounded-full border border-white/10 text-[#d4943a] transition group-open:rotate-45">+</span></summary><p className="max-w-2xl pb-6 pr-12 text-sm leading-6 text-[#a09890]">{answer}</p></details>)}</div></div></section>
+
+      <section id="contacto" className="relative scroll-mt-20 overflow-hidden px-5 py-24 text-center sm:px-8 lg:py-28"><div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(212,148,58,.18),transparent_42%)]"/><div className="relative mx-auto max-w-[650px]"><h2 className="text-4xl font-extrabold leading-tight tracking-[-.04em] sm:text-5xl">¿Listo para que tu carta<br/>se vea como sabe?</h2><p className="mt-5 text-[#a09890]">Cuéntanos qué necesita tu restaurante y te ayudamos a ponerlo en marcha.</p><div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row"><a href="https://wa.me/34643663194?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20Menuly" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[40px] bg-[#d4943a] px-7 py-3 text-sm font-bold text-[#0b0b0c] shadow-[0_0_20px_rgba(212,148,58,.25)]"><MessageCircle size={17}/>Preguntar por WhatsApp</a><Link href="/register" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-[40px] border border-white/15 px-7 py-3 text-sm font-bold transition hover:border-[#d4943a]"><span>Crear mi carta</span><ArrowRight size={16}/></Link>{contactEmail&&<a href={`mailto:${contactEmail}?subject=${encodeURIComponent("Información sobre Menuly")}`} className="inline-flex min-h-12 items-center justify-center rounded-[40px] border border-white/15 px-7 py-3 text-sm font-bold">Correo</a>}</div><p className="mt-5 text-xs text-[#77716b]">WhatsApp: +34 643 663 194 · Soporte prioritario todos los días</p></div></section>
+
+      <footer className="border-t border-white/[.08] px-5 py-12 sm:px-8 lg:px-12"><div className="mx-auto flex max-w-[1344px] flex-col items-center justify-between gap-8 md:flex-row"><Link href="#inicio" className="text-2xl font-extrabold tracking-[-.04em]">Menuly</Link><nav aria-label="Navegación del pie" className="flex flex-wrap justify-center gap-x-7 gap-y-3 text-sm text-[#a09890]"><a href="#inicio">Inicio</a><a href="#precios">Precios</a><a href="#faq">FAQ</a><a href="/manual-menuly-restaurantes.pdf" target="_blank" rel="noopener noreferrer">Manual</a>{legalIdentity.complete&&legalLinks.slice(0,4).map(link=><Link key={link.href} href={link.href}>{link.label}</Link>)}<Link href="/login">Acceder</Link></nav></div><p className="mx-auto mt-10 max-w-[1344px] border-t border-white/[.06] pt-7 text-center text-xs text-[#77716b]">© {new Date().getFullYear()} Menuly. Cartas que despiertan el apetito.</p></footer>
     </main>
   );
 }
 
-function PhoneShowcase() {
-  return (
-    <div className="relative mx-auto w-full min-w-0 max-w-[430px] py-3 sm:py-5 lg:py-10">
-      <div className="absolute inset-x-8 bottom-4 top-16 -z-10 rounded-[50%] bg-orange-200/70 blur-3xl" />
-      <div className="relative mx-auto aspect-[9/18.7] w-[min(78vw,310px)] rounded-[42px] border-[8px] border-[#171713] bg-[#171713] p-1 shadow-[0_30px_70px_rgba(68,44,24,.3)] ring-1 ring-black/20 md:w-[min(34vw,280px)] lg:w-[min(78vw,310px)] lg:rounded-[48px] lg:border-[9px]">
-        <span className="absolute -left-[13px] top-28 h-16 w-1.5 rounded-l bg-[#35352f]" />
-        <span className="absolute -right-[13px] top-36 h-24 w-1.5 rounded-r bg-[#35352f]" />
-        <div className="relative h-full overflow-hidden rounded-[34px] bg-stone-950 lg:rounded-[36px]">
-          <iframe
-            title="Vista móvil real de Menuly"
-            src="/r/bistro-nube?preview=landing"
-            loading="eager"
-            allow="autoplay"
-            tabIndex={-1}
-            className="pointer-events-none h-full w-full border-0 bg-stone-950"
-          />
-        </div>
-      </div>
-      <p className="mx-auto mt-5 w-fit rounded-full border border-stone-200 bg-white px-4 py-2 text-center text-[11px] font-semibold text-slate-600 shadow-sm">
-        Así verán tus clientes cada plato
-      </p>
-    </div>
-  );
-}
-function Eyebrow({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="text-xs font-bold uppercase tracking-[.2em] text-orange-700">
-      {children}
-    </p>
-  );
-}
-function SectionTitle({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="mt-4 max-w-3xl text-3xl font-black leading-tight tracking-[-.035em] sm:text-4xl lg:text-5xl">
-      {children}
-    </h2>
-  );
-}
-function Stat({
-  value,
-  suffix = "+",
-  label,
-}: {
-  value: string;
-  suffix?: string;
-  label: string;
-}) {
-  return (
-    <div className="bg-white p-5 text-center">
-      <strong className="text-2xl font-black">
-        {value}
-        {suffix}
-      </strong>
-      <p className="mt-1 text-[10px] uppercase tracking-wider text-slate-500">
-        {label}
-      </p>
-    </div>
-  );
-}
-function PriceCard({
-  name,
-  price,
-  suffix,
-  note,
-  description,
-  features,
-  cta,
-  href,
-  featured = false,
-  badge,
-  wide = false,
-}: {
-  name: string;
-  price: string;
-  suffix?: string;
-  note?: string;
-  description: string;
-  features: string[];
-  cta: string;
-  href: string;
-  featured?: boolean;
-  badge?: string;
-  wide?: boolean;
-}) {
-  const label = badge ?? (featured ? "Recomendado" : null);
-  return (
-    <article
-      className={`relative flex min-w-0 flex-col rounded-xl border p-5 shadow-sm sm:p-7 ${wide ? "md:col-span-2 lg:col-span-1" : ""} ${featured ? "border-orange-300/40 bg-orange-100" : "border-stone-200 bg-white"}`}
-    >
-      {label && (
-        <span
-          className={`absolute right-5 top-5 max-w-[45%] rounded-lg px-2.5 py-1 text-center text-[9px] font-black uppercase sm:right-6 sm:top-6 sm:px-3 sm:text-[10px] ${featured ? "bg-orange-500 text-slate-950" : "bg-emerald-400/15 text-emerald-800"}`}
-        >
-          {label}
-        </span>
-      )}
-      <h3 className="pr-[48%] text-xl font-bold">{name}</h3>
-      <div className="mt-4">
-        <strong className="text-3xl font-black sm:text-4xl">{price}</strong>
-        {suffix && <span className="text-sm text-slate-600">{suffix}</span>}
-      </div>
-      {note && (
-        <p className="mt-2 text-xs font-semibold text-orange-800">{note}</p>
-      )}
-      <p className="mt-3 text-sm leading-relaxed text-slate-600">
-        {description}
-      </p>
-      <ul className="mt-6 flex-1 space-y-3 text-sm">
-        {features.map((item) => (
-          <li key={item} className="flex items-start gap-2">
-            <Check className="mt-0.5 shrink-0 text-emerald-500" size={16} />
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-      <Link
-        href={href}
-        className={`mt-7 block rounded-xl px-5 py-3 text-center text-sm font-bold ${featured ? "bg-white text-slate-950" : "border border-stone-300 hover:bg-stone-100"}`}
-      >
-        {cta}
-      </Link>
-    </article>
-  );
-}
+function HeroCards(){const cards=[{src:"/landing/figma/asset-3.png",title:"Pizza Margarita",price:"8,90 €",rotate:"-rotate-[14deg] -translate-x-8 translate-y-7"},{src:"/landing/figma/dish-1.jpg",title:"Alcachofas con jamón",price:"12,90 €",rotate:"z-10"},{src:"/landing/figma/asset-7.png",title:"Hamburguesa Nebulosa",price:"10,50 €",rotate:"rotate-[14deg] translate-x-8 translate-y-7"}];return <div className="relative mx-auto flex h-[390px] w-full max-w-[650px] items-center justify-center sm:h-[500px]">{cards.map((card,index)=><div key={card.title} className={`absolute aspect-[9/16] w-[min(39vw,230px)] overflow-hidden rounded-[21px] border ${index===1?"border-[#d4943a]/40 shadow-[0_0_40px_rgba(212,148,58,.18)]":"border-white/10"} bg-[#181410] ${card.rotate}`}><Image src={card.src} alt={card.title} fill sizes="230px" priority className="object-cover"/><div className="absolute inset-0 bg-gradient-to-t from-black via-black/5 to-black/35"/><div className="absolute inset-x-3 top-3 flex items-center justify-between text-[7px]"><span className="rounded-[5px] border border-white/20 bg-black/35 p-1">←</span><b>MENULY</b><span className="rounded-[5px] border border-white/20 bg-black/35 px-1.5 py-1">EN</span></div><div className="absolute inset-x-3 bottom-4"><div className="flex items-end justify-between gap-2"><b className="max-w-[70%] text-[10px] leading-3 sm:text-xs sm:leading-4">{card.title}</b><b className="text-[9px] text-[#fcd34d] sm:text-[10px]">{card.price}</b></div><p className="mt-1 text-[7px] text-white/60">Descripción</p></div></div>)}</div>}
+
+function FeatureCard({icon,title,text,visual}:{icon:React.ReactNode;title:string;text:string;visual:React.ReactNode}){return <article className="min-h-[230px] rounded-[16px] border border-white/[.08] bg-[#1a1a1a] p-5"><div className="flex min-h-24 items-center justify-center text-[#d4943a]">{visual}</div><div className="mt-5 flex items-center gap-2 text-[#d4943a]">{icon}<h3 className="text-sm font-bold text-[#f5f0eb]">{title}</h3></div><p className="mt-2 text-xs leading-5 text-[#89837d]">{text}</p></article>}
+function ProcessStep({number,title,text,children}:{number:string;title:string;text:string;children:React.ReactNode}){return <article className="border-t border-white/[.08] pt-5"><span className="text-[10px] font-bold text-[#d4943a]">{number}</span><h3 className="mt-3 text-base font-bold">{title}</h3><p className="mt-2 text-xs leading-5 text-[#89837d]">{text}</p><div className="mt-5">{children}</div></article>}
+function WindowFrame({children}:{children:React.ReactNode}){return <div className="overflow-hidden rounded-[12px] border border-white/[.08] bg-[#191919]"><div className="flex h-7 items-center gap-1.5 border-b border-white/[.06] px-3"><span className="size-1.5 rounded-full bg-[#f0643a]"/><span className="size-1.5 rounded-full bg-[#d4943a]"/><span className="size-1.5 rounded-full bg-[#6e9f75]"/><span className="ml-2 text-[8px] text-[#77716b]">panel.menuly.es</span></div>{children}</div>}
+function SettingsMockup(){return <WindowFrame><div className="grid gap-2 p-4 text-[8px]"><span className="text-[#77716b]">Nombre del restaurante</span><div className="rounded-[6px] border border-white/[.08] bg-[#111] p-2">Bistro Nube</div><div className="grid grid-cols-2 gap-2"><div className="rounded-[6px] border border-white/[.08] bg-[#111] p-2">Español</div><div className="rounded-[6px] border border-[#d4943a]/40 bg-[#111] p-2 text-[#d4943a]">Moderno</div></div></div></WindowFrame>}
+function MenuMockup(){return <WindowFrame><div className="space-y-2 p-4 text-[8px]">{[["Tartar de atún","€14"],["Chuletón madurado","€39"],["Burrata con trufa","€16"]].map(([name,price])=><div key={name} className="flex items-center justify-between rounded-[6px] bg-[#111] p-2"><span className="flex items-center gap-2"><i className="size-4 rounded-full bg-[#353432]"/>{name}</span><b className="text-[#d4943a]">{price}</b></div>)}</div></WindowFrame>}
+function QrMockup(){return <WindowFrame><div className="grid place-items-center p-5"><QrCode size={64} className="text-white"/><p className="mt-2 text-[8px] text-[#89837d]">Tu carta siempre actualizada</p><span className="mt-3 rounded-[20px] bg-[#d4943a] px-5 py-2 text-[8px] font-bold text-[#111]">Descargar QR</span></div></WindowFrame>}
+function PriceCard({name,price,suffix,note,description,features,href,cta,featured=false}:{name:string;price:string;suffix:string;note?:string;description:string;features:readonly string[];href:string;cta:string;featured?:boolean}){return <article className={`relative flex min-h-[440px] flex-col rounded-[16px] border bg-[#1a1a1a] p-6 ${featured?"border-[#d4a853] shadow-[0_0_30px_rgba(212,168,83,.08)]":"border-white/[.08]"}`}>{featured&&<span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-[20px] bg-[#d4a853] px-3 py-1 text-[9px] font-bold text-[#111]">Recomendado</span>}<p className="text-xs font-semibold text-[#a09890]">{name}</p><div className="mt-2"><strong className="text-3xl font-extrabold tracking-[-.04em]">{price}</strong><span className="ml-1 text-xs text-[#77716b]">{suffix}</span></div>{note&&<p className="mt-2 text-[10px] font-semibold text-[#d4943a]">{note}</p>}<p className="mt-4 min-h-12 text-xs leading-5 text-[#a09890]">{description}</p><ul className="mt-5 flex-1 space-y-3 text-xs">{features.map(item=><li key={item} className="flex gap-2"><Check size={14} className="shrink-0 text-[#d4943a]"/><span>{item}</span></li>)}</ul><Link href={href} className={`mt-7 rounded-[32px] px-5 py-3 text-center text-sm font-bold transition ${featured?"bg-[#d4943a] text-[#111] hover:bg-[#e3a64d]":"border border-white/10 text-[#a09890] hover:border-[#d4943a] hover:text-white"}`}>{cta}</Link></article>}

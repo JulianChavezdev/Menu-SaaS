@@ -27,7 +27,7 @@ describe("landing pública", () => {
   });
   it("abre el alta con el plan comercial correspondiente", () => {
     for (const plan of ["carta", "pedidos", "configuracion"])
-      expect(page).toContain(`href="/register?plan=${plan}"`);
+      expect(page).toContain(`/register?plan=${plan}`);
   });
   it("no publica un correo personal y usa una variable explícita", () => {
     expect(page).toContain("NEXT_PUBLIC_CONTACT_EMAIL");
@@ -45,14 +45,14 @@ describe("landing pública", () => {
       "ahorra un 18%",
       "Configuración completa",
       "149,99 €",
-      "Segundo mes gratis",
+      "Segundo mes de Plan Carta gratis",
       "Edición de vídeos con IA",
       "Primer mes de Plan Carta incluido",
     ])
       expect(page).toContain(copy);
-    expect(page).toContain('value="6" label="plantillas"');
+    expect(page).toContain('"6 plantillas"');
     expect(page).not.toContain("30 días gratis");
-    expect(page).toContain("Un diseño incluido y cinco estilos premium");
+    expect(page).toContain("seis estilos visuales");
     expect(page).toContain("No ofrecemos una prueba gratuita general");
     expect(page).toContain("Menuly Comandas sí conecta el comandero móvil");
   });
@@ -67,13 +67,12 @@ describe("landing pública", () => {
     expect(page).toContain("/manual-menuly-restaurantes.pdf");
     expect(page).toContain("Manual");
   });
-  it("muestra la carta móvil real dentro del mockup sin contaminar analíticas", () => {
-    expect(page).toContain("aspect-[9/18.7]");
-    expect(page).toContain('title="Vista móvil real de Menuly"');
-    expect(page).toContain('src="/r/bistro-nube?preview=landing"');
-    expect(page).toContain('allow="autoplay"');
-    expect(page).toContain("Así verán tus clientes cada plato");
-    expect(page).not.toContain("MockControl");
+  it("replica el mockup editorial de Figma con recursos locales", () => {
+    expect(page).toContain("function HeroCards");
+    expect(page).toContain("/landing/figma/asset-3.png");
+    expect(page).toContain("/landing/figma/dish-1.jpg");
+    expect(page).toContain("/landing/figma/asset-7.png");
+    expect(page).not.toContain("figma.com/api/mcp/asset");
   });
   it("desactiva las analíticas y la apertura de marca dentro de la vista previa", () => {
     expect(publicMenu.replace(/\s+/g, " ")).toContain(

@@ -11,6 +11,7 @@ import {
   Noto_Serif_JP,
   Nunito,
   Playfair_Display,
+  Plus_Jakarta_Sans,
   Righteous,
 } from "next/font/google";
 
@@ -69,6 +70,12 @@ const tokyoSerif = Noto_Serif_JP({
   display: "swap",
   variable: "--font-tokyo-serif",
 });
+const marketingSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+  variable: "--font-marketing-sans",
+});
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: { default: "Menuly", template: "%s | Menuly" },
@@ -100,7 +107,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="es"
-      className={`${noirSans.variable} ${noirSerif.variable} ${streetSans.variable} ${streetCondensed.variable} ${cozyDisplay.variable} ${cozySans.variable} ${tokyoSans.variable} ${tokyoSerif.variable}`}
+      className={`${noirSans.variable} ${noirSerif.variable} ${streetSans.variable} ${streetCondensed.variable} ${cozyDisplay.variable} ${cozySans.variable} ${tokyoSans.variable} ${tokyoSerif.variable} ${marketingSans.variable}`}
     >
       <head>
         {mediaOrigins.map((origin) => (

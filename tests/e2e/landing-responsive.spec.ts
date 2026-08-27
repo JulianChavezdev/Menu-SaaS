@@ -45,17 +45,16 @@ test.describe("landing responsive contract",()=>{
     await page.setViewportSize({width:1440,height:900});
     await page.goto("/",{waitUntil:"networkidle"});
 
-    await expect(page.getByRole("heading",{name:"Haz que tus platos se vendan solos.",exact:true})).toBeVisible();
+    await expect(page.getByRole("heading",{name:"La carta que entra por los ojos",exact:true})).toBeVisible();
     await expect(page.getByRole("navigation",{name:"Navegación principal"})).toBeVisible();
     for(const id of["inicio","producto","como-funciona","precios","faq","contacto"]){
       await expect(page.locator(`#${id}`)).toHaveCount(1);
     }
     await expect(page.getByRole("link",{name:"Probar la demo",exact:true})).toBeVisible();
-    await expect(page.locator("#contenido").getByRole("link",{name:"Crear cuenta",exact:true})).toBeVisible();
-    await expect(page.locator('iframe[title="Vista móvil real de Menuly"]')).toHaveAttribute("src","/r/bistro-nube?preview=landing");
-    const preview=page.frameLocator('iframe[title="Vista móvil real de Menuly"]');
-    await expect(preview.locator("video").first()).toHaveAttribute("src",/c_limit,w_480\/q_auto:eco/);
-    await expect.poll(()=>preview.locator("main.public-menu").evaluate(element=>getComputedStyle(element).scrollbarWidth)).toBe("none");
+    await expect(page.locator("#contenido").getByRole("link",{name:"Crear mi carta",exact:true})).toBeVisible();
+    await expect(page.locator('#contenido img[alt="Alcachofas con jamón"]')).toBeVisible();
+    await expect(page.locator('#contenido img[alt="Pizza Margarita"]')).toBeVisible();
+    await expect(page.locator('#contenido img[alt="Hamburguesa Nebulosa"]')).toBeVisible();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(1440);
   });
 
@@ -67,7 +66,7 @@ test.describe("landing responsive contract",()=>{
     await expect(toggle).toBeVisible();
     await toggle.click();
     await expect(page.getByRole("button",{name:"Cerrar menú",exact:true})).toHaveAttribute("aria-expanded","true");
-    await expect(page.locator("header").getByRole("link",{name:"FAQ",exact:true})).toBeVisible();
+    await expect(page.locator("header").getByRole("link",{name:"FAQs",exact:true})).toBeVisible();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
   });
 });
