@@ -23,6 +23,9 @@ describe("alertas operativas", () => {
     expect(instrumentation).toContain("onRequestError");
     expect(alerts).toContain('input.kind === "failure"');
     expect(alerts).toContain("5 * 60_000");
+    expect(alerts).toContain('process.env.VERCEL_ENV === "production"');
+    expect(alerts).toContain("isLocalDevelopmentFailure");
+    expect(alertsPage).toContain("isLocalDevelopmentFailure");
   });
 
   it("ofrece bandeja privada y webhook opcional", () => {

@@ -10,12 +10,25 @@ type AlertInput = {
   details?: Record<string, unknown>;
 };
 
+export function platformAlertsEnabled() {
+  if (process.env.OPERATIONS_ALERTS_ENABLED === "true") return true;
+  if (process.env.OPERATIONS_ALERTS_ENABLED === "false") return false;
+  return process.env.VERCEL_ENV === "production";
+}
+
+export function isLocalDevelopmentFailure(details: unknown) {
+  if (!details || typeof details !== "object" || Array.isArray(details)) return false;
+  const message = String((details as Record<string, unknown>).message ?? "");
+  return /segment-explorer-node|React Client Manifest|__webpack_modules__|[A-Z]:\\Users\\/i.test(message);
+}
+
 function safeText(value: string, max = 500) {
   return value.replace(/(sb_(?:secret|publishable)_[A-Za-z0-9_-]+)/g, "[secret]").slice(0, max);
 }
 
 export async function recordPlatformAlert(input: AlertInput) {
   try {
+    if (!platformAlertsEnabled()) return;
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = getSupabaseSecretKey();
     if (!url || !key) return;

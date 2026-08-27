@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AlertTriangle, BellRing, Building2, Globe2 } from "lucide-react";
 import { requireSuperadmin } from "@/lib/superadmin";
+import { isLocalDevelopmentFailure } from "@/lib/platform-alerts";
 
 type AlertRow = {
   id: string;
@@ -22,7 +23,7 @@ export default async function AlertsPage() {
   const { admin } = await requireSuperadmin();
   const { data, error } = await admin.from("superadmin_audit_log").select("id,restaurant_id,action,details,created_at,restaurants(name,slug)").like("action", "alert.%").order("created_at", { ascending: false }).limit(200);
   if (error) throw new Error(error.message);
-  const alerts = (data ?? []) as AlertRow[];
+  const alerts = ((data ?? []) as AlertRow[]).filter((alert) => alert.action !== "alert.failure" || !isLocalDevelopmentFailure(alert.details));
   return <main className="mx-auto max-w-5xl p-4 md:p-6">
     <div className="flex items-start gap-3"><span className="grid size-12 shrink-0 place-items-center rounded-xl bg-orange-100 text-orange-700"><BellRing size={23}/></span><div><p className="text-xs font-bold uppercase tracking-[.18em] text-orange-700">Supervisión</p><h1 className="mt-1 text-3xl font-extrabold">Alertas</h1><p className="mt-1 text-sm text-slate-600">Nuevas altas, cartas creadas o publicadas y fallos detectados por el servidor.</p></div></div>
     <section className="mt-6 space-y-3" aria-label="Alertas recientes">{alerts.map((alert) => {
