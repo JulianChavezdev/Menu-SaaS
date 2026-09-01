@@ -157,4 +157,32 @@ test.describe("public menu responsive contract",()=>{
     await expect(burgerVideo).toBeVisible();
     await expect(burgerVideo).toHaveAttribute("autoplay","");
   });
+
+  test("changes category reliably after swiping past its last product",async({page})=>{
+    await page.setViewportSize({width:393,height:852});
+    await page.goto("/r/bistro-nube",{waitUntil:"domcontentloaded"});
+    await dismissIntro(page);
+
+    const menu=page.locator("main.public-menu");
+    const categories=page.getByRole("navigation",{name:"Categorías"});
+    await categories.getByRole("button",{name:"Café y desayuno",exact:true}).click();
+    const lastProduct=page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Croissant de Pistacho",exact:true})});
+    await lastProduct.scrollIntoViewIfNeeded();
+    await expect(lastProduct).toBeInViewport();
+    await page.waitForTimeout(250);
+
+    // Reproduce Safari's scroll-snap rounding: close to the edge, but farther
+    // than the old hard-coded four-pixel threshold.
+    await menu.evaluate(element=>{
+      element.scrollTop=Math.max(0,element.scrollHeight-element.clientHeight-20);
+    });
+    await menu.dispatchEvent("touchstart",{
+      touches:[{identifier:1,clientX:195,clientY:650}],
+    });
+    await menu.dispatchEvent("touchend",{
+      changedTouches:[{identifier:1,clientX:195,clientY:540}],
+    });
+
+    await expect(categories.getByRole("button",{name:"Brasas",exact:true})).toHaveAttribute("aria-current","true",{timeout:2_000});
+  });
 });

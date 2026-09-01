@@ -210,7 +210,11 @@ export function VideoMenu({
   );
   const categoryAnimationFrame = useRef<number | null>(null);
   const categoryAnimating = useRef(false);
-  const gestureStart = useRef<{ x: number; y: number } | null>(null);
+  const gestureStart = useRef<{
+    x: number;
+    y: number;
+    productId: string | null;
+  } | null>(null);
   const [muted, setMuted] = useState(true);
   const [panel, setPanel] = useState<
     "controls" | "menu" | "info" | "cart" | null
@@ -643,10 +647,16 @@ export function VideoMenu({
     setPanel(null);
     return true;
   };
-  const changeCategory = (direction: -1 | 1) => {
+  const changeCategory = (
+    direction: -1 | 1,
+    sourceProductId?: string | null,
+  ) => {
+    const sourceCategory = sourceProductId
+      ? products.find((product) => product.id === sourceProductId)?.category_id
+      : activeCategory;
     const current = Math.max(
       0,
-      categoryGroups.findIndex((group) => group.id === activeCategory),
+      categoryGroups.findIndex((group) => group.id === sourceCategory),
     );
     const next = Math.max(
       0,
@@ -655,6 +665,32 @@ export function VideoMenu({
     if (next === current) return false;
     return openCategory(categoryGroups[next].id, direction);
   };
+  const startsAtCategoryEdge = (
+    productId: string | null,
+    direction: -1 | 1,
+  ) => {
+    if (!productId) return false;
+    const group = categoryGroups.find((candidate) =>
+      candidate.products.some((product) => product.id === productId),
+    );
+    if (!group) return false;
+    const edgeProduct =
+      direction === 1
+        ? group.products[group.products.length - 1]
+        : group.products[0];
+    return edgeProduct?.id === productId;
+  };
+  const feedIsNearEdge = (direction: -1 | 1) => {
+    const feed = feedRef.current;
+    if (!feed) return false;
+    // Safari/iOS can finish a snapped gesture several pixels away from the
+    // mathematical edge (and briefly report overscroll). A viewport-relative
+    // tolerance makes the final swipe reliable without skipping a product.
+    const tolerance = Math.max(16, Math.min(64, feed.clientHeight * 0.06));
+    return direction === 1
+      ? feed.scrollTop + feed.clientHeight >= feed.scrollHeight - tolerance
+      : feed.scrollTop <= tolerance;
+  };
   const handleTouchStart = (event: React.TouchEvent<HTMLElement>) => {
     if (panel || blocksCategoryGesture(event.target)) {
       gestureStart.current = null;
@@ -662,7 +698,11 @@ export function VideoMenu({
     }
     const touch = event.touches[0];
     gestureStart.current = touch
-      ? { x: touch.clientX, y: touch.clientY }
+      ? {
+          x: touch.clientX,
+          y: touch.clientY,
+          productId: products[active]?.id ?? null,
+        }
       : null;
   };
   const handleTouchEnd = (event: React.TouchEvent<HTMLElement>) => {
@@ -673,17 +713,22 @@ export function VideoMenu({
       const dx = touch.clientX - start.x;
       const dy = touch.clientY - start.y;
       if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
-        changeCategory(dx < 0 ? 1 : -1);
+        changeCategory(dx < 0 ? 1 : -1, start.productId);
         resumeActiveVideo();
         return;
       }
-      const feed = feedRef.current;
-      const atBottom = Boolean(
-        feed && feed.scrollTop + feed.clientHeight >= feed.scrollHeight - 4,
-      );
-      const atTop = Boolean(feed && feed.scrollTop <= 4);
-      if (dy < -55 && atBottom) changeCategory(1);
-      else if (dy > 55 && atTop) changeCategory(-1);
+      if (
+        dy < -55 &&
+        startsAtCategoryEdge(start.productId, 1) &&
+        feedIsNearEdge(1)
+      )
+        changeCategory(1, start.productId);
+      else if (
+        dy > 55 &&
+        startsAtCategoryEdge(start.productId, -1) &&
+        feedIsNearEdge(-1)
+      )
+        changeCategory(-1, start.productId);
     }
     resumeActiveVideo();
   };
@@ -693,7 +738,11 @@ export function VideoMenu({
       !panel &&
       !blocksCategoryGesture(event.target)
     )
-      gestureStart.current = { x: event.clientX, y: event.clientY };
+      gestureStart.current = {
+        x: event.clientX,
+        y: event.clientY,
+        productId: products[active]?.id ?? null,
+      };
     else gestureStart.current = null;
   };
   const handlePointerUp = (event: React.PointerEvent<HTMLElement>) => {
@@ -707,15 +756,20 @@ export function VideoMenu({
       const dx = event.clientX - start.x;
       const dy = event.clientY - start.y;
       if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy))
-        changeCategory(dx < 0 ? 1 : -1);
+        changeCategory(dx < 0 ? 1 : -1, start.productId);
       else {
-        const feed = feedRef.current;
-        const atBottom = Boolean(
-          feed && feed.scrollTop + feed.clientHeight >= feed.scrollHeight - 4,
-        );
-        const atTop = Boolean(feed && feed.scrollTop <= 4);
-        if (dy < -55 && atBottom) changeCategory(1);
-        else if (dy > 55 && atTop) changeCategory(-1);
+        if (
+          dy < -55 &&
+          startsAtCategoryEdge(start.productId, 1) &&
+          feedIsNearEdge(1)
+        )
+          changeCategory(1, start.productId);
+        else if (
+          dy > 55 &&
+          startsAtCategoryEdge(start.productId, -1) &&
+          feedIsNearEdge(-1)
+        )
+          changeCategory(-1, start.productId);
       }
     }
     resumeActiveVideo();
@@ -733,10 +787,16 @@ export function VideoMenu({
     if (!feed) return;
     if (
       event.deltaY > 30 &&
-      feed.scrollTop + feed.clientHeight >= feed.scrollHeight - 4
+      startsAtCategoryEdge(products[active]?.id ?? null, 1) &&
+      feedIsNearEdge(1)
     )
       changeCategory(1);
-    else if (event.deltaY < -30 && feed.scrollTop <= 4) changeCategory(-1);
+    else if (
+      event.deltaY < -30 &&
+      startsAtCategoryEdge(products[active]?.id ?? null, -1) &&
+      feedIsNearEdge(-1)
+    )
+      changeCategory(-1);
   };
   const back = () =>
     history.length > 1 ? history.back() : location.assign("/");
