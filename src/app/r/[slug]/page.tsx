@@ -4,6 +4,7 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseSecretKey } from "@/lib/supabase/admin-env";
 import { demoProducts, demoRestaurant } from "@/lib/demo";
 import { VideoMenu } from "@/components/menu/video-menu";
+import { LandingDemoExperience } from "@/components/menu/landing-demo-experience";
 import type { Metadata } from "next";
 
 const LANDING_PREVIEW_VIDEO =
@@ -85,8 +86,17 @@ export default async function PublicMenu({
 }) {
   const { slug } = await params;
   const query = await searchParams;
-  const preview = query.preview === "landing";
+  const landingPreview = query.preview === "landing";
+  const embeddedPreview = query.preview === "embed";
+  const preview = landingPreview || embeddedPreview;
   if (slug === "bistro-nube" && !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    if (landingPreview)
+      return (
+        <LandingDemoExperience
+          slug={demoRestaurant.slug}
+          restaurantName={demoRestaurant.name}
+        />
+      );
     const previewProducts = preview
       ? demoProducts.map((product, index) =>
           index === 0
@@ -123,7 +133,7 @@ export default async function PublicMenu({
     const target = related as { slug?: string } | null;
     if (target?.slug && target.slug !== slug)
       permanentRedirect(
-        `/r/${target.slug}${preview ? "?preview=landing" : ""}`,
+        `/r/${target.slug}${query.preview ? `?preview=${query.preview}` : ""}`,
       );
     notFound();
   }
@@ -142,6 +152,13 @@ export default async function PublicMenu({
           </p>
         </div>
       </main>
+    );
+  if (landingPreview)
+    return (
+      <LandingDemoExperience
+        slug={restaurant.slug}
+        restaurantName={restaurant.name}
+      />
     );
   const { data: products } = await supabase
     .from("products")

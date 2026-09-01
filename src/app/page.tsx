@@ -146,7 +146,7 @@ export default function Home() {
                 Crear mi carta
               </Link>
               <Link
-                href="/r/bistro-nube"
+                href="/r/bistro-nube?preview=landing"
                 className="inline-flex h-[50.53px] items-center justify-center gap-2 rounded-[40px] border-2 border-[#d4943a] px-7 text-[14px] font-medium text-[#f4ede4] transition duration-300 hover:bg-[#d4943a]/10 sm:w-[171.95px] min-[1600px]:h-[68px] min-[1600px]:w-[230px] min-[1600px]:text-[18px]"
               >
                 <Play size={15} fill="#d4943a" className="text-[#d4943a]" />

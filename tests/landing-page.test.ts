@@ -4,6 +4,10 @@ import { describe, expect, it } from "vitest";
 const page = readFileSync("src/app/page.tsx", "utf8");
 const nav = readFileSync("src/components/marketing/marketing-nav.tsx", "utf8");
 const publicMenu = readFileSync("src/app/r/[slug]/page.tsx", "utf8");
+const landingDemo = readFileSync(
+  "src/components/menu/landing-demo-experience.tsx",
+  "utf8",
+);
 
 describe("landing pública", () => {
   it("incluye todas las secciones comerciales", () => {
@@ -21,7 +25,7 @@ describe("landing pública", () => {
   it("ofrece navegación mobile y llamadas a demo, registro y acceso", () => {
     expect(nav).toContain('aria-label="Navegación principal"');
     expect(nav).toContain("aria-expanded={open}");
-    expect(page).toContain('href="/r/bistro-nube"');
+    expect(page).toContain('href="/r/bistro-nube?preview=landing"');
     expect(page).toContain('href="/register"');
     expect(nav).toContain('href="/login"');
   });
@@ -76,10 +80,19 @@ describe("landing pública", () => {
   });
   it("desactiva las analíticas y la apertura de marca dentro de la vista previa", () => {
     expect(publicMenu.replace(/\s+/g, " ")).toContain(
-      'preview = query.preview === "landing"',
+      'landingPreview = query.preview === "landing"',
     );
     expect(publicMenu).toContain("analyticsEnabled={!preview}");
     expect(publicMenu).toContain("introEnabled={!preview}");
+  });
+  it("presenta la demo guiada en pantallas grandes y mantiene la carta completa en móvil", () => {
+    expect(publicMenu).toContain("<LandingDemoExperience");
+    expect(landingDemo).toContain("md:grid-cols-");
+    expect(landingDemo).toContain('src={`/r/${slug}?preview=embed`}');
+    expect(landingDemo).toContain('className="h-full w-full border-0"');
+    expect(landingDemo).toContain('className="hidden min-w-0 md:block"');
+    expect(landingDemo).toContain("Desliza para descubrir");
+    expect(landingDemo).toContain("Prepara tu selección");
   });
   it("sirve un primer vídeo ligero de Cloudinary en el mockup", () => {
     expect(publicMenu).toContain("LANDING_PREVIEW_VIDEO");
