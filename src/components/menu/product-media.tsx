@@ -10,12 +10,16 @@ export function ProductMedia({index,name,src,poster,muted,preload,active,hydrate
   const playbackSrc=menuVideoPlaybackUrl(src);
   const localRef=useRef<HTMLVideoElement|null>(null);
   const bufferingTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
+  const playbackPending=useRef(false);
+  const playbackRetryFrame=useRef<number|null>(null);
+  const abortRetries=useRef(0);
+  const forceMutedPlayback=useRef(false);
   const[status,setStatus]=useState<"loading"|"ready"|"error">(src?"loading":"ready");
   const[autoBlocked,setAutoBlocked]=useState(false);
   const[buffering,setBuffering]=useState(false);
   const[slow,setSlow]=useState(false);
 
-  useEffect(()=>{setStatus(src?"loading":"ready");setAutoBlocked(false);setBuffering(false);setSlow(false);return()=>{if(bufferingTimer.current)clearTimeout(bufferingTimer.current)}},[src]);
+  useEffect(()=>{setStatus(src?"loading":"ready");setAutoBlocked(false);setBuffering(false);setSlow(false);playbackPending.current=false;abortRetries.current=0;forceMutedPlayback.current=false;return()=>{if(bufferingTimer.current)clearTimeout(bufferingTimer.current);if(playbackRetryFrame.current!==null)cancelAnimationFrame(playbackRetryFrame.current)}},[src]);
   useEffect(()=>{if(!active){setBuffering(false);setSlow(false)}},[active]);
   useEffect(()=>{
     const video=localRef.current;
@@ -31,9 +35,25 @@ export function ProductMedia({index,name,src,poster,muted,preload,active,hydrate
   };
   const attemptPlayback=useCallback(()=>{
     const video=localRef.current;
-    if(!video||!active)return;
-    video.muted=muted;
-    void video.play().then(()=>{setAutoBlocked(false);setBuffering(false);setSlow(false);onPlaybackStarted(index)}).catch(()=>setAutoBlocked(true));
+    if(!video||!active||playbackPending.current)return;
+    video.muted=forceMutedPlayback.current||muted;
+    const started=()=>{abortRetries.current=0;setAutoBlocked(false);setBuffering(false);setSlow(false);onPlaybackStarted(index)};
+    if(!video.paused){started();return}
+    playbackPending.current=true;
+    void video.play().then(started).catch((error:unknown)=>{
+      if(!video.isConnected)return;
+      const name=(error as DOMException)?.name;
+      if(name==="AbortError"&&abortRetries.current<3){
+        abortRetries.current+=1;
+        playbackRetryFrame.current=requestAnimationFrame(()=>{playbackRetryFrame.current=null;attemptPlayback()});
+      }else if(!video.muted){
+        forceMutedPlayback.current=true;
+        video.muted=true;
+        video.defaultMuted=true;
+        video.setAttribute("muted","");
+        playbackRetryFrame.current=requestAnimationFrame(()=>{playbackRetryFrame.current=null;attemptPlayback()});
+      }else if(name==="NotAllowedError")setAutoBlocked(true);
+    }).finally(()=>{playbackPending.current=false});
   },[active,index,muted,onPlaybackStarted]);
   useEffect(()=>{
     const video=localRef.current;if(!video||!hydrated||!src)return;

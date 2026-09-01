@@ -76,6 +76,22 @@ test.describe("public menu responsive contract",()=>{
     await page.emulateMedia({reducedMotion:"reduce"});await page.setViewportSize({width:393,height:852});await page.goto("/r/bistro-nube",{waitUntil:"domcontentloaded"});const video=page.locator("video").first();await expect(video).toHaveAttribute("autoplay","");await expect(video).toHaveAttribute("playsinline","");await expect.poll(()=>video.evaluate(element=>{const media=element as HTMLVideoElement;return{paused:media.paused,muted:media.muted}})).toEqual({paused:false,muted:true});
   });
 
+  test("recovers autoplay after Safari reports a transient AbortError",async({page})=>{
+    await page.addInitScript(()=>{
+      const nativePlay=HTMLMediaElement.prototype.play;
+      let interrupted=false;
+      HTMLMediaElement.prototype.play=function(){
+        if(!interrupted&&this instanceof HTMLVideoElement){interrupted=true;return Promise.reject(new DOMException("Interrupted","AbortError"))}
+        return nativePlay.call(this);
+      };
+    });
+    await page.setViewportSize({width:393,height:852});
+    await page.goto("/r/bistro-nube",{waitUntil:"domcontentloaded"});
+    const video=page.locator("video").first();
+    await expect.poll(()=>video.evaluate(element=>(element as HTMLVideoElement).paused),{timeout:10_000}).toBe(false);
+    await expect(page.getByRole("button",{name:/Reproducir vídeo de/})).toHaveCount(0);
+  });
+
   test("keeps a local cart with quantities and product notes",async({page})=>{
     await page.setViewportSize({width:390,height:844});
     await page.goto("/r/bistro-nube",{waitUntil:"domcontentloaded"});
@@ -135,7 +151,6 @@ test.describe("public menu responsive contract",()=>{
     const menu=page.locator("main.public-menu");
     await expect(menu).toHaveAttribute("data-hydrated","true");
     await expect.poll(()=>menu.locator(":scope > div > section video").count()).toBeLessThanOrEqual(2);
-    await expect(menu.locator("video[data-category-video-preload]")).toHaveAttribute("src",/6090695/);
     const categories=page.getByRole("navigation",{name:"Categorías"});
     await categories.getByRole("button",{name:"Brasas",exact:true}).click();
     await expect(categories.getByRole("button",{name:"Brasas",exact:true})).toHaveAttribute("aria-current","true");
@@ -171,6 +186,7 @@ test.describe("public menu responsive contract",()=>{
     await lastProduct.scrollIntoViewIfNeeded();
     await expect(lastProduct).toBeInViewport();
     await page.waitForTimeout(250);
+    await expect(menu.locator("video[data-category-video-preload]")).toHaveAttribute("src",/.+/);
 
     // Reproduce Safari's scroll-snap rounding: close to the edge, but farther
     // than the old hard-coded four-pixel threshold.

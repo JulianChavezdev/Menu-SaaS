@@ -405,72 +405,86 @@ export function VideoMenu({
         if (playingIndex.current === index) playingIndex.current = null;
         setPlaybackBlocked((current) => new Set(current).add(index));
       };
-      void video
-        .play()
-        .then(() => playbackStarted(index))
-        .catch(() => {
-          if (video.muted) {
-            failed();
-            return;
-          }
-          video.muted = true;
-          setMuted(true);
+      const stillCurrent = () =>
+        playingIndex.current === index &&
+        videoRefs.current[index] === video &&
+        video.isConnected;
+      const retryMuted = () => {
+        if (!stillCurrent()) return;
+        video.muted = true;
+        video.defaultMuted = true;
+        video.setAttribute("muted", "");
+        setMuted(true);
+        requestAnimationFrame(() => {
+          if (!stillCurrent()) return;
           void video
             .play()
             .then(() => playbackStarted(index))
-            .catch(failed);
+            .catch((error: unknown) => {
+              if ((error as DOMException)?.name !== "AbortError") failed();
+            });
+        });
+      };
+      void video
+        .play()
+        .then(() => playbackStarted(index))
+        .catch((error: unknown) => {
+          if (!stillCurrent()) return;
+          if ((error as DOMException)?.name === "AbortError") {
+            requestAnimationFrame(retryMuted);
+            return;
+          }
+          retryMuted();
         });
     },
     [muted, playbackStarted],
   );
 
   useEffect(() => {
-    const sectionObserver = new IntersectionObserver(
-      (entries) =>
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && entry.intersectionRatio > 0.35)
-            setActive(Number((entry.target as HTMLElement).dataset.index ?? 0));
-        }),
-      { root: feedRef.current, threshold: [0.35] },
-    );
-    sectionRefs.current.forEach(
-      (section) => section && sectionObserver.observe(section),
-    );
-    const videoObserver = new IntersectionObserver(
-      (entries) =>
-        entries.forEach((entry) => {
-          const video = entry.target as HTMLVideoElement;
-          const index = Number(video.dataset.videoIndex);
-          if (entry.isIntersecting && entry.intersectionRatio > 0.45) {
-            if (playingIndex.current === index && !video.paused && !video.ended)
-              return;
-            videoRefs.current.forEach((other) => {
-              if (other && other !== video) {
-                other.pause();
-                safelyRewind(other);
-              }
-            });
-            playingIndex.current = index;
-            startVideo(video, index);
-          } else {
-            video.pause();
-            safelyRewind(video);
-            if (playingIndex.current === index) playingIndex.current = null;
+    const feed = feedRef.current;
+    if (!feed) return;
+    let frame: number | null = null;
+    const updateActiveProduct = () => {
+      if (frame !== null) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const center = feed.getBoundingClientRect().top + feed.clientHeight / 2;
+        let nearestIndex = -1;
+        let nearestDistance = Number.POSITIVE_INFINITY;
+        sectionRefs.current.forEach((section, index) => {
+          if (!section) return;
+          const box = section.getBoundingClientRect();
+          const distance = Math.abs(box.top + box.height / 2 - center);
+          if (distance < nearestDistance) {
+            nearestIndex = index;
+            nearestDistance = distance;
           }
-        }),
-      { threshold: [0.45] },
-    );
-    const observedVideos = videoRefs.current.filter(
-      (video): video is HTMLVideoElement => Boolean(video),
-    );
-    observedVideos.forEach((video) => videoObserver.observe(video));
-    return () => {
-      sectionObserver.disconnect();
-      videoObserver.disconnect();
-      playingIndex.current = null;
-      observedVideos.forEach((video) => video.pause());
+        });
+        if (nearestIndex >= 0) setActive(nearestIndex);
+      });
     };
-  }, [active, products, startVideo]);
+    feed.addEventListener("scroll", updateActiveProduct, { passive: true });
+    updateActiveProduct();
+    return () => {
+      feed.removeEventListener("scroll", updateActiveProduct);
+      if (frame !== null) cancelAnimationFrame(frame);
+    };
+  }, [activeCategory]);
+
+  useEffect(() => {
+    videoRefs.current.forEach((video, index) => {
+      if (!video || index === active) return;
+      video.pause();
+      safelyRewind(video);
+    });
+  }, [active]);
+
+  useEffect(
+    () => () => {
+      playingIndex.current = null;
+      videoRefs.current.forEach((video) => video?.pause());
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!panel) return;
@@ -658,8 +672,8 @@ export function VideoMenu({
       });
       categoryFinishTimer.current = setTimeout(() => {
         categoryAnimating.current = false;
-      }, 280);
-    }, 240);
+      }, 220);
+    }, 170);
     setPanel(null);
     return true;
   };
@@ -681,21 +695,6 @@ export function VideoMenu({
     if (next === current) return false;
     return openCategory(categoryGroups[next].id, direction);
   };
-  const startsAtCategoryEdge = (
-    productId: string | null,
-    direction: -1 | 1,
-  ) => {
-    if (!productId) return false;
-    const group = categoryGroups.find((candidate) =>
-      candidate.products.some((product) => product.id === productId),
-    );
-    if (!group) return false;
-    const edgeProduct =
-      direction === 1
-        ? group.products[group.products.length - 1]
-        : group.products[0];
-    return edgeProduct?.id === productId;
-  };
   const feedIsNearEdge = (direction: -1 | 1) => {
     const feed = feedRef.current;
     if (!feed) return false;
@@ -707,6 +706,24 @@ export function VideoMenu({
       ? feed.scrollTop + feed.clientHeight >= feed.scrollHeight - tolerance
       : feed.scrollTop <= tolerance;
   };
+  const productAtViewportCenter = () => {
+    const feed = feedRef.current;
+    if (!feed) return products[active]?.id ?? null;
+    const center = feed.getBoundingClientRect().top + feed.clientHeight / 2;
+    let nearestId: string | null = null;
+    let nearestDistance = Number.POSITIVE_INFINITY;
+    sectionRefs.current.forEach((section, index) => {
+      const product = products[index];
+      if (!section || !product) return;
+      const box = section.getBoundingClientRect();
+      const distance = Math.abs(box.top + box.height / 2 - center);
+      if (distance < nearestDistance) {
+        nearestId = product.id;
+        nearestDistance = distance;
+      }
+    });
+    return nearestId ?? products[active]?.id ?? null;
+  };
   const handleTouchStart = (event: React.TouchEvent<HTMLElement>) => {
     if (panel || blocksCategoryGesture(event.target)) {
       gestureStart.current = null;
@@ -717,7 +734,7 @@ export function VideoMenu({
       ? {
           x: touch.clientX,
           y: touch.clientY,
-          productId: products[active]?.id ?? null,
+          productId: productAtViewportCenter(),
         }
       : null;
   };
@@ -735,13 +752,11 @@ export function VideoMenu({
       }
       if (
         dy < -55 &&
-        startsAtCategoryEdge(start.productId, 1) &&
         feedIsNearEdge(1)
       )
         changeCategory(1, start.productId);
       else if (
         dy > 55 &&
-        startsAtCategoryEdge(start.productId, -1) &&
         feedIsNearEdge(-1)
       )
         changeCategory(-1, start.productId);
@@ -757,7 +772,7 @@ export function VideoMenu({
       gestureStart.current = {
         x: event.clientX,
         y: event.clientY,
-        productId: products[active]?.id ?? null,
+        productId: productAtViewportCenter(),
       };
     else gestureStart.current = null;
   };
@@ -776,13 +791,11 @@ export function VideoMenu({
       else {
         if (
           dy < -55 &&
-          startsAtCategoryEdge(start.productId, 1) &&
           feedIsNearEdge(1)
         )
           changeCategory(1, start.productId);
         else if (
           dy > 55 &&
-          startsAtCategoryEdge(start.productId, -1) &&
           feedIsNearEdge(-1)
         )
           changeCategory(-1, start.productId);
@@ -803,13 +816,11 @@ export function VideoMenu({
     if (!feed) return;
     if (
       event.deltaY > 30 &&
-      startsAtCategoryEdge(products[active]?.id ?? null, 1) &&
       feedIsNearEdge(1)
     )
       changeCategory(1);
     else if (
       event.deltaY < -30 &&
-      startsAtCategoryEdge(products[active]?.id ?? null, -1) &&
       feedIsNearEdge(-1)
     )
       changeCategory(-1);
@@ -1488,7 +1499,7 @@ export function VideoMenu({
 
       <div
         data-category-slide={categorySlide}
-        className={`will-change-transform ${categorySlide.startsWith("enter-") ? "transition-none" : "transition-[transform,opacity] duration-[240ms] ease-out"} ${categorySlideClass}`}
+        className={`will-change-transform ${categorySlide.startsWith("enter-") ? "transition-none" : "transition-[transform,opacity] duration-200 ease-[cubic-bezier(.22,1,.36,1)]"} ${categorySlideClass}`}
       >
         {visibleProducts.map((product) => {
           const index = products.findIndex((item) => item.id === product.id);

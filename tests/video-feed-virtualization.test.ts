@@ -11,8 +11,8 @@ describe("virtualización del feed de vídeo", () => {
   it("hidrata exclusivamente el producto actual y sus vecinos", () => {
     expect(menu).toContain("hydrated={Math.abs(index - active) <= 1}");
     expect(media).toContain("src&&hydrated&&<video");
-    expect(menu).toContain("root: feedRef.current");
-    expect(menu).toContain("threshold: [0.35]");
+    expect(menu).toContain('feed.addEventListener("scroll", updateActiveProduct');
+    expect(menu).toContain("feed.clientHeight / 2");
   });
   it("usa portadas estáticas en el catálogo y ofrece acceso directo por categoría", () => {
     expect(menu).not.toContain("src={`${product.video_url}#t=0.1`}");
@@ -95,7 +95,7 @@ describe("virtualización del feed de vídeo", () => {
     expect(menu).toContain("const visibleProducts =");
     expect(menu).toContain("visibleProducts.map((product)");
     expect(menu).toContain("Math.abs(dx) > 50");
-    expect(menu).toContain("startsAtCategoryEdge(start.productId, 1)");
+    expect(menu).toContain("productAtViewportCenter()");
     expect(menu).toContain("feedIsNearEdge(1)");
     expect(menu).toContain("changeCategory(1, start.productId)");
     expect(menu).toContain("data-category-video-preload");
@@ -117,7 +117,7 @@ describe("virtualización del feed de vídeo", () => {
     );
     expect(menu).toContain("data-category-slide={categorySlide}");
     expect(menu).toContain(
-      "transition-[transform,opacity] duration-[240ms] ease-out",
+      "transition-[transform,opacity] duration-200",
     );
     expect(menu).toContain('matchMedia("(prefers-reduced-motion: reduce)")');
   });
