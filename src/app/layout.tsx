@@ -96,7 +96,7 @@ export const metadata: Metadata = {
     title: "Menuly",
     description: "Cartas digitales en vídeo para hostelería",
   },
-  icons: { icon: "/brand/menuly-mark.png", apple: "/brand/menuly-mark.png" },
+  icons: { apple: "/brand/menuly-mark.png" },
 };
 export const viewport: Viewport = {
   width: "device-width",
@@ -118,6 +118,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       className={`${noirSans.variable} ${noirSerif.variable} ${streetSans.variable} ${streetCondensed.variable} ${cozyDisplay.variable} ${cozySans.variable} ${tokyoSans.variable} ${tokyoSerif.variable} ${marketingSans.variable} ${marketingBody.variable}`}
     >
       <head>
+        <link rel="icon" href="/brand/menuly-mark.png" />
+        <link
+          rel="icon"
+          href="/brand/menuly-mark.png"
+          media="(prefers-color-scheme: light)"
+        />
+        <link
+          rel="icon"
+          href="/brand/menuly-mark-dark.png"
+          media="(prefers-color-scheme: dark)"
+        />
         {mediaOrigins.map((origin) => (
           <link
             key={origin}
