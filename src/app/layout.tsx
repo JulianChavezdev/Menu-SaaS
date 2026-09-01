@@ -7,6 +7,7 @@ import {
   Barlow,
   Barlow_Condensed,
   Jost,
+  Inter,
   Noto_Sans_JP,
   Noto_Serif_JP,
   Nunito,
@@ -76,6 +77,12 @@ const marketingSans = Plus_Jakarta_Sans({
   display: "swap",
   variable: "--font-marketing-sans",
 });
+const marketingBody = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-marketing-body",
+});
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
   title: { default: "Menuly", template: "%s | Menuly" },
@@ -108,7 +115,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <html
       lang="es"
       data-scroll-behavior="smooth"
-      className={`${noirSans.variable} ${noirSerif.variable} ${streetSans.variable} ${streetCondensed.variable} ${cozyDisplay.variable} ${cozySans.variable} ${tokyoSans.variable} ${tokyoSerif.variable} ${marketingSans.variable}`}
+      className={`${noirSans.variable} ${noirSerif.variable} ${streetSans.variable} ${streetCondensed.variable} ${cozyDisplay.variable} ${cozySans.variable} ${tokyoSans.variable} ${tokyoSerif.variable} ${marketingSans.variable} ${marketingBody.variable}`}
     >
       <head>
         {mediaOrigins.map((origin) => (
