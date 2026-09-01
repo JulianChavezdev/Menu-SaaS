@@ -170,17 +170,20 @@ export default function Home() {
               title="Traducción automática"
               text="Tu carta en español e inglés al instante, sin duplicar trabajo."
               visual={
-                <div className="text-center">
-                  <span className="text-[10px] text-[#77716b]">English</span>
-                  <p className="mt-1 text-sm font-bold">
+                <div className="w-full rounded-[12px] border border-white/[.06] bg-[#111111] px-4 py-3 text-center shadow-[0_12px_30px_rgba(0,0,0,.18)]">
+                  <div className="mb-2 flex items-center justify-center gap-1.5 text-[9px] font-semibold uppercase tracking-[.14em] text-[#77716b]">
+                    <span className="size-1.5 rounded-full bg-[#d4943a]" />
+                    English
+                  </div>
+                  <p className="text-[13px] font-bold text-[#f5f0eb]">
                     Tuna tartare with avocado
                   </p>
-                  <p className="text-[10px] text-[#85817d]">
+                  <p className="mt-0.5 text-[9px] text-[#85817d]">
                     Fresh bluefin tuna, soy, sesame
                   </p>
-                  <div className="mt-3 flex justify-center gap-5 text-[9px]">
-                    <span>ES</span>
-                    <span className="text-[#d4943a]">EN</span>
+                  <div className="mx-auto mt-2 flex w-fit rounded-full bg-[#20201f] p-0.5 text-[8px] font-bold">
+                    <span className="rounded-full px-2 py-1 text-[#77716b]">ES</span>
+                    <span className="rounded-full bg-[#d4943a] px-2 py-1 text-[#111]">EN</span>
                   </div>
                 </div>
               }
@@ -190,28 +193,28 @@ export default function Home() {
               title="Carrito local"
               text="El cliente prepara su selección antes de decidir qué pedir."
               visual={
-                <div className="space-y-2 text-[10px]">
-                  <div className="flex justify-between border-b border-white/[.06] pb-2">
-                    <span>
-                      <b className="mr-2 rounded-full bg-[#2b2926] px-1.5 py-1 text-[#d4943a]">
+                <div className="w-full space-y-1.5 rounded-[12px] border border-white/[.06] bg-[#111111] p-3 text-[9px] shadow-[0_12px_30px_rgba(0,0,0,.18)]">
+                  <div className="flex items-center justify-between rounded-[8px] bg-white/[.035] px-2 py-1.5">
+                    <span className="flex items-center text-[#ddd6cf]">
+                      <b className="mr-2 grid size-5 place-items-center rounded-full bg-[#2b2926] text-[8px] text-[#d4943a]">
                         1
                       </b>
                       Tartar de atún
                     </span>
                     <b className="text-[#d4943a]">€14</b>
                   </div>
-                  <div className="flex justify-between border-b border-white/[.06] pb-2">
-                    <span>
-                      <b className="mr-2 rounded-full bg-[#2b2926] px-1.5 py-1 text-[#d4943a]">
+                  <div className="flex items-center justify-between rounded-[8px] bg-white/[.035] px-2 py-1.5">
+                    <span className="flex items-center text-[#ddd6cf]">
+                      <b className="mr-2 grid size-5 place-items-center rounded-full bg-[#2b2926] text-[8px] text-[#d4943a]">
                         2
                       </b>
                       Chuletón
                     </span>
                     <b className="text-[#d4943a]">€76</b>
                   </div>
-                  <div className="flex justify-between pt-1 text-[#a09890]">
+                  <div className="flex justify-between px-2 pt-1 text-[#a09890]">
                     <span>Total</span>
-                    <b className="text-white">€90</b>
+                    <b className="text-[11px] text-white">€90</b>
                   </div>
                 </div>
               }
@@ -221,14 +224,23 @@ export default function Home() {
               title="Analíticas privadas"
               text="Descubre qué platos generan más interés sin cookies de terceros."
               visual={
-                <div className="flex h-16 items-end justify-between gap-2">
-                  {[22, 42, 31, 58, 25, 48, 20].map((height, index) => (
-                    <span
-                      key={index}
-                      className={`w-full rounded-t-[5px] ${index === 3 ? "bg-[#d4a853]" : "bg-[#353432]"}`}
-                      style={{ height }}
-                    />
-                  ))}
+                <div className="w-full rounded-[12px] border border-white/[.06] bg-[#111111] px-3 pb-2 pt-3 shadow-[0_12px_30px_rgba(0,0,0,.18)]">
+                  <div className="mb-2 flex items-end justify-between">
+                    <span className="text-[8px] uppercase tracking-[.12em] text-[#77716b]">Visitas</span>
+                    <b className="text-[13px] text-[#f5f0eb]">1.248</b>
+                  </div>
+                  <div className="flex h-12 items-end justify-between gap-1.5">
+                    {[22, 36, 28, 48, 30, 42, 24].map((height, index) => (
+                      <span
+                        key={index}
+                        className={`w-full rounded-t-[3px] ${index === 3 ? "bg-[#d4a853]" : "bg-[#302f2d]"}`}
+                        style={{ height }}
+                      />
+                    ))}
+                  </div>
+                  <div className="mt-1 flex justify-between text-[7px] text-[#68635e]">
+                    {['L', 'M', 'X', 'J', 'V', 'S', 'D'].map((day) => <span key={day}>{day}</span>)}
+                  </div>
                 </div>
               }
             />
@@ -237,20 +249,29 @@ export default function Home() {
               title="Equipo y soporte"
               text="Roles separados y soporte humano para gestionar el servicio con seguridad."
               visual={
-                <div className="flex justify-center gap-3">
-                  {[
-                    ["MA", "#d4a853"],
-                    ["LP", "#f0643a"],
-                    ["JR", "#79aee8"],
-                  ].map(([label, color]) => (
-                    <span
-                      key={label}
-                      style={{ backgroundColor: color }}
-                      className="grid size-10 place-items-center rounded-full text-[10px] font-bold text-[#111]"
-                    >
-                      {label}
+                <div className="flex w-full items-center justify-between rounded-[12px] border border-white/[.06] bg-[#111111] px-4 py-5 shadow-[0_12px_30px_rgba(0,0,0,.18)]">
+                  <div className="flex -space-x-2">
+                    {[
+                      ["MA", "#d4a853"],
+                      ["LP", "#f0643a"],
+                      ["JR", "#79aee8"],
+                    ].map(([label, color]) => (
+                      <span
+                        key={label}
+                        style={{ backgroundColor: color }}
+                        className="grid size-9 place-items-center rounded-full border-2 border-[#111] text-[9px] font-bold text-[#111]"
+                      >
+                        {label}
+                      </span>
+                    ))}
+                    <span className="grid size-9 place-items-center rounded-full border-2 border-[#111] bg-[#292826] text-[9px] font-bold text-[#d4943a]">+5</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-[#1d291f] px-2 py-1 text-[8px] font-bold text-[#88b38e]">
+                      <span className="size-1.5 rounded-full bg-[#71a578]" /> Activo
                     </span>
-                  ))}
+                    <p className="mt-1 text-[8px] text-[#77716b]">Soporte prioritario</p>
+                  </div>
                 </div>
               }
             />
@@ -557,17 +578,20 @@ function FeatureCard({
   visual: React.ReactNode;
 }) {
   return (
-    <article className="h-[208.87px] rounded-[16px] border border-[#2a2a2a] bg-[#1a1a1a] p-[12.8px]">
-      <div className="flex h-28 items-center justify-center text-[#d4943a]">
+    <article className="group relative flex min-h-[220px] flex-col overflow-hidden rounded-[18px] border border-white/[.08] bg-[#191919] p-3.5 shadow-[0_18px_45px_rgba(0,0,0,.18)] transition-all duration-300 ease-out hover:-translate-y-1 hover:border-[#d4943a]/35 hover:shadow-[0_24px_55px_rgba(0,0,0,.28)] lg:h-[208.87px] lg:min-h-0">
+      <span className="pointer-events-none absolute -right-8 -top-10 size-28 rounded-full bg-[#d4943a]/[.055] blur-2xl transition-opacity duration-300 group-hover:opacity-100" />
+      <div className="flex h-[104px] items-center justify-center text-[#d4943a]">
         {visual}
       </div>
-      <div className="pt-3">
-        <span className="hidden">{icon}</span>
+      <div className="flex items-center gap-2.5 pt-3">
+        <span className="grid size-7 shrink-0 place-items-center rounded-[8px] bg-[#d4943a]/10 text-[#d4943a] [&>svg]:size-3.5">
+          {icon}
+        </span>
         <h3 className="text-[13px] font-bold leading-[19.5px] text-[#f5f0eb]">
           {title}
         </h3>
       </div>
-      <p className="pt-1 text-[11px] leading-[17.88px] text-[#a09890]">
+      <p className="pt-1.5 text-[10px] leading-[15px] text-[#9d958d]">
         {text}
       </p>
     </article>
