@@ -135,6 +135,7 @@ test.describe("public menu responsive contract",()=>{
     const menu=page.locator("main.public-menu");
     await expect(menu).toHaveAttribute("data-hydrated","true");
     await expect.poll(()=>menu.locator(":scope > div > section video").count()).toBeLessThanOrEqual(2);
+    await expect(menu.locator("video[data-category-video-preload]")).toHaveAttribute("src",/6090695/);
     const categories=page.getByRole("navigation",{name:"Categorías"});
     await categories.getByRole("button",{name:"Brasas",exact:true}).click();
     await expect(categories.getByRole("button",{name:"Brasas",exact:true})).toHaveAttribute("aria-current","true");

@@ -22,8 +22,8 @@ describe("showcase canónico",()=>{
       const productNames=new Set(restaurant.products.map(product=>product.name));
       for(const product of restaurant.products){
         expect(categories.has(product.category)).toBe(true);
-        expect(product.videoUrl).toMatch(/^https:\/\/videos\.pexels\.com\/video-files\//);
-        expect(product.videoSourceUrl).toMatch(/^https:\/\/www\.pexels\.com\/video\//);
+        expect(product.videoUrl).toMatch(/^https:\/\/(videos\.pexels\.com\/video-files\/|res\.cloudinary\.com\/)/);
+        expect(product.videoSourceUrl).toMatch(/^https:\/\/(www\.pexels\.com\/video\/|res\.cloudinary\.com\/)/);
         expect(product.recommendations?.length??0).toBeGreaterThan(0);
         expect(product.recommendations?.length??0).toBeLessThanOrEqual(3);
         for(const recommendation of product.recommendations??[]){expect(productNames.has(recommendation)).toBe(true);expect(recommendation).not.toBe(product.name)}

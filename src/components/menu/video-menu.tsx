@@ -33,6 +33,7 @@ import { translatedField } from "@/lib/translations";
 import { ThemeVectors } from "@/components/menu/theme-vectors";
 import type { AnalyticsEvent } from "@/lib/analytics";
 import { ProductMedia } from "@/components/menu/product-media";
+import { menuVideoPlaybackUrl } from "@/lib/menu-media";
 import {
   addCartItem,
   changeCartQuantity,
@@ -320,6 +321,21 @@ export function VideoMenu({
     categoryGroups.find((group) => group.id === activeCategory)?.products ??
     categoryGroups[0]?.products ??
     [];
+  const activeGroupIndex = categoryGroups.findIndex(
+    (group) => group.id === activeCategory,
+  );
+  const activeGroup = categoryGroups[activeGroupIndex];
+  const activeProductInGroup = activeGroup?.products.findIndex(
+    (product) => product.id === products[active]?.id,
+  );
+  const nextCategoryVideo =
+    activeGroup &&
+    activeProductInGroup !== undefined &&
+    activeProductInGroup >= Math.max(0, activeGroup.products.length - 2)
+      ? menuVideoPlaybackUrl(
+          categoryGroups[activeGroupIndex + 1]?.products[0]?.video_url ?? null,
+        )
+      : null;
   const categorySlideClass = {
     idle: "translate-x-0 opacity-100",
     "exit-left": "-translate-x-[105%] opacity-20",
@@ -2490,6 +2506,17 @@ export function VideoMenu({
             <Share2 size={19} />
           </button>
         </nav>
+      )}
+      {nextCategoryVideo && (
+        <video
+          data-category-video-preload
+          aria-hidden="true"
+          src={nextCategoryVideo}
+          muted
+          playsInline
+          preload="auto"
+          className="pointer-events-none absolute h-px w-px opacity-0"
+        />
       )}
     </main>
   );

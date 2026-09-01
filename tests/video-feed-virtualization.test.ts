@@ -95,8 +95,10 @@ describe("virtualización del feed de vídeo", () => {
     expect(menu).toContain("const visibleProducts =");
     expect(menu).toContain("visibleProducts.map((product)");
     expect(menu).toContain("Math.abs(dx) > 50");
-    expect(menu).toContain("dy < -55 && atBottom");
-    expect(menu).toContain("changeCategory(1)");
+    expect(menu).toContain("startsAtCategoryEdge(start.productId, 1)");
+    expect(menu).toContain("feedIsNearEdge(1)");
+    expect(menu).toContain("changeCategory(1, start.productId)");
+    expect(menu).toContain("data-category-video-preload");
   });
   it("no cambia de categoría al desplazarse dentro de paneles o descripciones", () => {
     expect(menu).toContain("function blocksCategoryGesture");

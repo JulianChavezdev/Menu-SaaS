@@ -2,10 +2,12 @@
 
 import {useCallback,useEffect,useRef,useState} from "react";
 import {ImageOff,LoaderCircle,Play,RefreshCcw} from "lucide-react";
+import {menuVideoPlaybackUrl} from "@/lib/menu-media";
 
 type Props={index:number;name:string;src:string|null;poster:string|null;muted:boolean;preload:"none"|"metadata"|"auto";active:boolean;hydrated:boolean;playbackBlocked:boolean;setVideoRef:(element:HTMLVideoElement|null)=>void;onPlaybackStarted:(index:number)=>void};
 
 export function ProductMedia({index,name,src,poster,muted,preload,active,hydrated,playbackBlocked,setVideoRef,onPlaybackStarted}:Props){
+  const playbackSrc=menuVideoPlaybackUrl(src);
   const localRef=useRef<HTMLVideoElement|null>(null);
   const bufferingTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
   const[status,setStatus]=useState<"loading"|"ready"|"error">(src?"loading":"ready");
@@ -57,7 +59,7 @@ export function ProductMedia({index,name,src,poster,muted,preload,active,hydrate
     {src&&hydrated&&<video
       data-video-index={index}
       ref={assign}
-      src={src}
+      src={playbackSrc??undefined}
       poster={poster??undefined}
       autoPlay={active}
       muted={muted}
