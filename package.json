@@ -15,6 +15,7 @@
     "check:legal": "node scripts/check-legal.mjs",
     "check:db": "node scripts/check-db.mjs",
     "seed:showcase": "node scripts/seed-showcase.mjs --apply",
+    "seed:showcase-products": "node scripts/seed-showcase.mjs --apply --append-products",
     "seed:showcase-recommendations": "node scripts/seed-showcase.mjs --apply --recommendations-only",
     "check:showcase": "node scripts/seed-showcase.mjs --verify",
     "check:showcase-sales": "node scripts/check-showcase-sales.mjs",

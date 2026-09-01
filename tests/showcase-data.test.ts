@@ -10,7 +10,7 @@ describe("showcase canónico",()=>{
     expect(showcase.restaurants[0].slug).toBe("bistro-nube");
     expect(showcase.legacyDemoSlugs).toEqual(["pizzeria-roma","cafe-central","la-brasa","sushi-yume"]);
     expect(showcase.restaurants[0].categories).toHaveLength(7);
-    expect(new Set(showcase.restaurants.flatMap(item=>item.products.map(product=>product.name))).size).toBe(15);
+    expect(new Set(showcase.restaurants.flatMap(item=>item.products.map(product=>product.name))).size).toBe(22);
   });
 
   it("mantiene cada producto dentro de las categorías de su restaurante",()=>{
@@ -18,7 +18,10 @@ describe("showcase canónico",()=>{
       const categories=new Set(restaurant.categories.map(category=>category.slug));
       expect(restaurant.logoUrl).toMatch(/^\/demo\/logos\/[a-z-]+\.svg$/);
       expect(restaurant.categories).toHaveLength(7);
-      expect(restaurant.products).toHaveLength(15);
+      expect(restaurant.products).toHaveLength(22);
+      for(const category of restaurant.categories){
+        expect(restaurant.products.filter(product=>product.category===category.slug).length).toBeGreaterThanOrEqual(3);
+      }
       const productNames=new Set(restaurant.products.map(product=>product.name));
       for(const product of restaurant.products){
         expect(categories.has(product.category)).toBe(true);

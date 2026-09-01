@@ -6,6 +6,7 @@ dotenv.config({path:".env.local",quiet:true});
 
 const apply=process.argv.includes("--apply");
 const recommendationsOnly=process.argv.includes("--recommendations-only");
+const appendProductsOnly=process.argv.includes("--append-products");
 const data=JSON.parse(await readFile(new URL("../supabase/showcase-data.json",import.meta.url),"utf8"));
 const url=process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey=process.env.SUPABASE_SECRET_KEY||process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -96,8 +97,30 @@ async function seed(ownerId){
   }
 }
 
+async function appendMissingProducts(ownerId){
+  const rows=await inspect(ownerId);
+  for(const row of rows){
+    const restaurant=data.restaurants.find(item=>item.slug===row.slug);
+    if(!restaurant)continue;
+    const [{data:categories,error:categoryError},{data:existing,error:productError}]=await Promise.all([
+      admin.from("categories").select("id,slug").eq("restaurant_id",row.id),
+      admin.from("products").select("name").eq("restaurant_id",row.id),
+    ]);
+    if(categoryError)throw categoryError;if(productError)throw productError;
+    const categoryIds=new Map(categories.map(category=>[category.slug,category.id]));
+    const existingNames=new Set(existing.map(product=>product.name));
+    const missing=restaurant.products.map((product,index)=>({product,index})).filter(({product})=>!existingNames.has(product.name));
+    if(missing.length){
+      const values=missing.map(({product,index})=>({restaurant_id:row.id,category_id:categoryIds.get(product.category),name:product.name,description:product.description,price_cents:product.priceCents,video_url:product.videoUrl,video_path:null,image_url:null,image_path:null,is_available:true,is_featured:false,sort_order:index}));
+      if(values.some(product=>!product.category_id))throw new Error(`Categoría desconocida en ${restaurant.slug}.`);
+      await admin.from("products").insert(values).throwOnError();
+    }
+    await seedRecommendations(row.id,restaurant);
+  }
+}
+
 const owner=await findOwner();
-if(apply&&recommendationsOnly){const current=await inspect(owner.id);for(const row of current){const restaurant=data.restaurants.find(item=>item.slug===row.slug);if(restaurant)await seedRecommendations(row.id,restaurant)}}else if(apply)await seed(owner.id);
+if(apply&&recommendationsOnly){const current=await inspect(owner.id);for(const row of current){const restaurant=data.restaurants.find(item=>item.slug===row.slug);if(restaurant)await seedRecommendations(row.id,restaurant)}}else if(apply&&appendProductsOnly)await appendMissingProducts(owner.id);else if(apply)await seed(owner.id);
 const rows=await inspect(owner.id);
 const legacyRows=await inspectLegacy(owner.id);
 const expected=new Map(data.restaurants.map(item=>[item.slug,item]));

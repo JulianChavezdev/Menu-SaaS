@@ -16,7 +16,7 @@ Actualizado: 26 de agosto de 2026.
 - Panel de superadmin para métricas, capacidad, planes efectivos, alertas, soporte, previsualización, suspensión, restauración y eliminación protegida.
 - Papelera con restauración temporal, purga diaria auditada y limpieza de archivos asociados.
 - Exportaciones, copias versionadas y copias automáticas diarias con retención.
-- Demo única `Bistro Nube` con 7 categorías, 15 productos y 21 recomendaciones comerciales; los fixtures de prueba se eliminan automáticamente.
+- Demo única `Bistro Nube` con 7 categorías, 22 productos y 28 recomendaciones comerciales; los fixtures de prueba se eliminan automáticamente.
 - Pagos manuales genéricos, vencimientos, cortesía, suspensión en dos pasos, libro financiero y cierres mensuales.
 - Central de cobros pendientes con mensajes para copiar, WhatsApp o correo y registro del último aviso preparado.
 - Centro de actividad y auditoría privada con filtros y CSV.
@@ -33,7 +33,7 @@ Actualizado: 26 de agosto de 2026.
 - `npm run check:db`: esquema remoto completo, sin migraciones pendientes.
 - Pruebas unitarias, integración, TypeScript, lint y build disponibles en los scripts del proyecto.
 - `npm run check:deployment -- https://menuly.es`: salud, portada, demo, manifest, robots, sitemap y cabeceras correctos.
-- Demo remota comprobada: 1 restaurante, 7 categorías, 15 productos y 13 vídeos accesibles por debajo de 15 MB.
+- Demo remota comprobada: 1 restaurante, 7 categorías, 22 productos y 20 vídeos accesibles por debajo de 15 MB.
 - 354 pruebas unitarias, 17 de integración y 14 recorridos E2E superados.
 - TypeScript, lint y compilación de producción superados el 26 de agosto de 2026.
 - La matriz E2E cubre móvil, iPad y escritorio: reproducción automática, solapamientos, carrito, alérgenos, virtualización, alta de restaurante y exportaciones de superadmin.
