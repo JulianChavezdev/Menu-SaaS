@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     title: "Comandero",
     statusBarStyle: "black-translucent",
   },
-  icons: { apple: "/brand/menuly-mark.png" },
+  icons: { apple: "/brand/menuly-mark-dark.png?v=2" },
   robots: { index: false, follow: false },
 };
 

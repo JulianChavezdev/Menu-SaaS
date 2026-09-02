@@ -9,7 +9,7 @@ export default function manifest():MetadataRoute.Manifest{
     display:"standalone",
     background_color:"#FBF8F3",
     theme_color:"#0C1F30",
-    icons:[{src:"/brand/menuly-mark.png",sizes:"512x512",type:"image/png",purpose:"maskable"}],
+    icons:[{src:"/brand/menuly-mark-dark.png?v=2",sizes:"512x512",type:"image/png",purpose:"any"}],
     lang:"es",
     categories:["food","business"],
   };

@@ -96,7 +96,7 @@ export const metadata: Metadata = {
     title: "Menuly",
     description: "Cartas digitales en vídeo para hostelería",
   },
-  icons: { apple: "/brand/menuly-mark.png" },
+  icons: { apple: "/brand/menuly-mark-dark.png?v=2" },
 };
 export const viewport: Viewport = {
   width: "device-width",

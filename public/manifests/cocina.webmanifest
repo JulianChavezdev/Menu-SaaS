@@ -11,10 +11,10 @@
   "theme_color": "#0C1F30",
   "icons": [
     {
-      "src": "/brand/menuly-mark.png",
+      "src": "/brand/menuly-mark-dark.png?v=2",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ],
   "lang": "es",
