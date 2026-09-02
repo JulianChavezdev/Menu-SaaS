@@ -72,7 +72,7 @@ export function LandingDemoExperience({
           <p className="mt-1 text-xs leading-5 text-[#91867c]">
             Cambia el diseño y prueba la misma carta en tiempo real.
           </p>
-          <div className="mt-5 grid max-h-[min(650px,calc(100svh-190px))] gap-2 overflow-y-auto pr-2 [scrollbar-color:#d4943a_#191919] [scrollbar-width:thin]">
+          <div className="mt-5 grid grid-cols-2 gap-2.5">
             {templates.map((template) => {
               const selected = template.key === selectedTemplate;
               return (
@@ -81,21 +81,21 @@ export function LandingDemoExperience({
                   type="button"
                   aria-pressed={selected}
                   onClick={() => setSelectedTemplate(template.key)}
-                  className={`group flex min-h-[68px] w-full items-center gap-3 rounded-[14px] border px-3 py-2.5 text-left transition duration-300 ${selected ? "border-[#d4943a] bg-[#d4943a]/10 shadow-[0_0_22px_rgba(212,148,58,.12)]" : "border-white/[.08] bg-white/[.025] hover:border-white/20 hover:bg-white/[.05]"}`}
+                  className={`group flex aspect-square min-w-0 flex-col items-center justify-center rounded-[14px] border p-2 text-center transition duration-300 ${selected ? "border-[#d4943a] bg-[#d4943a]/10 shadow-[0_0_22px_rgba(212,148,58,.12)]" : "border-white/[.08] bg-white/[.025] hover:border-white/20 hover:bg-white/[.05]"}`}
                 >
                   <span
                     aria-hidden="true"
                     style={{
                       background: `radial-gradient(circle at 30% 25%, ${template.colors.accent2}, ${template.colors.accent} 48%, ${template.colors.background} 100%)`,
                     }}
-                    className="size-10 shrink-0 rounded-full shadow-[inset_-7px_-8px_14px_rgba(0,0,0,.35),0_5px_14px_rgba(0,0,0,.35)]"
+                    className="size-9 shrink-0 rounded-full shadow-[inset_-7px_-8px_14px_rgba(0,0,0,.35),0_5px_14px_rgba(0,0,0,.35)]"
                   />
-                  <span className="min-w-0">
-                    <strong className={`block truncate text-sm ${selected ? "text-white" : "text-[#b8afa6]"}`}>
+                  <span className="mt-2 min-w-0">
+                    <strong className={`block text-[12px] leading-4 ${selected ? "text-white" : "text-[#b8afa6]"}`}>
                       {template.name}
                     </strong>
-                    <span className="mt-0.5 block truncate text-[10px] text-[#6f6963]">
-                      {template.description}
+                    <span className="mt-0.5 block text-[9px] leading-3 text-[#6f6963]">
+                      {template.previewLabel}
                     </span>
                   </span>
                 </button>

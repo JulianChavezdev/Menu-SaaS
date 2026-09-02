@@ -18,6 +18,7 @@ type MenuTemplate = {
   key: string;
   name: string;
   description: string;
+  previewLabel: string;
   tier: TemplateTier;
   layout: TemplateLayout;
   motif: TemplateMotif;
@@ -36,6 +37,7 @@ const cinematicTemplate: MenuTemplate & { key: "cinematic" } = {
   name: "Cinemática",
   description:
     "Vídeo limpio a pantalla completa con el HUD flotante como único elemento visual.",
+  previewLabel: "Vídeo inmersivo",
   tier: "free",
   layout: "fullscreen",
   motif: "cinema",
@@ -53,6 +55,7 @@ const noirLuxeTemplate: MenuTemplate & { key: "noirluxe" } = {
   name: "NoirLuxe",
   description:
     "Fotografía protagonista, negro profundo y tipografía editorial dorada para una carta gastronómica sofisticada.",
+  previewLabel: "Alta cocina",
   tier: "premium",
   layout: "fullscreen",
   motif: "noirluxe",
@@ -70,6 +73,7 @@ const streetTemplate: MenuTemplate & { key: "street" } = {
   name: "Street",
   description:
     "Estética urbana de alto contraste, amarillo intenso y tipografía contundente para conceptos informales.",
+  previewLabel: "Street food",
   tier: "premium",
   layout: "fullscreen",
   motif: "street",
@@ -87,6 +91,7 @@ const cozyCornerTemplate: MenuTemplate & { key: "cozy-corner" } = {
   name: "Cozy Corner",
   description:
     "Una carta cálida, cercana y desenfadada con rojo coral, amarillo y formas suaves.",
+  previewLabel: "Retro diner",
   tier: "premium",
   layout: "fullscreen",
   motif: "cozy-corner",
@@ -104,6 +109,7 @@ const tokyoPulseTemplate: MenuTemplate & { key: "tokyo-pulse" } = {
   name: "Tokyo Pulse",
   description:
     "Ritmo de izakaya contemporánea, banner animado y contraste editorial para cocina asiática.",
+  previewLabel: "Cocina asiática",
   tier: "premium",
   layout: "fullscreen",
   motif: "tokyo-pulse",
@@ -121,6 +127,7 @@ const socialHudTemplate: MenuTemplate & { key: "social-hud" } = {
   name: "Social HUD",
   description:
     "Interfaz ultraligera inspirada en los feeds verticales: vídeo dominante, acciones laterales y navegación inmediata.",
+  previewLabel: "Estilo social",
   tier: "premium",
   layout: "fullscreen",
   motif: "social-hud",
