@@ -3,7 +3,7 @@
   "name": "Menuly Comandero",
   "short_name": "Comandero",
   "description": "Comandero móvil de Menuly para tomar pedidos por mesa.",
-  "start_url": "/operaciones/comandero",
+  "start_url": "/operaciones/comandero?app=comandero",
   "scope": "/operaciones/comandero",
   "display": "standalone",
   "orientation": "any",

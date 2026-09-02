@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { OperationalAppGuard } from "@/components/pwa/operational-app-guard";
 
 export const metadata: Metadata = {
   title: "Comandero",
@@ -14,5 +15,5 @@ export const metadata: Metadata = {
 };
 
 export default function ComanderoLayout({ children }: { children: React.ReactNode }) {
-  return children;
+  return <><OperationalAppGuard app="comandero" />{children}</>;
 }

@@ -3,7 +3,7 @@
   "name": "Menuly Cocina",
   "short_name": "Cocina",
   "description": "Pantalla de cocina de Menuly para recibir y preparar comandas.",
-  "start_url": "/operaciones/cocina",
+  "start_url": "/operaciones/cocina?app=cocina",
   "scope": "/operaciones/cocina",
   "display": "standalone",
   "orientation": "any",

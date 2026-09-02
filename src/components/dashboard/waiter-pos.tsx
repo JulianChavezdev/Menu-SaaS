@@ -187,6 +187,7 @@ export function WaiterPos({
           <div className="flex min-w-0 items-center gap-3">
             {isManager && <Link
               href="/dashboard"
+              data-hide-in-installed-app
               aria-label="Volver al panel"
               className="grid size-10 shrink-0 place-items-center rounded-lg bg-stone-100 active:scale-95"
             >
@@ -205,6 +206,7 @@ export function WaiterPos({
             <InstallOperationalApp name="Comandero" />
             {isManager && <Link
               href="/dashboard/tables"
+              data-hide-in-installed-app
               className="grid size-10 place-items-center rounded-lg text-slate-600 active:bg-stone-100"
               aria-label="Organizar mesas"
             >
@@ -212,6 +214,7 @@ export function WaiterPos({
             </Link>}
             {isManager && <a
               href="/operaciones/cocina"
+              data-hide-in-installed-app
               className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-orange-600 px-3 text-xs font-black text-white active:scale-95"
             >
               <ChefHat size={18} />

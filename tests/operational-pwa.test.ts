@@ -9,9 +9,17 @@ const navigationComponent = readFileSync("src/components/dashboard/dashboard-nav
 
 describe("PWAs operativas", () => {
   it("instala Comandero y Cocina como aplicaciones independientes", () => {
-    expect(waiterManifest).toMatchObject({ id: "/operaciones/comandero", start_url: "/operaciones/comandero", scope: "/operaciones/comandero", display: "standalone" });
-    expect(kitchenManifest).toMatchObject({ id: "/operaciones/cocina", start_url: "/operaciones/cocina", scope: "/operaciones/cocina", display: "standalone" });
+    expect(waiterManifest).toMatchObject({ id: "/operaciones/comandero", start_url: "/operaciones/comandero?app=comandero", scope: "/operaciones/comandero", display: "standalone" });
+    expect(kitchenManifest).toMatchObject({ id: "/operaciones/cocina", start_url: "/operaciones/cocina?app=cocina", scope: "/operaciones/cocina", display: "standalone" });
     expect(waiterManifest.id).not.toBe(kitchenManifest.id);
+  });
+
+  it("bloquea navegación fuera del módulo cuando se ejecuta instalado", () => {
+    const guard = readFileSync("src/components/pwa/operational-app-guard.tsx", "utf8");
+    expect(guard).toContain('matchMedia("(display-mode: standalone)")');
+    expect(guard).toContain('addEventListener("popstate", blockBack)');
+    expect(guard).toContain("blockExternalNavigation");
+    expect(guard).toContain("dataset.operationalApp = app");
   });
 
   it("ofrece instalación nativa y guía específica para iOS", () => {

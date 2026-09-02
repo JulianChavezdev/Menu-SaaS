@@ -248,6 +248,7 @@ export function KitchenBoard({
           <div className="flex min-w-0 items-center gap-3">
             {isManager && <Link
               href="/dashboard"
+              data-hide-in-installed-app
               aria-label="Volver al panel"
               className="grid size-10 shrink-0 place-items-center rounded-lg bg-stone-100 active:scale-95"
             >
@@ -277,6 +278,7 @@ export function KitchenBoard({
             </button>
             {isManager && <a
               href="/operaciones/comandero"
+              data-hide-in-installed-app
               className="inline-flex min-h-10 items-center rounded-lg bg-stone-100 px-3 text-xs font-black"
             >
               Comandero
