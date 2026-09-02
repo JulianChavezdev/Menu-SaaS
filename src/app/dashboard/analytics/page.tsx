@@ -22,7 +22,6 @@ import {
   parseAnalyticsPeriod,
   weeklySalesSummary,
 } from "@/lib/analytics-report";
-import { BackButton } from "@/components/ui/back-button";
 import { AnalyticsGoals } from "@/components/dashboard/analytics-goals";
 import { SalesFunnel } from "@/components/dashboard/sales-funnel";
 import { DailyVisitsChart } from "@/components/dashboard/daily-visits-chart";
@@ -112,8 +111,7 @@ export default async function AnalyticsPage({
   return (
     <main className="mx-auto max-w-7xl p-4 md:p-6">
       <header className="border-b border-stone-200 pb-5">
-        <BackButton fallback="/dashboard" />
-        <div className="mt-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[.18em] text-orange-700">
               Analíticas del restaurante

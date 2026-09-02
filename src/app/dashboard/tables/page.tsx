@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ArrowRight, Table2 } from "lucide-react";
-import { BackButton } from "@/components/ui/back-button";
 import { activeRestaurant } from "@/lib/permissions";
 import {
   createDiningTable,
@@ -20,8 +19,7 @@ export default async function TablesPage() {
 
   return (
     <main className="mx-auto max-w-6xl p-4 md:p-6">
-      <BackButton fallback="/dashboard" />
-      <div className="mt-5 flex flex-col gap-4 border-b border-stone-200 pb-5 lg:flex-row lg:items-end lg:justify-between">
+      <div className="flex flex-col gap-4 border-b border-stone-200 pb-5 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-xs font-bold uppercase tracking-[.16em] text-orange-700">
             Menuly Comandas
@@ -115,8 +113,7 @@ export default async function TablesPage() {
 function Unavailable() {
   return (
     <main className="mx-auto max-w-3xl p-6">
-      <BackButton fallback="/dashboard" />
-      <section className="mt-6 border border-stone-200 bg-white p-8 text-center">
+      <section className="border border-stone-200 bg-white p-8 text-center">
         <h1 className="text-2xl font-bold">Menuly Comandas no está activo</h1>
         <p className="mt-2 text-sm text-slate-600">
           El plan de 59,99 € incluye comandero móvil, mesas y Cocina.

@@ -2,7 +2,6 @@ import {activeRestaurant} from "@/lib/permissions";
 import {ProductsManager} from "@/components/dashboard/products-manager";
 import {CategoriesManager} from "@/components/dashboard/categories-manager";
 import {MediaUpload} from "@/components/dashboard/media-upload";
-import {BackButton} from "@/components/ui/back-button";
 
 export default async function Page(){
   const {supabase,restaurant}=await activeRestaurant();
@@ -15,7 +14,7 @@ export default async function Page(){
   const options=list.map(product=>({id:product.id,name:product.name,imageUrl:product.image_url,videoUrl:product.video_url}));
   return <main className="mx-auto max-w-7xl p-4 md:p-6">
     <div className="flex flex-wrap items-end justify-between gap-3 border-b border-stone-200 pb-4">
-      <div><BackButton fallback="/dashboard"/><h1 className="mt-4 text-2xl font-extrabold">Gestión de Carta</h1><p className="mt-1 text-sm text-slate-600">Crea platos, ordénalos y asigna una foto o vídeo a cada producto.</p></div>
+      <div><h1 className="text-2xl font-extrabold">Gestión de Carta</h1><p className="mt-1 text-sm text-slate-600">Crea platos, ordénalos y asigna una foto o vídeo a cada producto.</p></div>
       <a href={`/r/${restaurant.slug}`} target="_blank" rel="noopener noreferrer" className="w-full rounded-xl bg-orange-600 text-white px-4 py-3 text-center text-sm font-semibold text-white sm:w-auto">Ver carta oficial ↗</a>
     </div>
     <details id="categorias" open className="group mt-5 rounded-3xl border border-stone-200 bg-white p-4 md:p-5">

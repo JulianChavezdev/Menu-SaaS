@@ -1,6 +1,5 @@
 import { Check, Crown, LockKeyhole } from "lucide-react";
 import { activeRestaurant } from "@/lib/permissions";
-import { BackButton } from "@/components/ui/back-button";
 import { PLAN_LIMITS, planForStatus } from "@/lib/plans";
 import { checkoutIsConfigured } from "@/lib/billing";
 import { startCheckout } from "@/app/dashboard/actions";
@@ -56,8 +55,7 @@ export default async function Page({
   return (
     <main className="mx-auto max-w-5xl p-4 md:p-6">
       <div className="border-b border-stone-200 pb-4">
-        <BackButton fallback="/dashboard" />
-        <h1 className="mt-4 text-2xl font-extrabold">Suscripción</h1>
+        <h1 className="text-2xl font-extrabold">Suscripción</h1>
         <p className="mt-1 text-sm text-slate-600">
           Gestiona los límites y las funciones premium de tu restaurante.
         </p>

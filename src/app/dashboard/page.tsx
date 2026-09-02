@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { BackButton } from "@/components/ui/back-button";
 import { activeRestaurant } from "@/lib/permissions";
 import { OnboardingChecklist } from "@/components/dashboard/onboarding-checklist";
 import { ActionCenter } from "@/components/dashboard/action-center";
@@ -86,7 +85,6 @@ export default async function Dashboard() {
       {/* Cabecera Principal */}
       <div className="flex flex-wrap items-center justify-between border-b border-stone-200 pb-5 gap-4">
         <div className="flex flex-col gap-1">
-          <BackButton fallback="/" />
           <h1 className="text-3xl font-extrabold tracking-tight text-slate-950">
             Hola, {restaurant.name}
           </h1>

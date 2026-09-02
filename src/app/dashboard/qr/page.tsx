@@ -1,6 +1,5 @@
 import { activeRestaurant } from "@/lib/permissions";
 import { QrCard } from "@/components/dashboard/qr-card";
-import { BackButton } from "@/components/ui/back-button";
 
 export default async function Page() {
   const { restaurant } = await activeRestaurant();
@@ -11,7 +10,6 @@ export default async function Page() {
       {/* Cabecera Fija */}
       <div className="flex items-center justify-between border-b border-stone-200 pb-4">
         <div className="flex flex-col gap-0.5">
-          <BackButton fallback="/dashboard" />
           <h1 className="text-2xl font-extrabold tracking-tight text-slate-950">
             Código QR
           </h1>

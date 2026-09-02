@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { BackButton } from "@/components/ui/back-button";
 import { activeRestaurant } from "@/lib/permissions";
 import { orderStatusSchema, type OrderStatus } from "@/lib/table-ordering";
 import { OrderHistoryAction } from "@/components/dashboard/order-history-action";
@@ -68,8 +67,7 @@ export default async function OrdersPage({
   const sales = completed.reduce((sum, order) => sum + order.subtotal_cents, 0);
   return (
     <main className="mx-auto max-w-6xl p-4 md:p-6">
-      <BackButton fallback="/dashboard" />
-      <header className="mt-5 border-b border-stone-200 pb-5">
+      <header className="border-b border-stone-200 pb-5">
         <p className="text-xs font-bold uppercase tracking-[.16em] text-orange-700">
           Menuly Comandas
         </p>
@@ -194,8 +192,7 @@ function Metric({ label, value }: { label: string; value: string }) {
 function Unavailable() {
   return (
     <main className="mx-auto max-w-3xl p-6">
-      <BackButton fallback="/dashboard" />
-      <section className="mt-6 border border-stone-200 bg-white p-8 text-center">
+      <section className="border border-stone-200 bg-white p-8 text-center">
         <h1 className="text-2xl font-bold">Menuly Comandas no está activo</h1>
         <p className="mt-2 text-sm text-slate-600">
           Activa el módulo para consultar el historial de comandas.
