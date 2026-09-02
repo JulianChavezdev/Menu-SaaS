@@ -25,7 +25,7 @@ describe("landing pública", () => {
   it("ofrece navegación mobile y llamadas a demo, registro y acceso", () => {
     expect(nav).toContain('aria-label="Navegación principal"');
     expect(nav).toContain("aria-expanded={open}");
-    expect(page).toContain('href="/r/bistro-nube?preview=landing"');
+    expect(page).toContain('href="/demo"');
     expect(page).toContain('href="/register"');
     expect(nav).toContain('href="/login"');
   });
