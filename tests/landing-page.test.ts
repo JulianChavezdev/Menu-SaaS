@@ -88,7 +88,10 @@ describe("landing pública", () => {
   it("presenta la demo guiada en pantallas grandes y mantiene la carta completa en móvil", () => {
     expect(publicMenu).toContain("<LandingDemoExperience");
     expect(landingDemo).toContain("md:grid-cols-");
-    expect(landingDemo).toContain('src={`/r/${slug}?preview=embed`}');
+    expect(landingDemo).toContain('src={`/r/${slug}?preview=embed&template=${selectedTemplate}`}');
+    expect(landingDemo).toContain("Object.values(MENU_TEMPLATES)");
+    expect(landingDemo).toContain("setSelectedTemplate(template.key)");
+    expect(publicMenu).toContain("previewTemplate");
     expect(landingDemo).toContain('className="h-full w-full border-0"');
     expect(landingDemo).toContain('className="hidden min-w-0 md:block"');
     expect(landingDemo).toContain("Desliza para descubrir");

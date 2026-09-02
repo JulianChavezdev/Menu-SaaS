@@ -6,6 +6,7 @@ import { demoProducts, demoRestaurant } from "@/lib/demo";
 import { VideoMenu } from "@/components/menu/video-menu";
 import { LandingDemoExperience } from "@/components/menu/landing-demo-experience";
 import type { Metadata } from "next";
+import { isMenuTemplateKey } from "@/lib/menu-templates";
 
 const LANDING_PREVIEW_VIDEO =
   "https://res.cloudinary.com/det6jfwzx/video/upload/c_limit,w_480/q_auto:eco/vc_h264/f_mp4/v1783700256/Generame_un_video_de_una_hambu_oo9gur.mp4";
@@ -82,19 +83,24 @@ export default async function PublicMenu({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ preview?: string }>;
+  searchParams: Promise<{ preview?: string; template?: string }>;
 }) {
   const { slug } = await params;
   const query = await searchParams;
   const landingPreview = query.preview === "landing";
   const embeddedPreview = query.preview === "embed";
   const preview = landingPreview || embeddedPreview;
+  const previewTemplate =
+    embeddedPreview && isMenuTemplateKey(query.template ?? "")
+      ? query.template
+      : null;
   if (slug === "bistro-nube" && !process.env.NEXT_PUBLIC_SUPABASE_URL) {
     if (landingPreview)
       return (
         <LandingDemoExperience
           slug={demoRestaurant.slug}
           restaurantName={demoRestaurant.name}
+          initialTemplate={demoRestaurant.menu_template}
         />
       );
     const previewProducts = preview
@@ -106,7 +112,11 @@ export default async function PublicMenu({
       : demoProducts;
     return (
       <VideoMenu
-        restaurant={demoRestaurant}
+        restaurant={
+          previewTemplate
+            ? { ...demoRestaurant, menu_template: previewTemplate }
+            : demoRestaurant
+        }
         products={previewProducts}
         analyticsEnabled={!preview}
         introEnabled={!preview}
@@ -158,6 +168,7 @@ export default async function PublicMenu({
       <LandingDemoExperience
         slug={restaurant.slug}
         restaurantName={restaurant.name}
+        initialTemplate={restaurant.menu_template}
       />
     );
   const { data: products } = await supabase
@@ -216,7 +227,11 @@ export default async function PublicMenu({
     : productsWithRecommendations;
   return (
     <VideoMenu
-      restaurant={publicRestaurant}
+      restaurant={
+        previewTemplate
+          ? { ...publicRestaurant, menu_template: previewTemplate }
+          : publicRestaurant
+      }
       products={publicProducts as typeof demoProducts}
       analyticsEnabled={!preview}
       introEnabled={!preview}
