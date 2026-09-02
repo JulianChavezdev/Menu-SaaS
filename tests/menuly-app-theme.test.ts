@@ -9,9 +9,11 @@ const superadmin = readFileSync("src/app/superadmin/layout.tsx", "utf8");
 
 describe("sistema visual Menuly", () => {
   it("comparte la identidad de la landing en las áreas privadas", () => {
-    for (const layout of [dashboard, auth, operations, superadmin]) {
+    for (const layout of [dashboard, auth, superadmin]) {
       expect(layout).toContain("menuly-app");
     }
+    expect(operations).toContain("dashboard-light");
+    expect(operations).not.toContain("menuly-app");
     for (const token of ["#0b0b0c", "#1a1a1a", "#f5f0eb", "#d4943a", "--font-marketing-sans"]) {
       expect(css).toContain(token);
     }

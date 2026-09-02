@@ -6,5 +6,5 @@ export const metadata: Metadata = {
 };
 
 export default function OperationsLayout({ children }: { children: React.ReactNode }) {
-  return <div className="dashboard-light menuly-app min-h-screen bg-[#f4f1eb] text-slate-950">{children}</div>;
+  return <div className="dashboard-light min-h-screen bg-[#FBF8F3] text-[#0C1F30]">{children}</div>;
 }
