@@ -89,9 +89,3 @@ body{margin:0;background:#FBF8F3;color:#0C1F30;font-family:Inter,Arial,ui-sans-s
 .menuly-sidebar nav a[class*="bg-orange-50"]{background:rgba(212,148,58,.13)!important;color:#f2c37d!important;box-shadow:inset 3px 0 0 var(--menuly-gold)}
 .menuly-app header[class*="sticky"]{background:rgba(11,11,12,.92)!important;border-color:var(--menuly-border)!important;box-shadow:0 10px 30px rgba(0,0,0,.12)!important;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
 .menuly-app article,.menuly-app section{scroll-margin-top:5rem}
-.menuly-auth main>div.absolute{display:none}
-
-@media (min-width:900px){
-  .menuly-auth main::before{content:"";position:absolute;inset:0 0 0 52%;z-index:0;background:linear-gradient(90deg,#0b0b0c 0,transparent 28%),linear-gradient(0deg,rgba(11,11,12,.58),rgba(11,11,12,.18)),url("/landing/figma/asset-7.png") center/cover no-repeat;opacity:.82}
-  .menuly-auth form{margin-right:46%;z-index:1}
-}
