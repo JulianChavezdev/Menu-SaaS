@@ -24,10 +24,10 @@ const links = [
   ["Suscripción", "/dashboard/billing"],
 ] as const;
 const orderingLinks = [
-  ["Comandero", "/operaciones/comandero"],
   ["Mesas", "/dashboard/tables"],
-  ["Cocina", "/operaciones/cocina"],
   ["Historial", "/dashboard/orders"],
+  ["Comandero", "/operaciones/comandero"],
+  ["Cocina", "/operaciones/cocina"],
 ] as const;
 
 export default async function DashboardLayout({
@@ -45,7 +45,7 @@ export default async function DashboardLayout({
     (member) => member.restaurants as unknown as { id: string; name: string },
   );
   const restaurantNavigation = restaurant.ordering_enabled
-    ? [...links.slice(0, 2), ...orderingLinks, ...links.slice(2)]
+    ? [...links, ...orderingLinks]
     : [...links];
   const navigation = isSuperadminUser(user)
     ? [...restaurantNavigation, ["Superadmin", "/superadmin"] as const]

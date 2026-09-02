@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { SignOut } from "@/components/dashboard/sign-out";
+import { InstallOperationalApp } from "@/components/pwa/install-operational-app";
 import {
   createStaffDiningOrder,
   type StaffOrderInput,
@@ -201,6 +202,7 @@ export function WaiterPos({
             </div>
           </div>
           <nav className="flex items-center gap-1" aria-label="Operaciones">
+            <InstallOperationalApp name="Comandero" />
             {isManager && <Link
               href="/dashboard/tables"
               className="grid size-10 place-items-center rounded-lg text-slate-600 active:bg-stone-100"
@@ -208,13 +210,13 @@ export function WaiterPos({
             >
               <Table2 size={20} />
             </Link>}
-            {isManager && <Link
+            {isManager && <a
               href="/operaciones/cocina"
               className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-orange-600 px-3 text-xs font-black text-white active:scale-95"
             >
               <ChefHat size={18} />
               Cocina
-            </Link>}
+            </a>}
             {!isManager && <SignOut compact />}
           </nav>
         </div>

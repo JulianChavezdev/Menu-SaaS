@@ -17,6 +17,7 @@ import { transitionDiningOrder } from "@/app/dashboard/ordering/actions";
 import { SignOut } from "@/components/dashboard/sign-out";
 import type { OrderStatus } from "@/lib/table-ordering";
 import type { KitchenOrder } from "@/lib/kitchen-orders";
+import { InstallOperationalApp } from "@/components/pwa/install-operational-app";
 
 export type { KitchenOrder } from "@/lib/kitchen-orders";
 
@@ -262,6 +263,7 @@ export function KitchenBoard({
             </div>
           </div>
           <div className="flex items-center gap-1.5">
+            <InstallOperationalApp name="Cocina" />
             <button
               type="button"
               onClick={() => void refreshOrders(true)}
@@ -273,12 +275,12 @@ export function KitchenBoard({
                 className={isPending ? "animate-spin" : ""}
               />
             </button>
-            {isManager && <Link
+            {isManager && <a
               href="/operaciones/comandero"
               className="inline-flex min-h-10 items-center rounded-lg bg-stone-100 px-3 text-xs font-black"
             >
               Comandero
-            </Link>}
+            </a>}
             <button
               type="button"
               onClick={() => void enableOperations()}

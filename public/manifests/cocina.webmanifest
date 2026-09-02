@@ -1,0 +1,22 @@
+{
+  "id": "/operaciones/cocina",
+  "name": "Menuly Cocina",
+  "short_name": "Cocina",
+  "description": "Pantalla de cocina de Menuly para recibir y preparar comandas.",
+  "start_url": "/operaciones/cocina",
+  "scope": "/operaciones/cocina",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FBF8F3",
+  "theme_color": "#0C1F30",
+  "icons": [
+    {
+      "src": "/brand/menuly-mark.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "lang": "es",
+  "categories": ["business", "food", "productivity"]
+}
