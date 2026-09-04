@@ -94,7 +94,9 @@ export default async function PublicMenu({
     embeddedPreview && isMenuTemplateKey(query.template ?? "")
       ? query.template
       : null;
-  if (slug === "bistro-nube" && !process.env.NEXT_PUBLIC_SUPABASE_URL) {
+  // Preview mode must stay independent from Supabase so the public demo also
+  // works reliably on mobile and in slow or offline network conditions.
+  if (slug === "bistro-nube" && (!process.env.NEXT_PUBLIC_SUPABASE_URL || preview)) {
     if (landingPreview)
       return (
         <LandingDemoExperience
