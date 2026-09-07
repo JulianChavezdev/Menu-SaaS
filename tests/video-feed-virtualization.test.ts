@@ -108,6 +108,15 @@ describe("virtualización del feed de vídeo", () => {
       "aside,nav,details,summary,button,a,input,textarea,select",
     );
   });
+  it("encierra el desplazamiento en la carta para evitar el pull-to-refresh móvil", () => {
+    const globalCss = readFileSync("src/app/globals.css", "utf8");
+    expect(menu).toContain('classList.add("public-menu-scroll-lock")');
+    expect(menu).toContain("fixed inset-0 h-[100dvh] touch-pan-y");
+    expect(menu).toContain('addEventListener("touchmove", containTouchAtEdge, { passive: false })');
+    expect(menu).toContain("event.preventDefault()");
+    expect(globalCss).toContain("html.public-menu-scroll-lock,body.public-menu-scroll-lock");
+    expect(globalCss).toContain("overscroll-behavior:none");
+  });
   it("anima horizontalmente el vídeo completo al cambiar de categoría", () => {
     expect(menu).toContain(
       'setCategorySlide(direction === 1 ? "exit-left" : "exit-right")',

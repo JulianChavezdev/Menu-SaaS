@@ -522,6 +522,34 @@ export function VideoMenu({
     };
   }, [language]);
   useEffect(() => {
+    const root = document.documentElement;
+    const body = document.body;
+    root.classList.add("public-menu-scroll-lock");
+    body.classList.add("public-menu-scroll-lock");
+    return () => {
+      root.classList.remove("public-menu-scroll-lock");
+      body.classList.remove("public-menu-scroll-lock");
+    };
+  }, []);
+  useEffect(() => {
+    const feed = feedRef.current;
+    if (!feed) return;
+    const containTouchAtEdge = (event: TouchEvent) => {
+      const start = gestureStart.current;
+      const touch = event.touches[0];
+      if (!start || !touch || blocksCategoryGesture(event.target)) return;
+      const movingDown = touch.clientY > start.y;
+      const movingUp = touch.clientY < start.y;
+      const atTop = feed.scrollTop <= 1;
+      const atBottom =
+        feed.scrollTop + feed.clientHeight >= feed.scrollHeight - 1;
+      if (event.cancelable && ((atTop && movingDown) || (atBottom && movingUp)))
+        event.preventDefault();
+    };
+    feed.addEventListener("touchmove", containTouchAtEdge, { passive: false });
+    return () => feed.removeEventListener("touchmove", containTouchAtEdge);
+  }, []);
+  useEffect(() => {
     setCart(parseCart(localStorage.getItem(cartKey)));
     setCartReady(true);
   }, [cartKey]);
@@ -913,7 +941,7 @@ export function VideoMenu({
       data-template={template.key}
       data-hydrated={hydrated ? "true" : "false"}
       style={themeStyle}
-      className="public-menu relative h-svh snap-y snap-mandatory overflow-y-auto overscroll-none scroll-smooth bg-[var(--theme-bg)] text-white [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-auto md:max-w-[402px]"
+      className="public-menu fixed inset-0 h-[100dvh] touch-pan-y snap-y snap-mandatory overflow-y-auto overscroll-none scroll-smooth bg-[var(--theme-bg)] text-white [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-auto md:max-w-[402px]"
     >
       <h1 className="sr-only">{restaurant.name}: carta en vídeo</h1>
       {introVisible && restaurant.logo_url && (
