@@ -4,7 +4,7 @@
   "restaurants": [{
     "name": "Bistro Nube",
     "slug": "bistro-nube",
-    "description": "Una demostración completa de carta en vídeo: hamburguesas, pizza, desayunos, brasa, sushi y postres.",
+    "description": "Una demostración completa de carta en vídeo: hamburguesas, carnes, pastas, cócteles, pizza, desayunos, sushi y postres.",
     "logoUrl": "/demo/logos/bistro-nube.svg",
     "template": "noirluxe",
     "languageSwitcherEnabled": true,
@@ -12,10 +12,12 @@
       {"name": "Hamburguesas", "slug": "hamburguesas"},
       {"name": "Pizzas", "slug": "pizzas"},
       {"name": "Café y desayuno", "slug": "cafe-desayuno"},
-      {"name": "Brasas", "slug": "brasas"},
+      {"name": "Carnes y brasas", "slug": "brasas"},
+      {"name": "Pastas", "slug": "pastas"},
       {"name": "Sushi", "slug": "sushi"},
       {"name": "Para compartir", "slug": "para-compartir"},
-      {"name": "Postres", "slug": "postres"}
+      {"name": "Postres", "slug": "postres"},
+      {"name": "Cócteles", "slug": "cocteles"}
     ],
     "products": [
       {"category": "hamburguesas", "name": "Hamburguesa Nebulosa", "description": "Carne madurada, cheddar, cebolla caramelizada y salsa secreta.", "priceCents": 1290, "videoUrl": "https://res.cloudinary.com/det6jfwzx/video/upload/v1783700256/Generame_un_video_de_una_hambu_oo9gur.mp4", "videoSourceUrl": "https://res.cloudinary.com/det6jfwzx/video/upload/v1783700256/Generame_un_video_de_una_hambu_oo9gur.mp4", "recommendations": ["Papas Voladoras", "Tarta Estratos"]},
@@ -38,8 +40,14 @@
       {"category": "pizzas", "name": "Burrata y Pesto", "description": "Mozzarella, burrata cremosa, pesto de albahaca y tomate seco.", "priceCents": 1390, "videoUrl": "https://videos.pexels.com/video-files/14549645/14549645-hd_1080_1920_25fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/a-person-lifting-a-slice-of-pizza-14549645/", "recommendations": ["Tiramisú della Casa"]},
       {"category": "pizzas", "name": "Diavola Crujiente", "description": "Tomate, mozzarella, salami picante, chile y un borde fino y crujiente.", "priceCents": 1290, "videoUrl": "https://videos.pexels.com/video-files/6221677/6221677-hd_1080_1920_24fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/close-up-video-of-person-slicing-a-pizza-6221677/", "recommendations": ["Patate al Parmigiano"]},
       {"category": "brasas", "name": "Tomahawk al Fuego", "description": "Corte premium marcado a la llama, mantequilla especiada y sal ahumada.", "priceCents": 3290, "videoUrl": "https://videos.pexels.com/video-files/8523024/8523024-hd_1080_1920_30fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/a-man-cooking-in-the-grill-8523024/", "recommendations": ["Patatas a la Brasa"]},
+      {"category": "pastas", "name": "Tagliatelle al Tartufo", "description": "Pasta fresca, crema de parmesano, trufa negra y pimienta recién molida.", "priceCents": 1690, "videoUrl": "https://videos.pexels.com/video-files/6247894/6247894-hd_1080_1920_24fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/food-pasta-cooking-dinner-6247894/", "recommendations": ["Tiramisú della Casa"]},
+      {"category": "pastas", "name": "Rigatoni de la Casa", "description": "Rigatoni al dente, tomate asado, albahaca fresca y queso curado.", "priceCents": 1450, "videoUrl": "https://videos.pexels.com/video-files/6247888/6247888-hd_1080_1920_24fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/food-pasta-cooking-dinner-6247888/", "recommendations": ["Burrata y Pesto"]},
+      {"category": "pastas", "name": "Carbonara Cremosa", "description": "Pasta larga, guanciale crujiente, pecorino y yema de huevo.", "priceCents": 1590, "videoUrl": "https://videos.pexels.com/video-files/5708472/5708472-hd_720_1280_50fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/cheerful-woman-in-a-restaurant-eating-ramens-5708472/", "recommendations": ["Tiramisú della Casa"]},
       {"category": "sushi", "name": "Maki Dragón", "description": "Salmón, aguacate y pepino con acabado de sésamo y salsa cítrica.", "priceCents": 1490, "videoUrl": "https://videos.pexels.com/video-files/6202679/6202679-hd_1080_1920_25fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/sushi-food-presentation-6202679/", "recommendations": ["Mochi de Cheesecake"]},
-      {"category": "para-compartir", "name": "Nachos Nube", "description": "Totopos crujientes, guacamole, pico de gallo, jalapeños y crema especiada.", "priceCents": 890, "videoUrl": "https://videos.pexels.com/video-files/7613580/7613580-hd_1080_1920_24fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/a-person-dipping-nachos-7613580/", "recommendations": ["Burger Brasa Doble"]}
+      {"category": "para-compartir", "name": "Nachos Nube", "description": "Totopos crujientes, guacamole, pico de gallo, jalapeños y crema especiada.", "priceCents": 890, "videoUrl": "https://videos.pexels.com/video-files/7613580/7613580-hd_1080_1920_24fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/a-person-dipping-nachos-7613580/", "recommendations": ["Burger Brasa Doble"]},
+      {"category": "cocteles", "name": "Negroni Nube", "description": "Ginebra, vermut rojo, bitter italiano y piel de naranja.", "priceCents": 950, "videoUrl": "https://videos.pexels.com/video-files/7219291/7219291-hd_720_1280_24fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/bartender-making-a-cocktail-7219291/", "recommendations": ["Tarta Estratos"]},
+      {"category": "cocteles", "name": "Mojito Jardín", "description": "Ron blanco, lima fresca, hierbabuena, soda y hielo picado.", "priceCents": 890, "videoUrl": "https://videos.pexels.com/video-files/8085092/8085092-hd_1080_1920_25fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/a-bartender-preparing-a-cocktail-8085092/", "recommendations": ["Papas Voladoras"]},
+      {"category": "cocteles", "name": "Pasión Ahumada", "description": "Maracuyá, cítricos, vainilla y un acabado aromático ahumado.", "priceCents": 990, "videoUrl": "https://videos.pexels.com/video-files/4725772/4725772-hd_1080_1920_25fps.mp4", "videoSourceUrl": "https://www.pexels.com/video/bartender-making-a-cocktail-4725772/", "recommendations": ["Mochi de Cheesecake"]}
     ]
   }]
 }

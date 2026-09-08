@@ -102,13 +102,33 @@ async function appendMissingProducts(ownerId){
   for(const row of rows){
     const restaurant=data.restaurants.find(item=>item.slug===row.slug);
     if(!restaurant)continue;
-    const [{data:categories,error:categoryError},{data:existing,error:productError}]=await Promise.all([
+    let [{data:categories,error:categoryError},{data:existing,error:productError}]=await Promise.all([
       admin.from("categories").select("id,slug").eq("restaurant_id",row.id),
       admin.from("products").select("name").eq("restaurant_id",row.id),
     ]);
     if(categoryError)throw categoryError;if(productError)throw productError;
+    const existingCategorySlugs=new Set(categories.map(category=>category.slug));
+    const missingCategories=restaurant.categories.filter(category=>!existingCategorySlugs.has(category.slug));
+    if(missingCategories.length){
+      const {error}=await admin.from("categories").insert(missingCategories.map(category=>({restaurant_id:row.id,name:category.name,slug:category.slug,sort_order:restaurant.categories.findIndex(item=>item.slug===category.slug),is_active:true})));
+      if(error)throw error;
+    }
+    for(const [sort_order,category] of restaurant.categories.entries()){
+      const {error}=await admin.from("categories").update({name:category.name,sort_order,is_active:true}).eq("restaurant_id",row.id).eq("slug",category.slug);
+      if(error)throw error;
+    }
+    const refreshed=await admin.from("categories").select("id,slug").eq("restaurant_id",row.id);
+    if(refreshed.error)throw refreshed.error;
+    categories=refreshed.data;
     const categoryIds=new Map(categories.map(category=>[category.slug,category.id]));
     const existingNames=new Set(existing.map(product=>product.name));
+    for(const [sort_order,product] of restaurant.products.entries()){
+      if(!existingNames.has(product.name))continue;
+      const categoryId=categoryIds.get(product.category);
+      if(!categoryId)throw new Error(`Categoría desconocida en ${restaurant.slug}.`);
+      const {error}=await admin.from("products").update({category_id:categoryId,description:product.description,price_cents:product.priceCents,video_url:product.videoUrl,sort_order}).eq("restaurant_id",row.id).eq("name",product.name);
+      if(error)throw error;
+    }
     const missing=restaurant.products.map((product,index)=>({product,index})).filter(({product})=>!existingNames.has(product.name));
     if(missing.length){
       const values=missing.map(({product,index})=>({restaurant_id:row.id,category_id:categoryIds.get(product.category),name:product.name,description:product.description,price_cents:product.priceCents,video_url:product.videoUrl,video_path:null,image_url:null,image_path:null,is_available:true,is_featured:false,sort_order:index}));
