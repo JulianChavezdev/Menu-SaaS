@@ -28,6 +28,7 @@ import {
   X,
 } from "lucide-react";
 import type { Product, Restaurant } from "@/lib/types";
+import { preconnect, preload as preloadResource } from "react-dom";
 import { resolveMenuTemplate } from "@/lib/menu-templates";
 import { translatedField } from "@/lib/translations";
 import { ThemeVectors } from "@/components/menu/theme-vectors";
@@ -235,9 +236,7 @@ export function VideoMenu({
   const [expandedDetails, setExpandedDetails] = useState<Set<string>>(
     () => new Set(),
   );
-  const [playbackBlocked, setPlaybackBlocked] = useState<Set<number>>(
-    () => new Set(),
-  );
+  const [playbackReady, setPlaybackReady] = useState(false);
   const [language, setLanguage] = useState<"es" | "en">(
     restaurant.locale.startsWith("en") ? "en" : "es",
   );
@@ -260,6 +259,13 @@ export function VideoMenu({
     restaurant.menu_template,
     ["active", "trialing"].includes(restaurant.subscription_status ?? ""),
   );
+  const firstVideo = menuVideoPlaybackUrl(products[0]?.video_url ?? null);
+  if (firstVideo) {
+    try { preconnect(new URL(firstVideo).origin); } catch { /* Relative media needs no connection hint. */ }
+  }
+  if (products[0]?.image_url) {
+    preloadResource(products[0].image_url, { as: "image", fetchPriority: "high" });
+  }
   const framed = template.layout === "framed";
   const primaryTemplate = template.key === "cinematic";
   const noirLuxe = template.key === "noirluxe";
@@ -388,56 +394,11 @@ export function VideoMenu({
   const playbackStarted = useCallback(
     (index: number) => {
       playingIndex.current = index;
+      setPlaybackReady(true);
+      setIntroVisible(false);
       trackVideoPlay(index);
-      setPlaybackBlocked((current) => {
-        if (!current.has(index)) return current;
-        const next = new Set(current);
-        next.delete(index);
-        return next;
-      });
     },
     [trackVideoPlay],
-  );
-  const startVideo = useCallback(
-    (video: HTMLVideoElement, index: number) => {
-      video.muted = muted;
-      const failed = () => {
-        if (playingIndex.current === index) playingIndex.current = null;
-        setPlaybackBlocked((current) => new Set(current).add(index));
-      };
-      const stillCurrent = () =>
-        playingIndex.current === index &&
-        videoRefs.current[index] === video &&
-        video.isConnected;
-      const retryMuted = () => {
-        if (!stillCurrent()) return;
-        video.muted = true;
-        video.defaultMuted = true;
-        video.setAttribute("muted", "");
-        setMuted(true);
-        requestAnimationFrame(() => {
-          if (!stillCurrent()) return;
-          void video
-            .play()
-            .then(() => playbackStarted(index))
-            .catch((error: unknown) => {
-              if ((error as DOMException)?.name !== "AbortError") failed();
-            });
-        });
-      };
-      void video
-        .play()
-        .then(() => playbackStarted(index))
-        .catch((error: unknown) => {
-          if (!stillCurrent()) return;
-          if ((error as DOMException)?.name === "AbortError") {
-            requestAnimationFrame(retryMuted);
-            return;
-          }
-          retryMuted();
-        });
-    },
-    [muted, playbackStarted],
   );
 
   useEffect(() => {
@@ -593,7 +554,7 @@ export function VideoMenu({
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const timer = setTimeout(
       () => setIntroVisible(false),
-      reduced ? 450 : 1800,
+      reduced ? 250 : 700,
     );
     return () => clearTimeout(timer);
   }, []);
@@ -856,17 +817,12 @@ export function VideoMenu({
   const back = () =>
     history.length > 1 ? history.back() : location.assign("/");
   const resumeActiveVideo = useCallback(() => {
-    if (introVisible) return;
     const video = videoRefs.current[active];
     if (!video || !products[active]?.video_url) return;
-    if (
-      video.error ||
-      video.networkState === HTMLMediaElement.NETWORK_NO_SOURCE
-    )
-      video.load();
-    startVideo(video, active);
-  }, [active, introVisible, products, startVideo]);
+    video.dispatchEvent(new Event("menuly:resume"));
+  }, [active, products]);
   useEffect(() => {
+    resumeActiveVideo();
     const resume = () => {
       if (document.visibilityState === "visible") resumeActiveVideo();
     };
@@ -1567,19 +1523,19 @@ export function VideoMenu({
                   src={product.video_url}
                   poster={product.image_url}
                   muted={muted}
-                  preload={Math.abs(index - active) <= 1 ? "auto" : "metadata"}
+                  preload={index === active || playbackReady || !products[active]?.video_url ? "auto" : "none"}
                   active={index === active}
                   hydrated={Math.abs(index - active) <= 1}
-                  playbackBlocked={playbackBlocked.has(index)}
                   setVideoRef={(element) => {
                     videoRefs.current[index] = element;
                   }}
                   onPlaybackStarted={playbackStarted}
+                  onMutedFallback={() => setMuted(true)}
                 />
               </div>
               {template.key !== "cinematic" && (
                 <div
-                  className={`absolute z-[1] ${framed ? "inset-3 bottom-16 rounded-xl" : "inset-0"}`}
+                  className={`pointer-events-none absolute z-[1] ${framed ? "inset-3 bottom-16 rounded-xl" : "inset-0"}`}
                   style={{
                     background: noirLuxe
                       ? "linear-gradient(180deg,rgba(17,17,17,.4) 0%,rgba(17,17,17,.08) 42%,rgba(17,17,17,.4) 62%,#111111 100%)"
@@ -2553,7 +2509,7 @@ export function VideoMenu({
           src={nextCategoryVideo}
           muted
           playsInline
-          preload="auto"
+          preload={playbackReady ? "auto" : "none"}
           className="pointer-events-none absolute h-px w-px opacity-0"
         />
       )}

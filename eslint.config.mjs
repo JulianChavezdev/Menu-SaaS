@@ -2,5 +2,5 @@ import { FlatCompat } from "@eslint/eslintrc";
 import { fileURLToPath } from "node:url";
 import { dirname } from "node:path";
 const compat=new FlatCompat({baseDirectory:dirname(fileURLToPath(import.meta.url))});
-const config=[...compat.extends("next/core-web-vitals"),{ignores:[".next/**","node_modules/**"]}];
+const config=[...compat.extends("next/core-web-vitals"),{ignores:[".next/**","node_modules/**","tmp/**"]}];
 export default config;

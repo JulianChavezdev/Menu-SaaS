@@ -5,7 +5,8 @@ import {getSupabaseSecretKey} from "@/lib/supabase/admin-env";
 
 export async function POST(request:Request){
   const origin=request.headers.get("origin");
-  if(origin&&new URL(origin).origin!==new URL(request.url).origin)return NextResponse.json({error:"Invalid origin"},{status:403});
+  try{if(origin&&new URL(origin).origin!==new URL(request.url).origin)return NextResponse.json({error:"Invalid origin"},{status:403})}
+  catch{return NextResponse.json({error:"Invalid origin"},{status:403})}
   const text=await request.text();
   if(text.length>2048)return NextResponse.json({error:"Payload too large"},{status:413});
   let body:unknown;try{body=JSON.parse(text)}catch{return NextResponse.json({error:"Invalid JSON"},{status:400})}

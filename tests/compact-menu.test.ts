@@ -17,7 +17,7 @@ describe("ficha compacta de producto", () => {
     expect(menu).toContain("h-svh");
     expect(menu).toContain("hydrated={Math.abs(index - active) <= 1}");
     expect(menu).toContain(
-      'preload={Math.abs(index - active) <= 1 ? "auto" : "metadata"}',
+      'preload={index === active || playbackReady || !products[active]?.video_url ? "auto" : "none"}',
     );
     expect(menu).toContain("aria-label={text.categories}");
     expect(menu).toContain(

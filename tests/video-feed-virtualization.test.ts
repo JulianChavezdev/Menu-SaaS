@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const menu = readFileSync("src/components/menu/video-menu.tsx", "utf8");
-const media = readFileSync("src/components/menu/product-media.tsx", "utf8");
+const media = readFileSync("src/components/menu/product-media.tsx", "utf8").replace(/\s+/g, "");
 const vectors = readFileSync("src/components/menu/theme-vectors.tsx", "utf8");
 const noirTokens = readFileSync("src/lib/noirluxe-design-tokens.ts", "utf8");
 const socialHud = readFileSync("src/components/menu/social-hud.tsx", "utf8");
@@ -38,10 +38,10 @@ describe("virtualización del feed de vídeo", () => {
   });
   it("precarga ambos vídeos vecinos y reintenta tras gestos, conexión o regreso a la app", () => {
     expect(menu).toContain(
-      'preload={Math.abs(index - active) <= 1 ? "auto" : "metadata"}',
+      'preload={index === active || playbackReady || !products[active]?.video_url ? "auto" : "none"}',
     );
-    expect(media).toContain('video.preload="auto"');
-    expect(media).toContain("HTMLMediaElement.NETWORK_EMPTY");
+    expect(media).toContain('preload={preload}');
+    expect(media).not.toContain("HTMLMediaElement.NETWORK_EMPTY");
     expect(menu).toContain("onTouchEnd={handleTouchEnd}");
     expect(menu).toContain('addEventListener("pageshow", resume)');
     expect(menu).toContain('addEventListener("online", resume)');
@@ -51,7 +51,8 @@ describe("virtualización del feed de vídeo", () => {
     expect(menu).not.toContain(
       "if(introVisible){video.pause();video.currentTime=0;return}",
     );
-    expect(menu).toContain("if (introVisible) return");
+    expect(menu).toContain("setIntroVisible(false)");
+    expect(menu).not.toContain("if (introVisible) return");
   });
   it("reserva una zona segura para desplegar descripción y alérgenos", () => {
     expect(menu).toContain(

@@ -43,7 +43,7 @@ test.describe("landing responsive contract",()=>{
 
   test("presents the complete commercial journey on desktop",async({page})=>{
     await page.setViewportSize({width:1440,height:900});
-    await page.goto("/",{waitUntil:"networkidle"});
+    await page.goto("/",{waitUntil:"domcontentloaded"});
 
     await expect(page.getByRole("heading",{name:"La carta que entra por los ojos",exact:true})).toBeVisible();
     await expect(page.getByRole("navigation",{name:"Navegación principal"})).toBeVisible();
@@ -60,7 +60,7 @@ test.describe("landing responsive contract",()=>{
 
   test("uses a compact menu without horizontal overflow on mobile",async({page})=>{
     await page.setViewportSize({width:390,height:844});
-    await page.goto("/",{waitUntil:"networkidle"});
+    await page.goto("/",{waitUntil:"domcontentloaded"});
 
     const toggle=page.getByRole("button",{name:"Abrir menú",exact:true});
     await expect(toggle).toBeVisible();

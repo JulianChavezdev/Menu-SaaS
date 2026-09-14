@@ -19,7 +19,8 @@ export async function GET(request:Request){
 
 export async function POST(request:Request){
   const origin=request.headers.get("origin");
-  if(origin&&new URL(origin).origin!==new URL(request.url).origin)return reply({error:"Origen no válido."},403);
+  try{if(origin&&new URL(origin).origin!==new URL(request.url).origin)return reply({error:"Origen no válido."},403)}
+  catch{return reply({error:"Origen no válido."},403)}
   const text=await request.text();if(text.length>20_000)return reply({error:"Pedido demasiado grande."},413);
   let body:unknown;try{body=JSON.parse(text)}catch{return reply({error:"Pedido no válido."},400)}
   const parsed=publicOrderSchema.safeParse(body);if(!parsed.success)return reply({error:"Revisa los productos del pedido."},400);

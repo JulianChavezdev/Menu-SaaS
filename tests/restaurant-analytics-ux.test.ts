@@ -4,16 +4,17 @@ import {analyticsGuidance} from "../src/lib/analytics-report";
 import {summarizeAnalytics} from "../src/lib/analytics";
 
 const page=readFileSync("src/app/dashboard/analytics/page.tsx","utf8");
+const products=readFileSync("src/components/dashboard/analytics-products.tsx","utf8");
 
 describe("analíticas intuitivas para restaurantes",()=>{
   it("explica las métricas y prioriza una acción",()=>{
-    for(const copy of["¿Qué está funcionando en tu carta?","Resumen de los últimos","Qué deberías hacer ahora","Una visita cuenta cada apertura","no confirma una venta"])expect(page).toContain(copy);
+    for(const copy of['title="Analíticas"',"Resumen de los últimos","Lectura del periodo","Una visita cuenta cada apertura","no confirma una venta"])expect(page).toContain(copy);
   });
 
   it("evita una tabla horizontal en móvil",()=>{
-    expect(page).toContain('className="grid gap-3 p-4 md:hidden"');
-    expect(page).toContain('className="hidden overflow-x-auto md:block"');
-    expect(page).toContain("ProductCard");
+    expect(products).toContain('className="divide-y divide-stone-100 lg:hidden"');
+    expect(products).toContain('className="hidden overflow-x-auto lg:block"');
+    expect(page).toContain("<AnalyticsProducts");
   });
 
   it("genera recomendaciones comprensibles según el embudo",()=>{

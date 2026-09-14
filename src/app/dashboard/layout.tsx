@@ -8,6 +8,7 @@ import { isSuperadminUser } from "@/lib/superadmin";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { redirect } from "next/navigation";
 import { isOperationalRole, memberHome } from "@/lib/member-roles";
+import { ExternalLink, BookOpen } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Panel",
@@ -51,28 +52,70 @@ export default async function DashboardLayout({
     ? [...restaurantNavigation, ["Superadmin", "/superadmin"] as const]
     : restaurantNavigation;
   return (
-    <div className="dashboard-light menuly-app min-h-screen bg-[#f4f1eb] text-slate-950 md:grid md:grid-cols-[248px_1fr]">
-      <aside className="menuly-sidebar border-b border-stone-200 bg-white p-4 shadow-sm md:sticky md:top-0 md:flex md:h-screen md:flex-col md:border-b-0 md:border-r md:p-5">
-        <div className="flex items-center justify-between gap-3 md:block">
+    <div className="menuly-app dashboard-workspace">
+      <a href="#panel-content" className="workspace-skip">
+        Saltar al contenido
+      </a>
+      <aside className="workspace-sidebar">
+        <div className="workspace-brand">
           <Link
             href="/dashboard"
             prefetch
             aria-label="Menuly · Panel"
             className="inline-flex items-center"
           >
-            <BrandLogo priority className="w-[124px] md:w-[142px]" />
+            <BrandLogo priority className="w-[106px]" />
           </Link>
-          <div className="flex items-center gap-2 md:mt-5">
+          <span className="md:hidden">
+            <SignOut compact />
+          </span>
+        </div>
+        {items.length > 1 && (
+          <div className="mt-3 max-w-full overflow-hidden text-sm md:hidden">
             <RestaurantSwitcher activeId={restaurant.id} items={items} />
-            <span className="md:hidden"><SignOut compact /></span>
+          </div>
+        )}
+        <div className="workspace-restaurant">
+          <span className="workspace-restaurant-initial" aria-hidden="true">
+            {restaurant.name.slice(0, 1).toUpperCase()}
+          </span>
+          <div className="min-w-0 flex-1">
+            <p
+              className="truncate text-sm font-semibold"
+              title={restaurant.name}
+            >
+              {restaurant.name}
+            </p>
+            <p className="mt-0.5 text-xs text-slate-500">
+              Panel del restaurante
+            </p>
+            <RestaurantSwitcher activeId={restaurant.id} items={items} />
           </div>
         </div>
         <DashboardNavigation links={navigation} />
-        <div className="mt-8 hidden border-t border-stone-200 pt-4 md:mt-auto md:block">
+        <div className="workspace-sidebar-footer">
+          <a
+            href={`/r/${restaurant.slug}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <ExternalLink size={16} />
+            Ver carta pública
+          </a>
+          <a
+            href="/manual-menuly-restaurantes.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <BookOpen size={16} />
+            Ayuda y manual
+          </a>
           <SignOut />
         </div>
       </aside>
-      <div className="min-w-0">{children}</div>
+      <div id="panel-content" tabIndex={-1} className="min-w-0 outline-none">
+        {children}
+      </div>
     </div>
   );
 }

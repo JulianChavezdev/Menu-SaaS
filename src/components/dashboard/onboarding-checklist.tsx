@@ -1,6 +1,46 @@
 import Link from "next/link";
-import {ArrowRight,Check,Circle} from "lucide-react";
-import type {OnboardingInput} from "@/lib/onboarding";
-import {restaurantOnboarding} from "@/lib/onboarding";
+import { ArrowRight, Check, ChevronDown, Circle } from "lucide-react";
+import type { OnboardingInput } from "@/lib/onboarding";
+import { restaurantOnboarding } from "@/lib/onboarding";
 
-export function OnboardingChecklist({input}:{input:OnboardingInput}){const onboarding=restaurantOnboarding(input);return <details open={!onboarding.complete} className="group mt-6 border border-stone-200 bg-white shadow-sm"><summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-4 md:p-5"><div className="min-w-0"><p className="text-xs font-bold uppercase tracking-[.15em] text-orange-700">Puesta en marcha</p><h2 className="mt-1 font-bold">{onboarding.complete?"Tu carta está preparada":"Completa tu carta paso a paso"}</h2></div><div className="shrink-0 text-right"><strong className="text-lg tabular-nums">{onboarding.completed}/{onboarding.total}</strong><p className="text-[10px] text-slate-500">completados</p></div></summary><div className="border-t border-stone-200 p-4 md:p-5"><div className="h-2 overflow-hidden bg-stone-100"><div className="h-full bg-orange-600 transition-all" style={{width:`${onboarding.percentage}%`}}/></div><div className="mt-4 grid gap-2 md:grid-cols-5">{onboarding.steps.map(step=><Link key={step.id} href={step.href} className={`flex min-w-0 gap-2 border p-3 transition hover:border-orange-300 ${step.done?"border-emerald-200 bg-emerald-50/60":"border-stone-200 bg-stone-50"}`}>{step.done?<Check size={17} className="mt-0.5 shrink-0 text-emerald-700"/>:<Circle size={17} className="mt-0.5 shrink-0 text-orange-700"/>}<span className="min-w-0"><strong className="block text-xs">{step.label}</strong><span className="mt-1 block text-[10px] leading-relaxed text-slate-500">{step.description}</span></span></Link>)}</div>{onboarding.next&&<Link href={onboarding.next.href} className="mt-4 inline-flex items-center gap-2 bg-orange-600 px-4 py-2.5 text-sm font-bold text-white">Continuar: {onboarding.next.label}<ArrowRight size={16}/></Link>}</div></details>}
+export function OnboardingChecklist({ input }: { input: OnboardingInput }) {
+  const onboarding = restaurantOnboarding(input);
+  return (
+    <details open={!onboarding.complete} className="workspace-checklist">
+      <summary>
+        <div>
+          <h2>
+            {onboarding.complete
+              ? "Configuración de la carta completada"
+              : "Prepara tu carta"}
+          </h2>
+          <p>
+            {onboarding.complete
+              ? "Revisa los pasos de configuración cuando lo necesites."
+              : "Completa estos pasos para empezar a recibir visitas."}
+          </p>
+        </div>
+        <span>
+          {onboarding.completed} de {onboarding.total}
+          <ChevronDown className="ml-3 inline" size={14} />
+        </span>
+      </summary>
+      <div className="workspace-checklist-steps">
+        {onboarding.steps.map((step) => (
+          <Link key={step.id} href={step.href}>
+            {step.done ? (
+              <Check size={16} className="shrink-0 text-emerald-700" />
+            ) : (
+              <Circle size={15} className="shrink-0 text-stone-400" />
+            )}
+            <div>
+              <strong>{step.label}</strong>
+              <p>{step.description}</p>
+            </div>
+            <ArrowRight size={14} className="ml-auto shrink-0 text-stone-400" />
+          </Link>
+        ))}
+      </div>
+    </details>
+  );
+}

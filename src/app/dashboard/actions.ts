@@ -33,6 +33,7 @@ import {
 } from "@/lib/cloudinary";
 import {signupPlan} from "@/lib/signup-plans";
 import {recordPlatformAlert} from "@/lib/platform-alerts";
+import {canUploadRestaurantMedia} from "@/lib/media-permissions";
 const uuid = z.string().uuid();
 const orderedIds = z
   .array(uuid)
@@ -890,7 +891,9 @@ export async function assignCloudinaryVideo(
 ) {
   const parsed = uuid.safeParse(productId);
   if (!parsed.success) throw new Error("Producto no válido.");
-  const { restaurant, supabase } = await activeRestaurant();
+  const { restaurant, supabase, member } = await activeRestaurant();
+  if (!canUploadRestaurantMedia(member.role, restaurant))
+    throw new Error("No tienes permiso para subir vídeos.");
   const prefix = `carta-video/${restaurant.id}/products/${parsed.data}/`;
   if (
     !publicId.startsWith(prefix) ||
@@ -921,7 +924,13 @@ export async function assignCloudinaryVideo(
     .update(media)
     .eq("id", parsed.data)
     .eq("restaurant_id", restaurant.id)
+    .select("id")
+    .single()
     .throwOnError();
+  if (previous.video_path === `cloudinary:${publicId}`) {
+    refresh(restaurant.slug);
+    return;
+  }
   if (previous.video_path?.startsWith("cloudinary:"))
     await destroyCloudinaryVideo(previous.video_path);
   else if (previous.video_path)

@@ -2,16 +2,16 @@ import Link from "next/link";
 import {
   ArrowRight,
   Download,
-  Eye,
   Info,
-  Lightbulb,
   MousePointerClick,
   Play,
   ShoppingBag,
-  Sparkles,
-  TrendingUp,
-  UtensilsCrossed,
 } from "lucide-react";
+import {
+  WorkspaceHeading,
+  WorkspaceMetric,
+} from "@/components/dashboard/workspace-ui";
+import { AnalyticsProducts } from "@/components/dashboard/analytics-products";
 import { activeRestaurant } from "@/lib/permissions";
 import { analyticsDateSeries, summarizeAnalytics } from "@/lib/analytics";
 import {
@@ -108,34 +108,29 @@ export default async function AnalyticsPage({
   const weekly = weeklySalesSummary(weeklySummary, restaurant.name);
   const shareUrl = `https://wa.me/?text=${encodeURIComponent(weekly.text)}`;
 
+  const dateLabel = (value: string) =>
+    new Intl.DateTimeFormat("es-ES", {
+      day: "numeric",
+      month: "short",
+      timeZone: "UTC",
+    }).format(new Date(`${value}T00:00:00Z`));
   return (
-    <main className="mx-auto max-w-7xl p-4 md:p-6">
-      <header className="border-b border-stone-200 pb-5">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[.18em] text-orange-700">
-              Analíticas del restaurante
-            </p>
-            <h1 className="mt-1 text-2xl font-extrabold md:text-3xl">
-              ¿Qué está funcionando en tu carta?
-            </h1>
-            <p className="mt-2 max-w-2xl text-sm text-slate-600">
-              <strong>Intención de compra, no ventas confirmadas.</strong> Aquí
-              ves desde que alguien abre la carta hasta que añade un producto,
-              comparado con el periodo anterior.
-            </p>
-          </div>
-          <div className="flex flex-col gap-2 sm:flex-row">
+    <main className="workspace-page">
+      <WorkspaceHeading
+        eyebrow={restaurant.name}
+        title="Analíticas"
+        description={`${dateLabel(range.currentFrom)} – ${dateLabel(range.currentTo)} · Comparado con los ${days} días anteriores.`}
+        actions={
+          <>
             <nav
               aria-label="Periodo de analíticas"
-              className="grid grid-cols-3 border border-stone-300 bg-white p-1"
+              className="workspace-periods"
             >
               {ANALYTICS_PERIODS.map((period) => (
                 <Link
                   key={period}
                   href={`/dashboard/analytics?days=${period}`}
                   aria-current={period === days ? "page" : undefined}
-                  className={`px-3 py-2 text-center text-xs font-bold ${period === days ? "bg-orange-600 text-white" : "text-slate-600 hover:bg-stone-100"}`}
                 >
                   {period} días
                 </Link>
@@ -143,315 +138,247 @@ export default async function AnalyticsPage({
             </nav>
             <a
               href={`/api/dashboard/analytics/export?days=${days}`}
-              className="inline-flex min-h-11 items-center justify-center gap-2 border border-stone-300 bg-white px-3 py-2 text-xs font-bold hover:bg-stone-100"
+              className="workspace-button"
             >
-              <Download size={15} />
-              Descargar datos
+              <Download size={14} />
+              Exportar CSV
             </a>
-          </div>
-        </div>
-      </header>
-
-      <section aria-labelledby="quick-summary" className="mt-6">
-        <div className="mb-3 flex items-center gap-2">
-          <h2 id="quick-summary" className="text-lg font-bold">
-            Resumen de los últimos {days} días
-          </h2>
-          <Info size={16} className="text-slate-400" />
-        </div>
-        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <PrimaryMetric
-            icon={<Eye />}
-            label="Personas abrieron la carta"
-            value={summary.totals.menuViews}
-            previous={previous.totals.menuViews}
-            explanation="Una visita cuenta cada apertura de la carta."
-          />
-          <PrimaryMetric
-            icon={<UtensilsCrossed />}
-            label="Productos vistos"
-            value={summary.totals.productViews}
-            previous={previous.totals.productViews}
-            explanation={`${productsPerVisit} productos vistos por cada visita.`}
-          />
-          <PrimaryMetric
-            icon={<ShoppingBag />}
-            label="Productos añadidos"
-            value={summary.totals.cartAdds}
-            previous={previous.totals.cartAdds}
-            explanation="Muestra intención de compra; no confirma una venta."
-            emphasis
-          />
-          <PrimaryMetric
-            icon={<TrendingUp />}
-            label="Tasa de añadido"
-            value={`${addRate}%`}
-            current={addRate}
-            previous={previousAddRate}
-            explanation={`${addRate} de cada 100 productos vistos acabaron en el carrito.`}
-          />
-        </div>
-      </section>
-
+          </>
+        }
+      />
       <section
-        className={`mt-5 border-l-4 p-5 ${guidance.tone === "positive" ? "border-emerald-600 bg-emerald-50" : "border-orange-500 bg-orange-50"}`}
+        aria-label={`Resumen de los últimos ${days} días`}
+        className="workspace-metrics"
       >
-        <div className="flex items-start gap-3">
-          <Lightbulb
-            className={
-              guidance.tone === "positive"
-                ? "text-emerald-700"
-                : "text-orange-700"
-            }
-            size={22}
+        <WorkspaceMetric
+          label="Visitas a la carta"
+          value={summary.totals.menuViews}
+          note="Cada apertura cuenta como una visita"
+        >
+          <ChangeBadge
+            current={summary.totals.menuViews}
+            previous={previous.totals.menuViews}
           />
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[.14em] text-slate-600">
-              Qué deberías hacer ahora
-            </p>
-            <h2 className="mt-1 text-lg font-bold">{guidance.title}</h2>
-            <p className="mt-1 text-sm leading-relaxed text-slate-700">
-              {guidance.explanation}
-            </p>
-            <p className="mt-3 flex items-start gap-2 text-sm font-semibold">
-              <ArrowRight className="mt-0.5 shrink-0" size={16} />
+        </WorkspaceMetric>
+        <WorkspaceMetric
+          label="Productos vistos"
+          value={summary.totals.productViews}
+          note={`${productsPerVisit.toLocaleString("es-ES")} visualizaciones por visita`}
+        >
+          <ChangeBadge
+            current={summary.totals.productViews}
+            previous={previous.totals.productViews}
+          />
+        </WorkspaceMetric>
+        <WorkspaceMetric
+          label="Añadidos al carrito"
+          value={summary.totals.cartAdds}
+          note="Interés en un producto, no una venta"
+        >
+          <ChangeBadge
+            current={summary.totals.cartAdds}
+            previous={previous.totals.cartAdds}
+          />
+        </WorkspaceMetric>
+        <WorkspaceMetric
+          label="Tasa de añadido"
+          value={`${addRate}%`}
+          note="Añadidos por cada 100 visualizaciones"
+        >
+          <ChangeBadge current={addRate} previous={previousAddRate} points />
+        </WorkspaceMetric>
+      </section>
+      <p className="workspace-note">
+        <Info size={13} />
+        Una visita cuenta cada apertura, no una persona única. Un añadido al
+        carrito no confirma una venta.
+      </p>
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1.8fr)_minmax(260px,1fr)]">
+        <div className="workspace-panel">
+          <DailyVisitsChart series={series} />
+          <div className="workspace-insight">
+            <p className="workspace-eyebrow">Lectura del periodo</p>
+            <h2>{guidance.title}</h2>
+            <p>{guidance.explanation}</p>
+            <p className="flex items-start gap-2">
+              <ArrowRight size={13} className="mt-1 shrink-0" />
               {guidance.action}
             </p>
           </div>
         </div>
-      </section>
-
-      <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(280px,.55fr)]">
-        <DailyVisitsChart series={series} />
-        <aside className="space-y-4">
-          <section className="border border-stone-200 bg-white p-5">
-            <h2 className="font-bold">Cómo interactúan con la carta</h2>
-            <p className="mt-1 text-xs text-slate-500">
-              Estas acciones ayudan a entender qué despierta interés.
-            </p>
-            <div className="mt-4 divide-y divide-stone-100">
-              <Interaction
-                icon={<Play />}
-                label="Vídeos iniciados"
-                value={summary.totals.videoPlays}
-              />
-              <Interaction
-                icon={<MousePointerClick />}
-                label="Descripciones abiertas"
-                value={summary.totals.detailOpens}
-              />
-              <Interaction
-                icon={<Sparkles />}
-                label="Añadidos por recomendación"
-                value={summary.totals.recommendationAdds}
-              />
+        <aside className="workspace-panel">
+          <div className="workspace-section-header">
+            <div>
+              <h2>Actividad en la carta</h2>
+              <p>Qué consultan tus clientes.</p>
             </div>
-          </section>
-          <section className="border border-stone-200 bg-white p-5">
-            <h2 className="font-bold">Categorías que más venden</h2>
-            <p className="mt-1 text-xs text-slate-500">
-              Ordenadas por productos añadidos al carrito.
-            </p>
-            <div className="mt-4 space-y-3">
-              {summary.categories.slice(0, 5).map((category, index) => (
-                <Rank
-                  key={category.id}
-                  position={index + 1}
-                  name={category.name}
-                  value={category.cartAdds}
-                  suffix={`${category.addRate}%`}
-                />
-              ))}
-              {!summary.categories.length && <Empty />}
+          </div>
+          <div className="px-6 py-2">
+            <Interaction
+              icon={<Play size={15} />}
+              label="Vídeos iniciados"
+              value={summary.totals.videoPlays}
+            />
+            <Interaction
+              icon={<MousePointerClick size={15} />}
+              label="Detalles abiertos"
+              value={summary.totals.detailOpens}
+            />
+            <Interaction
+              icon={<ShoppingBag size={15} />}
+              label="Añadidos sugeridos"
+              value={summary.totals.recommendationAdds}
+            />
+          </div>
+          <div className="workspace-section-header border-t">
+            <div>
+              <h2>Categorías con más interés</h2>
+              <p>Ordenadas por añadidos al carrito.</p>
             </div>
-          </section>
+          </div>
+          <div className="space-y-5 px-6 py-5">
+            {summary.categories.slice(0, 5).map((category, index) => (
+              <div key={category.id} className="flex items-center gap-3">
+                <span className="w-3 text-[10px] tabular-nums text-slate-400">
+                  {index + 1}
+                </span>
+                <span
+                  className="min-w-0 flex-1 truncate text-xs"
+                  title={category.name}
+                >
+                  {category.name}
+                </span>
+                <div className="text-right">
+                  <strong className="text-sm font-medium tabular-nums">
+                    {category.cartAdds.toLocaleString("es-ES")}
+                  </strong>
+                  <p className="text-[10px] text-slate-500">añadidos</p>
+                </div>
+              </div>
+            ))}
+            {!summary.categories.length && (
+              <p className="text-xs leading-6 text-slate-500">
+                Las categorías aparecerán cuando tu carta reciba actividad.
+              </p>
+            )}
+          </div>
         </aside>
       </div>
-
-      <SalesFunnel
-        menuViews={summary.totals.menuViews}
-        productViews={summary.totals.productViews}
-        detailOpens={summary.totals.detailOpens}
-        cartAdds={summary.totals.cartAdds}
-      />
-
-      <section className="mt-6 border border-stone-200 bg-white">
-        <div className="border-b border-stone-200 p-5">
-          <h2 className="font-bold">Productos que más interesan</h2>
-          <p className="mt-1 text-xs text-slate-600">
-            La tasa indica cuántos productos se añaden por cada 100
-            visualizaciones.
-          </p>
-        </div>
-        <div className="grid gap-3 p-4 md:hidden">
-          {summary.products.map((item, index) => (
-            <ProductCard
-              key={item.id}
-              item={item}
-              position={index + 1}
-              averageRate={addRate}
-            />
-          ))}
-          {!summary.products.length && <Empty />}
-        </div>
-        <div className="hidden overflow-x-auto md:block">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-stone-50 text-xs uppercase text-slate-500">
-              <tr>
-                <th className="px-5 py-3">Producto</th>
-                <th className="px-4 py-3">Vistas</th>
-                <th className="px-4 py-3">Vídeos</th>
-                <th className="px-4 py-3">Descripciones</th>
-                <th className="px-4 py-3">Añadidos</th>
-                <th className="px-4 py-3">Tasa</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-stone-100">
-              {summary.products.map((item) => (
-                <tr key={item.id}>
-                  <td className="px-5 py-3">
-                    <strong>{item.name}</strong>
-                    <p className="text-xs text-slate-500">
-                      {item.categoryName}
-                    </p>
-                  </td>
-                  <td className="px-4 py-3 tabular-nums">{item.views}</td>
-                  <td className="px-4 py-3 tabular-nums">{item.videoPlays}</td>
-                  <td className="px-4 py-3 tabular-nums">{item.detailOpens}</td>
-                  <td className="px-4 py-3 tabular-nums">
-                    {item.cartAdds}
-                    {item.recommendationAdds > 0 && (
-                      <span className="ml-1 text-xs text-orange-700">
-                        (+{item.recommendationAdds} sugeridos)
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <RateBadge rate={item.addRate} average={addRate} />
-                  </td>
-                </tr>
-              ))}
-              {!summary.products.length && (
-                <tr>
-                  <td colSpan={6} className="p-8 text-center text-slate-500">
-                    Todavía no hay actividad de productos.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
-
+      <AnalyticsProducts products={summary.products} />
       {restaurant.ordering_enabled && (
-        <section className="mt-6 border border-stone-200 bg-white p-5">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[.16em] text-emerald-700">
-              Menuly Comandas
-            </p>
-            <h2 className="mt-1 text-xl font-bold">
-              Comandas enviadas a Cocina
-            </h2>
-            <p className="mt-1 text-xs text-slate-500">
-              Son comandas reales; el importe no confirma que hayan sido
-              cobradas.
-            </p>
+        <section className="workspace-panel mt-6">
+          <div className="workspace-section-header">
+            <div>
+              <h2>Servicio y comandas</h2>
+              <p>
+                Comandas reales. Los importes no confirman que hayan sido
+                cobrados.
+              </p>
+            </div>
+            <Link href="/dashboard/orders" className="workspace-text-link">
+              Ver historial
+              <ArrowRight size={13} />
+            </Link>
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-6">
-            <OrderMetric
-              label="Enviadas"
-              value={String(currentOrders.submitted)}
-              current={currentOrders.submitted}
-              previous={previousOrders.submitted}
-            />
-            <OrderMetric
-              label="Aceptadas"
-              value={`${currentOrders.acceptanceRate}%`}
-              current={currentOrders.acceptanceRate}
-              previous={previousOrders.acceptanceRate}
-            />
-            <OrderMetric
-              label="Entregadas"
-              value={String(currentOrders.delivered)}
-              current={currentOrders.delivered}
-              previous={previousOrders.delivered}
-            />
-            <OrderMetric
-              label="Tasa entrega"
-              value={`${currentOrders.deliveryRate}%`}
-              current={currentOrders.deliveryRate}
-              previous={previousOrders.deliveryRate}
-            />
-            <OrderMetric
+          <div className="grid grid-cols-2 divide-x divide-stone-100 lg:grid-cols-3">
+            <WorkspaceMetric
+              label="Comandas enviadas"
+              value={currentOrders.submitted}
+            >
+              <ChangeBadge
+                current={currentOrders.submitted}
+                previous={previousOrders.submitted}
+              />
+            </WorkspaceMetric>
+            <WorkspaceMetric
+              label="Comandas entregadas"
+              value={currentOrders.delivered}
+              note={`${currentOrders.deliveryRate}% del total`}
+            >
+              <ChangeBadge
+                current={currentOrders.delivered}
+                previous={previousOrders.delivered}
+              />
+            </WorkspaceMetric>
+            <WorkspaceMetric
               label="Ticket medio"
               value={new Intl.NumberFormat("es-ES", {
                 style: "currency",
                 currency: restaurant.currency,
               }).format(currentOrders.averageTicketCents / 100)}
-              current={currentOrders.averageTicketCents}
-              previous={previousOrders.averageTicketCents}
-            />
-            <OrderMetric
-              label="Tiempo medio"
+            >
+              <ChangeBadge
+                current={currentOrders.averageTicketCents}
+                previous={previousOrders.averageTicketCents}
+              />
+            </WorkspaceMetric>
+            <WorkspaceMetric
+              label="Tiempo medio de entrega"
               value={`${currentOrders.averageDeliveryMinutes} min`}
-              current={currentOrders.averageDeliveryMinutes}
-              previous={previousOrders.averageDeliveryMinutes}
-            />
+            >
+              <ChangeBadge
+                current={currentOrders.averageDeliveryMinutes}
+                previous={previousOrders.averageDeliveryMinutes}
+                lowerIsBetter
+              />
+            </WorkspaceMetric>
+            <WorkspaceMetric
+              label="Tasa de aceptación"
+              value={`${currentOrders.acceptanceRate}%`}
+            >
+              <ChangeBadge
+                current={currentOrders.acceptanceRate}
+                previous={previousOrders.acceptanceRate}
+                points
+              />
+            </WorkspaceMetric>
+            <WorkspaceMetric
+              label="Tasa de entrega"
+              value={`${currentOrders.deliveryRate}%`}
+            >
+              <ChangeBadge
+                current={currentOrders.deliveryRate}
+                previous={previousOrders.deliveryRate}
+                points
+              />
+            </WorkspaceMetric>
           </div>
         </section>
       )}
-
-      {summary.totals.menuViews === 0 && (
-        <div className="mt-6 border border-dashed border-stone-300 p-6 text-center">
-          <p className="font-semibold">Aún no hay visitas en este periodo</p>
-          <p className="mt-1 text-sm text-slate-500">
-            Publica la carta y comparte su QR. Las estadísticas aparecerán
-            automáticamente.
+      <details className="workspace-disclosure">
+        <summary>Recorrido de la carta y objetivos semanales</summary>
+        <SalesFunnel
+          menuViews={summary.totals.menuViews}
+          productViews={summary.totals.productViews}
+          detailOpens={summary.totals.detailOpens}
+          cartAdds={summary.totals.cartAdds}
+        />
+        <AnalyticsGoals
+          views={weeklySummary.totals.menuViews}
+          adds={weeklySummary.totals.cartAdds}
+          viewGoal={goals?.weekly_menu_views ?? 100}
+          addGoal={goals?.weekly_cart_adds ?? 10}
+        />
+      </details>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-stone-200 pt-5">
+        <div>
+          <h2 className="text-sm">Resumen semanal</h2>
+          <p className="mt-1 text-xs text-slate-500">
+            Últimos 7 días ·{" "}
+            {weeklySummary.totals.menuViews.toLocaleString("es-ES")} visitas ·{" "}
+            {weeklySummary.totals.cartAdds.toLocaleString("es-ES")} añadidos
           </p>
         </div>
-      )}
-
-      <section className="mt-6 border-l-4 border-orange-500 bg-white p-5 shadow-sm">
-        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[.16em] text-orange-700">
-              Últimos 7 días
-            </p>
-            <h2 className="mt-1 text-lg font-bold">Resumen para compartir</h2>
-            <p className="mt-1 text-xs text-slate-500">
-              Una versión breve de la actividad semanal.
-            </p>
-          </div>
-          <a
-            href={shareUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex min-h-11 items-center justify-center bg-emerald-700 px-4 py-2 text-sm font-bold text-white hover:bg-emerald-800"
-          >
-            Compartir por WhatsApp
-          </a>
-        </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
-          <SummaryValue
-            label="Visitas"
-            value={String(weeklySummary.totals.menuViews)}
-          />
-          <SummaryValue
-            label="Añadidos"
-            value={String(weeklySummary.totals.cartAdds)}
-          />
-          <SummaryValue
-            label="Producto destacado"
-            value={weekly.topProduct?.name ?? "Sin datos"}
-          />
-        </div>
-      </section>
-      <AnalyticsGoals
-        views={weeklySummary.totals.menuViews}
-        adds={weeklySummary.totals.cartAdds}
-        viewGoal={goals?.weekly_menu_views ?? 100}
-        addGoal={goals?.weekly_cart_adds ?? 10}
-      />
+        <a
+          href={shareUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="workspace-button"
+        >
+          Compartir por WhatsApp
+          <ArrowRight size={13} />
+        </a>
+      </div>
     </main>
   );
 }
@@ -459,56 +386,31 @@ export default async function AnalyticsPage({
 function ChangeBadge({
   current,
   previous,
+  points = false,
+  lowerIsBetter = false,
 }: {
   current: number;
   previous: number;
+  points?: boolean;
+  lowerIsBetter?: boolean;
 }) {
   const change = analyticsChange(current, previous);
+  const tone = lowerIsBetter
+    ? change.tone === "up"
+      ? "down"
+      : change.tone === "down"
+        ? "up"
+        : "flat"
+    : change.tone;
+  const difference = current - previous;
+  const label = points
+    ? `${difference > 0 ? "+" : ""}${difference} pp`
+    : change.label;
   return (
-    <span
-      className={`text-[10px] font-bold ${change.tone === "up" ? "text-emerald-700" : change.tone === "down" ? "text-red-600" : "text-slate-500"}`}
-    >
-      {change.label}{" "}
-      <span className="font-normal text-slate-400">
-        frente al periodo anterior
-      </span>
+    <span className="workspace-change" data-tone={tone}>
+      {label}
+      <small>vs. periodo anterior</small>
     </span>
-  );
-}
-function PrimaryMetric({
-  icon,
-  label,
-  value,
-  current,
-  previous,
-  explanation,
-  emphasis = false,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: number | string;
-  current?: number;
-  previous: number;
-  explanation: string;
-  emphasis?: boolean;
-}) {
-  const comparable = current ?? Number(value);
-  return (
-    <article
-      className={`border p-4 shadow-sm ${emphasis ? "border-orange-300 bg-orange-50" : "border-stone-200 bg-white"}`}
-    >
-      <div className="flex items-center gap-2 text-orange-700">
-        {icon}
-        <h3 className="text-xs font-bold uppercase tracking-wide text-slate-600">
-          {label}
-        </h3>
-      </div>
-      <p className="mt-3 text-3xl font-black tabular-nums">{value}</p>
-      <ChangeBadge current={comparable} previous={previous} />
-      <p className="mt-3 border-t border-stone-200 pt-3 text-xs leading-relaxed text-slate-600">
-        {explanation}
-      </p>
-    </article>
   );
 }
 function Interaction({
@@ -521,114 +423,12 @@ function Interaction({
   value: number;
 }) {
   return (
-    <div className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
-      <span className="text-orange-700">{icon}</span>
-      <span className="min-w-0 flex-1 text-sm text-slate-700">{label}</span>
-      <strong className="text-xl tabular-nums">{value}</strong>
-    </div>
-  );
-}
-function Rank({
-  position,
-  name,
-  value,
-  suffix,
-}: {
-  position: number;
-  name: string;
-  value: number;
-  suffix: string;
-}) {
-  return (
-    <div className="flex items-center gap-3">
-      <span className="flex size-6 shrink-0 items-center justify-center bg-stone-100 text-xs font-bold text-slate-600">
-        {position}
-      </span>
-      <span className="min-w-0 flex-1 truncate text-sm">{name}</span>
-      <span className="text-right">
-        <strong className="block text-sm tabular-nums">{value}</strong>
-        <span className="text-[10px] text-slate-500">{suffix} tasa</span>
-      </span>
-    </div>
-  );
-}
-function ProductCard({
-  item,
-  position,
-  averageRate,
-}: {
-  item: ReturnType<typeof summarizeAnalytics>["products"][number];
-  position: number;
-  averageRate: number;
-}) {
-  return (
-    <article className="border border-stone-200 bg-stone-50 p-4">
-      <div className="flex items-start gap-3">
-        <span className="flex size-7 shrink-0 items-center justify-center bg-white text-xs font-bold text-slate-600">
-          {position}
-        </span>
-        <div className="min-w-0 flex-1">
-          <h3 className="font-bold">{item.name}</h3>
-          <p className="text-xs text-slate-500">{item.categoryName}</p>
-        </div>
-        <RateBadge rate={item.addRate} average={averageRate} />
-      </div>
-      <div className="mt-4 grid grid-cols-3 gap-2 text-center">
-        <SmallStat label="Vistas" value={item.views} />
-        <SmallStat label="Detalles" value={item.detailOpens} />
-        <SmallStat label="Añadidos" value={item.cartAdds} />
-      </div>
-    </article>
-  );
-}
-function RateBadge({ rate, average }: { rate: number; average: number }) {
-  return (
-    <span
-      className={`inline-flex min-w-12 justify-center px-2 py-1 text-xs font-bold ${rate >= average && rate > 0 ? "bg-emerald-100 text-emerald-800" : "bg-stone-100 text-stone-700"}`}
-    >
-      {rate}%
-    </span>
-  );
-}
-function SmallStat({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="bg-white p-2">
-      <strong className="block tabular-nums">{value}</strong>
-      <span className="text-[10px] text-slate-500">{label}</span>
-    </div>
-  );
-}
-function Empty() {
-  return (
-    <p className="py-4 text-sm text-slate-500">
-      Todavía no hay suficiente actividad.
-    </p>
-  );
-}
-function SummaryValue({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="bg-stone-50 p-3">
-      <p className="text-[10px] font-bold uppercase text-slate-500">{label}</p>
-      <p className="mt-1 truncate font-bold">{value}</p>
-    </div>
-  );
-}
-function OrderMetric({
-  label,
-  value,
-  current,
-  previous,
-}: {
-  label: string;
-  value: string;
-  current: number;
-  previous: number;
-}) {
-  return (
-    <div className="bg-stone-50 p-3">
-      <p className="text-[10px] font-bold uppercase text-slate-500">{label}</p>
-      <p className="mt-1 text-xl font-black tabular-nums">{value}</p>
-      <ChangeBadge current={current} previous={previous} />
+    <div className="flex items-center gap-3 border-b border-stone-100 py-4 last:border-0">
+      <span className="text-slate-400">{icon}</span>
+      <span className="min-w-0 flex-1 text-xs text-slate-600">{label}</span>
+      <strong className="text-sm font-medium tabular-nums">
+        {value.toLocaleString("es-ES")}
+      </strong>
     </div>
   );
 }

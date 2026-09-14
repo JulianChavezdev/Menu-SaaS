@@ -1,105 +1,127 @@
 "use client";
 
-import {useCallback,useEffect,useRef,useState} from "react";
-import {ImageOff,LoaderCircle,Play,RefreshCcw} from "lucide-react";
-import {menuVideoPlaybackUrl} from "@/lib/menu-media";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ImageOff, LoaderCircle, Play, RefreshCcw } from "lucide-react";
+import { menuVideoPlaybackUrl } from "@/lib/menu-media";
+import { createVideoPlayback } from "@/lib/video-playback";
 
-type Props={index:number;name:string;src:string|null;poster:string|null;muted:boolean;preload:"none"|"metadata"|"auto";active:boolean;hydrated:boolean;playbackBlocked:boolean;setVideoRef:(element:HTMLVideoElement|null)=>void;onPlaybackStarted:(index:number)=>void};
+type Props = {
+  index: number; name: string; src: string | null; poster: string | null;
+  muted: boolean; preload: "none" | "metadata" | "auto"; active: boolean; hydrated: boolean;
+  setVideoRef: (element: HTMLVideoElement | null) => void;
+  onPlaybackStarted: (index: number) => void;
+  onMutedFallback: () => void;
+};
 
-export function ProductMedia({index,name,src,poster,muted,preload,active,hydrated,playbackBlocked,setVideoRef,onPlaybackStarted}:Props){
-  const playbackSrc=menuVideoPlaybackUrl(src);
-  const localRef=useRef<HTMLVideoElement|null>(null);
-  const bufferingTimer=useRef<ReturnType<typeof setTimeout>|null>(null);
-  const playbackPending=useRef(false);
-  const playbackRetryFrame=useRef<number|null>(null);
-  const abortRetries=useRef(0);
-  const forceMutedPlayback=useRef(false);
-  const[status,setStatus]=useState<"loading"|"ready"|"error">(src?"loading":"ready");
-  const[autoBlocked,setAutoBlocked]=useState(false);
-  const[buffering,setBuffering]=useState(false);
-  const[slow,setSlow]=useState(false);
+export function ProductMedia(props: Props) {
+  const { index, name, src, poster, muted, preload, active, hydrated } = props;
+  const playbackSrc = menuVideoPlaybackUrl(src);
+  const latest = useRef(props);
+  latest.current = props;
+  const localRef = useRef<HTMLVideoElement | null>(null);
+  const controller = useRef<ReturnType<typeof createVideoPlayback> | null>(null);
+  const [status, setStatus] = useState<"loading" | "ready" | "error">(src ? "loading" : "ready");
+  const [autoBlocked, setAutoBlocked] = useState(false);
+  const [buffering, setBuffering] = useState(false);
 
-  useEffect(()=>{setStatus(src?"loading":"ready");setAutoBlocked(false);setBuffering(false);setSlow(false);playbackPending.current=false;abortRetries.current=0;forceMutedPlayback.current=false;return()=>{if(bufferingTimer.current)clearTimeout(bufferingTimer.current);if(playbackRetryFrame.current!==null)cancelAnimationFrame(playbackRetryFrame.current)}},[src]);
-  useEffect(()=>{if(!active){setBuffering(false);setSlow(false)}},[active]);
-  useEffect(()=>{
-    const video=localRef.current;
-    if(!hydrated||!src||!video)return;
-    video.preload="auto";
-    if(video.networkState===HTMLMediaElement.NETWORK_EMPTY)video.load();
-  },[hydrated,src]);
+  const assign = useCallback((element: HTMLVideoElement | null) => {
+    localRef.current = element;
+    if (element) {
+      element.muted = latest.current.muted;
+      element.defaultMuted = latest.current.muted;
+      element.setAttribute("playsinline", "");
+      element.setAttribute("webkit-playsinline", "true");
+    }
+    latest.current.setVideoRef(element);
+  }, []);
 
-  const assign=(element:HTMLVideoElement|null)=>{
-    localRef.current=element;
-    if(element){element.muted=muted;element.defaultMuted=muted;element.autoplay=active;element.setAttribute("playsinline","");element.setAttribute("webkit-playsinline","true");if(muted)element.setAttribute("muted","");else element.removeAttribute("muted")}
-    setVideoRef(element);
+  useEffect(() => {
+    setStatus(src ? "loading" : "ready");
+    setAutoBlocked(false);
+    setBuffering(false);
+    const video = localRef.current;
+    if (!video || !hydrated || !src) return;
+    const playback = createVideoPlayback(video, {
+      isActive: () => latest.current.active && document.visibilityState !== "hidden",
+      muted: () => latest.current.muted,
+      onPlaying: () => {
+        setStatus("ready"); setBuffering(false); setAutoBlocked(false);
+        latest.current.onPlaybackStarted(latest.current.index);
+      },
+      onBlocked: () => { setAutoBlocked(true); setBuffering(false); },
+      onError: () => setStatus("error"),
+      onMutedFallback: () => latest.current.onMutedFallback(),
+    });
+    controller.current = playback;
+    const synchronize = () => {
+      if (video.error) { setStatus("error"); return; }
+      if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) setStatus("ready");
+      playback.play();
+    };
+    const resume = () => {
+      if (!latest.current.active || document.visibilityState === "hidden") return;
+      // Reload only failed sources. Reloading a healthy pending request
+      // discards its buffer and aborts Safari's initial autoplay.
+      if (video.error || video.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) video.load();
+      synchronize();
+    };
+    video.addEventListener("menuly:resume", resume);
+    video.addEventListener("loadeddata", synchronize);
+    video.addEventListener("canplay", synchronize);
+    synchronize();
+    return () => {
+      playback.dispose(); controller.current = null;
+      video.removeEventListener("menuly:resume", resume);
+      video.removeEventListener("loadeddata", synchronize);
+      video.removeEventListener("canplay", synchronize);
+    };
+  }, [hydrated, src]);
+
+  useEffect(() => {
+    if (active) controller.current?.play();
+    else { controller.current?.pause(); setBuffering(false); setAutoBlocked(false); }
+  }, [active, hydrated, muted, src]);
+
+  useEffect(() => {
+    if (!active || !hydrated || !src) return;
+    const recovery = setInterval(() => controller.current?.play(), 1500);
+    return () => clearInterval(recovery);
+  }, [active, hydrated, src]);
+
+  const retry = () => {
+    const video = localRef.current;
+    if (!video) return;
+    controller.current?.pause();
+    setStatus("loading"); setAutoBlocked(false);
+    video.load(); controller.current?.play();
   };
-  const attemptPlayback=useCallback(()=>{
-    const video=localRef.current;
-    if(!video||!active||playbackPending.current)return;
-    video.muted=forceMutedPlayback.current||muted;
-    const started=()=>{abortRetries.current=0;setAutoBlocked(false);setBuffering(false);setSlow(false);onPlaybackStarted(index)};
-    if(!video.paused){started();return}
-    playbackPending.current=true;
-    void video.play().then(started).catch((error:unknown)=>{
-      if(!video.isConnected)return;
-      const name=(error as DOMException)?.name;
-      if(name==="AbortError"&&abortRetries.current<3){
-        abortRetries.current+=1;
-        playbackRetryFrame.current=requestAnimationFrame(()=>{playbackRetryFrame.current=null;attemptPlayback()});
-      }else if(!video.muted){
-        forceMutedPlayback.current=true;
-        video.muted=true;
-        video.defaultMuted=true;
-        video.setAttribute("muted","");
-        playbackRetryFrame.current=requestAnimationFrame(()=>{playbackRetryFrame.current=null;attemptPlayback()});
-      }else if(name==="NotAllowedError")setAutoBlocked(true);
-    }).finally(()=>{playbackPending.current=false});
-  },[active,index,muted,onPlaybackStarted]);
-  useEffect(()=>{
-    const video=localRef.current;if(!video||!hydrated||!src)return;
-    const synchronize=()=>{if(video.error){setStatus("error");return}if(video.readyState>=HTMLMediaElement.HAVE_CURRENT_DATA){setStatus("ready");setBuffering(false)}if(active)attemptPlayback()};
-    synchronize();const frame=requestAnimationFrame(synchronize);return()=>cancelAnimationFrame(frame);
-  },[active,attemptPlayback,hydrated,src]);
-  useEffect(()=>{
-    if(!active||!hydrated||!src)return;
-    attemptPlayback();
-    const retryShort=setTimeout(attemptPlayback,700);
-    const retryLong=setTimeout(attemptPlayback,2000);
-    const revealRecovery=setTimeout(()=>{const video=localRef.current;if(video&&(video.paused||video.readyState<HTMLMediaElement.HAVE_FUTURE_DATA))setSlow(true)},4000);
-    return()=>{clearTimeout(retryShort);clearTimeout(retryLong);clearTimeout(revealRecovery)};
-  },[active,attemptPlayback,hydrated,src]);
-  const retry=()=>{const video=localRef.current;if(!video)return;setStatus("loading");setBuffering(true);setSlow(false);setAutoBlocked(false);video.load();attemptPlayback()};
-  const manualPlay=()=>{const video=localRef.current;if(!video)return;if(video.readyState>HTMLMediaElement.HAVE_NOTHING)video.currentTime=0;video.muted=muted;void video.play().then(()=>{setAutoBlocked(false);onPlaybackStarted(index)}).catch(()=>setAutoBlocked(true))};
-  const markBuffering=()=>{setBuffering(true);if(bufferingTimer.current)clearTimeout(bufferingTimer.current);bufferingTimer.current=setTimeout(()=>{const video=localRef.current;if(active&&video&&(video.paused||video.readyState<HTMLMediaElement.HAVE_FUTURE_DATA))setSlow(true)},2500)};
-  const markPlaying=()=>{setStatus("ready");setBuffering(false);setSlow(false);setAutoBlocked(false);onPlaybackStarted(index)};
-  const fallbackStyle={backgroundImage:poster?`linear-gradient(rgba(6,8,18,.12),rgba(6,8,18,.45)),url(${poster})`:"radial-gradient(circle at 65% 25%,#4c1d95,#111827 55%,#030712)"};
+  const manualPlay = () => controller.current?.play();
+  const fallbackStyle = {
+    backgroundImage: poster ? `linear-gradient(rgba(6,8,18,.12),rgba(6,8,18,.45)),url(${poster})` : "linear-gradient(#22221f,#111111)",
+  };
 
   return <div className="relative h-full w-full overflow-hidden bg-slate-950">
-    <div aria-hidden="true" style={fallbackStyle} className="absolute inset-0 bg-cover bg-center"/>
-    {src&&hydrated&&<video
-      data-video-index={index}
-      ref={assign}
-      src={playbackSrc??undefined}
-      poster={poster??undefined}
-      autoPlay={active}
-      muted={muted}
-      loop
-      playsInline
-      preload={preload}
-      disablePictureInPicture
-      onLoadStart={()=>{setStatus("loading");setBuffering(true)}}
-      onLoadedMetadata={attemptPlayback}
-      onLoadedData={()=>{setStatus("ready");attemptPlayback()}}
-      onCanPlay={()=>{setStatus("ready");attemptPlayback()}}
-      onPlaying={markPlaying}
-      onWaiting={markBuffering}
-      onStalled={markBuffering}
-      onError={()=>setStatus("error")}
-      className={`relative h-full w-full object-cover transition-opacity duration-300 ${status==="error"?"opacity-0":"opacity-100"}`}
+    <div aria-hidden="true" style={fallbackStyle} className="absolute inset-0 bg-cover bg-center" />
+    {src && hydrated && <video
+      data-video-index={index} ref={assign} src={playbackSrc ?? undefined}
+      poster={poster ?? undefined} autoPlay={active} muted={muted} loop playsInline
+      preload={preload} disablePictureInPicture
+      onLoadStart={() => setStatus("loading")}
+      onWaiting={() => setBuffering(true)} onStalled={() => setBuffering(true)}
+      onError={() => setStatus("error")}
+      className={`relative h-full w-full object-cover ${status === "error" ? "opacity-0" : "opacity-100"}`}
     />}
-    {src&&hydrated&&(status==="loading"||buffering)&&!slow&&<div role="status" aria-label={`Cargando vídeo de ${name}`} className="pointer-events-none absolute inset-0 grid place-items-center bg-black/15"><span className="grid h-11 w-11 place-items-center rounded-full border border-white/15 bg-black/35 backdrop-blur-md"><LoaderCircle className="animate-spin" size={20}/></span></div>}
-    {src&&hydrated&&slow&&status!=="error"&&<button type="button" onClick={retry} className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center gap-2 rounded-full border border-white/20 bg-black/55 px-4 py-3 text-xs font-semibold shadow-xl backdrop-blur-md"><RefreshCcw size={15}/>Reanudar vídeo</button>}
-    {src&&hydrated&&status==="error"&&<div className="absolute inset-0 grid place-items-center bg-black/45 p-6 text-center backdrop-blur-[2px]"><div><span className="mx-auto grid h-12 w-12 place-items-center rounded-2xl bg-white/10"><ImageOff size={22}/></span><p className="mt-3 text-sm font-semibold">El vídeo no está disponible</p><p className="mt-1 text-xs text-white/60">Mostramos la portada para no interrumpir la carta.</p><button type="button" onClick={retry} className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/30 px-4 py-2 text-xs font-semibold"><RefreshCcw size={14}/>Reintentar</button></div></div>}
-    {src&&hydrated&&active&&status==="ready"&&(playbackBlocked||autoBlocked)&&<button type="button" onClick={manualPlay} aria-label={`Reproducir vídeo de ${name}`} className="absolute left-1/2 top-1/2 grid h-14 w-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/25 bg-black/45 shadow-xl backdrop-blur-md"><Play className="ml-1" fill="currentColor" size={23}/></button>}
+    {src && hydrated && active && !autoBlocked && (status === "loading" || buffering) &&
+      <div role="status" aria-label={`Cargando vídeo de ${name}`} className="pointer-events-none absolute right-4 top-1/2 rounded-full bg-black/30 p-2 text-white/80">
+        <LoaderCircle className="animate-spin" size={16} />
+      </div>}
+    {src && hydrated && status === "error" && <div className="absolute inset-0 grid place-items-center bg-black/30 p-6 text-center">
+      <div><ImageOff className="mx-auto" size={22} /><p className="mt-3 text-sm font-semibold">El vídeo no está disponible</p>
+        <p className="mt-1 text-xs text-white/80">Puedes seguir consultando el plato.</p>
+        <button type="button" onClick={retry} className="mt-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/30 px-4 py-2 text-xs font-semibold"><RefreshCcw size={14} />Reintentar</button>
+      </div>
+    </div>}
+    {src && hydrated && active && autoBlocked && status !== "error" &&
+      <button type="button" onClick={manualPlay} aria-label={`Reproducir vídeo de ${name}`} className="absolute left-1/2 top-1/2 grid h-14 w-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-white/25 bg-black/45"><Play className="ml-1" fill="currentColor" size={23} /></button>}
   </div>;
 }

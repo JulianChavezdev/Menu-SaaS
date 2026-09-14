@@ -7,6 +7,7 @@ import { VideoMenu } from "@/components/menu/video-menu";
 import { LandingDemoExperience } from "@/components/menu/landing-demo-experience";
 import type { Metadata } from "next";
 import { isMenuTemplateKey } from "@/lib/menu-templates";
+import {isMenuPublic,publicMenuRestaurant} from "@/lib/public-menu";
 
 const LANDING_PREVIEW_VIDEO =
   "https://res.cloudinary.com/det6jfwzx/video/upload/c_limit,w_480/q_auto:eco/vc_h264/f_mp4/v1783700256/Generame_un_video_de_una_hambu_oo9gur.mp4";
@@ -49,7 +50,7 @@ export async function generateMetadata({
   const { data } = await retryPublicQuery(() =>
     supabase
       .from("restaurants")
-      .select("name,slug,description,logo_url")
+      .select("name,slug,description,logo_url,is_published,access_suspended,publication_suspended_for_payment,subscription_status")
       .eq("slug", slug)
       .maybeSingle(),
   );
@@ -57,7 +58,7 @@ export async function generateMetadata({
   if (!resolved) {
     const { data: alias } = await supabase
       .from("restaurant_slug_aliases")
-      .select("restaurants(name,slug,description,logo_url)")
+      .select("restaurants(name,slug,description,logo_url,is_published,access_suspended,publication_suspended_for_payment,subscription_status)")
       .eq("slug", slug)
       .maybeSingle();
     const related = Array.isArray(alias?.restaurants)
@@ -65,7 +66,7 @@ export async function generateMetadata({
       : alias?.restaurants;
     resolved = related as typeof data;
   }
-  if (!resolved) return { title: "Carta no encontrada" };
+  if (!resolved||!isMenuPublic(resolved)) return { title: "Carta no encontrada" };
   return {
     title: `${resolved.name} | Carta en vídeo`,
     description: resolved.description ?? "Carta digital en vídeo",
@@ -149,18 +150,13 @@ export default async function PublicMenu({
       );
     notFound();
   }
-  const paymentRequired =
-    Boolean(restaurant.publication_suspended_for_payment) ||
-    !["active", "trialing"].includes(restaurant.subscription_status);
-  if (!restaurant.is_published || paymentRequired)
+  if (!isMenuPublic(restaurant))
     return (
       <main className="grid min-h-screen place-items-center bg-slate-950 p-6 text-center">
         <div className="max-w-md">
           <h1 className="text-3xl font-bold">Carta no disponible</h1>
           <p className="mt-2 text-slate-300">
-            {paymentRequired
-              ? "El restaurante debe activar o renovar su plan para publicar la carta."
-              : "Este restaurante todavía no ha publicado su carta."}
+            La carta no está disponible en este momento. Consulta con el personal del restaurante.
           </p>
         </div>
       </main>
@@ -219,7 +215,7 @@ export default async function PublicMenu({
           : [];
       }),
   }));
-  const { subscriptions: _, ...publicRestaurant } = restaurant;
+  const publicRestaurant = publicMenuRestaurant(restaurant);
   const publicProducts = preview
     ? productsWithRecommendations.map((product, index) =>
         index === 0

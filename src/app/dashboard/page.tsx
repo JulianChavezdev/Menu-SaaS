@@ -1,13 +1,23 @@
 import Link from "next/link";
+import {
+  ArrowRight,
+  BookOpen,
+  ExternalLink,
+  Palette,
+  QrCode,
+  UtensilsCrossed,
+  ChefHat,
+} from "lucide-react";
+import {
+  WorkspaceHeading,
+  WorkspaceMetric,
+} from "@/components/dashboard/workspace-ui";
+import { subscriptionHasAccess } from "@/lib/plans";
 import { activeRestaurant } from "@/lib/permissions";
 import { OnboardingChecklist } from "@/components/dashboard/onboarding-checklist";
 import { ActionCenter } from "@/components/dashboard/action-center";
 import { restaurantAlerts } from "@/lib/restaurant-alerts";
-import {
-  trialDaysRemaining,
-  signupPlanName,
-  trialUrgency,
-} from "@/lib/signup-plans";
+import { trialDaysRemaining, signupPlanName } from "@/lib/signup-plans";
 
 export default async function Dashboard() {
   const { restaurant, supabase } = await activeRestaurant();
@@ -67,7 +77,6 @@ export default async function Dashboard() {
     subscription?.status === "trialing" && subscription.current_period_end
       ? trialDaysRemaining(subscription.current_period_end)
       : null;
-  const trialTone = trialDays === null ? null : trialUrgency(trialDays);
   const alerts = restaurantAlerts({
     subscriptionStatus: status,
     published: restaurant.is_published,
@@ -80,81 +89,183 @@ export default async function Dashboard() {
     hasContact: Boolean(restaurant.phone || restaurant.address),
   });
 
+  const published = restaurant.is_published && subscriptionHasAccess(status);
+  const coverage = products ? Math.round(((media ?? 0) / products) * 100) : 0;
+  const tools = [
+    {
+      href: "/dashboard/menu",
+      title: "Editar la carta",
+      description: "Productos, precios y disponibilidad.",
+      icon: BookOpen,
+    },
+    {
+      href: "/dashboard/appearance",
+      title: "Apariencia",
+      description: "Plantilla, imágenes e idiomas.",
+      icon: Palette,
+    },
+    {
+      href: "/dashboard/qr",
+      title: "Código QR",
+      description: "Descarga el acceso a tu carta.",
+      icon: QrCode,
+    },
+  ];
   return (
-    <main className="mx-auto max-w-6xl p-4 md:p-8 animate-in fade-in duration-300 min-h-screen flex flex-col justify-start">
-      {/* Cabecera Principal */}
-      <div className="flex flex-wrap items-center justify-between border-b border-stone-200 pb-5 gap-4">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-950">
-            Hola, {restaurant.name}
-          </h1>
-          <p className="text-sm text-slate-600">
-            Gestiona productos, identidad corporativa y la disponibilidad de tu
-            negocio.
-          </p>
-        </div>
-
-        {/* Estado Dinámico de la Carta */}
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500 font-medium uppercase tracking-wider">
-            Estado:
-          </span>
-          <span
-            className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1 text-xs font-semibold border ${
-              restaurant.is_published
-                ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                : "bg-amber-500/10 border-amber-500/30 text-amber-400"
-            }`}
-          >
-            <span
-              className={`h-1.5 w-1.5 rounded-full ${restaurant.is_published ? "bg-emerald-400" : "bg-amber-400"}`}
-            />
-            {restaurant.is_published ? "Publicada" : "Borrador"}
-          </span>
-        </div>
-      </div>
-
-      {trialDays !== null && (
-        <section
-          className={`mt-5 flex flex-col gap-4 border p-4 sm:flex-row sm:items-center sm:justify-between ${trialTone === "normal" ? "border-emerald-200 bg-emerald-50" : trialTone === "soon" ? "border-amber-300 bg-amber-50" : "border-orange-300 bg-orange-50"}`}
-        >
-          <div>
-            <p
-              className={`text-xs font-bold uppercase tracking-[.15em] ${trialTone === "normal" ? "text-emerald-700" : "text-orange-700"}`}
+    <main className="workspace-page">
+      <WorkspaceHeading
+        eyebrow={restaurant.name}
+        title="Resumen"
+        description="La actividad de tu carta y lo que necesita atención."
+        actions={
+          <>
+            <a
+              href={`/r/${restaurant.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="workspace-button"
             >
-              Prueba de{" "}
-              {signupPlanName(
-                restaurant.signup_plan_interest ?? subscription?.plan,
-              )}
-            </p>
-            <h2 className="mt-1 text-lg font-bold text-slate-950">
-              {trialDays === 0
-                ? "Tu prueba termina hoy"
-                : `Te quedan ${trialDays} ${trialDays === 1 ? "día" : "días"} gratis`}
-            </h2>
-            <p className="mt-1 text-xs text-slate-600">
-              {trialTone === "normal"
-                ? "Tu carta y sus funciones permanecen disponibles durante todo el periodo."
-                : "Activa el plan antes del vencimiento para evitar que la carta deje de estar publicada."}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-2">
+              <ExternalLink size={14} />
+              Ver carta
+            </a>
             <Link
-              href="/dashboard/getting-started"
-              className="bg-white px-4 py-2.5 text-center text-sm font-bold text-slate-900 ring-1 ring-stone-300"
+              href="/dashboard/menu"
+              className="workspace-button workspace-button-primary"
             >
-              Abrir guía
+              Editar carta
+              <ArrowRight size={14} />
             </Link>
+          </>
+        }
+      />
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <span
+          className="workspace-status"
+          data-state={published ? "active" : "inactive"}
+        >
+          {published
+            ? "Carta publicada"
+            : subscriptionHasAccess(status)
+              ? "Carta en borrador"
+              : "Pendiente de activación"}
+        </span>
+        <span className="text-xs text-slate-500">
+          Actividad · últimos 7 días
+        </span>
+      </div>
+      <section aria-label="Resumen de la carta" className="workspace-metrics">
+        <WorkspaceMetric
+          label="Visitas a la carta"
+          value={eventTotal("menu_view")}
+          note="Aperturas durante esta semana"
+        />
+        <WorkspaceMetric
+          label="Añadidos al carrito"
+          value={eventTotal("cart_add")}
+          note="Intención de compra, no ventas"
+        />
+        <WorkspaceMetric
+          label="Productos"
+          value={products ?? 0}
+          note={`${categories ?? 0} categorías en tu carta`}
+        />
+        <WorkspaceMetric
+          label="Contenido visual"
+          value={`${coverage}%`}
+          note={`${media ?? 0} con foto o vídeo · ${videos ?? 0} vídeos`}
+        />
+      </section>
+      {trialDays !== null && (
+        <div className="mt-5 flex flex-wrap items-center justify-between gap-3 rounded-md border border-stone-200 bg-white px-5 py-4">
+          <p className="text-xs text-slate-600">
+            Prueba de{" "}
+            {signupPlanName(
+              restaurant.signup_plan_interest ?? subscription?.plan,
+            )}{" "}
+            ·{" "}
+            <strong className="font-medium">
+              {trialDays === 0 ? "Termina hoy" : `${trialDays} días restantes`}
+            </strong>
+          </p>
+          <Link href="/dashboard/billing" className="workspace-text-link">
+            Ver suscripción
+            <ArrowRight size={14} />
+          </Link>
+        </div>
+      )}
+      <div className="workspace-grid">
+        <section className="workspace-panel">
+          <div className="workspace-section-header">
+            <div>
+              <h2>Gestiona tu carta</h2>
+              <p>Los accesos que necesitas a diario.</p>
+            </div>
+          </div>
+          {tools.map((tool) => (
             <Link
-              href="/dashboard/billing"
-              className={`${trialTone === "normal" ? "bg-emerald-800" : "bg-orange-700"} px-4 py-2.5 text-center text-sm font-bold text-white`}
+              key={tool.href}
+              href={tool.href}
+              className="workspace-list-item"
             >
-              {trialTone === "normal" ? "Ver suscripción" : "Activar plan"}
+              <tool.icon
+                className="workspace-list-icon"
+                size={21}
+                strokeWidth={1.5}
+              />
+              <div>
+                <h3>{tool.title}</h3>
+                <p>{tool.description}</p>
+              </div>
+              <ArrowRight className="workspace-list-arrow" size={16} />
+            </Link>
+          ))}
+          <div className="flex items-center justify-between gap-4 border-t border-stone-200 bg-stone-50/40 px-6 py-4">
+            <p className="text-xs text-slate-500">
+              Consulta qué productos despiertan más interés.
+            </p>
+            <Link
+              href="/dashboard/analytics"
+              className="workspace-text-link whitespace-nowrap"
+            >
+              Ver analíticas
+              <ArrowRight size={14} />
             </Link>
           </div>
         </section>
+        <ActionCenter alerts={alerts} />
+      </div>
+      {restaurant.ordering_enabled && (
+        <section className="workspace-panel mt-6">
+          <div className="workspace-section-header">
+            <div>
+              <h2>Durante el servicio</h2>
+              <p>Comandero y cocina, conectados a tu carta.</p>
+            </div>
+            <Link href="/dashboard/orders" className="workspace-text-link">
+              Historial
+              <ArrowRight size={14} />
+            </Link>
+          </div>
+          <div className="grid md:grid-cols-2">
+            <a href="/operaciones/comandero" className="workspace-list-item">
+              <UtensilsCrossed className="workspace-list-icon" size={21} />
+              <div>
+                <h3>Abrir comandero</h3>
+                <p>Mesas y nuevas comandas.</p>
+              </div>
+              <ArrowRight className="workspace-list-arrow" size={16} />
+            </a>
+            <a href="/operaciones/cocina" className="workspace-list-item">
+              <ChefHat className="workspace-list-icon" size={21} />
+              <div>
+                <h3>Abrir cocina</h3>
+                <p>Preparación y entrega de pedidos.</p>
+              </div>
+              <ArrowRight className="workspace-list-arrow" size={16} />
+            </a>
+          </div>
+        </section>
       )}
-
       <OnboardingChecklist
         input={{
           hasLogo: Boolean(restaurant.logo_url),
@@ -162,115 +273,9 @@ export default async function Dashboard() {
           categories: categories ?? 0,
           products: products ?? 0,
           media: media ?? 0,
-          published: restaurant.is_published,
+          published,
         }}
       />
-      <ActionCenter alerts={alerts} />
-
-      {/* Módulo de Estadísticas Clave */}
-      <section className="mt-8 grid gap-4 grid-cols-2 lg:grid-cols-3">
-        <div className="border-l-4 border-l-orange-500 border-y border-r border-stone-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-            Productos
-          </p>
-          <p className="mt-2 text-3xl font-black text-slate-950">
-            {products ?? 0}
-          </p>
-        </div>
-
-        <div className="border-l-4 border-l-emerald-500 border-y border-r border-stone-200 bg-white p-5 shadow-sm">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-            Categorías
-          </p>
-          <p className="mt-2 text-3xl font-black text-slate-950">
-            {categories ?? 0}
-          </p>
-        </div>
-
-        <div className="col-span-2 border-l-4 border-l-amber-500 border-y border-r border-stone-200 bg-white p-5 shadow-sm lg:col-span-1">
-          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
-            Vídeos enlazados
-          </p>
-          <p className="mt-2 text-3xl font-black text-orange-700">
-            {videos ?? 0}
-          </p>
-        </div>
-      </section>
-
-      {/* Grid Bento de Herramientas de Control */}
-      <h2 className="mt-10 text-xs font-bold text-slate-500 uppercase tracking-wider">
-        Herramientas del panel
-      </h2>
-
-      <div className="mt-4 grid gap-4 grid-cols-1 md:grid-cols-2">
-        {restaurant.ordering_enabled && (
-          <Link
-            href="/dashboard/pos"
-            className="group flex flex-col justify-between border-l-4 border-orange-500 border-y border-r border-stone-200 bg-white p-6 shadow-sm transition-all duration-200 hover:bg-orange-50/40"
-          >
-            <div>
-              <div className="flex h-10 w-10 items-center justify-center bg-orange-100 text-lg">
-                🍽️
-              </div>
-              <h3 className="mt-4 text-lg font-bold text-slate-900">
-                Abrir comandero móvil
-              </h3>
-              <p className="mt-1 text-xs leading-relaxed text-slate-600">
-                Selecciona una mesa, añade productos de la carta y envía la
-                comanda directamente a Cocina.
-              </p>
-            </div>
-            <span className="mt-6 text-xs font-semibold text-orange-700">
-              Tomar una comanda →
-            </span>
-          </Link>
-        )}
-        {/* Enlace Principal: Gestor de la Carta */}
-        <Link
-          href="/dashboard/menu"
-          className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-stone-200 bg-white p-6 shadow-sm transition-all duration-200 hover:border-orange-500/50 hover:bg-stone-50"
-        >
-          <div>
-            <div className="flex h-10 w-10 items-center justify-center bg-orange-100 text-lg">
-              📋
-            </div>
-            <h3 className="mt-4 text-lg font-bold text-slate-900 group-hover:text-orange-900">
-              Gestionar catálogo de carta
-            </h3>
-            <p className="mt-1 text-xs text-slate-600 leading-relaxed">
-              Modifica la estructura de tus platos, organiza el orden de tus
-              menús y edita la disponibilidad en tiempo real.
-            </p>
-          </div>
-          <span className="mt-6 text-xs font-semibold text-orange-700 group-hover:text-orange-700 flex items-center gap-1">
-            Abrir administrador de carta →
-          </span>
-        </Link>
-
-        {/* Enlace Secundario: Vista Previa Pública */}
-        <a
-          href={`/r/${restaurant.slug}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-stone-200 bg-white p-6 shadow-sm transition-all duration-200 hover:border-stone-400 hover:bg-stone-50"
-        >
-          <div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-stone-100 border border-stone-200 text-lg group-hover:border-slate-700">
-              🎥
-            </div>
-            <h3 className="mt-4 text-lg font-bold text-slate-900 group-hover:text-slate-950">
-              Ver carta interactiva pública
-            </h3>
-            <p className="mt-1 text-xs text-slate-600 leading-relaxed">
-              Visualiza en vivo la interfaz móvil interactiva que escanearán tus
-              clientes finales en las mesas.
-            </p>
-          </div>
-          <span className="mt-6 text-xs font-semibold text-slate-600 group-hover:text-slate-900 flex items-center gap-1">
-            Abrir URL en pestaña nueva ↗
-          </span>
-        </a>
-      </div>
     </main>
   );
 }

@@ -22,10 +22,10 @@ describe("sales growth features",()=>{
   });
 
   it("shows intent metrics without calling them confirmed sales",()=>{
-    expect(analytics).toContain("Intención de compra");
-    expect(analytics).toContain("no ventas confirmadas");
+    expect(analytics).toContain("Añadidos al carrito");
+    expect(analytics).toContain("no confirma una venta");
     expect(analytics).toContain("Tasa de añadido");
-    expect(analytics).toContain("Qué deberías hacer ahora");
+    expect(analytics).toContain("Lectura del periodo");
   });
 
   it("guides restaurants to the next incomplete setup step",()=>{
