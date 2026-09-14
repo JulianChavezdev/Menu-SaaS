@@ -96,19 +96,19 @@ export function DailyVisitsChart({ series }: { series: VisitDay[] }) {
                 x2="720"
                 y1={y}
                 y2={y}
-                stroke="#e9eeea"
+                stroke="var(--workspace-line, #e9eeea)"
                 strokeDasharray="3 5"
                 vectorEffect="non-scaling-stroke"
               />
             ))}
             {series.length > 1 && (
-              <polygon points={`0,190 ${points} 720,190`} fill="#edf3ed" />
+              <polygon points={`0,190 ${points} 720,190`} fill="var(--workspace-chart-area, #edf3ed)" />
             )}
             {series.length > 1 && (
               <polyline
                 points={points}
                 fill="none"
-                stroke="#52765b"
+                stroke="var(--workspace-chart-line, #52765b)"
                 strokeWidth="2"
                 strokeLinejoin="round"
                 strokeLinecap="round"
@@ -116,7 +116,7 @@ export function DailyVisitsChart({ series }: { series: VisitDay[] }) {
               />
             )}
             {series.length === 1 && (
-              <circle cx="360" cy={point(0).y} r="3" fill="#52765b" />
+              <circle cx="360" cy={point(0).y} r="3" fill="var(--workspace-chart-line, #52765b)" />
             )}
             {active !== null && day && (
               <g>
@@ -125,7 +125,7 @@ export function DailyVisitsChart({ series }: { series: VisitDay[] }) {
                   x2={point(active).x}
                   y1="5"
                   y2="190"
-                  stroke="#9dae9d"
+                  stroke="var(--workspace-muted, #9dae9d)"
                   strokeDasharray="4 4"
                   vectorEffect="non-scaling-stroke"
                 />
@@ -133,8 +133,8 @@ export function DailyVisitsChart({ series }: { series: VisitDay[] }) {
                   cx={point(active).x}
                   cy={point(active).y}
                   r="4"
-                  fill="#365c48"
-                  stroke="#fff"
+                  fill="var(--workspace-accent, #365c48)"
+                  stroke="var(--workspace-surface, #fff)"
                   strokeWidth="2"
                   vectorEffect="non-scaling-stroke"
                 />
@@ -175,7 +175,7 @@ export function DailyVisitsChart({ series }: { series: VisitDay[] }) {
               value={active ?? series.length - 1}
               aria-valuetext={`${formatDate(series[active ?? series.length - 1].date, true)}: ${series[active ?? series.length - 1].views} visitas`}
               onChange={(event) => setSelected(Number(event.target.value))}
-              className="mt-3 h-1 w-full cursor-pointer accent-[#52765b]"
+              className="mt-3 h-1 w-full cursor-pointer accent-[var(--workspace-chart-line)]"
             />
           )}
         </div>

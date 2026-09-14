@@ -9,6 +9,8 @@ import { BrandLogo } from "@/components/brand/brand-logo";
 import { redirect } from "next/navigation";
 import { isOperationalRole, memberHome } from "@/lib/member-roles";
 import { ExternalLink, BookOpen } from "lucide-react";
+import { cookies } from "next/headers";
+import { DashboardTheme, DashboardThemeToggle } from "@/components/dashboard/dashboard-theme";
 
 export const metadata: Metadata = {
   title: "Panel",
@@ -37,6 +39,7 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const { supabase, user, restaurant, member } = await activeRestaurant();
+  const initialTheme = (await cookies()).get("menuly-dashboard-theme")?.value === "light" ? "light" : "dark";
   if (isOperationalRole(member.role)) redirect(memberHome(member.role));
   const { data: members } = await supabase
     .from("restaurant_members")
@@ -52,7 +55,7 @@ export default async function DashboardLayout({
     ? [...restaurantNavigation, ["Superadmin", "/superadmin"] as const]
     : restaurantNavigation;
   return (
-    <div className="menuly-app dashboard-workspace">
+    <DashboardTheme initialTheme={initialTheme}>
       <a href="#panel-content" className="workspace-skip">
         Saltar al contenido
       </a>
@@ -66,9 +69,10 @@ export default async function DashboardLayout({
           >
             <BrandLogo priority className="w-[106px]" />
           </Link>
-          <span className="md:hidden">
-            <SignOut compact />
-          </span>
+          <div className="flex items-center gap-1">
+            <DashboardThemeToggle />
+            <span className="md:hidden"><SignOut compact /></span>
+          </div>
         </div>
         {items.length > 1 && (
           <div className="mt-3 max-w-full overflow-hidden text-sm md:hidden">
@@ -116,6 +120,6 @@ export default async function DashboardLayout({
       <div id="panel-content" tabIndex={-1} className="min-w-0 outline-none">
         {children}
       </div>
-    </div>
+    </DashboardTheme>
   );
 }

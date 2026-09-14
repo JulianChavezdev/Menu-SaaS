@@ -9,6 +9,7 @@ const state = vi.hoisted(() => ({
   error: false,
   ordering: false,
 }));
+vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock("next/navigation", () => ({
   usePathname: () => state.path,
   useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),

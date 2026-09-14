@@ -74,6 +74,7 @@ function TemplatePreview({
   if (kind === "noirluxe")
     return (
       <div
+        data-dashboard-preview
         style={{ fontFamily: "var(--font-noir-sans)" }}
         className={`relative isolate mx-auto w-full overflow-hidden bg-[#111111] text-[#F0E9DB] shadow-2xl ${large ? "h-[min(70dvh,620px)] max-w-[350px]" : "aspect-[9/12]"}`}
       >
@@ -173,6 +174,7 @@ function TemplatePreview({
   if (kind === "social-hud")
     return (
       <div
+        data-dashboard-preview
         className={`relative isolate mx-auto w-full overflow-hidden bg-[#08080A] font-sans text-white shadow-2xl ${large ? "h-[min(70dvh,620px)] max-w-[350px]" : "aspect-[9/12]"}`}
       >
         <div className="absolute inset-0 bg-[#22221f]">
@@ -274,6 +276,7 @@ function TemplatePreview({
   if (kind === "tokyo-pulse")
     return (
       <div
+        data-dashboard-preview
         style={{ fontFamily: "var(--font-tokyo-sans)" }}
         className={`relative isolate mx-auto w-full overflow-hidden bg-[#1A0D14] text-[#FFF1D7] shadow-2xl ${large ? "h-[min(70dvh,620px)] max-w-[350px]" : "aspect-[9/12]"}`}
       >
@@ -375,6 +378,7 @@ function TemplatePreview({
     const iconTheme = street ? "street" : "cozy-corner";
     return (
       <div
+        data-dashboard-preview
         style={{
           fontFamily: street
             ? "var(--font-street-sans)"
@@ -470,6 +474,7 @@ function TemplatePreview({
   }
   return (
     <div
+        data-dashboard-preview
       style={{ background: colors.background }}
       className={`relative isolate mx-auto w-full overflow-hidden text-white shadow-2xl ${large ? "h-[min(70dvh,620px)] max-w-[350px] rounded-xl" : "aspect-[9/12] rounded-2xl"}`}
     >

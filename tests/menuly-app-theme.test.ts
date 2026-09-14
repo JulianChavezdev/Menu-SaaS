@@ -3,13 +3,15 @@ import { describe, expect, it } from "vitest";
 
 const css = readFileSync("src/app/globals.css", "utf8");
 const dashboard = readFileSync("src/app/dashboard/layout.tsx", "utf8");
+const dashboardTheme = readFileSync("src/components/dashboard/dashboard-theme.tsx", "utf8");
 const auth = readFileSync("src/app/(auth)/layout.tsx", "utf8");
 const operations = readFileSync("src/app/operaciones/layout.tsx", "utf8");
 const superadmin = readFileSync("src/app/superadmin/layout.tsx", "utf8");
 
 describe("sistema visual Menuly", () => {
   it("comparte la identidad de la landing en las áreas privadas", () => {
-    for (const layout of [dashboard, auth, superadmin]) {
+    expect(dashboard).toContain("<DashboardTheme");
+    for (const layout of [dashboardTheme, auth, superadmin]) {
       expect(layout).toContain("menuly-app");
     }
     expect(operations).toContain("dashboard-light");
