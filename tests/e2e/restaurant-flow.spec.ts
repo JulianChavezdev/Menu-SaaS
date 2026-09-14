@@ -178,6 +178,7 @@ test.describe("restaurant owner journey", () => {
       page.getByRole("dialog", { name: "Vista previa de Cinemática" }),
     ).toBeVisible();
     await page.getByRole("button", { name: "Cerrar vista previa" }).click();
+    await page.getByRole("tab", { name: "Logo", exact: true }).click();
     await page
       .locator('input[accept="image/jpeg,image/png,image/webp"]')
       .setInputFiles({
@@ -192,6 +193,7 @@ test.describe("restaurant owner journey", () => {
     await expect(
       page.getByText("Archivo actual guardado. Puedes reemplazarlo."),
     ).toBeVisible();
+    await page.getByRole("tab", { name: "Idiomas", exact: true }).click();
     await page.getByLabel("Mostrar selector de idioma").check();
     await page.getByRole("button", { name: "Guardar preferencias" }).click();
 

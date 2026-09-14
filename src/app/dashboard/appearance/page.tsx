@@ -7,11 +7,9 @@ export default async function Page(){
   const {data:product}=await supabase.from("products").select("name,price_cents,video_url,categories(name)").eq("restaurant_id",restaurant.id).eq("is_available",true).order("sort_order").limit(1).maybeSingle();
   const relation=product?.categories as {name:string}|{name:string}[]|null|undefined;
   const previewProduct=product?{name:product.name,priceCents:product.price_cents,videoUrl:product.video_url,category:Array.isArray(relation)?relation[0]?.name??"Carta":relation?.name??"Carta"}:undefined;
-  return <main className="mx-auto max-w-5xl p-4 md:p-6">
-    <div className="mb-6"><h1 className="text-2xl font-extrabold">Apariencia</h1><p className="mt-1 text-sm text-slate-600">Configura el logo, previsualiza las plantillas y elige los controles de la carta pública.</p></div>
-    <div className="grid gap-5 lg:grid-cols-[320px_1fr]">
-      <MediaUpload restaurantId={restaurant.id} kind="logo" label="Logo del restaurante" currentUrl={restaurant.logo_url}/>
-      <AppearancePreferences enabled={Boolean(restaurant.language_switcher_enabled)} template={restaurant.menu_template} canUsePremium={["active","trialing"].includes(restaurant.subscription_status)} restaurantName={restaurant.name} logoUrl={restaurant.logo_url} currency={restaurant.currency} previewProduct={previewProduct}/>
-    </div>
+  return <main className="workspace-page appearance-page">
+    <header className="workspace-heading"><div><h1>Apariencia</h1><p className="workspace-description">Diseña cómo ven tus clientes la carta.</p></div></header>
+    <AppearancePreferences enabled={Boolean(restaurant.language_switcher_enabled)} template={restaurant.menu_template} canUsePremium={["active","trialing"].includes(restaurant.subscription_status)} restaurantName={restaurant.name} logoUrl={restaurant.logo_url} currency={restaurant.currency} previewProduct={previewProduct}
+      logoEditor={<MediaUpload restaurantId={restaurant.id} kind="logo" label="Logo del restaurante" currentUrl={restaurant.logo_url}/>}/>
   </main>;
 }

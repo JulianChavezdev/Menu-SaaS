@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
 import { Eye, Info, Languages, Lock, Share2, VolumeX, X } from "lucide-react";
 import { toast } from "sonner";
@@ -572,14 +572,15 @@ function TemplatePreview({
   );
 }
 
+const APPEARANCE_TABS = [
+  { key: "design", label: "Diseño" },
+  { key: "logo", label: "Logo" },
+  { key: "languages", label: "Idiomas" },
+] as const;
+
 export function AppearancePreferences({
-  enabled,
-  template,
-  canUsePremium,
-  restaurantName,
-  logoUrl,
-  currency,
-  previewProduct,
+  enabled, template, canUsePremium, restaurantName, logoUrl, currency,
+  previewProduct, logoEditor,
 }: {
   enabled: boolean;
   template?: string;
@@ -588,198 +589,157 @@ export function AppearancePreferences({
   logoUrl: string | null;
   currency: string;
   previewProduct?: PreviewProduct;
+  logoEditor?: ReactNode;
 }) {
   const current = resolveMenuTemplate(template, canUsePremium);
   const [selected, setSelected] = useState<MenuTemplateKey>(current.key);
+  const [languageEnabled, setLanguageEnabled] = useState(enabled);
+  const [saved, setSaved] = useState({ template: current.key, language: enabled });
+  const [tab, setTab] = useState<(typeof APPEARANCE_TABS)[number]["key"]>("design");
   const [preview, setPreview] = useState<MenuTemplateKey | null>(null);
+  const [wide, setWide] = useState(false);
+  const [saving, startSaving] = useTransition();
   const [translating, startTranslation] = useTransition();
+  const dialog = useRef<HTMLDialogElement>(null);
+  const dirty = selected !== saved.template || languageEnabled !== saved.language;
+  const previewProps = { restaurantName, logoUrl, currency, product: previewProduct };
+
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 1024px)");
+    const update = () => setWide(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+
   useEffect(() => {
     if (!preview) return;
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setPreview(null);
+    const element = dialog.current;
+    const previousFocus = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    element?.showModal();
+    document.body.style.overflow = "hidden";
+    return () => {
+      element?.close();
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus instanceof HTMLElement) previousFocus.focus();
     };
-    addEventListener("keydown", closeOnEscape);
-    return () => removeEventListener("keydown", closeOnEscape);
   }, [preview]);
-  return (
-    <>
-      <form
-        action={async (form) => {
-          try {
-            const result = await updateAppearancePreferences(form);
-            toast.success("Preferencias guardadas");
-            notifyAutomaticTranslation(result.translationStatus);
-          } catch (error) {
-            toast.error(
-              error instanceof Error ? error.message : "No se pudo guardar",
-            );
-          }
+
+  return <>
+    <div role="tablist" aria-label="Ajustes de apariencia" className="appearance-tabs">
+      {APPEARANCE_TABS.map((item, index) => <button
+        key={item.key} type="button" role="tab" id={`appearance-tab-${item.key}`}
+        aria-controls={`appearance-panel-${item.key}`} aria-selected={tab === item.key}
+        tabIndex={tab === item.key ? 0 : -1} onClick={() => setTab(item.key)}
+        onKeyDown={(event) => {
+          let next = index;
+          if (event.key === "ArrowRight") next = (index + 1) % APPEARANCE_TABS.length;
+          else if (event.key === "ArrowLeft") next = (index + APPEARANCE_TABS.length - 1) % APPEARANCE_TABS.length;
+          else if (event.key === "Home") next = 0;
+          else if (event.key === "End") next = APPEARANCE_TABS.length - 1;
+          else return;
+          event.preventDefault();
+          setTab(APPEARANCE_TABS[next].key);
+          document.getElementById(`appearance-tab-${APPEARANCE_TABS[next].key}`)?.focus();
         }}
-        className="space-y-6 rounded-2xl border border-stone-200 bg-white shadow-sm p-5"
-      >
-        <section>
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <h2 className="font-bold">Plantillas de la carta</h2>
-              <p className="mt-1 text-sm text-slate-600">
-                Elige el estilo que mejor representa al restaurante.
-              </p>
-            </div>
-            <span className="text-xs text-slate-500">6 disponibles</span>
-          </div>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            {Object.values(MENU_TEMPLATES).map((item) => {
-              const locked = item.tier === "premium" && !canUsePremium;
-              return (
-                <article
-                  key={item.key}
-                  className={`rounded-2xl border p-3 transition ${item.key === selected ? "border-orange-500 bg-orange-50" : "border-stone-200 bg-stone-50"}`}
-                >
-                  <TemplatePreview
-                    kind={item.key}
-                    restaurantName={restaurantName}
-                    logoUrl={logoUrl}
-                    currency={currency}
-                    product={previewProduct}
-                  />
-                  <div className="mt-3 flex items-start gap-2">
-                    <label
-                      className={`flex min-w-0 flex-1 gap-2 ${locked ? "cursor-not-allowed opacity-60" : "cursor-pointer"}`}
-                    >
-                      <input
-                        aria-label={`Seleccionar plantilla ${item.name}`}
-                        type="radio"
-                        name="menu_template"
-                        value={item.key}
-                        checked={item.key === selected}
-                        onChange={() => setSelected(item.key)}
-                        disabled={locked}
-                        className="mt-1 h-4 w-4 shrink-0 accent-orange-600"
-                      />
-                      <span className="min-w-0">
-                        <strong className="block">{item.name}</strong>
-                        <span className="mt-1 block text-xs leading-relaxed text-slate-600">
-                          {item.description}
-                        </span>
-                      </span>
-                    </label>
-                    {item.tier === "premium" && (
-                      <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-400/15 px-2 py-1 text-[9px] font-bold uppercase text-amber-700">
-                        <Lock size={10} />
-                        Pro
-                      </span>
-                    )}
+      >{item.label}</button>)}
+    </div>
+
+    <form onSubmit={(event) => {
+      event.preventDefault();
+      const form = new FormData(event.currentTarget);
+      startSaving(async () => {
+        try {
+          const result = await updateAppearancePreferences(form);
+          setSaved({ template: form.get("menu_template") as MenuTemplateKey, language: form.has("language_switcher_enabled") });
+          toast.success("Preferencias guardadas");
+          notifyAutomaticTranslation(result.translationStatus);
+        } catch (error) {
+          toast.error(error instanceof Error ? error.message : "No se pudo guardar");
+        }
+      });
+    }}>
+      <input type="hidden" name="menu_template" value={selected} />
+      {languageEnabled && <input type="hidden" name="language_switcher_enabled" value="on" />}
+      <section role="tabpanel" id="appearance-panel-design" aria-labelledby="appearance-tab-design" hidden={tab !== "design"} tabIndex={0}>
+        <div className="appearance-design">
+          <div className="appearance-choices">
+            <div className="appearance-section-heading"><h2>Plantilla de la carta</h2><span>{Object.keys(MENU_TEMPLATES).length} estilos</span></div>
+            <p className="appearance-help">Selecciona un diseño. Los cambios se aplican al guardar.</p>
+            <fieldset disabled={saving} className="appearance-options">
+              <legend className="sr-only">Plantillas de la carta</legend>
+              {Object.values(MENU_TEMPLATES).map((item) => {
+                const locked = item.tier === "premium" && !canUsePremium;
+                return <article key={item.key} className="appearance-option" data-selected={selected === item.key}>
+                  <label className="appearance-choice" data-locked={locked}>
+                    <input type="radio" name="template_choice" value={item.key}
+                      aria-label={`Seleccionar plantilla ${item.name}`} checked={selected === item.key}
+                      onChange={() => setSelected(item.key)} disabled={locked} />
+                    <span className="appearance-swatches" aria-hidden="true">
+                      {[item.colors.background, item.colors.accent, item.colors.accent2].map((color, i) => <i key={i} style={{ backgroundColor: color }} />)}
+                    </span>
+                    <strong>{item.name}</strong>
+                    <span className="appearance-help">{item.previewLabel}</span>
+                  </label>
+                  <div className="appearance-option-footer">
+                    <span className="appearance-tier">{locked && <Lock size={11} aria-hidden="true" />}{item.tier === "free" ? "Incluida" : "Pro"}</span>
+                    <button type="button" onClick={() => setPreview(item.key)} aria-label={`Vista previa de ${item.name}`} title={`Vista previa de ${item.name}`}><Eye size={16} aria-hidden="true" /></button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setPreview(item.key)}
-                    aria-label={`Vista previa de ${item.name}`}
-                    className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-stone-300 px-3 py-2 text-xs font-semibold hover:bg-stone-100"
-                  >
-                    <Eye size={15} />
-                    Vista previa
-                  </button>
-                </article>
-              );
-            })}
+                </article>;
+              })}
+            </fieldset>
+            {!canUsePremium && <p className="appearance-upgrade">Los estilos Pro requieren un plan de pago. <Link href="/dashboard/billing?from=templates">Ver planes →</Link></p>}
           </div>
-          {!canUsePremium && (
-            <div className="mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-400/30 bg-amber-50 p-3 text-xs text-slate-600">
-              <span>
-                Las plantillas premium están incluidas en los planes de pago.
-              </span>
-              <Link
-                href="/dashboard/billing?from=templates"
-                className="font-semibold text-amber-800"
-              >
-                Ver planes →
-              </Link>
-            </div>
-          )}
-        </section>
-        <section className="border-t border-stone-200 pt-5">
-          <h2 className="font-bold">Idiomas de la carta</h2>
-          <p className="mt-1 text-sm text-slate-600">
-            Permite cambiar los controles públicos entre español e inglés. El
-            restaurante solo escribe en español.
-          </p>
-          <label className="mt-4 flex items-center gap-3">
-            <input
-              name="language_switcher_enabled"
-              type="checkbox"
-              defaultChecked={enabled}
-              className="h-5 w-5 accent-orange-600"
-            />
-            <span>Mostrar selector de idioma</span>
+          {wide && tab === "design" && <aside className="appearance-preview" aria-label="Vista previa del diseño seleccionado">
+            <div className="appearance-section-heading"><h2>Vista previa</h2><span>{MENU_TEMPLATES[selected].name}</span></div>
+            {!preview && <div className="appearance-phone"><TemplatePreview kind={selected} {...previewProps} /></div>}
+            <button type="button" className="workspace-button" onClick={() => setPreview(selected)}><Eye size={15} aria-hidden="true" /> Ampliar vista previa</button>
+          </aside>}
+        </div>
+      </section>
+
+      <section role="tabpanel" id="appearance-panel-languages" aria-labelledby="appearance-tab-languages" hidden={tab !== "languages"} tabIndex={0}>
+        <div className="appearance-settings">
+          <h2>Idiomas de la carta</h2>
+          <p className="appearance-help">Escribe en español y ofrece también tu carta en inglés.</p>
+          <label className="appearance-language-toggle">
+            <span><strong>Mostrar selector de idioma</strong><small>El cliente podrá elegir entre español e inglés.</small></span>
+            <input type="checkbox" checked={languageEnabled} disabled={saving} onChange={(event) => setLanguageEnabled(event.target.checked)} aria-label="Mostrar selector de idioma" />
           </label>
-          <button
-            type="button"
-            disabled={translating}
-            onClick={() =>
-              startTranslation(async () => {
+          <div className="appearance-translation">
+            <div><h3>Traducción del contenido</h3><p className="appearance-help">Al activar el selector y guardar se traduce la carta. También puedes actualizar la traducción aquí.</p></div>
+            <button type="button" disabled={translating || saving} className="workspace-button"
+              onClick={() => startTranslation(async () => {
                 try {
                   const result = await translateEntireMenu();
                   notifyAutomaticTranslation(result.translationStatus);
-                  if (result.translationStatus === "translated")
-                    toast.success(
-                      `${result.translatedCount} elementos traducidos`,
-                    );
+                  if (result.translationStatus === "translated") toast.success(`${result.translatedCount} elementos traducidos`);
                 } catch (error) {
-                  toast.error(
-                    error instanceof Error
-                      ? error.message
-                      : "No se pudo traducir la carta",
-                  );
+                  toast.error(error instanceof Error ? error.message : "No se pudo traducir la carta");
                 }
-              })
-            }
-            className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-cyan-400/20 bg-cyan-400/[.06] px-4 py-3 text-sm font-semibold text-cyan-800 disabled:opacity-50"
-          >
-            <Languages size={17} />
-            {translating
-              ? "Traduciendo carta…"
-              : "Traducir ahora toda la carta"}
-          </button>
-        </section>
-        <button className="w-full rounded-lg bg-orange-600 text-white px-4 py-3 font-semibold">
-          Guardar preferencias
-        </button>
-      </form>
-
-      {preview && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label={`Vista previa de ${MENU_TEMPLATES[preview].name}`}
-          className="fixed inset-0 z-50 grid place-items-center bg-black/80 p-4 backdrop-blur-md"
-          onClick={() => setPreview(null)}
-        >
-          <div
-            className="relative w-full max-w-[390px]"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <button
-              type="button"
-              onClick={() => setPreview(null)}
-              aria-label="Cerrar vista previa"
-              className="absolute -right-1 -top-12 grid h-10 w-10 place-items-center rounded-full bg-white text-slate-950"
-            >
-              <X size={20} />
-            </button>
-            <TemplatePreview
-              large
-              kind={preview}
-              restaurantName={restaurantName}
-              logoUrl={logoUrl}
-              currency={currency}
-              product={previewProduct}
-            />
-            <p className="mt-3 text-center text-sm font-semibold text-white">
-              {MENU_TEMPLATES[preview].name}
-            </p>
+              })}><Languages size={16} aria-hidden="true" />{translating ? "Traduciendo carta…" : "Traducir ahora toda la carta"}</button>
           </div>
         </div>
-      )}
-    </>
-  );
+      </section>
+      <section role="tabpanel" id="appearance-panel-logo" aria-labelledby="appearance-tab-logo" hidden={tab !== "logo"} tabIndex={0} className="appearance-logo">
+        {logoEditor}
+        <p className="appearance-help">El logo se guarda al confirmar la subida.</p>
+      </section>
+      <div className="appearance-savebar" hidden={tab === "logo" && !dirty}>
+        <p role="status">{saving ? "Guardando…" : dirty ? "Cambios sin guardar" : "Sin cambios pendientes"}</p>
+        <button type="submit" disabled={!dirty || saving || translating} className="workspace-button workspace-button-primary">{saving ? "Guardando…" : "Guardar preferencias"}</button>
+      </div>
+    </form>
+
+    {preview && <dialog ref={dialog} className="appearance-dialog" aria-label={`Vista previa de ${MENU_TEMPLATES[preview].name}`}
+      onCancel={() => setPreview(null)} onClose={() => setPreview(null)}
+      onClick={(event) => { if (event.target === event.currentTarget) setPreview(null); }}>
+      <div className="appearance-dialog-content">
+        <div className="appearance-section-heading"><h2>{MENU_TEMPLATES[preview].name}</h2><button type="button" autoFocus onClick={() => setPreview(null)} aria-label="Cerrar vista previa"><X size={20} /></button></div>
+        <TemplatePreview large kind={preview} {...previewProps} />
+        <p className="appearance-help">{MENU_TEMPLATES[preview].description}</p>
+      </div>
+    </dialog>}
+  </>;
 }
