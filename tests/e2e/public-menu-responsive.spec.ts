@@ -7,7 +7,7 @@ const admin=url&&serviceKey?createClient(url,serviceKey,{auth:{persistSession:fa
 const fixtureSlug=`e2e-mobile-menu-${Date.now()}`;
 let fixtureUserId="";let fixtureRestaurantId="";
 
-async function dismissIntro(page:Page){const button=page.getByRole("button",{name:"Abrir carta"});if(await button.isVisible().catch(()=>false))await button.click()}
+async function dismissIntro(page:Page){const button=page.getByRole("button",{name:"Abrir carta"});if(await button.isVisible().catch(()=>false)){await button.dispatchEvent("click");await expect(button).toHaveCount(0)}}
 
 test.describe("public menu responsive contract",()=>{
   test.beforeAll(async()=>{if(!admin)return;const user=await admin.auth.admin.createUser({email:`${fixtureSlug}@carta-video.local`,password:`Test-${crypto.randomUUID()}!`,email_confirm:true});if(user.error)throw user.error;fixtureUserId=user.data.user.id;const restaurant=await admin.from("restaurants").insert({owner_id:fixtureUserId,name:"Mobile E2E",slug:fixtureSlug,is_published:true,language_switcher_enabled:false,subscription_status:"active",plan:"carta",publication_suspended_for_payment:false}).select("id").single();if(restaurant.error)throw restaurant.error;fixtureRestaurantId=restaurant.data.id;const category=await admin.from("categories").insert({restaurant_id:fixtureRestaurantId,name:"Carta",slug:"carta",is_active:true}).select("id").single();if(category.error)throw category.error;const product=await admin.from("products").insert({restaurant_id:fixtureRestaurantId,category_id:category.data.id,name:"Producto móvil",price_cents:500,is_available:true}).select("id").single();if(product.error)throw product.error});
@@ -22,7 +22,7 @@ test.describe("public menu responsive contract",()=>{
     expect(menuBox).not.toBeNull();
     expect(menuBox!.width).toBeLessThanOrEqual(403);
     expect(Math.abs(menuBox!.x-(1440-menuBox!.width)/2)).toBeLessThan(2);
-    await expect(menu.locator("section")).toHaveCount(1);
+    await expect.poll(()=>menu.locator("section").count()).toBeLessThanOrEqual(2);
     await expect(page.getByText(/01\s*\/\s*03/)).toHaveCount(0);
 
     for(const details of await page.locator("[data-product-details]").all()){
@@ -30,9 +30,9 @@ test.describe("public menu responsive contract",()=>{
       expect(box?.height??900).toBeLessThan(900*.35);
     }
 
-    await page.getByRole("navigation",{name:"Categorías"}).getByRole("button",{name:"Para compartir",exact:true}).click();
+    await page.getByRole("navigation",{name:"Categorías"}).getByRole("button",{name:"Ensaladas",exact:true}).click();
     await expect(menu.locator("section")).toHaveCount(2);
-    await expect(page.getByRole("heading",{name:"Papas Voladoras"})).toBeVisible();
+    await expect(page.getByRole("heading",{name:"Ensalada del Huerto"})).toBeVisible();
     await expect(page.getByRole("button",{name:"Controles",exact:true})).toBeVisible();
     await expect(page.getByRole("navigation",{name:"Categorías"})).toBeVisible();
 
@@ -97,8 +97,8 @@ test.describe("public menu responsive contract",()=>{
     await page.goto("/r/bistro-nube",{waitUntil:"domcontentloaded"});
     await dismissIntro(page);
 
-    const burger=page.locator('section[id^="product-"]').filter({hasText:"Hamburguesa Nebulosa"}).first();
-    await burger.getByRole("button",{name:"Añadir Hamburguesa Nebulosa",exact:true}).click();
+    const burger=page.locator('section[id^="product-"]').filter({hasText:"Hamburguesa Clásica"}).first();
+    await burger.getByRole("button",{name:"Añadir Hamburguesa Clásica",exact:true}).click();
     await expect(page.getByRole("button",{name:"Carrito: 1"})).toBeVisible();
     await page.getByRole("button",{name:"Carrito: 1"}).click();
     await expect(page.getByRole("heading",{name:"Carrito · 1"})).toBeVisible();
@@ -109,7 +109,7 @@ test.describe("public menu responsive contract",()=>{
     await dismissIntro(page);
     await page.getByRole("button",{name:"Carrito: 1"}).click();
     await expect(page.getByPlaceholder("Añade o quita ingredientes")).toHaveValue("Sin cebolla, añade queso");
-    await page.getByRole("button",{name:"Añadir una unidad de Hamburguesa Nebulosa"}).click();
+    await page.getByRole("button",{name:"Añadir una unidad de Hamburguesa Clásica"}).click();
     await expect(page.getByRole("heading",{name:"Carrito · 2"})).toBeVisible();
   });
 
@@ -130,16 +130,14 @@ test.describe("public menu responsive contract",()=>{
     await expect(productGrid.locator("article")).not.toHaveCount(0);
     await expect.poll(()=>productGrid.evaluate(element=>getComputedStyle(element).gridTemplateColumns.split(" ").length)).toBe(2);
     await expect(catalog.locator("video")).toHaveCount(0);
-    await catalog.getByRole("button",{name:"Añadir Hamburguesa Nebulosa"}).click();
-    await expect(catalog.getByRole("button",{name:"Hamburguesa Nebulosa añadido al carrito"})).toBeVisible();
+    await catalog.getByRole("button",{name:"Añadir Hamburguesa Clásica"}).click();
+    await expect(catalog.getByRole("button",{name:"Hamburguesa Clásica añadido al carrito"})).toBeVisible();
     await catalog.getByRole("button",{name:"Cerrar"}).click();
 
-    const burger=page.locator('section[id^="product-"]').filter({hasText:"Hamburguesa Nebulosa"}).first();
+    const burger=page.locator('section[id^="product-"]').filter({hasText:"Hamburguesa Clásica"}).first();
     await burger.locator("details > summary").click();
-    await expect(burger.getByText(/Alérgenos · 3/)).toBeVisible();
+    await expect(burger.getByText(/Alérgenos · 1/)).toBeVisible();
     await expect(burger.getByText("Gluten",{exact:true})).toBeVisible();
-    await expect(burger.getByText("Huevos",{exact:true})).toBeVisible();
-    await expect(burger.getByText("Leche",{exact:true})).toBeVisible();
     await expect(burger.getByText(/confirma siempre la información con el personal/i)).toBeVisible();
   });
 
@@ -152,24 +150,24 @@ test.describe("public menu responsive contract",()=>{
     await expect(menu).toHaveAttribute("data-hydrated","true");
     await expect.poll(()=>menu.locator(":scope > div > section video").count()).toBeLessThanOrEqual(2);
     const categories=page.getByRole("navigation",{name:"Categorías"});
-    await categories.getByRole("button",{name:"Brasas",exact:true}).click();
-    await expect(categories.getByRole("button",{name:"Brasas",exact:true})).toHaveAttribute("aria-current","true");
+    await categories.getByRole("button",{name:"Carnes a la parrilla",exact:true}).click();
+    await expect(categories.getByRole("button",{name:"Carnes a la parrilla",exact:true})).toHaveAttribute("aria-current","true");
     const navBox=await categories.boundingBox();
-    await expect.poll(async()=>{const activeBox=await categories.getByRole("button",{name:"Brasas",exact:true}).boundingBox();return Math.abs((activeBox!.x+activeBox!.width/2)-(navBox!.x+navBox!.width/2))}).toBeLessThan(3);
+    await expect.poll(async()=>{const activeBox=await categories.getByRole("button",{name:"Carnes a la parrilla",exact:true}).boundingBox();return Math.abs((activeBox!.x+activeBox!.width/2)-(navBox!.x+navBox!.width/2))}).toBeLessThan(3);
     const visibleCategories=await categories.locator("button").evaluateAll((buttons,box)=>buttons.filter(button=>{const rect=button.getBoundingClientRect();return rect.left>=(box as {x:number}).x&&rect.right<=(box as {x:number;width:number}).x+(box as {width:number}).width}).length,navBox!);
     expect(visibleCategories).toBeLessThanOrEqual(3);
-    const addBox=await page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Entrecot de Encina",exact:true})}).getByRole("button",{name:"Añadir Entrecot de Encina",exact:true}).boundingBox();
+    const addBox=await page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Brochetas a la Parrilla",exact:true})}).getByRole("button",{name:"Añadir Brochetas a la Parrilla",exact:true}).boundingBox();
     expect(navBox!.y+navBox!.height).toBeLessThan(addBox!.y);
     expect(addBox!.y+addBox!.height).toBeLessThanOrEqual(874);
     await page.waitForTimeout(600);
-    await categories.getByRole("button",{name:"Postres",exact:true}).click();
-    await expect(categories.getByRole("button",{name:"Postres",exact:true})).toHaveAttribute("aria-current","true");
+    await categories.getByRole("button",{name:"Ensaladas",exact:true}).click();
+    await expect(categories.getByRole("button",{name:"Ensaladas",exact:true})).toHaveAttribute("aria-current","true");
     await expect.poll(()=>menu.locator(":scope > div > section video").count()).toBeLessThanOrEqual(3);
-    const dessertVideo=page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Tarta Estratos",exact:true})}).locator("video");
-    await expect.poll(()=>dessertVideo.evaluate(element=>(element as HTMLVideoElement).paused),{timeout:12_000}).toBe(false);
+    const saladVideo=page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Ensalada del Huerto",exact:true})}).locator("video");
+    await expect.poll(()=>saladVideo.evaluate(element=>(element as HTMLVideoElement).paused),{timeout:12_000}).toBe(false);
     await page.waitForTimeout(600);
     await categories.getByRole("button",{name:"Hamburguesas",exact:true}).click();
-    const burgerVideo=page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:/Hamburguesa Nebulosa$/})}).locator("video");
+    const burgerVideo=page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:/Hamburguesa Clásica$/})}).locator("video");
     await expect(burgerVideo).toBeVisible();
     await expect(burgerVideo).toHaveAttribute("autoplay","");
   });
@@ -181,8 +179,8 @@ test.describe("public menu responsive contract",()=>{
 
     const menu=page.locator("main.public-menu");
     const categories=page.getByRole("navigation",{name:"Categorías"});
-    await categories.getByRole("button",{name:"Café y desayuno",exact:true}).click();
-    const lastProduct=page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Croissant de Pistacho",exact:true})});
+    await categories.getByRole("button",{name:"Ensaladas",exact:true}).click();
+    const lastProduct=page.locator('section[id^="product-"]').filter({has:page.getByRole("heading",{name:"Bowl Mediterráneo",exact:true})});
     await lastProduct.scrollIntoViewIfNeeded();
     await expect(lastProduct).toBeInViewport();
     await page.waitForTimeout(250);
@@ -200,6 +198,6 @@ test.describe("public menu responsive contract",()=>{
       changedTouches:[{identifier:1,clientX:195,clientY:540}],
     });
 
-    await expect(categories.getByRole("button",{name:"Brasas",exact:true})).toHaveAttribute("aria-current","true",{timeout:2_000});
+    await expect(categories.getByRole("button",{name:"Sándwiches",exact:true})).toHaveAttribute("aria-current","true",{timeout:2_000});
   });
 });

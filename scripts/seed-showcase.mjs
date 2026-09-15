@@ -84,7 +84,7 @@ async function seed(ownerId){
     const {data:categories,error:categoryError}=await admin.from("categories").insert(restaurant.categories.map((category,index)=>({restaurant_id:saved.id,name:category.name,slug:category.slug,sort_order:index,is_active:true}))).select("id,slug");
     if(categoryError)throw categoryError;
     const categoryIds=new Map(categories.map(category=>[category.slug,category.id]));
-    const products=restaurant.products.map((product,index)=>({restaurant_id:saved.id,category_id:categoryIds.get(product.category),name:product.name,description:product.description,price_cents:product.priceCents,video_url:product.videoUrl,video_path:null,image_url:null,image_path:null,is_available:true,is_featured:index===0,sort_order:index}));
+    const products=restaurant.products.map((product,index)=>({restaurant_id:saved.id,category_id:categoryIds.get(product.category),name:product.name,description:product.description,price_cents:product.priceCents,allergens:product.allergens??[],video_url:product.videoUrl,video_path:null,image_url:null,image_path:null,is_available:true,is_featured:index===0,sort_order:index}));
     if(products.some(product=>!product.category_id))throw new Error(`Categoría desconocida en ${restaurant.slug}.`);
     const {error:productError}=await admin.from("products").insert(products);
     if(productError)throw productError;
@@ -126,12 +126,12 @@ async function appendMissingProducts(ownerId){
       if(!existingNames.has(product.name))continue;
       const categoryId=categoryIds.get(product.category);
       if(!categoryId)throw new Error(`Categoría desconocida en ${restaurant.slug}.`);
-      const {error}=await admin.from("products").update({category_id:categoryId,description:product.description,price_cents:product.priceCents,video_url:product.videoUrl,sort_order}).eq("restaurant_id",row.id).eq("name",product.name);
+      const {error}=await admin.from("products").update({category_id:categoryId,description:product.description,price_cents:product.priceCents,allergens:product.allergens??[],video_url:product.videoUrl,sort_order}).eq("restaurant_id",row.id).eq("name",product.name);
       if(error)throw error;
     }
     const missing=restaurant.products.map((product,index)=>({product,index})).filter(({product})=>!existingNames.has(product.name));
     if(missing.length){
-      const values=missing.map(({product,index})=>({restaurant_id:row.id,category_id:categoryIds.get(product.category),name:product.name,description:product.description,price_cents:product.priceCents,video_url:product.videoUrl,video_path:null,image_url:null,image_path:null,is_available:true,is_featured:false,sort_order:index}));
+      const values=missing.map(({product,index})=>({restaurant_id:row.id,category_id:categoryIds.get(product.category),name:product.name,description:product.description,price_cents:product.priceCents,allergens:product.allergens??[],video_url:product.videoUrl,video_path:null,image_url:null,image_path:null,is_available:true,is_featured:false,sort_order:index}));
       if(values.some(product=>!product.category_id))throw new Error(`Categoría desconocida en ${restaurant.slug}.`);
       await admin.from("products").insert(values).throwOnError();
     }
