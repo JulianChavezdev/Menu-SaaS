@@ -10,7 +10,7 @@ import { isMenuTemplateKey } from "@/lib/menu-templates";
 import {isMenuPublic,publicMenuRestaurant} from "@/lib/public-menu";
 
 const LANDING_PREVIEW_VIDEO =
-  "https://res.cloudinary.com/det6jfwzx/video/upload/c_limit,w_480/q_auto:eco/vc_h264/f_mp4/v1783700256/Generame_un_video_de_una_hambu_oo9gur.mp4";
+  "https://videos.pexels.com/video-files/8879540/8879540-hd_720_1366_25fps.mp4";
 const RETRY_DELAY_MS = 150;
 
 async function retryPublicQuery<T extends { error: unknown }>(
