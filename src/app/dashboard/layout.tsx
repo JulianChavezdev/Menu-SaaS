@@ -27,6 +27,8 @@ const links = [
   ["Suscripción", "/dashboard/billing"],
 ] as const;
 const orderingLinks = [
+  ["Recogidas QR", "/dashboard/pickup"],
+  ["Caja", "/operaciones/caja"],
   ["Mesas", "/dashboard/tables"],
   ["Historial", "/dashboard/orders"],
   ["Comandero", "/operaciones/comandero"],

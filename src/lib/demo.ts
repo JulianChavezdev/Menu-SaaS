@@ -1,7 +1,7 @@
 import type {Category,Product,Restaurant} from "./types";
 
 export const demoRestaurant:Restaurant={
-  id:"demo",name:"Bistro Nube",slug:"bistro-nube",
+  id:"demo",name:"Bistro Nube",slug:"bistro-nube",subscription_status:"active",menu_template:"noirluxe",
   description:"Una carta que flota entre sabores.",translations:{en:{description:"A menu floating among flavors."}},
   logo_url:null,cover_url:null,primary_color:"#7c3aed",secondary_color:"#ec4899",currency:"EUR",locale:"es-ES",is_published:true,language_switcher_enabled:true,
   phone:"+34 600 123 456",address:"Calle del Cielo, 12 · Madrid",email:"hola@bistronube.es",instagram_url:null,website_url:null,

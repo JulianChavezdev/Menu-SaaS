@@ -9,16 +9,16 @@ describe("showcase canónico",()=>{
     expect(showcase.restaurants).toHaveLength(1);
     expect(showcase.restaurants[0].slug).toBe("bistro-nube");
     expect(showcase.legacyDemoSlugs).toEqual(["pizzeria-roma","cafe-central","la-brasa","sushi-yume"]);
-    expect(showcase.restaurants[0].categories).toHaveLength(9);
-    expect(new Set(showcase.restaurants.flatMap(item=>item.products.map(product=>product.name))).size).toBe(28);
+    expect(showcase.restaurants[0].categories).toHaveLength(10);
+    expect(new Set(showcase.restaurants.flatMap(item=>item.products.map(product=>product.name))).size).toBe(32);
   });
 
   it("mantiene cada producto dentro de las categorías de su restaurante",()=>{
     for(const restaurant of showcase.restaurants){
       const categories=new Set(restaurant.categories.map(category=>category.slug));
       expect(restaurant.logoUrl).toMatch(/^\/demo\/logos\/[a-z-]+\.svg$/);
-      expect(restaurant.categories).toHaveLength(9);
-      expect(restaurant.products).toHaveLength(28);
+      expect(restaurant.categories).toHaveLength(10);
+      expect(restaurant.products).toHaveLength(32);
       for(const category of restaurant.categories){
         expect(restaurant.products.filter(product=>product.category===category.slug).length).toBeGreaterThanOrEqual(3);
       }
@@ -26,7 +26,7 @@ describe("showcase canónico",()=>{
       for(const product of restaurant.products){
         expect(categories.has(product.category)).toBe(true);
         expect(product.videoUrl).toMatch(/^https:\/\/(videos\.pexels\.com\/video-files\/|res\.cloudinary\.com\/)/);
-        expect(product.videoSourceUrl).toMatch(/^https:\/\/(www\.pexels\.com\/video\/|res\.cloudinary\.com\/)/);
+        expect(product.videoSourceUrl).toMatch(/^https:\/\/(www\.pexels\.com\/(?:es-es\/)?video\/|res\.cloudinary\.com\/)/);
         expect(product.recommendations?.length??0).toBeGreaterThan(0);
         expect(product.recommendations?.length??0).toBeLessThanOrEqual(3);
         for(const recommendation of product.recommendations??[]){expect(productNames.has(recommendation)).toBe(true);expect(recommendation).not.toBe(product.name)}

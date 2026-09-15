@@ -231,6 +231,7 @@ export default async function PublicMenu({
           : publicRestaurant
       }
       products={publicProducts as typeof demoProducts}
+      tableOrdering={!preview&&restaurant.ordering_enabled&&restaurant.pickup_enabled?{mode:"pickup",restaurantId:restaurant.id,tableCode:restaurant.id,tableName:"Recoger en caja",active:!restaurant.pickup_paused,expiresAt:null}:null}
       analyticsEnabled={!preview}
       introEnabled={!preview}
     />

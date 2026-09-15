@@ -12,7 +12,7 @@ export default async function WaiterPage({ searchParams }: { searchParams: Promi
   const [{ data: tables }, { data: categories }, { data: products }] = await Promise.all([
     supabase.from("restaurant_tables").select("id,name,is_active,sort_order").eq("restaurant_id", restaurant.id).eq("is_active", true).order("sort_order").order("name"),
     supabase.from("categories").select("id,name,sort_order").eq("restaurant_id", restaurant.id).eq("is_active", true).order("sort_order").order("name"),
-    supabase.from("products").select("id,category_id,name,price_cents,image_url,is_available,sort_order").eq("restaurant_id", restaurant.id).eq("is_available", true).order("sort_order").order("name"),
+    supabase.from("products").select("id,category_id,name,price_cents,image_url,is_available,sort_order,customization").eq("restaurant_id", restaurant.id).eq("is_available", true).order("sort_order").order("name"),
   ]);
 
   return <main className="min-h-screen bg-[#f4f1eb]"><WaiterPos restaurantName={restaurant.name} currency={restaurant.currency} tables={tables ?? []} categories={categories ?? []} products={products ?? []} initialTableId={(await searchParams).table} isManager={!["waiter", "kitchen"].includes(member.role)} /></main>;

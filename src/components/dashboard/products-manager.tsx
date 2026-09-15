@@ -1,5 +1,6 @@
 "use client";
 
+import {ProductCustomizationEditor} from "./product-customization-editor";
 import {useState,useTransition} from "react";
 import {ArrowDown,ArrowUp,Eye,EyeOff,Pencil,Sparkles,Trash2,X} from "lucide-react";
 import {toast} from "sonner";
@@ -15,12 +16,14 @@ function reordered(products:Product[],index:number,delta:number){
   return copy.map(item=>item.id);
 }
 
-export function ProductsManager({categories,products}:{categories:Category[];products:Product[]}){
+export function ProductsManager({categories,products,restaurantId}:{categories:Category[];products:Product[];restaurantId:string}){
+  const[customizing,setCustomizing]=useState<Product|null>(null);
   const[selected,setSelected]=useState<Product|null>(null);const[busy,start]=useTransition();
   const submit=(form:FormData)=>start(async()=>{const result=await submitProduct(form);if(!result.ok){toast.error(result.error);return}toast.success(selected?"Producto actualizado":"Producto creado");notifyAutomaticTranslation(result.translationStatus);setSelected(null)});
   const move=(index:number,delta:number)=>{const ids=reordered(products,index,delta);if(ids)start(async()=>{await reorderProducts(ids);toast.success("Orden actualizado")})};
 
   return <div className="grid gap-5 lg:grid-cols-[360px_1fr]">
+    {customizing&&<ProductCustomizationEditor key={customizing.id} product={customizing} restaurantId={restaurantId} onClose={()=>setCustomizing(null)}/>}
     <form key={selected?.id??"new"} action={submit} className="glass h-fit rounded-2xl p-4">
       <div className="flex items-center justify-between"><h2 className="font-bold">{selected?"Editar producto":"Nuevo producto"}</h2>{selected&&<button type="button" aria-label="Cancelar edición" onClick={()=>setSelected(null)}><X/></button>}</div>
       {selected&&<input type="hidden" name="id" value={selected.id}/>} 
@@ -43,6 +46,7 @@ export function ProductsManager({categories,products}:{categories:Category[];pro
         <div className="col-span-2 flex flex-wrap justify-end border-t border-stone-200 pt-1">
           <button disabled={!index||busy} aria-label="Subir producto" onClick={()=>move(index,-1)} className="p-2 disabled:opacity-30"><ArrowUp size={18}/></button>
           <button disabled={index===products.length-1||busy} aria-label="Bajar producto" onClick={()=>move(index,1)} className="p-2 disabled:opacity-30"><ArrowDown size={18}/></button>
+          <button type="button" className="mr-auto px-2 text-xs font-semibold" onClick={()=>setCustomizing(product)}>{product.customization?.enabled?"Configurar opciones":"Añadir personalización"}</button>
           <button aria-label={`Editar ${product.name}`} onClick={()=>setSelected(product)} className="p-2"><Pencil size={18}/></button>
           <button aria-label="Cambiar disponibilidad" onClick={()=>start(async()=>{await toggleProduct(product.id,!product.is_available);toast.success("Disponibilidad actualizada")})} className="p-2">{product.is_available?<Eye size={18}/>:<EyeOff size={18}/>}</button>
           <button aria-label={`Eliminar ${product.name}`} onClick={()=>{if(confirm(`¿Eliminar ${product.name}?`))start(async()=>{try{await deleteProduct(product.id);toast.success("Producto eliminado")}catch(error){toast.error(error instanceof Error?error.message:"Error")}})}} className="p-2 text-red-300"><Trash2 size={18}/></button>

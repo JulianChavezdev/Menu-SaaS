@@ -2,6 +2,7 @@ import {NextResponse} from "next/server";
 import {createClient} from "@supabase/supabase-js";
 import {getSupabaseSecretKey} from "@/lib/supabase/admin-env";
 import {publicOrderSchema} from "@/lib/table-ordering";
+import {priceOrderLines} from "@/lib/pickup-orders";
 
 const headers={"Cache-Control":"no-store","X-Content-Type-Options":"nosniff"};
 const reply=(body:unknown,status=200)=>NextResponse.json(body,{status,headers});
@@ -37,11 +38,10 @@ export async function POST(request:Request){
   const minuteAgo=new Date(now.getTime()-60_000).toISOString();
   const{count:recent}=await admin.from("dining_orders").select("id",{count:"exact",head:true}).eq("table_session_id",session.id).gte("created_at",minuteAgo);
   if((recent??0)>=5)return reply({error:"Se han enviado demasiados pedidos seguidos. Espera un minuto."},429);
-  const ids=parsed.data.lines.map(line=>line.productId);
-  const{data:products,error:productError}=await admin.from("products").select("id,name,price_cents,is_available,categories!inner(is_active)").eq("restaurant_id",restaurant.id).in("id",ids).eq("is_available",true).eq("categories.is_active",true);
+  const ids=[...new Set(parsed.data.lines.map(line=>line.productId))];
+  const{data:products,error:productError}=await admin.from("products").select("id,name,price_cents,is_available,customization,updated_at,categories!inner(is_active)").eq("restaurant_id",restaurant.id).in("id",ids).eq("is_available",true).eq("categories.is_active",true);
   if(productError||products?.length!==ids.length)return reply({error:"Algún producto ya no está disponible. Actualiza la carta."},409);
-  const byId=new Map(products.map(product=>[product.id,product]));
-  const items=parsed.data.lines.map(line=>{const product=byId.get(line.productId)!;return{restaurant_id:restaurant.id,product_id:product.id,product_name:product.name,unit_price_cents:product.price_cents,quantity:line.quantity,note:line.note||null,line_total_cents:product.price_cents*line.quantity}});
+  let items;try{items=priceOrderLines(parsed.data.lines,products,restaurant.id)}catch(error){return reply({error:error instanceof Error?error.message:"Revisa las opciones"},409)}
   const subtotal=items.reduce((sum,item)=>sum+item.line_total_cents,0);
   const{data:created,error:orderError}=await admin.rpc("create_public_dining_order",{target_restaurant:restaurant.id,target_table:table.id,target_session:session.id,target_request:parsed.data.requestId,target_subtotal:subtotal,target_customer_note:parsed.data.customerNote,target_items:items});
   const order=Array.isArray(created)?created[0]:created;

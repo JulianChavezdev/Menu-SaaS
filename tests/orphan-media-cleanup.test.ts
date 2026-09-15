@@ -7,10 +7,11 @@ describe("orphan media cleanup",()=>{
   it("defaults to a dry run and deletes only unreferenced files",()=>{
     expect(script).toContain('process.argv.includes("--apply")');
     expect(script).toContain('admin.from("restaurants").select("logo_url")');
-    expect(script).toContain('admin.from("products").select("video_path,image_path")');
+    expect(script).toContain('admin.from("products").select("video_path,image_path,customization")');
     expect(script).toContain('eq("action","restaurant.deletion_backup_created")');
     expect(script).toContain("retainedTrashPaths");
-    expect(script).toContain("allFiles.filter(file=>!referenced.has(file.path))");
+    expect(script).toContain("allFiles.filter(file=>!referenced.has(file.path)&&");
+    expect(script).toContain("Date.now()-new Date(file.createdAt).getTime()>24*60*60*1000");
     expect(script).toContain('if(!apply)');
   });
 });

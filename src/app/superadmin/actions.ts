@@ -45,7 +45,7 @@ export async function deleteRestaurant(form:FormData){
   const deletedAt=new Date().toISOString();
   const logoPath=storagePathFromPublicUrl(restaurant.logo_url,"restaurant-media");
   const prefix=`restaurants/${restaurant.id}/`;
-  const mediaPaths=[logoPath,...(products??[]).flatMap(product=>[product.video_path,product.image_path])].filter((path):path is string=>typeof path==="string"&&path.startsWith(prefix)&&!path.split("/").includes(".."));
+  const mediaPaths=[logoPath,...(products??[]).flatMap(product=>[product.video_path,product.image_path,...(product.customization?.groups??[]).flatMap((group:{options:{imageUrl?:string|null}[]})=>group.options.map(option=>storagePathFromPublicUrl(option.imageUrl??null,"restaurant-media")))])].filter((path):path is string=>typeof path==="string"&&path.startsWith(prefix)&&!path.split("/").includes(".."));
   const uniquePaths=[...new Set(mediaPaths)];
   const restoreUntil=restaurantRestoreDeadline(deletedAt).toISOString();
   await admin.from("superadmin_audit_log").insert({actor_user_id:user.id,restaurant_id:restaurant.id,action:"restaurant.deletion_backup_created",details:{deleted_at:deletedAt,restore_until:restoreUntil,restaurant_name:restaurant.name,slug:restaurant.slug,backup:{format:"carta-video.deleted-restaurant",version:2,restaurant,categories:categories??[],products:products??[],memberships:memberships??[],subscriptions:subscriptions??[],payments:payments??[],media_paths:uniquePaths}}}).throwOnError();

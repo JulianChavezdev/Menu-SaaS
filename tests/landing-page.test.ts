@@ -97,9 +97,9 @@ describe("landing pública", () => {
     expect(landingDemo).toContain("Desliza para descubrir");
     expect(landingDemo).toContain("Prepara tu selección");
   });
-  it("sirve un primer vídeo ligero de Cloudinary en el mockup", () => {
+  it("sirve el vídeo de la demo en el mockup", () => {
     expect(publicMenu).toContain("LANDING_PREVIEW_VIDEO");
-    expect(publicMenu).toContain("c_limit,w_480");
-    expect(publicMenu).toContain("q_auto:eco");
+    expect(publicMenu).toContain("8879540-hd_720_1366_25fps.mp4");
+
   });
 });

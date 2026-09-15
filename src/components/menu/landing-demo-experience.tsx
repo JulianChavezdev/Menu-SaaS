@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import {useMenuScrollLock} from "./use-menu-scroll-lock";
 import {
   ArrowRight,
   ChevronDown,
@@ -60,6 +61,7 @@ export function LandingDemoExperience({
       ? (initialTemplate as MenuTemplateKey)
       : DEFAULT_MENU_TEMPLATE,
   );
+  useMenuScrollLock();
   const templates = Object.values(MENU_TEMPLATES);
   return (
     <main className="h-svh overflow-hidden bg-[#0f0f0f] text-[#f5f0eb]">

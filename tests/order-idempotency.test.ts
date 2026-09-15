@@ -11,5 +11,5 @@ describe("order idempotency",()=>{
   it("enforces one request per table session",()=>expect(migration).toContain("dining_orders_session_request_unique"));
   it("stores the order and every line in one transaction",()=>{expect(migration).toContain("create_public_dining_order");expect(migration).toContain("jsonb_to_recordset");expect(migration).toContain("grant execute")});
   it("replays an existing response instead of inserting twice",()=>{expect(route).toContain("client_request_id");expect(route).toContain("replayed:true")});
-  it("reuses the identifier while retrying",()=>{expect(checkout).toContain("requestId.current??=crypto.randomUUID()");expect(checkout).toContain("requestId:requestId.current")});
+  it("reuses the identifier while retrying",()=>{expect(checkout).toContain("previous?.fingerprint===fingerprint");expect(checkout).toContain("requestId=previous.requestId")});
 });

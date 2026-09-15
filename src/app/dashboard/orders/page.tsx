@@ -2,10 +2,13 @@ import Link from "next/link";
 import { activeRestaurant } from "@/lib/permissions";
 import { orderStatusSchema, type OrderStatus } from "@/lib/table-ordering";
 import { OrderHistoryAction } from "@/components/dashboard/order-history-action";
+import type {OptionSnapshot} from "@/lib/product-customization";
 
 type OrderRow = {
   id: string;
   status: string;
+  fulfillment: "table"|"pickup";
+  payment_status: "paid"|"unpaid";
   subtotal_cents: number;
   customer_note: string | null;
   created_at: string;
@@ -18,6 +21,7 @@ type OrderRow = {
     product_name: string;
     quantity: number;
     note: string | null;
+    selected_options: OptionSnapshot[];
   }>;
 };
 const labels: Record<OrderStatus, string> = {
@@ -45,7 +49,7 @@ export default async function OrdersPage({
   let query = supabase
     .from("dining_orders")
     .select(
-      "id,status,subtotal_cents,customer_note,created_at,accepted_at,ready_at,delivered_at,restaurant_tables(name),dining_order_items(id,product_name,quantity,note)",
+      "id,status,fulfillment,payment_status,subtotal_cents,customer_note,created_at,accepted_at,ready_at,delivered_at,restaurant_tables(name),dining_order_items(id,product_name,quantity,note,selected_options)",
     )
     .eq("restaurant_id", restaurant.id)
     .order("created_at", { ascending: false })
@@ -119,8 +123,8 @@ export default async function OrdersPage({
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wide text-orange-700">
-                    #{order.id.slice(0, 6).toUpperCase()} ·{" "}
-                    {table?.name ?? "Mesa"}
+                    #{order.id.slice(0, order.fulfillment==="pickup"?8:6).toUpperCase()} ·{" "}
+                    {order.fulfillment==="pickup"?"Recoger en caja":table?.name ?? "Mesa"}
                   </p>
                   <p className="mt-1 text-xs text-slate-500">
                     {new Intl.DateTimeFormat("es-ES", {
@@ -132,6 +136,7 @@ export default async function OrdersPage({
                 </div>
                 <span className="bg-stone-100 px-2 py-1 text-xs font-bold text-slate-700">
                   {labels[parsed]}
+                  {order.fulfillment==="pickup"&&` · ${order.payment_status==="paid"?"Pagado":"Sin cobrar"}`}
                 </span>
               </div>
               <ul className="mt-3 border-y border-stone-100 py-3 text-sm">
@@ -140,6 +145,7 @@ export default async function OrdersPage({
                     <strong>
                       {item.quantity}× {item.product_name}
                     </strong>
+                    {item.selected_options?.map(option=><p key={option.optionId} className="text-xs text-slate-600">{option.groupName}: {option.name}</p>)}
                     {item.note && (
                       <span className="ml-2 text-xs text-amber-800">
                         {item.note}

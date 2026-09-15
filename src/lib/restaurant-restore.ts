@@ -1,6 +1,7 @@
 import {z} from "zod";
 import {DEFAULT_MENU_TEMPLATE,isMenuTemplateKey} from "./menu-templates";
 import {ALLERGEN_CODES} from "./allergens";
+import {customizationSchema,emptyCustomization} from "./product-customization";
 
 export const MAX_BACKUP_BYTES=5*1024*1024;
 const UUID=z.string().uuid();
@@ -34,6 +35,7 @@ const categorySchema=z.object({
 }).strip();
 
 const productSchema=z.object({
+  customization:customizationSchema.default(emptyCustomization),
   id:UUID,restaurant_id:UUID,category_id:UUID,name:z.string().trim().min(1).max(200),description:optionalText(3000),
   price_cents:z.number().int().min(0).max(100000000),video_url:optionalText(2048),video_path:optionalText(1024),
   image_url:optionalText(2048),image_path:optionalText(1024),allergens:z.array(z.enum(ALLERGEN_CODES)).max(14).default([]),is_available:z.boolean(),is_featured:z.boolean(),

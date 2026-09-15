@@ -448,6 +448,7 @@ function OrderCard({
               </strong>
               <div className="min-w-0">
                 <p className="font-bold">{item.name}</p>
+                {item.options?.map(option=><p key={option.optionId} className="mt-1 text-sm text-slate-700"><strong>{option.groupName}:</strong> {option.name}</p>)}
                 {item.note && (
                   <p className="mt-1 border-l-2 border-amber-500 pl-2 text-xs font-bold text-amber-900">
                     Modificación solicitada: {item.note}
@@ -470,6 +471,8 @@ function OrderCard({
           }).format(order.subtotalCents / 100)}
         </p>
         <div className="mt-4 grid gap-2">
+          {["pending","accepted"].includes(order.status)&&<button disabled={disabled} onClick={()=>move(order.id,"preparing")} className="min-h-11 border border-orange-500 px-4 py-2 text-sm font-bold text-orange-800">Empezar preparación</button>}
+          {order.status==="preparing"&&<p className="text-sm font-bold text-orange-800">En preparación</p>}
           {["pending", "accepted", "preparing"].includes(order.status) && (
             <>
               <button
@@ -495,7 +498,7 @@ function OrderCard({
               Cancelar comanda
             </button>
           )}
-          {order.status === "ready" && (
+          {order.status === "ready" && order.fulfillment!=="pickup" && (
             <button
               disabled={disabled}
               onClick={() => move(order.id, "delivered")}
@@ -504,6 +507,7 @@ function OrderCard({
               Entregado
             </button>
           )}
+          {order.status==="ready"&&order.fulfillment==="pickup"&&<p className="text-center text-sm font-bold text-emerald-800">Listo · Pendiente de cobro en caja</p>}
         </div>
       </div>
     </article>

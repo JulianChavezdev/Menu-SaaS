@@ -49,7 +49,7 @@ describe("mobile waiter POS", () => {
   });
 
   it("does not expose staff sessions as public table ordering", () => {
-    expect(publicMenu).not.toContain("tableOrdering=");
+    expect(publicMenu).toContain('mode:"pickup"');
     expect(publicMenu).not.toContain('from("table_sessions")');
   });
 });

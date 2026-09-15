@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import {ProductCustomizer} from "@/components/menu/product-customizer";
+import {addCartItem,cartLineKey,type CartLine} from "@/lib/menu-cart";
+import {resolveCustomization,type ProductCustomization,type CustomizationSelection} from "@/lib/product-customization";
 import { useMemo, useRef, useState, useTransition } from "react";
 import {
   ArrowLeft,
@@ -32,6 +35,7 @@ type Table = {
 };
 type Category = { id: string; name: string; sort_order: number };
 type Product = {
+  customization?:ProductCustomization;
   id: string;
   category_id: string;
   name: string;
@@ -40,7 +44,7 @@ type Product = {
   is_available: boolean;
   sort_order: number;
 };
-type Line = { productId: string; quantity: number; note: string };
+type Line = CartLine;
 
 export function WaiterPos({
   restaurantName,
@@ -65,6 +69,7 @@ export function WaiterPos({
   const [tableId, setTableId] = useState<string | undefined>(validInitial);
   const [categoryId, setCategoryId] = useState("");
   const [query, setQuery] = useState("");
+  const[customizing,setCustomizing]=useState<Product|null>(null);
   const [cart, setCart] = useState<Line[]>([]);
   const [generalNote, setGeneralNote] = useState("");
   const [cartOpen, setCartOpen] = useState(false);
@@ -81,7 +86,7 @@ export function WaiterPos({
     [currency],
   );
   const quantityByProduct = useMemo(
-    () => new Map(cart.map((line) => [line.productId, line.quantity])),
+    () => cart.reduce((counts,line)=>counts.set(line.productId,(counts.get(line.productId)??0)+line.quantity),new Map<string,number>()),
     [cart],
   );
   const categoryCovers = useMemo(
@@ -110,34 +115,24 @@ export function WaiterPos({
   );
   const cartDetails = cart.flatMap((line) => {
     const product = products.find((item) => item.id === line.productId);
-    return product ? [{ ...line, product }] : [];
+    if(!product)return[];
+    try{const resolved=resolveCustomization(product.customization,line.selection);return [{ ...line, product,lineKey:cartLineKey(line),unitPrice:product.price_cents+resolved.extraCents,options:resolved.options,invalid:false }];}
+    catch{return [{...line,product,lineKey:cartLineKey(line),unitPrice:product.price_cents,options:[],invalid:true}]}
   });
   const units = cart.reduce((sum, line) => sum + line.quantity, 0);
   const total = cartDetails.reduce(
-    (sum, line) => sum + line.product.price_cents * line.quantity,
+    (sum, line) => sum + line.unitPrice * line.quantity,
     0,
   );
   const selectedCategory = categories.find((item) => item.id === categoryId);
   const showingProducts = Boolean(categoryId || normalizedQuery);
 
-  function add(productId: string) {
-    setCart((current) => {
-      const existing = current.find((line) => line.productId === productId);
-      return existing
-        ? current.map((line) =>
-            line.productId === productId
-              ? { ...line, quantity: Math.min(20, line.quantity + 1) }
-              : line,
-          )
-        : [...current, { productId, quantity: 1, note: "" }];
-    });
-  }
-
+  function add(productId:string,selection?:CustomizationSelection){const product=products.find(p=>p.id===productId);if(product?.customization?.enabled&&!selection){setCustomizing(product);return}setCart(current=>addCartItem(current,productId,selection).map(l=>({...l,quantity:Math.min(20,l.quantity)})))}
   function change(productId: string, amount: number) {
     setCart((current) =>
       current.flatMap((line) => {
-        if (line.productId !== productId) return [line];
-        const quantity = line.quantity + amount;
+        if (cartLineKey(line) !== productId) return [line];
+        const quantity = Math.min(20,line.quantity + amount);
         return quantity > 0 ? [{ ...line, quantity }] : [];
       }),
     );
@@ -182,6 +177,7 @@ export function WaiterPos({
 
   return (
     <section className="min-h-[100dvh] bg-[#f4f1eb] pb-28 text-slate-950 md:min-h-screen md:pb-10">
+      {customizing&&<ProductCustomizer product={{...customizing,description:null,video_url:null,is_featured:false}} currency={currency} panel="#19201c" accent="#b8d8a4" onAccent="#111614" onClose={()=>setCustomizing(null)} onConfirm={selection=>{add(customizing.id,selection);setCustomizing(null)}}/>}
       <header className="sticky top-0 z-40 border-b-4 border-orange-600 bg-white px-3 pb-3 pt-[max(.75rem,env(safe-area-inset-top))] text-slate-950 shadow-sm md:px-6">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
@@ -204,6 +200,7 @@ export function WaiterPos({
           </div>
           <nav className="flex items-center gap-1" aria-label="Operaciones">
             <InstallOperationalApp name="Comandero" />
+            <Link href="/operaciones/caja" className="px-3 py-2 text-xs font-bold">Caja</Link>
             {isManager && <Link
               href="/dashboard/tables"
               data-hide-in-installed-app
@@ -480,7 +477,7 @@ export function WaiterPos({
               </button>
             </div>
             <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-4">
-              {cartDetails.map(({ product, productId, quantity, note }) => (
+              {cartDetails.map(({ product, lineKey:productId, quantity, note,unitPrice,options,invalid }) => (
                 <article
                   key={productId}
                   className="border-b border-slate-200 pb-4"
@@ -490,7 +487,7 @@ export function WaiterPos({
                       <h3 className="font-bold">{product.name}</h3>
                       <p className="mt-0.5 text-sm font-semibold text-orange-700">
                         {formatter.format(
-                          (product.price_cents * quantity) / 100,
+                          (unitPrice * quantity) / 100,
                         )}
                       </p>
                     </div>
@@ -514,12 +511,14 @@ export function WaiterPos({
                       </button>
                     </div>
                   </div>
+                  {options.map(o=><p key={o.optionId} className="mt-1 text-xs">{o.groupName}: {o.name}</p>)}
+                  {invalid&&<p role="alert" className="text-xs text-red-600">Las opciones han cambiado. Quita el producto y añádelo de nuevo.</p>}
                   <input
                     value={note}
                     onChange={(event) =>
                       setCart((current) =>
                         current.map((line) =>
-                          line.productId === productId
+                          cartLineKey(line) === productId
                             ? {
                                 ...line,
                                 note: event.target.value.slice(0, 300),
@@ -554,7 +553,7 @@ export function WaiterPos({
               </div>
               <button
                 type="button"
-                disabled={sending || !cart.length}
+                disabled={sending || !cart.length || cartDetails.some(line=>line.invalid)}
                 onClick={submit}
                 className="inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl bg-orange-500 px-4 py-3 font-black text-slate-950 disabled:opacity-50"
               >

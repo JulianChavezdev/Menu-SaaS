@@ -1,5 +1,6 @@
 "use client";
 
+import {useMenuScrollLock} from "./use-menu-scroll-lock";
 import {
   useCallback,
   useEffect,
@@ -28,6 +29,8 @@ import {
   X,
 } from "lucide-react";
 import type { Product, Restaurant } from "@/lib/types";
+import {ProductCustomizer} from "./product-customizer";
+import {resolveCustomization,type CustomizationSelection} from "@/lib/product-customization";
 import { preconnect, preload as preloadResource } from "react-dom";
 import { resolveMenuTemplate } from "@/lib/menu-templates";
 import { translatedField } from "@/lib/translations";
@@ -37,6 +40,7 @@ import { ProductMedia } from "@/components/menu/product-media";
 import { menuVideoPlaybackUrl } from "@/lib/menu-media";
 import {
   addCartItem,
+  cartLineKey,
   changeCartQuantity,
   parseCart,
   updateCartNote,
@@ -222,6 +226,7 @@ export function VideoMenu({
     "controls" | "menu" | "info" | "cart" | null
   >(null);
   const [cart, setCart] = useState<CartLine[]>([]);
+  const [customizing,setCustomizing]=useState<Product|null>(null);
   const [cartReady, setCartReady] = useState(false);
   const [controlsClearance, setControlsClearance] = useState(80);
   const [catalogAdded, setCatalogAdded] = useState<string | null>(null);
@@ -362,14 +367,15 @@ export function VideoMenu({
   );
   const cartDetails = cart.flatMap((line) => {
     const product = products.find((item) => item.id === line.productId);
-    return product ? [{ ...line, product }] : [];
+    if(!product)return[];
+    try{const resolved=resolveCustomization(product.customization,line.selection);return[{...line,product,lineKey:cartLineKey(line),unitPrice:product.price_cents+resolved.extraCents,options:resolved.options,invalid:""}]}catch(error){return[{...line,product,lineKey:cartLineKey(line),unitPrice:product.price_cents,options:[],invalid:error instanceof Error?error.message:"Revisa este producto"}]}
   });
   const cartQuantity = cartDetails.reduce(
     (total, line) => total + line.quantity,
     0,
   );
   const cartTotal = cartDetails.reduce(
-    (total, line) => total + line.product.price_cents * line.quantity,
+    (total, line) => total + line.unitPrice * line.quantity,
     0,
   );
   const trackVideoPlay = useCallback(
@@ -482,38 +488,12 @@ export function VideoMenu({
       document.documentElement.lang = "es";
     };
   }, [language]);
-  useEffect(() => {
-    const root = document.documentElement;
-    const body = document.body;
-    root.classList.add("public-menu-scroll-lock");
-    body.classList.add("public-menu-scroll-lock");
-    return () => {
-      root.classList.remove("public-menu-scroll-lock");
-      body.classList.remove("public-menu-scroll-lock");
-    };
-  }, []);
-  useEffect(() => {
-    const feed = feedRef.current;
-    if (!feed) return;
-    const containTouchAtEdge = (event: TouchEvent) => {
-      const start = gestureStart.current;
-      const touch = event.touches[0];
-      if (!start || !touch || blocksCategoryGesture(event.target)) return;
-      const movingDown = touch.clientY > start.y;
-      const movingUp = touch.clientY < start.y;
-      const atTop = feed.scrollTop <= 1;
-      const atBottom =
-        feed.scrollTop + feed.clientHeight >= feed.scrollHeight - 1;
-      if (event.cancelable && ((atTop && movingDown) || (atBottom && movingUp)))
-        event.preventDefault();
-    };
-    feed.addEventListener("touchmove", containTouchAtEdge, { passive: false });
-    return () => feed.removeEventListener("touchmove", containTouchAtEdge);
-  }, []);
+  useMenuScrollLock();
   useEffect(() => {
     setCart(parseCart(localStorage.getItem(cartKey)));
+    if(tableOrdering){try{const saved=JSON.parse(localStorage.getItem(`menuly:order:${tableOrdering.tableCode}`)??"null");if(saved?.token&&!['delivered','cancelled','rejected'].includes(saved.status))setPanel("cart")}catch{}}
     setCartReady(true);
-  }, [cartKey]);
+  }, [cartKey,tableOrdering]);
   useEffect(() => {
     if (cartReady) localStorage.setItem(cartKey, JSON.stringify(cart));
   }, [cart, cartKey, cartReady]);
@@ -835,8 +815,10 @@ export function VideoMenu({
       removeEventListener("online", resume);
     };
   }, [resumeActiveVideo]);
-  const addProduct = (productId: string) => {
-    setCart((current) => addCartItem(current, productId));
+  const addProduct = (productId: string, selection?:CustomizationSelection) => {
+    const product=products.find(p=>p.id===productId);
+    if(product?.customization?.enabled&&!selection){setCustomizing(product);return}
+    setCart((current) => addCartItem(current, productId,selection).map(line=>({...line,quantity:tableOrdering?Math.min(20,line.quantity):line.quantity})));
     if (analyticsEnabled)
       sendAnalytics({
         restaurantId: restaurant.id,
@@ -847,6 +829,7 @@ export function VideoMenu({
   };
   const addFromCatalog = (productId: string) => {
     addProduct(productId);
+    if(products.find(p=>p.id===productId)?.customization?.enabled)return;
     setCatalogAdded(productId);
     if (catalogFeedbackTimer.current)
       clearTimeout(catalogFeedbackTimer.current);
@@ -900,6 +883,7 @@ export function VideoMenu({
       className="public-menu fixed inset-0 h-[100dvh] touch-pan-y snap-y snap-mandatory overflow-y-auto overscroll-none scroll-smooth bg-[var(--theme-bg)] text-white [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:mx-auto md:max-w-[402px]"
     >
       <h1 className="sr-only">{restaurant.name}: carta en vídeo</h1>
+      {customizing&&<ProductCustomizer key={customizing.id} product={customizing} currency={restaurant.currency} language={language} panel={sidebarPanel} accent={sidebarAccent} onAccent={sidebarOnAccent} onClose={()=>setCustomizing(null)} onConfirm={selection=>{addProduct(customizing.id,selection);setCustomizing(null);setPanel("cart")}}/>}
       {introVisible && restaurant.logo_url && (
         <div
           data-menu-intro
@@ -1297,9 +1281,9 @@ export function VideoMenu({
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    {cartDetails.map(({ product, quantity, note }) => (
+                    {cartDetails.map(({ product, quantity, note,lineKey,unitPrice,options,invalid }) => (
                       <article
-                        key={product.id}
+                        key={lineKey}
                         className="border-b border-white/10 pb-4"
                       >
                         <div className="flex items-start justify-between gap-3">
@@ -1316,7 +1300,7 @@ export function VideoMenu({
                               style={{ color: sidebarAccent }}
                               className="mt-1 text-sm font-semibold"
                             >
-                              {currency.format(product.price_cents / 100)}
+                              {currency.format(unitPrice / 100)}
                             </p>
                           </div>
                           <div className="flex shrink-0 items-center rounded-full border border-white/15 bg-black/15 p-1">
@@ -1324,7 +1308,7 @@ export function VideoMenu({
                               aria-label={`Quitar una unidad de ${product.name}`}
                               onClick={() =>
                                 setCart((current) =>
-                                  changeCartQuantity(current, product.id, -1),
+                                  changeCartQuantity(current, lineKey, -1),
                                 )
                               }
                               className="grid h-8 w-8 place-items-center rounded-full hover:bg-white/10"
@@ -1336,13 +1320,16 @@ export function VideoMenu({
                             </span>
                             <button
                               aria-label={`Añadir una unidad de ${product.name}`}
-                              onClick={() => addProduct(product.id)}
+                              disabled={!!tableOrdering&&quantity>=20}
+                              onClick={() => setCart(current=>changeCartQuantity(current,lineKey,1).map(line=>({...line,quantity:tableOrdering?Math.min(20,line.quantity):line.quantity})))}
                               className="grid h-8 w-8 place-items-center rounded-full hover:bg-white/10"
                             >
                               <Plus size={16} />
                             </button>
                           </div>
                         </div>
+                        {options.length>0&&<ul className="mt-2 space-y-1 text-xs text-white/80">{options.map(o=><li key={o.optionId}>{o.groupName}: {o.name}{o.priceCents>0?` (+${currency.format(o.priceCents/100)})`:""}</li>)}</ul>}
+                        {invalid&&<p role="alert" className="mt-2 text-xs text-red-300">{invalid}. {language==="es"?"Quita este producto y vuelve a personalizarlo.":"Remove this item and customize it again."}</p>}
                         <label className="mt-3 block text-xs font-medium text-white/65">
                           {text.note}
                           <textarea
@@ -1352,7 +1339,7 @@ export function VideoMenu({
                               setCart((current) =>
                                 updateCartNote(
                                   current,
-                                  product.id,
+                                  lineKey,
                                   event.target.value,
                                 ),
                               )
@@ -1365,7 +1352,7 @@ export function VideoMenu({
                           onClick={() =>
                             setCart((current) =>
                               current.filter(
-                                (line) => line.productId !== product.id,
+                                (line) => cartLineKey(line) !== lineKey,
                               ),
                             )
                           }
@@ -1386,22 +1373,14 @@ export function VideoMenu({
                         {currency.format(cartTotal / 100)}
                       </strong>
                     </div>
-                    {tableOrdering ? (
-                      <TableOrderCheckout
-                        context={tableOrdering}
-                        lines={cart}
-                        language={language}
-                        accent={sidebarAccent}
-                        background={colors.background}
-                        onSent={() => setCart([])}
-                      />
-                    ) : (
+                    {!tableOrdering && (
                       <p className="mt-2 text-xs leading-relaxed text-white/55">
                         {text.saved}
                       </p>
                     )}
                   </div>
                 )}
+                {tableOrdering&&<TableOrderCheckout context={tableOrdering} lines={cart} language={language} accent={sidebarAccent} background={sidebarOnAccent} onSent={()=>setCart([])} invalid={cartDetails.some(l=>!!l.invalid)}/>}
               </div>
             ) : (
               <div className="mt-5 space-y-4 overflow-y-auto text-sm leading-relaxed text-white/70">

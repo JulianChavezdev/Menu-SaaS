@@ -111,10 +111,13 @@ describe("virtualización del feed de vídeo", () => {
   });
   it("encierra el desplazamiento en la carta para evitar el pull-to-refresh móvil", () => {
     const globalCss = readFileSync("src/app/globals.css", "utf8");
-    expect(menu).toContain('classList.add("public-menu-scroll-lock")');
+    const scrollLock=readFileSync("src/components/menu/use-menu-scroll-lock.ts","utf8");
+    expect(menu).toContain('useMenuScrollLock()');
+    expect(scrollLock).toContain('classList.add("public-menu-scroll-lock")');
     expect(menu).toContain("fixed inset-0 h-[100dvh] touch-pan-y");
-    expect(menu).toContain('addEventListener("touchmove", containTouchAtEdge, { passive: false })');
-    expect(menu).toContain("event.preventDefault()");
+    expect(scrollLock).toContain('addEventListener("touchmove",move,{passive:false,capture:true})');
+    expect(scrollLock).toContain("event.preventDefault()");
+    expect(scrollLock).toContain("element.scrollTop>0");
     expect(globalCss).toContain("html.public-menu-scroll-lock,body.public-menu-scroll-lock");
     expect(globalCss).toContain("overscroll-behavior:none");
   });

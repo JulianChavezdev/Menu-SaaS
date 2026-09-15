@@ -93,11 +93,12 @@ export async function transitionDiningOrder(
   });
   const { data: current, error: readError } = await admin
     .from("dining_orders")
-    .select("status,table_session_id")
+    .select("status,table_session_id,fulfillment")
     .eq("id", order.data)
     .eq("restaurant_id", restaurant.id)
     .maybeSingle();
   if (readError || !current) throw new Error("Pedido no encontrado.");
+  if(current.fulfillment==="pickup"&&next.data==="delivered")throw new Error("Confirma el cobro y la entrega desde Caja.");
   const from = orderStatusSchema.parse(current.status);
   if (!canTransitionOrder(from, next.data))
     throw new Error("Ese cambio de estado no está permitido.");

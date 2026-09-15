@@ -1,4 +1,5 @@
 import {z} from "zod";
+import {selectionSchema,selectionKey} from "./product-customization";
 
 export const ORDERING_SESSION_MINUTES=90;
 export const ACTIVE_ORDER_STATUSES=["pending","accepted","preparing","ready"] as const;
@@ -12,16 +13,17 @@ export const publicOrderSchema=z.object({
     productId:z.string().uuid(),
     quantity:z.number().int().min(1).max(20),
     note:z.string().trim().max(300).default(""),
+    selection:selectionSchema.default([]),
   })).min(1).max(30),
   customerNote:z.string().trim().max(300).default(""),
 }).superRefine((value,context)=>{
-  const unique=new Set(value.lines.map(line=>line.productId));
+  const unique=new Set(value.lines.map(line=>`${line.productId}/${selectionKey(line.selection)}`));
   if(unique.size!==value.lines.length)context.addIssue({code:"custom",path:["lines"],message:"No se permiten productos duplicados"});
 });
 
 const transitions:Record<OrderStatus,readonly OrderStatus[]>={
-  pending:["ready","rejected","cancelled"],
-  accepted:["ready","cancelled"],
+  pending:["preparing","ready","rejected","cancelled"],
+  accepted:["preparing","ready","cancelled"],
   preparing:["ready","cancelled"],
   ready:["delivered"],
   delivered:[],rejected:["pending"],cancelled:["pending"],

@@ -13,6 +13,12 @@ if(!url||!key){
 const supabase=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
 const randomId="00000000-0000-4000-8000-000000000000";
 const checks=[
+  {migration:"202609150001_customizable_pickup.sql",run:async()=>{const results=await Promise.all([
+    supabase.from("products").select("customization",{head:true}).limit(1),
+    supabase.from("restaurants").select("pickup_enabled,pickup_paused",{head:true}).limit(1),
+    supabase.from("dining_orders").select("fulfillment,payment_status,paid_at,paid_by,client_hash",{head:true}).limit(1),
+    supabase.from("dining_order_items").select("selected_options",{head:true}).limit(1),
+  ]);return{error:results.find(result=>result.error)?.error??null}}},
   {
     migration:"202607120002_language_switcher.sql",
     run:()=>supabase.from("restaurants").select("language_switcher_enabled",{head:true}).limit(1),

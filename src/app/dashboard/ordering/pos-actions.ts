@@ -3,6 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { z } from "zod";
+import {orderLineSchema,priceOrderLines} from "@/lib/pickup-orders";
+import {selectionKey} from "@/lib/product-customization";
 import { activeRestaurant } from "@/lib/permissions";
 import { getSupabaseSecretKey } from "@/lib/supabase/admin-env";
 import { canUseWaiter } from "@/lib/member-roles";
@@ -13,11 +15,7 @@ const staffOrderSchema = z.object({
   note: z.string().trim().max(300).default(""),
   lines: z
     .array(
-      z.object({
-        productId: z.string().uuid(),
-        quantity: z.number().int().min(1).max(20),
-        note: z.string().trim().max(300).default(""),
-      }),
+      orderLineSchema,
     )
     .min(1)
     .max(50),
@@ -29,7 +27,7 @@ export async function createStaffDiningOrder(input: StaffOrderInput) {
   const parsed = staffOrderSchema.safeParse(input);
   if (!parsed.success) throw new Error("Revisa la comanda antes de enviarla.");
   if (
-    new Set(parsed.data.lines.map((line) => line.productId)).size !==
+    new Set(parsed.data.lines.map((line) => `${line.productId}/${selectionKey(line.selection)}`)).size !==
     parsed.data.lines.length
   )
     throw new Error("Hay productos duplicados en la comanda.");
@@ -57,10 +55,10 @@ export async function createStaffDiningOrder(input: StaffOrderInput) {
     .maybeSingle();
   if (!table?.is_active) throw new Error("La mesa no está disponible.");
 
-  const productIds = parsed.data.lines.map((line) => line.productId);
+  const productIds = [...new Set(parsed.data.lines.map((line) => line.productId))];
   const { data: products, error: productsError } = await admin
     .from("products")
-    .select("id,name,price_cents,is_available,categories!inner(is_active)")
+    .select("id,name,price_cents,is_available,customization,updated_at,categories!inner(is_active)")
     .eq("restaurant_id", restaurant.id)
     .in("id", productIds)
     .eq("is_available", true)
@@ -115,19 +113,7 @@ export async function createStaffDiningOrder(input: StaffOrderInput) {
   }
   if (!session) throw new Error("No se pudo preparar la mesa.");
 
-  const byId = new Map(products.map((product) => [product.id, product]));
-  const items = parsed.data.lines.map((line) => {
-    const product = byId.get(line.productId)!;
-    return {
-      restaurant_id: restaurant.id,
-      product_id: product.id,
-      product_name: product.name,
-      unit_price_cents: product.price_cents,
-      quantity: line.quantity,
-      note: line.note || null,
-      line_total_cents: product.price_cents * line.quantity,
-    };
-  });
+  const items = priceOrderLines(parsed.data.lines,products,restaurant.id);
   const subtotal = items.reduce((sum, item) => sum + item.line_total_cents, 0);
   const { data: result, error } = await admin.rpc(
     "create_public_dining_order",

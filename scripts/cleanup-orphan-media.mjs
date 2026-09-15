@@ -24,7 +24,7 @@ async function collectFiles(prefix){
   const files=[];
   for(const item of await listAll(prefix)){
     const path=`${prefix}/${item.name}`;
-    if(item.id)files.push({path,bytes:Number(item.metadata?.size??0)});
+    if(item.id)files.push({path,bytes:Number(item.metadata?.size??0),createdAt:item.created_at});
     else files.push(...await collectFiles(path));
   }
   return files;
@@ -38,16 +38,16 @@ function logoPath(urlValue){
 const root=await listAll("restaurants");
 const restaurantFolders=root.filter(item=>!item.id&&/^[0-9a-f-]{36}$/i.test(item.name)).map(item=>item.name);
 const trashCutoff=new Date(Date.now()-30*24*60*60*1000).toISOString();
-const [{data:restaurants,error:restaurantError},{data:products,error:productError},{data:trashBackups,error:trashError}]=await Promise.all([admin.from("restaurants").select("logo_url"),admin.from("products").select("video_path,image_path"),admin.from("superadmin_audit_log").select("details").eq("action","restaurant.deletion_backup_created").gte("created_at",trashCutoff)]);
+const [{data:restaurants,error:restaurantError},{data:products,error:productError},{data:trashBackups,error:trashError}]=await Promise.all([admin.from("restaurants").select("logo_url"),admin.from("products").select("video_path,image_path,customization"),admin.from("superadmin_audit_log").select("details").eq("action","restaurant.deletion_backup_created").gte("created_at",trashCutoff)]);
 if(restaurantError||productError||trashError)throw restaurantError??productError??trashError;
 const retainedTrashPaths=(trashBackups??[]).flatMap(item=>{const paths=item.details?.backup?.media_paths;return Array.isArray(paths)?paths.filter(path=>typeof path==="string"):[]});
 const referenced=new Set([
   ...(restaurants??[]).map(item=>logoPath(item.logo_url)),
-  ...(products??[]).flatMap(item=>[item.video_path,item.image_path]),
+  ...(products??[]).flatMap(item=>[item.video_path,item.image_path,...(item.customization?.groups??[]).flatMap(group=>(group.options??[]).map(option=>logoPath(option.imageUrl)))]),
   ...retainedTrashPaths,
 ].filter(Boolean));
 const allFiles=(await Promise.all(restaurantFolders.map(id=>collectFiles(`restaurants/${id}`)))).flat();
-const orphanFiles=allFiles.filter(file=>!referenced.has(file.path));
+const orphanFiles=allFiles.filter(file=>!referenced.has(file.path)&&Date.now()-new Date(file.createdAt).getTime()>24*60*60*1000);
 const bytes=orphanFiles.reduce((total,file)=>total+file.bytes,0);
 console.log(`${orphanFiles.length} archivos sin referencia · ${(bytes/1024/1024).toFixed(2)} MB`);
 if(!apply){console.log("Simulación: añade --apply para eliminarlos.");process.exit(0)}
