@@ -21,6 +21,7 @@ beforeAll(async()=>{
   await db.exec(migration("202608200001_order_idempotency"));
   await db.exec(migration("202609150001_customizable_pickup"));
   await db.exec(migration("202609150002_restaurant_order_settings"));
+  await db.exec(migration("202609160001_order_payment_confirmation"));
 },30000);
 afterAll(()=>db.close());
 
@@ -33,14 +34,20 @@ async function fixture(timing="after"){
  await db.query("insert into auth.users(id) values($1)",[actor]);await db.query("insert into restaurant_members values($1,$2,'kitchen')",[restaurant,actor]);
  await db.query("insert into restaurant_tables(id,restaurant_id,name,public_code) values($1,$2,'Mesa 1',$3)",[table,restaurant,code]);
  const items=[{product_id:product,product_name:"Ensalada",unit_price_cents:850,quantity:2,note:"Sin hielo",line_total_cents:1700,selected_options:[{groupId:crypto.randomUUID(),optionId:crypto.randomUUID(),groupName:"Frutas",name:"Mango",priceCents:50}],product_updated_at:result.rows[0].updated_at.toISOString()}];
- return{restaurant,table,code,actor,product,items};
+ return{restaurant,table,code,actor,product,items,timing};
 }
 async function submit(f:Awaited<ReturnType<typeof fixture>>,request=crypto.randomUUID(),hash="device"){
- const result=await db.query<{result:{order_id:string;replayed:boolean;payment_timing:string}}>("select create_table_qr_order($1,$2,'',$3,$4) as result",[f.code,request,JSON.stringify(f.items),hash]);return result.rows[0].result;
+ const result=await db.query<{result:{order_id:string;replayed:boolean;payment_timing:string}}>("select create_table_qr_order($1,$2,'',$3,$4,$5) as result",[f.code,request,JSON.stringify(f.items),hash,f.timing]);return result.rows[0].result;
 }
 async function context(code:string){return (await db.query<{result:{active:boolean}}>("select table_ordering_context($1) as result",[code])).rows[0].result}
 async function windowAt(restaurant:string,time:string){return (await db.query("select * from restaurant_ordering_window($1,$2)",[restaurant,time])).rows}
 describe("restaurant QR service in PostgreSQL",()=>{
+ it("rejects changed payment terms atomically in both directions",async()=>{
+  for(const timing of ["before","after"]){const f=await fixture(timing);await db.query("update restaurants set payment_timing=$2 where id=$1",[f.restaurant,timing==="before"?"after":"before"]);await expect(submit(f)).rejects.toThrow("payment_settings_changed");expect((await db.query("select id from dining_orders where table_id=$1",[f.table])).rows).toHaveLength(0);}
+ });
+ it("stores SQL and HTML payloads as inert text",async()=>{
+  const f=await fixture();f.items[0].note="'); DROP TABLE dining_orders; -- <img src=x onerror=alert(1)>";const order=await submit(f);const result=await db.query<{note:string}>("select note from dining_order_items where order_id=$1",[order.order_id]);expect(result.rows[0].note).toBe(f.items[0].note);
+ });
  it("opens and closes at exact local boundaries, including overnight and split shifts",async()=>{
   const f=await fixture();const hours=fullWeek.map(h=>({...h,periods:h.day===1?[{start:"12:00",end:"15:00"},{start:"20:00",end:"02:00"}]:[]}));
   await db.query("update restaurants set opening_hours=$2 where id=$1",[f.restaurant,JSON.stringify(hours)]);
@@ -106,7 +113,7 @@ describe("restaurant QR service in PostgreSQL",()=>{
   const f=await fixture(),request=crypto.randomUUID();await submit(f,request);for(let i=0;i<4;i++)await submit(f);await expect(submit(f)).rejects.toThrow("rate_limit");expect((await submit(f,request)).replayed).toBe(true);
  });
  it("does not grant public order creation or payment and retires pickup creation",async()=>{
-  for(const signature of ['create_table_qr_order(uuid,uuid,text,jsonb,text)','record_order_payment(uuid,uuid,uuid,text)'])for(const role of ['anon','authenticated'])expect((await db.query<{allowed:boolean}>("select has_function_privilege($1,$2,'execute') as allowed",[role,signature])).rows[0].allowed).toBe(false);
+  for(const signature of ['create_table_qr_order(uuid,uuid,text,jsonb,text,text)','record_order_payment(uuid,uuid,uuid,text)'])for(const role of ['anon','authenticated'])expect((await db.query<{allowed:boolean}>("select has_function_privilege($1,$2,'execute') as allowed",[role,signature])).rows[0].allowed).toBe(false);
   expect((await db.query<{allowed:boolean}>("select has_function_privilege('service_role','create_pickup_order(uuid,uuid,text,jsonb,text)','execute') as allowed")).rows[0].allowed).toBe(false);
  });
 });

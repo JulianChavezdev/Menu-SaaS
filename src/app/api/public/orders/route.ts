@@ -30,6 +30,7 @@ export async function POST(request:Request){
   if(contextError||!context)return reply({error:"Mesa no disponible."},404);
   const{data:existing}=await admin.from("dining_orders").select("id,public_token,status,payment_status,payment_timing").eq("table_id",context.tableId).eq("order_source","table_qr").eq("client_request_id",parsed.data.requestId).maybeSingle();
   if(existing)return reply({order:{number:existing.id.slice(0,8).toUpperCase(),token:existing.public_token,status:existing.status,paymentStatus:existing.payment_status,paymentTiming:existing.payment_timing},replayed:true});
+  if(parsed.data.expectedPaymentTiming!==context.paymentTiming)return reply({code:"payment_settings_changed",paymentTiming:context.paymentTiming,error:"Ha cambiado el momento de pago. Actualiza la carta, revisa las condiciones y confirma de nuevo."},409);
   if(!context.active)return reply({error:"Esta mesa no acepta pedidos ahora. Consulta el horario o avisa al personal."},409);
   const ids=[...new Set(parsed.data.lines.map(line=>line.productId))];
   const{data:products,error}=await admin.from("products").select("id,name,price_cents,customization,updated_at,categories!inner(is_active)").eq("restaurant_id",context.restaurantId).in("id",ids).eq("is_available",true).eq("categories.is_active",true);
@@ -37,7 +38,8 @@ export async function POST(request:Request){
   let items;try{items=priceOrderLines(parsed.data.lines,products,context.restaurantId)}catch(error){return reply({error:error instanceof Error?error.message:"Revisa las opciones."},409)}
   const ip=request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()??"unknown";
   const clientHash=createHmac("sha256",key).update(context.restaurantId+":"+context.tableId+":"+new Date().toISOString().slice(0,10)+":"+ip).digest("hex");
-  const{data:order,error:orderError}=await admin.rpc("create_table_qr_order",{target_table_code:parsed.data.tableCode,target_request:parsed.data.requestId,target_note:parsed.data.customerNote,target_items:items,target_client_hash:clientHash});
+  const{data:order,error:orderError}=await admin.rpc("create_table_qr_order",{target_table_code:parsed.data.tableCode,target_request:parsed.data.requestId,target_note:parsed.data.customerNote,target_items:items,target_client_hash:clientHash,target_payment_timing:parsed.data.expectedPaymentTiming});
+  if(orderError?.message.includes("payment_settings_changed"))return reply({code:"payment_settings_changed",error:"Ha cambiado el momento de pago. Revisa las condiciones y confirma de nuevo."},409);
   if(orderError||!order)return reply({error:orderError?.message.includes("rate_limit")?"Demasiados pedidos seguidos. Espera un minuto.":"No se pudo aceptar el pedido. Revisa el horario y la disponibilidad."},orderError?.message.includes("rate_limit")?429:409);
   return reply({order:{number:order.order_id.slice(0,8).toUpperCase(),token:order.order_public_token,status:order.order_status,paymentStatus:order.payment_status,paymentTiming:order.payment_timing},replayed:order.replayed},order.replayed?200:201);
 }

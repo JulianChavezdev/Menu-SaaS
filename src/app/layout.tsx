@@ -16,6 +16,8 @@ import {
   Righteous,
 } from "next/font/google";
 
+// Nonces must be generated per response, including public and authentication pages.
+export const dynamic="force-dynamic";
 const baseUrl = normalizedAppUrl();
 const noirSans = Jost({
   subsets: ["latin"],

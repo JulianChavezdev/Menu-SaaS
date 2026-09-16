@@ -9,6 +9,7 @@ export type OrderStatus=z.infer<typeof orderStatusSchema>;
 export const publicOrderSchema=z.object({
   tableCode:z.string().uuid(),
   requestId:z.string().uuid(),
+  expectedPaymentTiming:z.enum(["before","after"]).optional(),
   lines:z.array(z.object({
     productId:z.string().uuid(),
     quantity:z.number().int().min(1).max(20),

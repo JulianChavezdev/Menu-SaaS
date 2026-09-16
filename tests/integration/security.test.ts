@@ -59,6 +59,17 @@ suite("Supabase security hardening",()=>{
       if(signIn.error)throw signIn.error;
       const billingChange=await owner.from("restaurants").update({subscription_status:"canceled"}).eq("id",createdRestaurants[0]);
       expect(billingChange.error).not.toBeNull();
+      await admin.from("restaurants").update({is_published:true}).in("id",createdRestaurants).throwOnError();
+      const anonymousSettings=await anonymous.from("restaurants").select("id,owner_id,payment_timing").in("id",createdRestaurants);
+      expect(anonymousSettings.error).toBeNull();expect(anonymousSettings.data).toEqual([]);
+      const otherSettings=await owner.from("restaurants").select("id").eq("id",createdRestaurants[1]);
+      expect(otherSettings.data).toEqual([]);
+      const ownSettings=await owner.from("restaurants").select("id").eq("id",createdRestaurants[0]);
+      expect(ownSettings.data).toEqual([{id:createdRestaurants[0]}]);
+      const forgedAccess=await owner.from("restaurants").insert({owner_id:createdUsers[0],name:"Forged",slug:`forged-${stamp}`,subscription_status:"active"});
+      expect(forgedAccess.error).not.toBeNull();
+      const publicationChange=await owner.from("restaurants").update({publication_suspended_for_payment:true}).eq("id",createdRestaurants[0]);
+      expect(publicationChange.error).not.toBeNull();
       const membershipEscalation=await owner.from("restaurant_members").insert({restaurant_id:createdRestaurants[1],user_id:createdUsers[0],role:"owner"});
       expect(membershipEscalation.error).not.toBeNull();
 

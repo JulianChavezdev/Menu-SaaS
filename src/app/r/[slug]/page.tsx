@@ -217,7 +217,7 @@ export default async function PublicMenu({
       }),
   }));
   let tableOrdering=null;
-  if(!preview&&z.string().uuid().safeParse(query.mesa).success){const {data}=await supabase.rpc("table_ordering_context",{target_code:query.mesa});if(data?.restaurantId===restaurant.id&&data.enabled)tableOrdering={tableCode:data.tableCode,tableName:data.tableName,active:data.active,expiresAt:data.expiresAt,paymentTiming:data.paymentTiming};}
+  if(!preview&&z.string().uuid().safeParse(query.mesa).success){const {data}=await supabase.rpc("table_ordering_context",{target_code:query.mesa});if(data?.restaurantId===restaurant.id)tableOrdering={tableCode:data.tableCode,tableName:data.tableName,enabled:data.enabled,active:data.active,expiresAt:data.expiresAt,paymentTiming:data.paymentTiming};}
   const publicRestaurant = publicMenuRestaurant(restaurant);
   const publicProducts = preview
     ? productsWithRecommendations.map((product, index) =>

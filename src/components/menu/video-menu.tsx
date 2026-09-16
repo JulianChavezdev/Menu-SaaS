@@ -37,6 +37,8 @@ import { translatedField } from "@/lib/translations";
 import { ThemeVectors } from "@/components/menu/theme-vectors";
 import type { AnalyticsEvent } from "@/lib/analytics";
 import { ProductMedia } from "@/components/menu/product-media";
+import {useTableOrdering} from "./use-table-ordering";
+import {safeExternalUrl} from "@/lib/safe-url";
 import { menuVideoPlaybackUrl } from "@/lib/menu-media";
 import {
   addCartItem,
@@ -188,7 +190,7 @@ export function VideoMenu({
   products: rawProducts,
   analyticsEnabled = true,
   introEnabled = true,
-  tableOrdering = null,
+  tableOrdering: initialTableOrdering = null,
 }: {
   restaurant: Restaurant;
   products: Product[];
@@ -196,6 +198,7 @@ export function VideoMenu({
   introEnabled?: boolean;
   tableOrdering?: TableOrderingContext | null;
 }) {
+  const tableOrdering=useTableOrdering(initialTableOrdering);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const sectionRefs = useRef<(HTMLElement | null)[]>([]);
   const feedRef = useRef<HTMLElement | null>(null);
@@ -489,11 +492,12 @@ export function VideoMenu({
     };
   }, [language]);
   useMenuScrollLock();
+  const orderingTableCode = tableOrdering?.tableCode;
   useEffect(() => {
     setCart(parseCart(localStorage.getItem(cartKey)));
-    if(tableOrdering){try{const saved=JSON.parse(localStorage.getItem(`menuly:order:${tableOrdering.tableCode}`)??"null");if(saved?.token&&(!['delivered','cancelled','rejected'].includes(saved.status)||(saved.status==='delivered'&&saved.paymentStatus!=='paid')))setPanel("cart")}catch{}}
+    if(orderingTableCode){try{const saved=JSON.parse(localStorage.getItem(`menuly:order:${orderingTableCode}`)??"null");if(saved?.token&&(!['delivered','cancelled','rejected'].includes(saved.status)||(saved.status==='delivered'&&saved.paymentStatus!=='paid')))setPanel("cart")}catch{}}
     setCartReady(true);
-  }, [cartKey,tableOrdering]);
+  }, [cartKey,orderingTableCode]);
   useEffect(() => {
     if (cartReady) localStorage.setItem(cartKey, JSON.stringify(cart));
   }, [cart, cartKey, cartReady]);
@@ -1422,7 +1426,7 @@ export function VideoMenu({
                       className="rounded-full border border-white/15 px-4 py-2"
                       target="_blank"
                       rel="noreferrer"
-                      href={restaurant.instagram_url}
+                      href={safeExternalUrl(restaurant.instagram_url)??undefined}
                       onClick={() =>
                         analyticsEnabled &&
                         sendAnalytics({
@@ -1440,7 +1444,7 @@ export function VideoMenu({
                       className="rounded-full border border-white/15 px-4 py-2"
                       target="_blank"
                       rel="noreferrer"
-                      href={restaurant.website_url}
+                      href={safeExternalUrl(restaurant.website_url)??undefined}
                       onClick={() =>
                         analyticsEnabled &&
                         sendAnalytics({

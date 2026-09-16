@@ -9,7 +9,6 @@ const layout = readFileSync("src/app/layout.tsx", "utf8");
 const mediaCheck = readFileSync("scripts/check-showcase-media.mjs", "utf8");
 const dashboardLayout = readFileSync("src/app/dashboard/layout.tsx", "utf8");
 const authLayout = readFileSync("src/app/(auth)/layout.tsx", "utf8");
-const nextConfig = readFileSync("next.config.ts", "utf8");
 
 describe("release readiness", () => {
   it("requires production HTTPS and a superadmin allowlist", () => {
@@ -66,10 +65,10 @@ describe("release readiness", () => {
   });
 
   it("restricts executable and embedded content", () => {
-    expect(nextConfig).toContain('"Content-Security-Policy"');
-    expect(nextConfig).toContain("object-src 'none'");
-    expect(nextConfig).toContain("frame-ancestors 'self'");
-    expect(nextConfig).toContain("https://videos.pexels.com");
-    expect(nextConfig).toContain("https://api.cloudinary.com");
+    expect(readFileSync("src/middleware.ts","utf8")).toContain('"Content-Security-Policy"');
+    expect(readFileSync("src/lib/content-security-policy.ts","utf8")).toContain("object-src 'none'");
+    expect(readFileSync("src/lib/content-security-policy.ts","utf8")).toContain("frame-ancestors 'self'");
+    expect(readFileSync("src/lib/content-security-policy.ts","utf8")).toContain("https://videos.pexels.com");
+    expect(readFileSync("src/lib/content-security-policy.ts","utf8")).toContain("https://api.cloudinary.com");
   });
 });

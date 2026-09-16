@@ -1,28 +1,15 @@
-import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { z } from "zod";
-import { recordPlatformAlert } from "@/lib/platform-alerts";
-import { getSupabaseSecretKey } from "@/lib/supabase/admin-env";
+import {NextResponse} from "next/server";
+import {createClient} from "@/lib/supabase/server";
+import {recordPlatformAlert} from "@/lib/platform-alerts";
+import {signupPlan} from "@/lib/signup-plans";
 
-const inputSchema = z.object({ userId: z.string().uuid() });
-
-export async function POST(request: Request) {
-  const parsed = inputSchema.safeParse(await request.json().catch(() => null));
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = getSupabaseSecretKey();
-  if (!parsed.success || !url || !key) return NextResponse.json({ ok: false }, { status: 400 });
-
-  const admin = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
-  const { data, error } = await admin.auth.admin.getUserById(parsed.data.userId);
-  if (error || !data.user) return NextResponse.json({ ok: false }, { status: 404 });
-  const accountAge = Date.now() - new Date(data.user.created_at).getTime();
-  if (!Number.isFinite(accountAge) || accountAge > 15 * 60_000) return NextResponse.json({ ok: true });
-
-  await recordPlatformAlert({
-    kind: "registration",
-    title: "Nueva cuenta registrada",
-    message: "Una nueva cuenta se ha registrado en Menuly.",
-    details: { accountId: data.user.id, plan: data.user.user_metadata?.plan_interest ?? "carta" },
-  });
-  return NextResponse.json({ ok: true }, { status: 202 });
+export async function POST(request:Request){
+  const headers={"Cache-Control":"no-store"};
+  try{const origin=request.headers.get("origin");if(origin&&new URL(origin).origin!==new URL(request.url).origin)return NextResponse.json({ok:false},{status:403,headers})}catch{return NextResponse.json({ok:false},{status:403,headers})}
+  const client=await createClient();const {data:{user},error}=await client.auth.getUser();
+  if(error||!user)return NextResponse.json({ok:false},{status:401,headers});
+  // The authenticated identity is authoritative; ignore any userId supplied by a caller.
+  const age=Date.now()-new Date(user.created_at).getTime();
+  if(Number.isFinite(age)&&age>=0&&age<=15*60_000)await recordPlatformAlert({kind:"registration",title:"Nueva cuenta registrada",message:"Una nueva cuenta se ha registrado en Menuly.",details:{accountId:user.id,plan:signupPlan(user.user_metadata?.plan_interest)}});
+  return NextResponse.json({ok:true},{status:202,headers});
 }

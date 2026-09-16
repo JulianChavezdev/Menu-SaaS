@@ -1,4 +1,5 @@
 "use server";
+import {safeExternalUrl} from "@/lib/safe-url";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -639,7 +640,7 @@ export async function updateRestaurantLinks(form: FormData) {
   const instagram_url = String(form.get("instagram_url") || "").trim();
   const website_url = String(form.get("website_url") || "").trim();
   for (const value of [instagram_url, website_url])
-    if (value && !/^https?:\/\//i.test(value))
+    if (value && !safeExternalUrl(value))
       throw new Error("Las URLs deben empezar por http:// o https://");
   await supabase
     .from("restaurants")

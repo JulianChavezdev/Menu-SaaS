@@ -1,4 +1,5 @@
 import {z} from "zod";
+import {safeExternalUrl} from "./safe-url";
 import {DEFAULT_MENU_TEMPLATE,isMenuTemplateKey} from "./menu-templates";
 import {ALLERGEN_CODES} from "./allergens";
 import {customizationSchema,emptyCustomization} from "./product-customization";
@@ -6,6 +7,7 @@ import {customizationSchema,emptyCustomization} from "./product-customization";
 export const MAX_BACKUP_BYTES=5*1024*1024;
 const UUID=z.string().uuid();
 const optionalText=(max:number)=>z.string().max(max).nullable().optional().transform(value=>value??null);
+const optionalUrl=optionalText(2048).refine(value=>!value||safeExternalUrl(value)!==null,"URL no permitida: usa HTTP o HTTPS");
 const translations=z.record(z.object({name:z.string().max(200).optional(),description:z.string().max(2000).optional()}).strict()).default({});
 const timestamp=z.string().datetime({offset:true}).optional();
 
@@ -14,12 +16,12 @@ const restaurantSchema=z.object({
   name:z.string().trim().min(1).max(200),
   slug:z.string().max(120),
   description:optionalText(3000),
-  logo_url:optionalText(2048),
+  logo_url:optionalUrl,
   phone:optionalText(100),
   email:optionalText(320),
   address:optionalText(500),
-  instagram_url:optionalText(2048),
-  website_url:optionalText(2048),
+  instagram_url:optionalUrl,
+  website_url:optionalUrl,
   currency:z.string().regex(/^[A-Z]{3}$/),
   locale:z.string().min(2).max(20),
   timezone:z.string().min(1).max(100),
@@ -37,8 +39,8 @@ const categorySchema=z.object({
 const productSchema=z.object({
   customization:customizationSchema.default(emptyCustomization),
   id:UUID,restaurant_id:UUID,category_id:UUID,name:z.string().trim().min(1).max(200),description:optionalText(3000),
-  price_cents:z.number().int().min(0).max(100000000),video_url:optionalText(2048),video_path:optionalText(1024),
-  image_url:optionalText(2048),image_path:optionalText(1024),allergens:z.array(z.enum(ALLERGEN_CODES)).max(14).default([]),is_available:z.boolean(),is_featured:z.boolean(),
+  price_cents:z.number().int().min(0).max(100000000),video_url:optionalUrl,video_path:optionalText(1024),
+  image_url:optionalUrl,image_path:optionalText(1024),allergens:z.array(z.enum(ALLERGEN_CODES)).max(14).default([]),is_available:z.boolean(),is_featured:z.boolean(),
   sort_order:z.number().int().min(-100000).max(100000),translations,created_at:timestamp,updated_at:timestamp,
 }).strip();
 

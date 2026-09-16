@@ -9,8 +9,8 @@ const alertsPage = readFileSync("src/app/superadmin/alerts/page.tsx", "utf8");
 
 describe("alertas operativas", () => {
   it("registra cuentas verificadas por el servidor sin exponer el correo", () => {
-    expect(registration).toContain("auth.admin.getUserById");
-    expect(registration).toContain('kind: "registration"');
+    expect(registration).toContain("auth.getUser()");
+    expect(registration).toContain('kind:"registration"');
     expect(registration).not.toContain("data.user.email");
   });
 

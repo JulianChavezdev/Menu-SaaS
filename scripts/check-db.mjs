@@ -243,6 +243,11 @@ checks.push({migration:"202609150002_restaurant_order_settings.sql",run:async()=
     supabase.rpc("table_ordering_context",{target_code:randomId})
   ]);return {error:results.find(result=>result.error)?.error};
 }});
+checks.push({migration:"202609160001_order_payment_confirmation.sql",run:async()=>{
+  const {error}=await supabase.rpc("create_table_qr_order",{target_table_code:randomId,target_request:randomId,target_note:"",target_items:[],target_client_hash:"schema-check",target_payment_timing:"after"});
+  return {error:error?.message.includes("table_unavailable")?null:(error??new Error("Missing payment confirmation guard"))};
+}});
+checks.push({migration:"202609160002_private_restaurant_settings.sql",run:async()=>{const{data,error}=await supabase.rpc("restaurant_privacy_policy_version");return{error:error??(data===20260916?null:new Error("Missing restaurant privacy policy"))}}});
 const pending=[];
 for(const check of checks){
   const {error}=await check.run();
