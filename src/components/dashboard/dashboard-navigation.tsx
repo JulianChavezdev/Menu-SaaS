@@ -36,7 +36,7 @@ const icons: Record<string, LucideIcon> = {
 };
 const groupFor = (href: string) =>
   href.startsWith("/operaciones/") ||
-  ["/dashboard/tables", "/dashboard/orders", "/dashboard/pickup"].includes(href)
+  ["/dashboard/tables", "/dashboard/orders", "/dashboard/order-settings"].includes(href)
     ? "Servicio"
     : [
           "/dashboard/restaurant",

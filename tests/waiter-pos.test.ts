@@ -43,13 +43,14 @@ describe("mobile waiter POS", () => {
     expect(action).toContain("12 * 60 * 60 * 1000");
     expect(action).toContain('"create_public_dining_order"');
     expect(action).toContain("requestId");
-    expect(tables).toContain("No es necesario");
+    expect(tables).toContain("loadDiningTables");
     expect(tables).not.toContain("openTableSession");
     expect(tables).not.toContain("closeTableSession");
   });
 
   it("does not expose staff sessions as public table ordering", () => {
-    expect(publicMenu).toContain('mode:"pickup"');
+    expect(publicMenu).toContain('rpc("table_ordering_context"');
+    expect(publicMenu).toContain('query.mesa');
     expect(publicMenu).not.toContain('from("table_sessions")');
   });
 });

@@ -235,6 +235,14 @@ const checks=[
   },
 ];
 
+checks.push({migration:"202609150002_restaurant_order_settings.sql",run:async()=>{
+  const results=await Promise.all([
+    supabase.from("restaurants").select("opening_hours,payment_timing,customer_order_mode,customer_orders_paused",{head:true}).limit(1),
+    supabase.from("dining_orders").select("payment_timing,order_source,pos_reference",{head:true}).limit(1),
+    supabase.from("restaurant_tables").select("orders_paused_until",{head:true}).limit(1),
+    supabase.rpc("table_ordering_context",{target_code:randomId})
+  ]);return {error:results.find(result=>result.error)?.error};
+}});
 const pending=[];
 for(const check of checks){
   const {error}=await check.run();

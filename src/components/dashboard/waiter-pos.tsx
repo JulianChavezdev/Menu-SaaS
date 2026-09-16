@@ -200,7 +200,7 @@ export function WaiterPos({
           </div>
           <nav className="flex items-center gap-1" aria-label="Operaciones">
             <InstallOperationalApp name="Comandero" />
-            <Link href="/operaciones/caja" className="px-3 py-2 text-xs font-bold">Caja</Link>
+            <Link href="/operaciones/mesas" className="px-3 py-2 text-xs font-bold">Mesas QR</Link>
             {isManager && <Link
               href="/dashboard/tables"
               data-hide-in-installed-app

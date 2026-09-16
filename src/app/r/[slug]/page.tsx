@@ -1,3 +1,4 @@
+import {z} from "zod";
 import { notFound, permanentRedirect } from "next/navigation";
 import { createClient as createServerClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
@@ -84,7 +85,7 @@ export default async function PublicMenu({
   searchParams,
 }: {
   params: Promise<{ slug: string }>;
-  searchParams: Promise<{ preview?: string; template?: string }>;
+  searchParams: Promise<{ preview?: string; template?: string; mesa?: string }>;
 }) {
   const { slug } = await params;
   const query = await searchParams;
@@ -146,7 +147,7 @@ export default async function PublicMenu({
     const target = related as { slug?: string } | null;
     if (target?.slug && target.slug !== slug)
       permanentRedirect(
-        `/r/${target.slug}${query.preview ? `?preview=${query.preview}` : ""}`,
+        `/r/${target.slug}?${new URLSearchParams({...query.preview?{preview:query.preview}:{},...query.mesa&&z.string().uuid().safeParse(query.mesa).success?{mesa:query.mesa}:{}}).toString()}`,
       );
     notFound();
   }
@@ -215,6 +216,8 @@ export default async function PublicMenu({
           : [];
       }),
   }));
+  let tableOrdering=null;
+  if(!preview&&z.string().uuid().safeParse(query.mesa).success){const {data}=await supabase.rpc("table_ordering_context",{target_code:query.mesa});if(data?.restaurantId===restaurant.id&&data.enabled)tableOrdering={tableCode:data.tableCode,tableName:data.tableName,active:data.active,expiresAt:data.expiresAt,paymentTiming:data.paymentTiming};}
   const publicRestaurant = publicMenuRestaurant(restaurant);
   const publicProducts = preview
     ? productsWithRecommendations.map((product, index) =>
@@ -231,7 +234,7 @@ export default async function PublicMenu({
           : publicRestaurant
       }
       products={publicProducts as typeof demoProducts}
-      tableOrdering={!preview&&restaurant.ordering_enabled&&restaurant.pickup_enabled?{mode:"pickup",restaurantId:restaurant.id,tableCode:restaurant.id,tableName:"Recoger en caja",active:!restaurant.pickup_paused,expiresAt:null}:null}
+      tableOrdering={tableOrdering}
       analyticsEnabled={!preview}
       introEnabled={!preview}
     />

@@ -18,7 +18,7 @@ async function orderingRestaurant(operation: "manage" | "kitchen" = "manage") {
     : ["owner", "admin", "editor"].includes(context.member.role);
   if (!allowed) throw new Error("No tienes permisos para realizar esta acción.");
   if (
-    !context.restaurant.ordering_enabled ||
+    (operation === "kitchen" && !context.restaurant.ordering_enabled) ||
     !["active", "trialing"].includes(context.restaurant.subscription_status)
   )
     throw new Error("Menuly Comandas no está activo para este restaurante.");
@@ -93,12 +93,12 @@ export async function transitionDiningOrder(
   });
   const { data: current, error: readError } = await admin
     .from("dining_orders")
-    .select("status,table_session_id,fulfillment")
+    .select("status,table_session_id,fulfillment,payment_timing,payment_status")
     .eq("id", order.data)
     .eq("restaurant_id", restaurant.id)
     .maybeSingle();
   if (readError || !current) throw new Error("Pedido no encontrado.");
-  if(current.fulfillment==="pickup"&&next.data==="delivered")throw new Error("Confirma el cobro y la entrega desde Caja.");
+  if(current.payment_timing==="before"&&current.payment_status!=="paid"&&["accepted","preparing","ready","delivered"].includes(next.data))throw new Error("Registra primero el cobro en el TPV.");
   const from = orderStatusSchema.parse(current.status);
   if (!canTransitionOrder(from, next.data))
     throw new Error("Ese cambio de estado no está permitido.");

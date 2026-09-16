@@ -9,12 +9,12 @@ const operations = readFileSync("src/app/operaciones/layout.tsx", "utf8");
 const superadmin = readFileSync("src/app/superadmin/layout.tsx", "utf8");
 
 describe("sistema visual Menuly", () => {
-  it("comparte la identidad de la landing en las áreas privadas", () => {
+  it("usa verde en panel, operaciones y administración", () => {
     expect(dashboard).toContain("<DashboardTheme");
-    for (const layout of [dashboardTheme, auth, superadmin]) {
-      expect(layout).toContain("menuly-app");
+    expect(auth).toContain("menuly-app");
+    for (const layout of [dashboardTheme, operations, superadmin]) {
+      expect(layout).toContain("internal-green");
     }
-    expect(operations).toContain("dashboard-light");
     expect(operations).not.toContain("menuly-app");
     for (const token of ["#0b0b0c", "#1a1a1a", "#f5f0eb", "#d4943a", "--font-marketing-sans"]) {
       expect(css).toContain(token);

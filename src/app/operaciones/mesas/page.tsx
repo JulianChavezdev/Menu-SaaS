@@ -1,0 +1,3 @@
+import {loadDiningTables} from "@/lib/dining-tables-server";
+import {DiningTables} from "@/components/dashboard/dining-tables";
+export default async function Page(){const{restaurant,member,tables,closesAt}=await loadDiningTables();return <DiningTables backHref={member.role==="waiter"?"/operaciones/comandero":"/operaciones/cocina"} tables={tables} slug={restaurant.slug} root={process.env.NEXT_PUBLIC_APP_URL??'https://menuly.es'} closesAt={closesAt} enabled={!!restaurant.ordering_enabled&&restaurant.customer_order_mode==='table_orders'&&['active','trialing'].includes(restaurant.subscription_status)} paused={!!restaurant.customer_orders_paused} canManage={['owner','admin','editor'].includes(member.role)} timezone={restaurant.timezone??'Europe/Madrid'}/>}

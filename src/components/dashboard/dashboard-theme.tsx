@@ -15,7 +15,7 @@ export function DashboardTheme({ initialTheme, children }: { initialTheme: Theme
     document.cookie = `menuly-dashboard-theme=${next}; Path=/dashboard; Max-Age=31536000; SameSite=Lax${location.protocol === "https:" ? "; Secure" : ""}`;
   }
   return <ThemeContext.Provider value={{ theme, toggle }}>
-    <div className="menuly-app dashboard-workspace" data-theme={theme}>{children}</div>
+    <div className="menuly-app dashboard-workspace internal-green" data-theme={theme}>{children}</div>
   </ThemeContext.Provider>;
 }
 

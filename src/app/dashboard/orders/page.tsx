@@ -8,6 +8,9 @@ type OrderRow = {
   id: string;
   status: string;
   fulfillment: "table"|"pickup";
+  order_source: string;
+  payment_timing: string;
+  pos_reference: string|null;
   payment_status: "paid"|"unpaid";
   subtotal_cents: number;
   customer_note: string | null;
@@ -20,6 +23,8 @@ type OrderRow = {
     id: string;
     product_name: string;
     quantity: number;
+    unit_price_cents:number;
+    line_total_cents:number;
     note: string | null;
     selected_options: OptionSnapshot[];
   }>;
@@ -49,7 +54,7 @@ export default async function OrdersPage({
   let query = supabase
     .from("dining_orders")
     .select(
-      "id,status,fulfillment,payment_status,subtotal_cents,customer_note,created_at,accepted_at,ready_at,delivered_at,restaurant_tables(name),dining_order_items(id,product_name,quantity,note,selected_options)",
+      "id,status,fulfillment,payment_status,order_source,payment_timing,pos_reference,subtotal_cents,customer_note,created_at,accepted_at,ready_at,delivered_at,restaurant_tables(name),dining_order_items(id,product_name,quantity,unit_price_cents,line_total_cents,note,selected_options)",
     )
     .eq("restaurant_id", restaurant.id)
     .order("created_at", { ascending: false })
@@ -59,11 +64,11 @@ export default async function OrdersPage({
   if (error) throw new Error(error.message);
   const orders = (data ?? []) as OrderRow[];
   const today = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "Europe/Madrid",
+    timeZone: restaurant.timezone??"Europe/Madrid",
   }).format(new Date());
   const todayOrders = orders.filter(
     (order) =>
-      new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Madrid" }).format(
+      new Intl.DateTimeFormat("en-CA", { timeZone: restaurant.timezone??"Europe/Madrid" }).format(
         new Date(order.created_at),
       ) === today,
   );
@@ -77,7 +82,7 @@ export default async function OrdersPage({
         </p>
         <h1 className="mt-1 text-3xl font-extrabold">Historial de comandas</h1>
         <p className="mt-2 text-sm text-slate-600">
-          Últimas 100 comandas. Los importes registrados no representan cobros.
+          Últimas 100 comandas. Abre un pedido para consultar sus productos, opciones y cobro.
         </p>
       </header>
       <section className="mt-5 grid grid-cols-3 gap-3">
@@ -116,34 +121,34 @@ export default async function OrdersPage({
             : order.restaurant_tables;
           const parsed = orderStatusSchema.parse(order.status);
           return (
-            <article
+            <details
               key={order.id}
               className="border border-stone-200 bg-white p-4 shadow-sm"
             >
-              <div className="flex flex-wrap items-start justify-between gap-3">
+              <summary className="flex cursor-pointer flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="text-xs font-bold uppercase tracking-wide text-orange-700">
-                    #{order.id.slice(0, order.fulfillment==="pickup"?8:6).toUpperCase()} ·{" "}
-                    {order.fulfillment==="pickup"?"Recoger en caja":table?.name ?? "Mesa"}
+                    #{order.id.slice(0, order.fulfillment==="pickup"||order.order_source==="table_qr"?8:6).toUpperCase()} ·{" "}
+                    {order.fulfillment==="pickup"?"Recogida":table?.name ?? "Mesa"}
                   </p>
                   <p className="mt-1 text-xs text-slate-500">
                     {new Intl.DateTimeFormat("es-ES", {
                       dateStyle: "medium",
                       timeStyle: "short",
-                      timeZone: "Europe/Madrid",
+                      timeZone: restaurant.timezone??"Europe/Madrid",
                     }).format(new Date(order.created_at))}
                   </p>
                 </div>
                 <span className="bg-stone-100 px-2 py-1 text-xs font-bold text-slate-700">
                   {labels[parsed]}
-                  {order.fulfillment==="pickup"&&` · ${order.payment_status==="paid"?"Pagado":"Sin cobrar"}`}
+                  {` · ${order.payment_status==="paid"?"Cobro registrado":"Sin cobrar"}`}<span className="ml-3">Ver detalle ↓</span>
                 </span>
-              </div>
+              </summary>
               <ul className="mt-3 border-y border-stone-100 py-3 text-sm">
                 {order.dining_order_items.map((item) => (
                   <li key={item.id} className="py-1">
                     <strong>
-                      {item.quantity}× {item.product_name}
+                      {item.quantity}× {item.product_name} · {new Intl.NumberFormat("es-ES",{style:"currency",currency:restaurant.currency}).format(item.line_total_cents/100)}
                     </strong>
                     {item.selected_options?.map(option=><p key={option.optionId} className="text-xs text-slate-600">{option.groupName}: {option.name}</p>)}
                     {item.note && (
@@ -169,10 +174,11 @@ export default async function OrdersPage({
                   }).format(order.subtotal_cents / 100)}
                 </strong>
               </div>
+              <p className="mt-3 text-xs text-slate-600">Pago {order.payment_timing==="before"?"antes de preparar":"después"}{order.pos_reference&&` · Ticket TPV: ${order.pos_reference}`}</p>
               {(parsed === "rejected" || parsed === "cancelled") && (
                 <OrderHistoryAction orderId={order.id} />
               )}
-            </article>
+            </details>
           );
         })}
         {!orders.length && (

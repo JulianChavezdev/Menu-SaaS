@@ -1,3 +1,4 @@
+import {createHmac} from "node:crypto";
 import {NextResponse} from "next/server";
 import {createClient} from "@supabase/supabase-js";
 import {getSupabaseSecretKey} from "@/lib/supabase/admin-env";
@@ -13,38 +14,30 @@ export async function GET(request:Request){
   if(!token?.match(uuid)||!tableCode?.match(uuid))return reply({error:"Seguimiento no válido."},400);
   const url=process.env.NEXT_PUBLIC_SUPABASE_URL;const key=getSupabaseSecretKey();if(!url||!key)return reply({error:"Seguimiento temporalmente no disponible."},503);
   const admin=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
-  const{data,error}=await admin.from("dining_orders").select("status,created_at,accepted_at,ready_at,delivered_at,restaurant_tables!inner(name,public_code)").eq("public_token",token).eq("restaurant_tables.public_code",tableCode).maybeSingle();
+  const{data,error}=await admin.from("dining_orders").select("status,payment_status,payment_timing,created_at,accepted_at,ready_at,delivered_at,restaurant_tables!inner(name,public_code)").eq("public_token",token).eq("restaurant_tables.public_code",tableCode).maybeSingle();
   if(error||!data)return reply({error:"Pedido no encontrado."},404);
-  return reply({order:{status:data.status,createdAt:data.created_at,acceptedAt:data.accepted_at,readyAt:data.ready_at,deliveredAt:data.delivered_at}});
+  return reply({order:{status:data.status,paymentStatus:data.payment_status,paymentTiming:data.payment_timing,createdAt:data.created_at,acceptedAt:data.accepted_at,readyAt:data.ready_at,deliveredAt:data.delivered_at}});
 }
 
 export async function POST(request:Request){
-  const origin=request.headers.get("origin");
-  try{if(origin&&new URL(origin).origin!==new URL(request.url).origin)return reply({error:"Origen no válido."},403)}
-  catch{return reply({error:"Origen no válido."},403)}
-  const text=await request.text();if(text.length>20_000)return reply({error:"Pedido demasiado grande."},413);
-  let body:unknown;try{body=JSON.parse(text)}catch{return reply({error:"Pedido no válido."},400)}
-  const parsed=publicOrderSchema.safeParse(body);if(!parsed.success)return reply({error:"Revisa los productos del pedido."},400);
-  const url=process.env.NEXT_PUBLIC_SUPABASE_URL;const key=getSupabaseSecretKey();if(!url||!key)return reply({error:"Pedidos temporalmente no disponibles."},503);
-  const admin=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});const now=new Date();
-  const{data:table,error:tableError}=await admin.from("restaurant_tables").select("id,restaurant_id,name,is_active").eq("public_code",parsed.data.tableCode).maybeSingle();
-  if(tableError||!table?.is_active)return reply({error:"El código de esta mesa no está activo."},404);
-  const{data:restaurant}=await admin.from("restaurants").select("id,is_published,access_suspended,subscription_status,ordering_enabled").eq("id",table.restaurant_id).maybeSingle();
-  if(!restaurant?.is_published||restaurant.access_suspended||!["active","trialing"].includes(restaurant.subscription_status)||!restaurant.ordering_enabled)return reply({error:"El restaurante no está aceptando pedidos desde la carta."},403);
-  const{data:session}=await admin.from("table_sessions").select("id,status,expires_at").eq("table_id",table.id).eq("restaurant_id",restaurant.id).eq("status","open").gt("expires_at",now.toISOString()).order("started_at",{ascending:false}).limit(1).maybeSingle();
-  if(!session)return reply({error:"La sesión de esta mesa está cerrada. Pide al personal que la active."},409);
-  const{data:existing}=await admin.from("dining_orders").select("id,public_token,status,created_at").eq("table_session_id",session.id).eq("client_request_id",parsed.data.requestId).maybeSingle();
-  if(existing)return reply({ok:true,replayed:true,order:{number:existing.id.slice(0,6).toUpperCase(),token:existing.public_token,status:existing.status,createdAt:existing.created_at},table:{name:table.name}});
-  const minuteAgo=new Date(now.getTime()-60_000).toISOString();
-  const{count:recent}=await admin.from("dining_orders").select("id",{count:"exact",head:true}).eq("table_session_id",session.id).gte("created_at",minuteAgo);
-  if((recent??0)>=5)return reply({error:"Se han enviado demasiados pedidos seguidos. Espera un minuto."},429);
+  try{const origin=request.headers.get("origin");if(origin&&new URL(origin).origin!==new URL(request.url).origin)return reply({error:"Origen no válido."},403)}catch{return reply({error:"Origen no válido."},403)}
+  const raw=await request.text();if(raw.length>60000)return reply({error:"Pedido demasiado grande."},413);
+  let body:unknown;try{body=JSON.parse(raw)}catch{return reply({error:"Pedido no válido."},400)}
+  const parsed=publicOrderSchema.safeParse(body);if(!parsed.success)return reply({error:"Escanea el QR de tu mesa y revisa el pedido."},400);
+  const key=getSupabaseSecretKey(),url=process.env.NEXT_PUBLIC_SUPABASE_URL;if(!key||!url)return reply({error:"Pedidos no disponibles."},503);
+  const admin=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
+  const{data:context,error:contextError}=await admin.rpc("table_ordering_context",{target_code:parsed.data.tableCode});
+  if(contextError||!context)return reply({error:"Mesa no disponible."},404);
+  const{data:existing}=await admin.from("dining_orders").select("id,public_token,status,payment_status,payment_timing").eq("table_id",context.tableId).eq("order_source","table_qr").eq("client_request_id",parsed.data.requestId).maybeSingle();
+  if(existing)return reply({order:{number:existing.id.slice(0,8).toUpperCase(),token:existing.public_token,status:existing.status,paymentStatus:existing.payment_status,paymentTiming:existing.payment_timing},replayed:true});
+  if(!context.active)return reply({error:"Esta mesa no acepta pedidos ahora. Consulta el horario o avisa al personal."},409);
   const ids=[...new Set(parsed.data.lines.map(line=>line.productId))];
-  const{data:products,error:productError}=await admin.from("products").select("id,name,price_cents,is_available,customization,updated_at,categories!inner(is_active)").eq("restaurant_id",restaurant.id).in("id",ids).eq("is_available",true).eq("categories.is_active",true);
-  if(productError||products?.length!==ids.length)return reply({error:"Algún producto ya no está disponible. Actualiza la carta."},409);
-  let items;try{items=priceOrderLines(parsed.data.lines,products,restaurant.id)}catch(error){return reply({error:error instanceof Error?error.message:"Revisa las opciones"},409)}
-  const subtotal=items.reduce((sum,item)=>sum+item.line_total_cents,0);
-  const{data:created,error:orderError}=await admin.rpc("create_public_dining_order",{target_restaurant:restaurant.id,target_table:table.id,target_session:session.id,target_request:parsed.data.requestId,target_subtotal:subtotal,target_customer_note:parsed.data.customerNote,target_items:items});
-  const order=Array.isArray(created)?created[0]:created;
-  if(orderError||!order)return reply({error:"No se pudo registrar el pedido."},503);
-  return reply({ok:true,replayed:Boolean(order.replayed),order:{number:order.order_id.slice(0,6).toUpperCase(),token:order.order_public_token,status:order.order_status,createdAt:order.order_created_at},table:{name:table.name}},order.replayed?200:201);
+  const{data:products,error}=await admin.from("products").select("id,name,price_cents,customization,updated_at,categories!inner(is_active)").eq("restaurant_id",context.restaurantId).in("id",ids).eq("is_available",true).eq("categories.is_active",true);
+  if(error||products?.length!==ids.length)return reply({error:"Algún producto ya no está disponible. Actualiza la carta."},409);
+  let items;try{items=priceOrderLines(parsed.data.lines,products,context.restaurantId)}catch(error){return reply({error:error instanceof Error?error.message:"Revisa las opciones."},409)}
+  const ip=request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()??"unknown";
+  const clientHash=createHmac("sha256",key).update(context.restaurantId+":"+context.tableId+":"+new Date().toISOString().slice(0,10)+":"+ip).digest("hex");
+  const{data:order,error:orderError}=await admin.rpc("create_table_qr_order",{target_table_code:parsed.data.tableCode,target_request:parsed.data.requestId,target_note:parsed.data.customerNote,target_items:items,target_client_hash:clientHash});
+  if(orderError||!order)return reply({error:orderError?.message.includes("rate_limit")?"Demasiados pedidos seguidos. Espera un minuto.":"No se pudo aceptar el pedido. Revisa el horario y la disponibilidad."},orderError?.message.includes("rate_limit")?429:409);
+  return reply({order:{number:order.order_id.slice(0,8).toUpperCase(),token:order.order_public_token,status:order.order_status,paymentStatus:order.payment_status,paymentTiming:order.payment_timing},replayed:order.replayed},order.replayed?200:201);
 }

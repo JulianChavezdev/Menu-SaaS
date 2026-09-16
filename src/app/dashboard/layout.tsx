@@ -24,12 +24,11 @@ const links = [
   ["Restaurante", "/dashboard/restaurant"],
   ["Equipo", "/dashboard/members"],
   ["Código QR", "/dashboard/qr"],
+  ["Configuración de pedidos", "/dashboard/order-settings"],
+  ["Mesas", "/dashboard/tables"],
   ["Suscripción", "/dashboard/billing"],
 ] as const;
 const orderingLinks = [
-  ["Recogidas QR", "/dashboard/pickup"],
-  ["Caja", "/operaciones/caja"],
-  ["Mesas", "/dashboard/tables"],
   ["Historial", "/dashboard/orders"],
   ["Comandero", "/operaciones/comandero"],
   ["Cocina", "/operaciones/cocina"],

@@ -1,24 +1,27 @@
-# Pedidos para recoger desde el QR
+# Pedidos desde el QR de mesa
 
-Disponible para restaurantes con Menuly Comandas activo.
+En **Configuración de pedidos** el restaurante elige Solo carta o Pedir desde la mesa. Los pedidos requieren Menuly Comandas activo. Cada producto puede activar su propia personalización con grupos, fotos, mínimos y máximos; se usa el mismo configurador en todas las plantillas.
 
-1. En **Carta**, crea el producto y pulsa **Añadir personalización**.
-2. Activa la función y añade grupos (Frutas, Sabores, Toppings). Cada opción admite nombre, foto, suplemento y disponibilidad.
-3. Para escoger 8 de 10 frutas, crea diez opciones y fija mínimo y máximo en 8. Guarda la configuración.
-4. En **Recogidas QR**, activa los pedidos. El QR habitual de la carta permite enviarlos a cocina sin registro ni pago online.
-5. Cocina recibe las cantidades, opciones y notas; marca el pedido en preparación y después listo.
-6. En **Caja**, busca el número del pedido. Después de cobrar y entregar, pulsa **Confirmar cobrado y entregado**.
+En **Mesas** se crean hasta 100 mesas y se descarga su QR permanente. El enlace general de la carta no permite enviar pedidos. No se emplean PIN ni geolocalización: un QR copiado puede utilizarse desde fuera durante el horario abierto. La apertura y cierre de mesas no acredita presencia física.
 
-La personalización se activa por producto y funciona en las seis plantillas. Desactivarla conserva las opciones guardadas. Los demás productos se añaden directamente al carrito.
+## Horario
 
-**Pausar nuevos pedidos** no modifica los pedidos en curso. Marcar una opción agotada impide nuevas selecciones. Las opciones y precios de pedidos ya aceptados se conservan.
+Se configuran siete días, zona horaria y hasta tres franjas por día. Sin franjas significa cerrado. Un cierre anterior a la apertura termina al día siguiente; horas iguales equivalen a 24 horas. Se contemplan cambios de horario de verano. La disponibilidad se calcula en el servidor al consultar y al enviar cada pedido: no depende de un cron ni de mantener el panel abierto.
 
-El cliente conserva el seguimiento en el mismo navegador. Los reintentos del envío reutilizan un identificador para evitar duplicados. Los precios, límites y disponibilidad se validan en el servidor; el registro del pedido es transaccional.
+El personal puede cerrar una mesa hasta el final de la franja actual; después vuelve al horario automático. La pausa general permanece activa hasta que el restaurante la desmarque. Ocultar una mesa bloquea sus pedidos hasta volver a mostrarla.
 
-## Validación de entrega
+## Cobro y cocina
 
-- Migración `202609150001_customizable_pickup.sql` aplicada en Supabase y verificada con `check:db`.
-- Pruebas PostgreSQL locales: atomicidad, reintentos, cambios de producto, separación entre restaurantes, pausa, límites de envío y permisos de caja.
-- Revisión en navegador a 390 px: selección de 8/10, bloqueo de una novena opción, configuración y caja.
-- Apertura de la personalización y cambio de demo comprobados en las seis plantillas.
-- El bloqueo de refresco conserva el desplazamiento dentro del catálogo y los paneles. La comprobación de navegador no sustituye una prueba física en cada versión de iOS/Android.
+- **Antes de preparar:** el cliente obtiene un número y paga al personal en el TPV del restaurante. En Cocina aparece en Por cobrar; no permite prepararlo hasta confirmar el cobro.
+- **Después:** entra directamente en Cocina. Puede prepararse y entregarse; si sigue sin cobrar permanece en Por cobrar.
+- **Cocina** permite buscar por mesa o número, consultar ingredientes y notas, copiar la comanda para pasarla al TPV y registrar el cobro con referencia opcional. No integra ni ejecuta cargos en un TPV externo. Cocina, propietario, administrador y editor pueden registrar el pago.
+- El momento de pago queda guardado en cada pedido y no cambia al modificar la configuración.
+- **Historial** permite abrir cada pedido para ver productos, opciones, notas, importes y referencia de pago.
+
+La antigua pantalla Caja redirige a Cocina. No se aceptan nuevas recogidas desde el enlace público; se conserva el seguimiento de las anteriores.
+
+## Despliegue
+
+Aplicar `202609150002_restaurant_order_settings.sql` después de `202609150001_customizable_pickup.sql`, antes de desplegar esta versión. Verificar con `node scripts/check-db.mjs`. Los restaurantes quedan inicialmente en Solo carta y deben configurar sus horarios antes de activar pedidos por mesa.
+
+La API valida origen, precios y selección en servidor. La transacción vuelve a comprobar publicación, suscripción, mesa, franja, pausas y versiones de productos; almacena opciones e importes y admite reintentos sin duplicar. La base de datos bloquea la preparación sin el pago previo requerido. Se limitan las ráfagas por mesa y origen de red dentro de esa mesa, evitando que el wifi compartido bloquee a todo el restaurante.

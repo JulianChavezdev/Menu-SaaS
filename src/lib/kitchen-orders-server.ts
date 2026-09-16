@@ -21,7 +21,7 @@ export async function loadKitchenOrders(
     .from("dining_orders")
     .select(kitchenOrderSelect)
     .eq("restaurant_id", restaurantId)
-    .in("status", ["pending", "accepted", "preparing", "ready"])
+    .or("status.in.(pending,accepted,preparing,ready),and(status.eq.delivered,payment_status.eq.unpaid,or(order_source.eq.table_qr,fulfillment.eq.pickup))")
     .order("created_at", { ascending: true })
     .limit(100);
 

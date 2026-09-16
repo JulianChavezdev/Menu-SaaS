@@ -11,6 +11,9 @@ export type KitchenOrder = {
   tableName: string;
   fulfillment?: "table"|"pickup";
   paymentStatus?: "unpaid"|"paid";
+  paymentTiming?: "before"|"after";
+  orderSource?: "staff"|"table_qr";
+  posReference?: string|null;
   items: Array<{
     id: string;
     name: string;
@@ -28,6 +31,9 @@ export type KitchenOrderRow = {
   created_at: string;
   fulfillment?: "table"|"pickup";
   payment_status?: "unpaid"|"paid";
+  payment_timing?: "before"|"after";
+  order_source?: "staff"|"table_qr";
+  pos_reference?: string|null;
   restaurant_tables: { name?: string } | { name?: string }[] | null;
   dining_order_items: Array<{
     id: string;
@@ -39,7 +45,7 @@ export type KitchenOrderRow = {
 };
 
 export const kitchenOrderSelect =
-  "id,status,subtotal_cents,customer_note,created_at,fulfillment,payment_status,restaurant_tables(name),dining_order_items(id,product_name,quantity,note,selected_options)";
+  "id,status,subtotal_cents,customer_note,created_at,fulfillment,payment_status,payment_timing,order_source,pos_reference,restaurant_tables(name),dining_order_items(id,product_name,quantity,note,selected_options)";
 
 export function mapKitchenOrders(rows: KitchenOrderRow[]): KitchenOrder[] {
   return rows.map((row) => {
@@ -48,13 +54,14 @@ export function mapKitchenOrders(rows: KitchenOrderRow[]): KitchenOrder[] {
       : row.restaurant_tables;
     return {
       id: row.id,
-      number: row.id.slice(0, row.fulfillment==="pickup"?8:6).toUpperCase(),
+      number: row.id.slice(0, row.fulfillment==="pickup"||row.order_source==="table_qr"?8:6).toUpperCase(),
       ...(row.fulfillment?{fulfillment:row.fulfillment,paymentStatus:row.payment_status}:{}),
+      ...(row.payment_timing?{paymentTiming:row.payment_timing,orderSource:row.order_source,posReference:row.pos_reference}:{}),
       status: row.status as OrderStatus,
       subtotalCents: row.subtotal_cents,
       customerNote: row.customer_note,
       createdAt: row.created_at,
-      tableName: row.fulfillment==="pickup"?"Recoger en caja":table?.name ?? "Mesa",
+      tableName: row.fulfillment==="pickup"?"Recogida":table?.name ?? "Mesa",
       items: (row.dining_order_items ?? []).map((item) => ({
         id: item.id,
         name: item.product_name,

@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import {recordOrderPayment} from "@/app/dashboard/ordering/payment-actions";
+import {waitsForPayment} from "@/lib/order-settings";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import {
   ArrowLeft,
@@ -22,6 +24,7 @@ import { InstallOperationalApp } from "@/components/pwa/install-operational-app"
 export type { KitchenOrder } from "@/lib/kitchen-orders";
 
 const columns = [
+  {key:"payment",statuses:[] as OrderStatus[],title:"Por cobrar",tone:"border-emerald-700"},
   {
     key: "new",
     statuses: ["pending", "accepted", "preparing"] as OrderStatus[],
@@ -36,6 +39,7 @@ const columns = [
   },
 ];
 type ColumnKey = (typeof columns)[number]["key"];
+function belongsToColumn(key:ColumnKey,order:KitchenOrder){const waiting=waitsForPayment(order);if(key==="payment")return waiting||(order.status==="delivered"&&order.paymentStatus!=="paid");if(key==="new")return !waiting&&["pending","accepted","preparing"].includes(order.status);return order.status==="ready";}
 
 type WakeLockHandle = {
   released: boolean;
@@ -68,6 +72,8 @@ export function KitchenBoard({
   const knownOrders = useRef(new Set(initialOrders.map((order) => order.id)));
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState("");
+  const [search,setSearch]=useState("");
+  const matchesSearch=(order:KitchenOrder)=>`${order.number} ${order.tableName}`.toLowerCase().includes(search.trim().replace(/^#/,"").toLowerCase());
 
   useEffect(() => {
     setOrders(initialOrders);
@@ -244,8 +250,8 @@ export function KitchenBoard({
   return (
     <section className="min-h-[100dvh] bg-[#f4f1eb] text-slate-950">
       <header className="sticky top-0 z-40 border-b-4 border-orange-600 bg-white px-3 pb-3 pt-[max(.75rem,env(safe-area-inset-top))] text-slate-950 shadow-sm md:px-6">
-        <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-3">
+        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-3">
+          <div className="flex shrink-0 items-center gap-3">
             {isManager && <Link
               href="/dashboard"
               data-hide-in-installed-app
@@ -258,13 +264,14 @@ export function KitchenBoard({
               <p className="text-[10px] font-bold uppercase tracking-[.15em] text-orange-700">
                 Menuly Comandas
               </p>
-              <h1 className="text-lg font-black uppercase tracking-tight text-slate-950">
+              <h1 className="text-lg font-semibold uppercase tracking-tight text-slate-950">
                 Cocina
               </h1>
             </div>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex w-full flex-wrap items-center gap-1.5 sm:w-auto">
             <InstallOperationalApp name="Cocina" />
+            <Link href="/operaciones/mesas" className="workspace-button">Mesas QR</Link>
             <button
               type="button"
               onClick={() => void refreshOrders(true)}
@@ -279,7 +286,7 @@ export function KitchenBoard({
             {isManager && <a
               href="/operaciones/comandero"
               data-hide-in-installed-app
-              className="inline-flex min-h-10 items-center rounded-lg bg-stone-100 px-3 text-xs font-black"
+              className="inline-flex min-h-10 items-center rounded-lg bg-stone-100 px-3 text-xs font-semibold"
             >
               Comandero
             </a>}
@@ -305,7 +312,7 @@ export function KitchenBoard({
       <div className="mx-auto max-w-[1600px] p-3 md:p-6">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h2 className="text-2xl font-black">Servicio en curso</h2>
+            <h2 className="text-2xl font-semibold">Servicio en curso</h2>
             <p className="mt-0.5 text-xs font-semibold text-slate-500">
               Sincronizado a las{" "}
               {lastSync.toLocaleTimeString("es-ES", {
@@ -315,25 +322,26 @@ export function KitchenBoard({
               })}
             </p>
           </div>
-          <span className="rounded-full bg-white px-3 py-1.5 text-xs font-black shadow-sm">
+          <span className="rounded-full bg-white px-3 py-1.5 text-xs font-semibold shadow-sm">
             {orders.length} activas
           </span>
         </div>
 
+        <label className="mt-4 block max-w-md text-xs font-semibold">Buscar pedido o mesa<input className="mt-2 block w-full p-3 text-sm" placeholder="Número de pedido o nombre de mesa" value={search} onChange={event=>setSearch(event.target.value)}/></label>
         <nav
           aria-label="Estados de cocina"
-          className="mt-4 grid grid-cols-2 gap-2 lg:hidden"
+          className="mt-4 grid grid-cols-3 gap-2 lg:hidden"
         >
           {columns.map((column) => {
             const count = orders.filter((order) =>
-              column.statuses.includes(order.status),
+              belongsToColumn(column.key,order)&&matchesSearch(order),
             ).length;
             return (
               <button
                 key={column.key}
                 type="button"
                 onClick={() => setActiveColumn(column.key)}
-                className={`rounded-xl border px-2 py-3 text-xs font-black ${activeColumn === column.key ? "border-orange-600 bg-orange-600 text-white" : "border-slate-200 bg-white text-slate-600"}`}
+                className={`rounded-xl border px-2 py-3 text-xs font-semibold ${activeColumn === column.key ? "border-orange-600 bg-orange-600 text-white" : "border-slate-200 bg-white text-slate-600"}`}
               >
                 <span className="block text-lg">{count}</span>
                 {column.title}
@@ -357,10 +365,10 @@ export function KitchenBoard({
           </p>
         )}
 
-        <div className="mt-4 grid min-h-[60vh] gap-4 lg:grid-cols-2">
+        <div className="mt-4 grid min-h-[60vh] gap-4 lg:grid-cols-3">
           {columns.map((column) => {
             const visible = orders.filter((order) =>
-              column.statuses.includes(order.status),
+              belongsToColumn(column.key,order)&&matchesSearch(order),
             );
             return (
               <section
@@ -369,7 +377,7 @@ export function KitchenBoard({
               >
                 <div className="mb-3 hidden items-center justify-between lg:flex">
                   <h3 className="font-extrabold">{column.title}</h3>
-                  <span className="grid h-7 min-w-7 place-items-center rounded-lg bg-white px-2 text-xs font-black shadow-sm">
+                  <span className="grid h-7 min-w-7 place-items-center rounded-lg bg-white px-2 text-xs font-semibold shadow-sm">
                     {visible.length}
                   </span>
                 </div>
@@ -381,6 +389,7 @@ export function KitchenBoard({
                       currency={currency}
                       disabled={isPending}
                       move={move}
+                      pay={(id,reference)=>startTransition(async()=>{try{await recordOrderPayment(id,reference);await refreshOrders(true);setError("")}catch(error){setError(error instanceof Error?error.message:"No se pudo registrar el pago")}})}
                     />
                   ))}
                   {!visible.length && (
@@ -403,12 +412,18 @@ function OrderCard({
   currency,
   disabled,
   move,
+  pay,
 }: {
   order: KitchenOrder;
   currency: string;
   disabled: boolean;
   move: (id: string, status: OrderStatus) => void;
+  pay: (id:string,reference:string)=>void;
 }) {
+  const [confirmingPayment,setConfirmingPayment]=useState(false);
+  const [reference,setReference]=useState("");
+  const waiting=waitsForPayment(order);
+  const tracksPayment=order.orderSource==="table_qr"||order.fulfillment==="pickup";
   const age = Math.max(
     0,
     Math.floor((Date.now() - new Date(order.createdAt).getTime()) / 60_000),
@@ -421,10 +436,10 @@ function OrderCard({
       <div className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-black uppercase tracking-wide text-orange-700">
+            <p className="text-xs font-semibold uppercase tracking-wide text-orange-700">
               Comanda #{order.number}
             </p>
-            <h3 className="mt-1 text-xl font-black">{order.tableName}</h3>
+            <h3 className="mt-1 text-xl font-semibold">{order.tableName}</h3>
           </div>
           <span className="flex items-center gap-1 text-xs font-bold text-slate-500">
             <Clock3 size={14} />
@@ -433,7 +448,7 @@ function OrderCard({
         </div>
         {order.customerNote && (
           <div className="mt-3 border-l-4 border-amber-500 bg-amber-50 p-3 text-amber-950">
-            <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wide">
+            <p className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide">
               <MessageSquareText size={14} />
               Observación general de la mesa
             </p>
@@ -464,16 +479,25 @@ function OrderCard({
             </li>
           )}
         </ul>
-        <p className="mt-3 text-right text-sm font-black">
+        <p className="mt-3 text-right text-sm font-semibold">
           {new Intl.NumberFormat("es-ES", {
             style: "currency",
             currency,
           }).format(order.subtotalCents / 100)}
         </p>
+        {tracksPayment&&<p className="mt-2 text-sm font-semibold">{order.paymentStatus==='paid'?'Cobro registrado en TPV':waiting?'Pendiente de pago · No preparar':'Pago pendiente'}</p>}
+        {order.posReference&&<p className="text-xs">Referencia TPV: {order.posReference}</p>}
         <div className="mt-4 grid gap-2">
-          {["pending","accepted"].includes(order.status)&&<button disabled={disabled} onClick={()=>move(order.id,"preparing")} className="min-h-11 border border-orange-500 px-4 py-2 text-sm font-bold text-orange-800">Empezar preparación</button>}
+          <button className="workspace-button" onClick={async()=>{try{await navigator.clipboard.writeText(['Pedido #'+order.number+' · '+order.tableName,...order.items.flatMap(item=>[item.quantity+' × '+item.name,...(item.options??[]).map(o=>'  '+o.groupName+': '+o.name),...(item.note?['  Nota: '+item.note]:[])]),order.customerNote??'',new Intl.NumberFormat('es-ES',{style:'currency',currency}).format(order.subtotalCents/100)].filter(Boolean).join('\n'))}catch{alert('No se pudo copiar. Consulta los datos en esta comanda.')}}}>Copiar pedido para el TPV</button>
+          {tracksPayment&&order.paymentStatus!=='paid'&&(confirmingPayment?<div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3">
+            <p className="text-sm font-semibold text-emerald-950">¿Ya se ha cobrado en vuestro TPV?</p>
+            <p className="mt-1 text-xs text-emerald-900">Confirma solo después de recibir el pago.</p>
+            <label className="mt-3 block text-xs">Referencia del ticket (opcional)<input value={reference} onChange={event=>setReference(event.target.value)} maxLength={80} className="mt-1 block w-full p-2"/></label>
+            <div className="mt-3 flex flex-wrap gap-2"><button disabled={disabled} className="workspace-button workspace-button-primary" onClick={()=>pay(order.id,reference)}>Confirmar cobro</button><button className="workspace-button" disabled={disabled} onClick={()=>setConfirmingPayment(false)}>Volver</button></div>
+          </div>:<button disabled={disabled} className="workspace-button workspace-button-primary" onClick={()=>setConfirmingPayment(true)}>Registrar cobro en TPV</button>)}
+          {!waiting&&["pending","accepted"].includes(order.status)&&<button disabled={disabled} onClick={()=>move(order.id,"preparing")} className="min-h-11 border border-orange-500 px-4 py-2 text-sm font-bold text-orange-800">Empezar preparación</button>}
           {order.status==="preparing"&&<p className="text-sm font-bold text-orange-800">En preparación</p>}
-          {["pending", "accepted", "preparing"].includes(order.status) && (
+          {!waiting&&["pending", "accepted", "preparing"].includes(order.status) && (
             <>
               <button
                 disabled={disabled}
@@ -498,7 +522,7 @@ function OrderCard({
               Cancelar comanda
             </button>
           )}
-          {order.status === "ready" && order.fulfillment!=="pickup" && (
+          {order.status === "ready" && !waiting && (
             <button
               disabled={disabled}
               onClick={() => move(order.id, "delivered")}
@@ -507,7 +531,7 @@ function OrderCard({
               Entregado
             </button>
           )}
-          {order.status==="ready"&&order.fulfillment==="pickup"&&<p className="text-center text-sm font-bold text-emerald-800">Listo · Pendiente de cobro en caja</p>}
+
         </div>
       </div>
     </article>

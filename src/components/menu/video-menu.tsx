@@ -491,7 +491,7 @@ export function VideoMenu({
   useMenuScrollLock();
   useEffect(() => {
     setCart(parseCart(localStorage.getItem(cartKey)));
-    if(tableOrdering){try{const saved=JSON.parse(localStorage.getItem(`menuly:order:${tableOrdering.tableCode}`)??"null");if(saved?.token&&!['delivered','cancelled','rejected'].includes(saved.status))setPanel("cart")}catch{}}
+    if(tableOrdering){try{const saved=JSON.parse(localStorage.getItem(`menuly:order:${tableOrdering.tableCode}`)??"null");if(saved?.token&&(!['delivered','cancelled','rejected'].includes(saved.status)||(saved.status==='delivered'&&saved.paymentStatus!=='paid')))setPanel("cart")}catch{}}
     setCartReady(true);
   }, [cartKey,tableOrdering]);
   useEffect(() => {

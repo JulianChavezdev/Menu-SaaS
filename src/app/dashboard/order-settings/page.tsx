@@ -1,0 +1,4 @@
+import {activeRestaurant} from "@/lib/permissions";
+import {OrderSettings} from "@/components/dashboard/order-settings";
+import {defaultOrderSettings} from "@/lib/order-settings";
+export default async function Page(){const{restaurant}=await activeRestaurant();return <main className="workspace-page"><header className="workspace-heading"><div><h1>Configuración de pedidos</h1><p className="workspace-description">Decide cómo funciona el servicio de tu restaurante.</p></div></header><OrderSettings initial={{opening_hours:restaurant.opening_hours??defaultOrderSettings.opening_hours,timezone:restaurant.timezone??"Europe/Madrid",customer_order_mode:restaurant.customer_order_mode??defaultOrderSettings.customer_order_mode,payment_timing:restaurant.payment_timing??'after',customer_orders_paused:restaurant.customer_orders_paused??false}} canOrder={!!restaurant.ordering_enabled&&['active','trialing'].includes(restaurant.subscription_status)}/></main>}
