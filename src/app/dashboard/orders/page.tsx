@@ -2,7 +2,7 @@ import Link from "next/link";
 import { activeRestaurant } from "@/lib/permissions";
 import { orderStatusSchema, type OrderStatus } from "@/lib/table-ordering";
 import { OrderHistoryAction } from "@/components/dashboard/order-history-action";
-import type {OptionSnapshot} from "@/lib/product-customization";
+import {OrderHistoryItems,type OrderHistoryItem} from "@/components/dashboard/order-history-items";
 
 type OrderRow = {
   id: string;
@@ -19,15 +19,7 @@ type OrderRow = {
   ready_at: string | null;
   delivered_at: string | null;
   restaurant_tables: { name?: string } | { name?: string }[] | null;
-  dining_order_items: Array<{
-    id: string;
-    product_name: string;
-    quantity: number;
-    unit_price_cents:number;
-    line_total_cents:number;
-    note: string | null;
-    selected_options: OptionSnapshot[];
-  }>;
+  dining_order_items: OrderHistoryItem[];
 };
 const labels: Record<OrderStatus, string> = {
   pending: "Nuevo",
@@ -144,21 +136,7 @@ export default async function OrdersPage({
                   {` · ${order.payment_status==="paid"?"Cobro registrado":"Sin cobrar"}`}<span className="ml-3">Ver detalle ↓</span>
                 </span>
               </summary>
-              <ul className="mt-3 border-y border-stone-100 py-3 text-sm">
-                {order.dining_order_items.map((item) => (
-                  <li key={item.id} className="py-1">
-                    <strong>
-                      {item.quantity}× {item.product_name} · {new Intl.NumberFormat("es-ES",{style:"currency",currency:restaurant.currency}).format(item.line_total_cents/100)}
-                    </strong>
-                    {item.selected_options?.map(option=><p key={option.optionId} className="text-xs text-slate-600">{option.groupName}: {option.name}</p>)}
-                    {item.note && (
-                      <span className="ml-2 text-xs text-amber-800">
-                        {item.note}
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
+              <OrderHistoryItems items={order.dining_order_items} currency={restaurant.currency}/>
               <div className="mt-3 flex items-end justify-between gap-3">
                 {order.customer_note ? (
                   <p className="text-xs text-slate-600">

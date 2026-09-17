@@ -249,6 +249,10 @@ checks.push({migration:"202609160001_order_payment_confirmation.sql",run:async()
 }});
 checks.push({migration:"202609160002_private_restaurant_settings.sql",run:async()=>{const{data,error}=await supabase.rpc("restaurant_privacy_policy_version");return{error:error??(data===20260916?null:new Error("Missing restaurant privacy policy"))}}});
 const pending=[];
+checks.push({migration:"202609170001_restore_order_item_read_policy.sql",run:async()=>{
+  const {data,error}=await supabase.rpc("order_history_policy_ready");
+  return {error:error??(data===true?null:new Error("Missing order item read policy"))};
+}});
 for(const check of checks){
   const {error}=await check.run();
   if(error){

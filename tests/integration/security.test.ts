@@ -66,6 +66,15 @@ suite("Supabase security hardening",()=>{
       expect(otherSettings.data).toEqual([]);
       const ownSettings=await owner.from("restaurants").select("id").eq("id",createdRestaurants[0]);
       expect(ownSettings.data).toEqual([{id:createdRestaurants[0]}]);
+      const historyOrder=await admin.from("dining_orders").insert({restaurant_id:createdRestaurants[0],fulfillment:"pickup",status:"delivered",subtotal_cents:2500}).select("id").single();
+      if(historyOrder.error)throw historyOrder.error;
+      await admin.from("dining_order_items").insert({restaurant_id:createdRestaurants[0],order_id:historyOrder.data.id,product_name:"Ensalada de frutas",quantity:1,unit_price_cents:2500,line_total_cents:2500,selected_options:[{groupId:crypto.randomUUID(),groupName:"Frutas",optionId:crypto.randomUUID(),name:"Mango",priceCents:0}]}).throwOnError();
+      const ownHistory=await owner.from("dining_orders").select("id,dining_order_items(product_name,quantity,selected_options)").eq("id",historyOrder.data.id).single();
+      expect(ownHistory.error).toBeNull();expect(ownHistory.data?.dining_order_items).toHaveLength(1);expect(ownHistory.data?.dining_order_items[0].product_name).toBe("Ensalada de frutas");
+      const anonymousItems=await anonymous.from("dining_order_items").select("id").eq("order_id",historyOrder.data.id);expect(anonymousItems.data).toEqual([]);
+      const otherOwner=createClient(url!,publicKey!,{auth:{persistSession:false,autoRefreshToken:false}});
+      const otherLogin=await otherOwner.auth.signInWithPassword({email:`security-other-${stamp}@carta-video.local`,password});if(otherLogin.error)throw otherLogin.error;
+      const otherItems=await otherOwner.from("dining_order_items").select("id").eq("order_id",historyOrder.data.id);expect(otherItems.data).toEqual([]);
       const forgedAccess=await owner.from("restaurants").insert({owner_id:createdUsers[0],name:"Forged",slug:`forged-${stamp}`,subscription_status:"active"});
       expect(forgedAccess.error).not.toBeNull();
       const publicationChange=await owner.from("restaurants").update({publication_suspended_for_payment:true}).eq("id",createdRestaurants[0]);

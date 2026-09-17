@@ -5,11 +5,12 @@ import {Plus,Trash2,X} from "lucide-react";
 import {toast} from "sonner";
 import {createClient} from "@/lib/supabase/client";
 import {saveProductCustomization} from "@/app/dashboard/menu/customization-actions";
-import {emptyCustomization,type ProductCustomization} from "@/lib/product-customization";
+import {customizationLimitError,customizationSchema,emptyCustomization,type ProductCustomization} from "@/lib/product-customization";
 import type {Product} from "@/lib/types";
 
 export function ProductCustomizationEditor({product,restaurantId,onClose}:{product:Product;restaurantId:string;onClose:()=>void}){
   const [config,setConfig]=useState<ProductCustomization>(product.customization??emptyCustomization);
+  const [saveError,setSaveError]=useState("");
   const [busy,start]=useTransition();const[uploading,setUploading]=useState(false);
   const dialog=useRef<HTMLDialogElement>(null);
   useEffect(()=>{const previous=document.activeElement;const overflow=document.body.style.overflow;dialog.current?.showModal();document.body.style.overflow="hidden";return()=>{document.body.style.overflow=overflow;if(previous instanceof HTMLElement)previous.focus()}},[]);
@@ -26,7 +27,8 @@ export function ProductCustomizationEditor({product,restaurantId,onClose}:{produ
   }
   return <dialog ref={dialog} onCancel={event=>{if(busy||uploading)event.preventDefault();else onClose()}} className="customization-editor" aria-label={`Personalizar ${product.name}`}>
     <header><div><h2>Personalización</h2><p>{product.name}</p></div><button type="button" disabled={busy||uploading} aria-label="Cerrar configuración" onClick={onClose}><X/></button></header>
-    <form onSubmit={e=>{e.preventDefault();start(async()=>{try{await saveProductCustomization(product.id,config);toast.success("Personalización guardada");onClose()}catch(error){toast.error(error instanceof Error?error.message:"No se pudo guardar")}})}}>
+    <form onSubmit={e=>{e.preventDefault();setSaveError("");const parsed=customizationSchema.safeParse(config);if(!parsed.success){setSaveError(parsed.error.issues[0]?.message??"Revisa las opciones");return}start(async()=>{try{const result=await saveProductCustomization(product.id,parsed.data);if(!result.ok){setSaveError(result.error);return}toast.success("Personalización guardada");onClose()}catch{setSaveError("No se pudo guardar. Inténtalo de nuevo.")}})}}>
+      {saveError&&<p role="alert" className="customization-warning">{saveError}</p>}
       <fieldset disabled={busy||uploading}>
         <label className="customization-enable"><input type="checkbox" checked={config.enabled} onChange={e=>setConfig(c=>({...c,enabled:e.target.checked}))}/><span><strong>Permitir personalizar este producto</strong><small>Los demás productos mantienen su funcionamiento habitual.</small></span></label>
         {config.enabled?<>
@@ -34,10 +36,11 @@ export function ProductCustomizationEditor({product,restaurantId,onClose}:{produ
           {config.groups.map((group,index)=><section key={group.id} className="customization-group">
             <div className="customization-group-fields">
               <label>Nombre del grupo<input required maxLength={70} value={group.name} onChange={e=>groupChange(index,{name:e.target.value})}/></label>
-              <label>Mínimo<input required type="number" min={0} max={30} value={group.min} onChange={e=>groupChange(index,{min:Number(e.target.value)})}/></label>
-              <label>Máximo<input required type="number" min={1} max={30} value={group.max} onChange={e=>groupChange(index,{max:Number(e.target.value)})}/></label>
+              <label>Mínimo<input required type="number" min={0} max={30} aria-describedby={customizationLimitError(group)?`group-limits-${group.id}`:undefined} value={group.min} onChange={e=>groupChange(index,{min:Number(e.target.value)})}/></label>
+              <label>Máximo<input required type="number" min={1} max={30} aria-invalid={Boolean(customizationLimitError(group))} aria-describedby={customizationLimitError(group)?`group-limits-${group.id}`:undefined} value={group.max} onChange={e=>groupChange(index,{max:Number(e.target.value)})}/></label>
               <button type="button" aria-label={`Quitar grupo ${group.name}`} onClick={()=>setConfig(c=>({...c,groups:c.groups.filter(g=>g.id!==group.id)}))}><Trash2 size={17}/></button>
             </div>
+            {customizationLimitError(group)&&<p id={`group-limits-${group.id}`} role="alert" className="customization-warning">{customizationLimitError(group)}</p>}
             <div className="customization-editor-options">{group.options.map((option,i)=><div key={option.id} className="customization-editor-option">
               <label className="customization-photo">{option.imageUrl?<Image width={56} height={56} src={option.imageUrl} alt={option.name||"Foto de la opción"}/>:<span>+ Foto</span>}<input type="file" accept="image/jpeg,image/png,image/webp" aria-label={`Foto de ${option.name||`opción ${i+1}`}`} onChange={e=>{if(e.target.files?.[0])void uploadPhoto(group.id,option.id,e.target.files[0]);e.target.value=""}}/></label>
               <label>Opción {i+1}<input required maxLength={70} value={option.name} placeholder="Ej. Fresa" onChange={e=>optionChange(group.id,option.id,{name:e.target.value})}/></label>

@@ -32,3 +32,9 @@ La protección mediante nonces exige renderizado dinámico del HTML; los recurso
 - Un QR estático copiado puede utilizarse fuera del local mientras la mesa esté abierta. Es una limitación del sistema de apertura por horarios elegido; no acredita presencia física.
 - Los pedidos tienen límites transaccionales de frecuencia. Los eventos de analítica siguen necesitando una política distribuida de cuotas o protección equivalente del proveedor frente a automatización masiva; el control de origen por sí solo no evita bots.
 - Una auditoría y un análisis de dependencias reducen riesgos, pero no garantizan ausencia absoluta de vulnerabilidades. No se realizaron pruebas de carga ni ataques destructivos sobre producción.
+
+## Seguimiento — 17 de septiembre
+
+El pedido de la captura conservaba sus productos y opciones. En producción faltaba la política de lectura de `dining_order_items`, por lo que el propietario veía el pedido pero recibía un array de líneas vacío. Se restauró la política de pertenencia al restaurante, manteniendo RLS y sin dar acceso a visitantes ni a otros restaurantes. El comprobador de despliegue ahora verifica esta política, además de las columnas. La prueba de integración comprueba también las líneas de pedidos entregados.
+
+La alerta «Revisa los límites de EXTRA» correspondía a una validación esperada que una acción lanzaba como excepción. Ahora se valida en el formulario y en el servidor con una respuesta estructurada; los límites siguen siendo obligatorios y los errores inesperados conservan su registro. Verificación: 474 pruebas correctas, integración de permisos correcta, compilación y tipos correctos; formulario comprobado en navegador con límites inválidos y válidos.

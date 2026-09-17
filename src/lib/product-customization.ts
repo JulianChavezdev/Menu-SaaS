@@ -1,5 +1,11 @@
 import { z } from "zod";
 const id = z.string().uuid();
+export function customizationLimitError(group:{name:string;min:number;max:number;options:unknown[]}):string|null{
+  const name=group.name.trim()||"Este grupo";
+  if(group.min>group.max)return `${name}: el mínimo (${group.min}) no puede superar el máximo (${group.max}).`;
+  if(group.max>group.options.length)return `${name}: el máximo (${group.max}) supera las opciones creadas (${group.options.length}). Añade opciones o reduce el máximo.`;
+  return null;
+}
 export const customizationSchema = z.object({
   enabled: z.boolean(),
   groups: z.array(z.object({
@@ -14,8 +20,9 @@ export const customizationSchema = z.object({
 }).superRefine((value,ctx)=>{
   if(value.enabled&&!value.groups.length)ctx.addIssue({code:"custom",message:"Añade al menos un grupo de opciones"});
   const ids=new Set<string>();
-  for(const group of value.groups){
-    if(group.min>group.max||group.max>group.options.length)ctx.addIssue({code:"custom",message:`Revisa los límites de ${group.name}`});
+  for(const [index,group] of value.groups.entries()){
+    const error=customizationLimitError(group);
+    if(error)ctx.addIssue({code:"custom",path:["groups",index,"max"],message:error});
     for(const item of [group,...group.options]){if(ids.has(item.id))ctx.addIssue({code:"custom",message:"Hay opciones repetidas"});ids.add(item.id)}
   }
 });
