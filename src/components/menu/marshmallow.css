@@ -1270,10 +1270,19 @@
     font-size: 37px;
   }
   .mm-hero-art > img {
-    width: 185px;
+    width: 150px;
+    max-width: 110%;
+  }
+  .mm-hero-art {
+    margin-left: 0;
+    margin-right: 0;
   }
   .mm-hero-description {
-    max-width: 160px;
+    max-width: 135px;
+  }
+  .mm-categories {
+    margin-right: -16px;
+    padding-right: 16px;
   }
   .mm-hero .mm-eyebrow {
     font-size: 7px;
