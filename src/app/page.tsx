@@ -63,7 +63,7 @@ const plans = [
     features: [
       "Hasta 100 productos",
       "Categorías ilimitadas",
-      "7 plantillas",
+      "6 plantillas",
       "Traducción automática ES/EN",
       "Carrito y analíticas privadas",
       "Soporte prioritario",
@@ -163,7 +163,7 @@ export default function Home() {
         id="producto"
         className="scroll-mt-20 px-5 py-16 sm:px-8 lg:h-[585px] lg:px-0 lg:py-0"
       >
-        <span className="sr-only">siete estilos visuales</span>
+        <span className="sr-only">seis estilos visuales</span>
         <div className="mx-auto grid max-w-[1344px] items-center gap-14 lg:h-full lg:grid-cols-[672px_672px] lg:gap-0">
           <div className="grid gap-3 sm:grid-cols-2 lg:h-[429.73px] lg:w-[672px]">
             <FeatureCard

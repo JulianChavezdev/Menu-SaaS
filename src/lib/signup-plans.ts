@@ -4,7 +4,7 @@ export const SIGNUP_PLANS = [
     name: "Plan Carta",
     price: "34,99 €/mes · 344,30 €/año",
     description:
-      "Hasta 100 productos, 7 plantillas, foto y vídeo, QR, idiomas y analíticas.",
+      "Hasta 100 productos, 6 plantillas, foto y vídeo, QR, idiomas y analíticas.",
   },
   {
     id: "pedidos",

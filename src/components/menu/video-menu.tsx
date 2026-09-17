@@ -1,7 +1,6 @@
 "use client";
 
 import {useMenuScrollLock} from "./use-menu-scroll-lock";
-import {MarshmallowMenu} from "./marshmallow-menu";
 import {
   useCallback,
   useEffect,
@@ -186,12 +185,7 @@ function safelyRewind(video: HTMLVideoElement) {
   } catch {}
 }
 
-export function VideoMenu(props:Parameters<typeof FeedVideoMenu>[0]){
-  const template=resolveMenuTemplate(props.restaurant.menu_template,["active","trialing"].includes(props.restaurant.subscription_status??""));
-  return template.key==="marshmallow"?<MarshmallowMenu key={props.restaurant.id} {...props}/>:<FeedVideoMenu {...props}/>;
-}
-
-function FeedVideoMenu({
+export function VideoMenu({
   restaurant,
   products: rawProducts,
   analyticsEnabled = true,

@@ -12,8 +12,7 @@ describe("ruta de demo de la landing", () => {
     expect(demo).toContain("analyticsEnabled={false}");
     expect(demo).toContain("introEnabled={false}");
     expect(demo).toContain('slug="bistro-nube"');
-    expect(demo).toContain('initialTemplate={selectedTemplate}');
-    expect(demo).toContain('isMenuTemplateKey(query.template');
+    expect(demo).toContain('initialTemplate="noirluxe"');
     expect(demo).not.toContain("activeRestaurant");
     expect(demo).not.toContain("supabase");
   });

@@ -14,7 +14,6 @@ import {
   type MenuTemplateKey,
 } from "@/lib/menu-templates";
 import { ThemeVectors } from "@/components/menu/theme-vectors";
-import { MarshmallowPreview } from "./marshmallow-preview";
 import { notifyAutomaticTranslation } from "@/components/dashboard/automatic-translation";
 import {
   NoirLuxeAddIcon,
@@ -72,7 +71,6 @@ function TemplatePreview({
     style: "currency",
     currency,
   }).format((product?.priceCents ?? 1290) / 100);
-  if (kind === "marshmallow")return <MarshmallowPreview restaurantName={restaurantName} large={large}/>;
   if (kind === "noirluxe")
     return (
       <div

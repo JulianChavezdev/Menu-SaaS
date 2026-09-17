@@ -12,8 +12,7 @@ export type TemplateMotif =
   | "street"
   | "cozy-corner"
   | "tokyo-pulse"
-  | "social-hud"
-  | "marshmallow";
+  | "social-hud";
 
 type MenuTemplate = {
   key: string;
@@ -149,19 +148,13 @@ export const MENU_TEMPLATES = {
   "cozy-corner": cozyCornerTemplate,
   "tokyo-pulse": tokyoPulseTemplate,
   "social-hud": socialHudTemplate,
-  marshmallow: {
-    key: "marshmallow", name: "Marshmallow", tier: "premium",
-    description: "Una heladería en tonos crema, fresa y pistacho. Catálogo ilustrado, botones con relieve y personalización de sabores.",
-    previewLabel: "Heladería pastel", layout: "editorial", motif: "marshmallow",
-    colors: {background:"#FFF9F0",panel:"#FFFDF8",nav:"#FFF9F0",accent:"#99435B",accent2:"#DAE6C5",frame:"#E8DACE"},
-  } as MenuTemplate & {key:"marshmallow"},
 } as const;
 
 export type MenuTemplateKey = keyof typeof MENU_TEMPLATES;
 export const DEFAULT_MENU_TEMPLATE: MenuTemplateKey = "cinematic";
 
 export function isMenuTemplateKey(value: string): value is MenuTemplateKey {
-  return Object.hasOwn(MENU_TEMPLATES,value);
+  return value in MENU_TEMPLATES;
 }
 export function resolveMenuTemplate(
   value: string | undefined | null,

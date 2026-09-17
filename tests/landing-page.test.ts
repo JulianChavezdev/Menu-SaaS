@@ -54,9 +54,9 @@ describe("landing pública", () => {
       "Primer mes de Plan Carta incluido",
     ])
       expect(page).toContain(copy);
-    expect(page).toContain('"7 plantillas"');
+    expect(page).toContain('"6 plantillas"');
     expect(page).not.toContain("30 días gratis");
-    expect(page).toContain("siete estilos visuales");
+    expect(page).toContain("seis estilos visuales");
     expect(page).toContain("No ofrecemos una prueba gratuita general");
     expect(page).toContain("Menuly Comandas sí conecta el comandero móvil");
   });
