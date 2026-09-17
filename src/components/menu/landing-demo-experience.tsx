@@ -72,7 +72,7 @@ export function LandingDemoExperience({
           </p>
           <h2 className="mt-2 text-xl font-extrabold">Plantillas disponibles</h2>
           <p className="mt-1 text-xs leading-5 text-[#91867c]">
-            Cambia el diseño y prueba la misma carta en tiempo real.
+            Cambia el diseño y prueba cada estilo en tiempo real.
           </p>
           <div className="mt-5 grid grid-cols-2 gap-2.5">
             {templates.map((template) => {
@@ -138,12 +138,11 @@ export function LandingDemoExperience({
             <span className="block text-[#d4943a]">como un cliente.</span>
           </h1>
           <p className="mt-4 max-w-md text-sm leading-6 text-[#a89b8e] lg:text-base lg:leading-7">
-            Todo lo que ves a la izquierda es funcional. Explora los vídeos,
-            abre un plato y añade productos al carrito.
+            {selectedTemplate==="marshmallow"?"Descubre una heladería en tonos pastel. Explora el catálogo, elige ocho frutas y prepara tu selección.":"Todo lo que ves a la izquierda es funcional. Explora los vídeos, abre un plato y añade productos al carrito."}
           </p>
 
           <div className="mt-6 grid gap-2.5 lg:mt-8 lg:gap-3">
-            {highlights.map(({ icon: Icon, title, text }, index) => (
+            {(selectedTemplate==="marshmallow"?[{icon:List,title:"Explora los antojos",text:"Filtra por categoría o busca tu sabor favorito en el catálogo."},{icon:Sparkles,title:"Hazlo a tu gusto",text:"Prueba Frutas a tu gusto: elige ocho de diez frutas y añade extras."},...highlights.slice(2)]:highlights).map(({ icon: Icon, title, text }, index) => (
               <article
                 key={title}
                 className="group flex items-start gap-3 rounded-[14px] border border-white/[.07] bg-white/[.035] px-3.5 py-3 transition duration-300 hover:border-[#d4943a]/35 hover:bg-white/[.055]"

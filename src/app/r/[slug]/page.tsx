@@ -4,6 +4,7 @@ import { createClient as createServerClient } from "@/lib/supabase/server";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import { getSupabaseSecretKey } from "@/lib/supabase/admin-env";
 import { demoProducts, demoRestaurant } from "@/lib/demo";
+import { marshmallowProducts, marshmallowRestaurant } from "@/lib/marshmallow-demo";
 import { VideoMenu } from "@/components/menu/video-menu";
 import { LandingDemoExperience } from "@/components/menu/landing-demo-experience";
 import type { Metadata } from "next";
@@ -37,10 +38,17 @@ async function menuDatabase() {
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ slug: string }>;
+  searchParams: Promise<{preview?:string;template?:string}>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  const query=await searchParams;
+  if(slug==="bistro-nube"&&["embed","landing"].includes(query.preview??""))return {
+    title:query.template==="marshmallow"?"Marshmallow · Heladería | Demo":"Bistro Nube | Demo",
+    description:"Prueba las plantillas de Menuly.",robots:{index:false,follow:false},
+  };
   if (slug === "bistro-nube" && !process.env.NEXT_PUBLIC_SUPABASE_URL)
     return {
       title: "Bistro Nube | Carta en vídeo",
@@ -99,6 +107,8 @@ export default async function PublicMenu({
   // Preview mode must stay independent from Supabase so the public demo also
   // works reliably on mobile and in slow or offline network conditions.
   if (slug === "bistro-nube" && (!process.env.NEXT_PUBLIC_SUPABASE_URL || preview)) {
+    if (previewTemplate === "marshmallow")
+      return <VideoMenu restaurant={marshmallowRestaurant} products={marshmallowProducts} analyticsEnabled={false} introEnabled={false}/>;
     if (landingPreview)
       return (
         <LandingDemoExperience
