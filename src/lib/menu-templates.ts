@@ -12,7 +12,8 @@ export type TemplateMotif =
   | "street"
   | "cozy-corner"
   | "tokyo-pulse"
-  | "social-hud";
+  | "social-hud"
+  | "marshmallow";
 
 type MenuTemplate = {
   key: string;
@@ -148,6 +149,12 @@ export const MENU_TEMPLATES = {
   "cozy-corner": cozyCornerTemplate,
   "tokyo-pulse": tokyoPulseTemplate,
   "social-hud": socialHudTemplate,
+  marshmallow: {
+    key: "marshmallow", name: "Marshmallow", tier: "premium",
+    description: "Carta en vídeo con crema, rosa nube, pistacho y lavanda. Marcos suaves y botones de confitería.",
+    previewLabel: "Carta pastel", layout: "fullscreen", motif: "marshmallow",
+    colors: {background: "#FFF8F0", panel: "#FFF8F0", nav: "#FFF8F0", accent: "#8A3D56", accent2: "#DBE7CE", frame: "#DECBC7"},
+  } as MenuTemplate & {key:"marshmallow"},
 } as const;
 
 export type MenuTemplateKey = keyof typeof MENU_TEMPLATES;

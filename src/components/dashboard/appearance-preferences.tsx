@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
-import { Eye, Info, Languages, Lock, Share2, VolumeX, X } from "lucide-react";
+import { ChevronDown, Eye, Info, Languages, List, Lock, Share2, VolumeX, X } from "lucide-react";
 import { toast } from "sonner";
 import {
   translateEntireMenu,
@@ -14,6 +14,7 @@ import {
   type MenuTemplateKey,
 } from "@/lib/menu-templates";
 import { ThemeVectors } from "@/components/menu/theme-vectors";
+import {MarshmallowIcon} from "@/components/menu/marshmallow-controls";
 import { notifyAutomaticTranslation } from "@/components/dashboard/automatic-translation";
 import {
   NoirLuxeAddIcon,
@@ -71,6 +72,17 @@ function TemplatePreview({
     style: "currency",
     currency,
   }).format((product?.priceCents ?? 1290) / 100);
+  if(kind==="marshmallow")return <div data-dashboard-preview className={`relative mx-auto w-full overflow-hidden bg-[#FFF8F0] p-[6%] text-[#573E43] ${large?"h-[min(70dvh,620px)] max-w-[350px]":"aspect-[9/12]"}`} style={{fontFamily:"var(--font-cozy-sans)"}}>
+    <div className="flex items-center justify-between gap-2"><List size={18}/><span className="flex min-w-0 items-center gap-1"><MarshmallowIcon kind="scoop" width={22}/><span className="truncate text-xs font-extrabold">{restaurantName}</span></span><Languages size={18}/></div>
+    <div className="absolute inset-x-[2%] bottom-[2%] top-[15%] overflow-hidden rounded-[24px_24px_32px_20px] border border-[#DECBC7] bg-[#E9DBD4] shadow-[3px_3px_0_#E6D9ED]">{product?.videoUrl?<video src={product.videoUrl} muted loop autoPlay playsInline className="h-full w-full object-cover"/>:<div className="grid h-full place-items-center bg-[#F7E3DA]"><MarshmallowIcon kind="scoop" width={64} height={64}/></div>}</div>
+    <div className="absolute left-[6%] top-[18%] max-w-[66%] rounded-xl border border-[#C493A6] bg-[#F4C6D6] px-3 py-2 text-[#683349]"><span className="block text-[7px] font-bold uppercase tracking-widest">Categorías</span><span className="flex items-center gap-2 text-[10px] font-extrabold"><span className="truncate">{product?.category??"Categoría"}</span><ChevronDown size={12}/></span></div>
+    <div className="absolute right-[6%] top-[18%] flex flex-col gap-2">{[VolumeX,Info,Share2].map((Icon,index)=><span key={index} className="grid size-8 place-items-center rounded-full border border-[#D9CADD] bg-[#F3E9F6] text-[#684854]"><Icon size={14}/></span>)}</div>
+    <div className="absolute inset-x-[6%] bottom-[17%] rounded-2xl border border-[#FFF8F0] bg-[#FFF8F0]/95 px-3 py-2 backdrop-blur-md">
+      <div className="flex items-center gap-2"><div className="min-w-0 flex-1"><p className={`truncate font-extrabold tracking-tight ${large?"text-xl":"text-sm"}`}>{product?.name??"Nombre del producto"}</p><strong className="text-sm text-[#8A3D56]">{price}</strong></div><span className="flex items-center rounded-xl bg-[#F4C6D6] p-1 text-[9px] font-bold text-[#683349]"><MarshmallowIcon kind="add" width={24} height={24}/>Añadir</span></div>
+      <p className="mt-1 text-[9px] text-[#765961]">Descripción⌄</p>
+    </div>
+    <div className="absolute bottom-[5%] right-[6%] flex items-center gap-2 rounded-2xl border border-[#BBCAAD] bg-[#DBE7CE] px-3 py-1 text-[10px] font-extrabold text-[#3C5138] shadow-[0_3px_0_#A7B69A]"><MarshmallowIcon kind="bag" width={26} height={26}/>Carrito<span className="rounded-full bg-[#3C5138] px-1.5 py-0.5 text-[#FFF8F0]">0</span></div>
+  </div>;
   if (kind === "noirluxe")
     return (
       <div

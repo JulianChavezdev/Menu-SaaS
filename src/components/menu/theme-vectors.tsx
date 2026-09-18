@@ -18,6 +18,10 @@ export function ThemeVectors({
     "aria-hidden": true,
   };
   if (motif === "cinema") return null;
+  if (motif === "marshmallow") return <svg {...common}>
+    <path d="m5 196 5 6m409 111 5-7M4 486l6-4m413 87-6 6" stroke="#B9CAA7" strokeWidth="3" strokeLinecap="round"/>
+    <path d="m5 321 5-5m409 104 5 5" stroke="#D5B7DD" strokeWidth="3" strokeLinecap="round"/>
+  </svg>;
   if (
     motif === "noirluxe" ||
     motif === "street" ||

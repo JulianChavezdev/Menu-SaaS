@@ -1,4 +1,6 @@
 "use client";
+import "./marshmallow-theme.css";
+import {MarshmallowIcon} from "./marshmallow-controls";
 
 import {useMenuScrollLock} from "./use-menu-scroll-lock";
 import {
@@ -281,6 +283,7 @@ export function VideoMenu({
   const cozyCorner = template.key === "cozy-corner";
   const tokyoPulse = template.key === "tokyo-pulse";
   const socialHud = template.key === "social-hud";
+  const marshmallow = template.key === "marshmallow";
   const figmaTheme = street || cozyCorner;
   const menuRailTheme = noirLuxe || figmaTheme || tokyoPulse || socialHud;
   const figmaThemeKey = street ? "street" : "cozy-corner";
@@ -301,7 +304,7 @@ export function VideoMenu({
       ? "var(--font-noir-sans)"
       : street
         ? "var(--font-street-sans)"
-        : cozyCorner
+        : cozyCorner || marshmallow
           ? "var(--font-cozy-sans)"
           : tokyoPulse
             ? "var(--font-tokyo-sans)"
@@ -986,13 +989,14 @@ export function VideoMenu({
           className="pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-center justify-between px-4 pb-10 pt-[max(1rem,env(safe-area-inset-top))] md:max-w-[402px]"
         >
           <button
-            aria-label="Volver"
-            onClick={back}
+            aria-label={marshmallow ? text.menu : "Volver"}
+            onClick={marshmallow ? () => setPanel("menu") : back}
             className="pointer-events-auto grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-black/30 backdrop-blur-md"
           >
-            <ArrowLeft size={20} />
+            {marshmallow ? <List size={20} /> : <ArrowLeft size={20} />}
           </button>
           <div className="flex min-w-0 flex-1 justify-center px-3">
+            {marshmallow&&!restaurant.logo_url&&<span className="marshmallow-wordmark"><MarshmallowIcon kind="scoop"/>{restaurant.name}</span>}
             {restaurant.logo_url && (
               <span
                 role="img"
@@ -1021,7 +1025,7 @@ export function VideoMenu({
         </header>
       )}
 
-      {!menuRailTheme && (
+      {!menuRailTheme && !marshmallow && (
         <div
           aria-hidden="true"
           className="pointer-events-none fixed right-3 top-1/2 z-20 flex -translate-y-1/2 flex-col gap-1.5 md:right-[calc((100vw-402px)/2+12px)]"
@@ -1142,6 +1146,7 @@ export function VideoMenu({
           onClick={() => setPanel(null)}
         >
           <aside
+            data-menu-panel
             aria-label={
               panel === "menu"
                 ? text.menu
@@ -1497,6 +1502,7 @@ export function VideoMenu({
               className={`relative isolate flex h-svh snap-start snap-always items-end overflow-hidden bg-[var(--theme-bg)] ${noirLuxe ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-40 [font-family:var(--font-noir-sans)]" : figmaTheme ? "px-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-44" : tokyoPulse ? "px-6 pb-[max(1rem,env(safe-area-inset-bottom))] pt-36" : socialHud ? "px-4 pb-[max(.75rem,env(safe-area-inset-bottom))] pt-28" : "px-4 pb-[var(--controls-clearance)] pt-24"}`}
             >
               <div
+                data-product-media-frame
                 style={{ borderColor: colors.frame }}
                 className={`absolute z-0 overflow-hidden bg-[#22221f] ${framed ? "inset-3 bottom-16 rounded-xl border shadow-2xl" : "inset-0"}`}
               >
@@ -1518,6 +1524,7 @@ export function VideoMenu({
               </div>
               {template.key !== "cinematic" && (
                 <div
+                  data-product-shade
                   className={`pointer-events-none absolute z-[1] ${framed ? "inset-3 bottom-16 rounded-xl" : "inset-0"}`}
                   style={{
                     background: noirLuxe
@@ -2072,6 +2079,7 @@ export function VideoMenu({
                 ) : (
                   <>
                     <div
+                      data-standard-product-heading
                       className={`flex min-h-8 gap-2 ${primaryTemplate ? "items-start" : "items-center"}`}
                     >
                       <h2
@@ -2108,7 +2116,7 @@ export function VideoMenu({
                         }}
                         className="grid h-8 w-8 shrink-0 place-items-center rounded-full shadow-lg transition active:scale-90"
                       >
-                        <Plus size={14} />
+                        {marshmallow ? <><MarshmallowIcon kind="add"/><span>{text.add}</span></> : <Plus size={14} />}
                       </button>
                     </div>
                     {(description ||
@@ -2232,7 +2240,30 @@ export function VideoMenu({
         })}
       </div>
 
-      {socialHud ? (
+      {marshmallow ? (
+        <>
+          <nav className="marshmallow-category-picker" aria-label={text.categories}>
+            <label htmlFor="marshmallow-category">{text.categories}</label>
+            <div>
+              <select id="marshmallow-category" value={activeCategory ?? ""} onChange={(event) => openCategory(event.target.value)}>
+                {categoryGroups.map((group) => <option key={group.id} value={group.id}>{group.name}</option>)}
+              </select>
+              <ChevronDown size={16} aria-hidden="true" />
+            </div>
+          </nav>
+          <nav className="marshmallow-side-actions" aria-label={text.controls}>
+            <button type="button" aria-label={muted ? text.soundOn : text.soundOff} title={muted ? text.soundOn : text.soundOff} onClick={() => setMuted((value) => !value)}>{muted ? <VolumeX size={18}/> : <Volume2 size={18}/>}</button>
+            <button type="button" aria-label={text.info} title={text.info} onClick={() => setPanel("info")}><Info size={18}/></button>
+            <button type="button" aria-label={text.share} title={text.share} onClick={share}><Share2 size={18}/></button>
+          </nav>
+          <div className="marshmallow-cart-dock">
+            <span aria-hidden="true" className="marshmallow-scroll-hint">{language === "es" ? "Desliza y descubre" : "Swipe to discover"}<ChevronDown size={16}/></span>
+            <button type="button" aria-label={`${text.cart}: ${cartQuantity}`} onClick={() => setPanel("cart")}>
+              <MarshmallowIcon kind="bag"/><span>{text.cart}</span><strong>{cartQuantity}</strong>
+            </button>
+          </div>
+        </>
+      ) : socialHud ? (
         <nav
           ref={categoryNavRef}
           aria-label={text.categories}
@@ -2384,6 +2415,7 @@ export function VideoMenu({
         <nav
           ref={categoryNavRef}
           aria-label={text.categories}
+          data-menu-categories
           className="fixed left-1/2 top-[calc(max(1rem,env(safe-area-inset-top))+3.25rem)] z-40 flex w-[calc(100%-2rem)] max-w-[390px] -translate-x-1/2 touch-pan-x snap-x snap-mandatory gap-2 overflow-x-auto overscroll-x-contain [mask-image:linear-gradient(to_right,transparent,black_14%,black_86%,transparent)] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:max-w-[370px]"
         >
           <span
@@ -2428,10 +2460,11 @@ export function VideoMenu({
         </nav>
       )}
 
-      {!menuRailTheme && (
+      {!menuRailTheme && !marshmallow && (
         <nav
           ref={controlsRef}
           aria-label="Controles de la carta"
+          data-menu-controls
           style={{ background: `${colors.nav}ed`, borderColor: colors.frame }}
           className="fixed bottom-[max(.75rem,env(safe-area-inset-bottom))] left-1/2 z-40 grid w-[calc(100%-2rem)] max-w-[390px] -translate-x-1/2 grid-cols-5 items-center rounded-xl border px-1 py-1 shadow-2xl backdrop-blur-xl md:max-w-[370px]"
         >
@@ -2457,7 +2490,7 @@ export function VideoMenu({
             onClick={() => setPanel("cart")}
             className="relative grid min-h-9 place-items-center rounded-lg text-white"
           >
-            <ShoppingBag size={20} />
+            {marshmallow?<MarshmallowIcon kind="bag"/>:<ShoppingBag size={20} />}
             {cartQuantity > 0 && (
               <span
                 style={{ background: colors.accent, color: colors.background }}
