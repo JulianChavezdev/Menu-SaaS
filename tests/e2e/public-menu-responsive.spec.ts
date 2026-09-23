@@ -7,7 +7,7 @@ const admin=url&&serviceKey?createClient(url,serviceKey,{auth:{persistSession:fa
 const fixtureSlug=`e2e-mobile-menu-${Date.now()}`;
 let fixtureUserId="";let fixtureRestaurantId="";
 
-async function dismissIntro(page:Page){const button=page.getByRole("button",{name:"Abrir carta"});if(await button.isVisible().catch(()=>false)){await button.dispatchEvent("click");await expect(button).toHaveCount(0)}}
+async function dismissIntro(page:Page){const button=page.getByRole("button",{name:"Abrir carta"});if(await button.isVisible().catch(()=>false)){await button.click({force:true,timeout:1_000}).catch(()=>undefined);await expect(button).toHaveCount(0)}}
 
 test.describe("public menu responsive contract",()=>{
   test.beforeAll(async()=>{if(!admin)return;const user=await admin.auth.admin.createUser({email:`${fixtureSlug}@carta-video.local`,password:`Test-${crypto.randomUUID()}!`,email_confirm:true});if(user.error)throw user.error;fixtureUserId=user.data.user.id;const restaurant=await admin.from("restaurants").insert({owner_id:fixtureUserId,name:"Mobile E2E",slug:fixtureSlug,is_published:true,language_switcher_enabled:false,subscription_status:"active",plan:"carta",publication_suspended_for_payment:false}).select("id").single();if(restaurant.error)throw restaurant.error;fixtureRestaurantId=restaurant.data.id;const category=await admin.from("categories").insert({restaurant_id:fixtureRestaurantId,name:"Carta",slug:"carta",is_active:true}).select("id").single();if(category.error)throw category.error;const product=await admin.from("products").insert({restaurant_id:fixtureRestaurantId,category_id:category.data.id,name:"Producto móvil",price_cents:500,is_available:true}).select("id").single();if(product.error)throw product.error});

@@ -981,6 +981,37 @@ export function VideoMenu({
             )}
           </button>
         </header>
+      ) : marshmallow ? (
+        <nav className="marshmallow-video-topbar" aria-label={text.controls}>
+          <button
+            aria-label={text.menu}
+            onClick={() => setPanel("menu")}
+          >
+            <List size={20} />
+          </button>
+          <div className="min-w-0 flex-1 px-2 text-center">
+            {restaurant.logo_url ? (
+              <span
+                role="img"
+                aria-label={`Logo de ${restaurant.name}`}
+                className="mx-auto block h-10 w-32 bg-contain bg-center bg-no-repeat drop-shadow-[0_2px_7px_rgba(0,0,0,.35)]"
+                style={{ backgroundImage: `url(${restaurant.logo_url})` }}
+              />
+            ) : (
+              <span className="marshmallow-wordmark"><MarshmallowIcon kind="scoop" />{restaurant.name}</span>
+            )}
+          </div>
+          {restaurant.language_switcher_enabled ? (
+            <button
+              aria-label={language === "es" ? "Cambiar a inglés" : "Switch to Spanish"}
+              onClick={() => setLanguage((value) => (value === "es" ? "en" : "es"))}
+              className="marshmallow-language-toggle"
+            >
+              <Languages size={17} />
+              {language.toUpperCase()}
+            </button>
+          ) : <span className="h-10 w-10" />}
+        </nav>
       ) : (
         <header
           style={{
@@ -989,14 +1020,13 @@ export function VideoMenu({
           className="pointer-events-none fixed left-0 right-0 top-0 z-30 mx-auto flex max-w-[430px] items-center justify-between px-4 pb-10 pt-[max(1rem,env(safe-area-inset-top))] md:max-w-[402px]"
         >
           <button
-            aria-label={marshmallow ? text.menu : "Volver"}
-            onClick={marshmallow ? () => setPanel("menu") : back}
+            aria-label="Volver"
+            onClick={back}
             className="pointer-events-auto grid h-10 w-10 place-items-center rounded-full border border-white/20 bg-black/30 backdrop-blur-md"
           >
-            {marshmallow ? <List size={20} /> : <ArrowLeft size={20} />}
+            <ArrowLeft size={20} />
           </button>
           <div className="flex min-w-0 flex-1 justify-center px-3">
-            {marshmallow&&!restaurant.logo_url&&<span className="marshmallow-wordmark"><MarshmallowIcon kind="scoop"/>{restaurant.name}</span>}
             {restaurant.logo_url && (
               <span
                 role="img"

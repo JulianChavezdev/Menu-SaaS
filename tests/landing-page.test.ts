@@ -93,7 +93,7 @@ describe("landing pública", () => {
     expect(landingDemo).toContain("setSelectedTemplate(template.key)");
     expect(publicMenu).toContain("previewTemplate");
     expect(landingDemo).toContain('className="h-full w-full border-0"');
-    expect(landingDemo).toContain('className="hidden min-w-0 md:block"');
+    expect(landingDemo).toContain('className="hidden min-w-0 md:block md:max-h-full');
     expect(landingDemo).toContain("Desliza para descubrir");
     expect(landingDemo).toContain("Prepara tu selección");
   });

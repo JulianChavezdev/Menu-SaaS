@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import {useMenuScrollLock} from "./use-menu-scroll-lock";
+import {TemplateEmblem} from "./template-emblem";
 import {
   ArrowRight,
   ChevronDown,
@@ -65,8 +66,8 @@ export function LandingDemoExperience({
   const templates = Object.values(MENU_TEMPLATES);
   return (
     <main className="h-svh overflow-hidden bg-[#0f0f0f] text-[#f5f0eb]">
-      <div className="h-full md:grid md:grid-cols-[minmax(340px,402px)_minmax(0,440px)] md:items-center md:justify-center md:gap-8 md:px-6 md:py-6 lg:px-8 xl:grid-cols-[230px_minmax(340px,402px)_minmax(0,440px)] xl:gap-8 2xl:grid-cols-[250px_402px_484px] 2xl:gap-12">
-        <aside className="hidden min-w-0 xl:block">
+      <div className="h-full md:grid md:grid-rows-[minmax(0,1fr)] md:grid-cols-[minmax(340px,402px)_minmax(0,440px)] md:items-center md:justify-center md:gap-8 md:px-6 md:py-6 lg:px-8 xl:grid-cols-[230px_minmax(340px,402px)_minmax(0,440px)] xl:gap-8 2xl:grid-cols-[250px_402px_484px] 2xl:gap-12">
+        <aside className="hidden min-w-0 xl:block xl:max-h-[calc(100svh-48px)] xl:self-start xl:overflow-y-auto [scrollbar-width:thin]">
           <p className="text-[10px] font-bold uppercase tracking-[.2em] text-[#d4943a]">
             Elige un estilo
           </p>
@@ -85,18 +86,12 @@ export function LandingDemoExperience({
                   onClick={() => setSelectedTemplate(template.key)}
                   className={`group flex aspect-square min-w-0 flex-col items-center justify-center rounded-[14px] border p-2 text-center transition duration-300 ${selected ? "border-[#d4943a] bg-[#d4943a]/10 shadow-[0_0_22px_rgba(212,148,58,.12)]" : "border-white/[.08] bg-white/[.025] hover:border-white/20 hover:bg-white/[.05]"}`}
                 >
-                  <span
-                    aria-hidden="true"
-                    style={{
-                      background: `radial-gradient(circle at 30% 25%, ${template.colors.accent2}, ${template.colors.accent} 48%, ${template.colors.background} 100%)`,
-                    }}
-                    className="size-9 shrink-0 rounded-full shadow-[inset_-7px_-8px_14px_rgba(0,0,0,.35),0_5px_14px_rgba(0,0,0,.35)]"
-                  />
-                  <span className="mt-2 min-w-0">
+                  <TemplateEmblem template={template.key} className="size-14 shrink-0 transition-transform duration-200 motion-safe:group-hover:-translate-y-0.5 motion-safe:group-hover:scale-105" />
+                  <span className="mt-1 min-w-0">
                     <strong className={`block text-[12px] leading-4 ${selected ? "text-white" : "text-[#b8afa6]"}`}>
                       {template.name}
                     </strong>
-                    <span className="mt-0.5 block text-[9px] leading-3 text-[#6f6963]">
+                    <span className="mt-0.5 block text-[9px] leading-3 text-[#91867c]">
                       {template.previewLabel}
                     </span>
                   </span>
@@ -106,7 +101,7 @@ export function LandingDemoExperience({
           </div>
         </aside>
 
-        <section className="h-full md:h-[min(820px,calc(100svh-48px))] md:min-h-[640px] md:overflow-hidden md:rounded-[32px] md:border md:border-[#d4943a]/35 md:bg-black md:shadow-[0_28px_80px_rgba(0,0,0,.55),0_0_0_6px_rgba(255,255,255,.025)]">
+        <section className="h-full md:h-[min(820px,calc(100svh-48px))] md:min-h-0 md:overflow-hidden md:rounded-[32px] md:border md:border-[#d4943a]/35 md:bg-black md:shadow-[0_28px_80px_rgba(0,0,0,.55),0_0_0_6px_rgba(255,255,255,.025)]">
           <iframe
             key={selectedTemplate}
             src={`/r/${slug}?preview=embed&template=${selectedTemplate}`}
@@ -117,7 +112,7 @@ export function LandingDemoExperience({
           />
         </section>
 
-        <aside className="hidden min-w-0 md:block">
+        <aside className="hidden min-w-0 md:block md:max-h-full md:overflow-y-auto [scrollbar-width:thin]">
           <Link href="/" className="inline-flex items-center gap-2">
             <Image
               src="/brand/menuly-mark-dark.png"
