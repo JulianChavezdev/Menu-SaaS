@@ -2272,13 +2272,21 @@ export function VideoMenu({
 
       {marshmallow ? (
         <>
-          <nav className="marshmallow-category-picker" aria-label={text.categories}>
-            <label htmlFor="marshmallow-category">{text.categories}</label>
+          <nav className="marshmallow-category-ribbon" aria-label={text.categories}>
+            <span aria-hidden="true" className="marshmallow-category-ribbon-label">{text.categories}</span>
             <div>
-              <select id="marshmallow-category" value={activeCategory ?? ""} onChange={(event) => openCategory(event.target.value)}>
-                {categoryGroups.map((group) => <option key={group.id} value={group.id}>{group.name}</option>)}
-              </select>
-              <ChevronDown size={16} aria-hidden="true" />
+              {categoryGroups.map((group) => {
+                const selected = activeCategory === group.id;
+                return <button
+                  type="button"
+                  key={group.id}
+                  aria-current={selected ? "true" : undefined}
+                  onClick={() => openCategory(group.id)}
+                >
+                  <i aria-hidden="true" />
+                  {group.name}
+                </button>;
+              })}
             </div>
           </nav>
           <nav className="marshmallow-side-actions" aria-label={text.controls}>
