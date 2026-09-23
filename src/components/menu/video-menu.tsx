@@ -2287,7 +2287,6 @@ export function VideoMenu({
             <button type="button" aria-label={text.share} title={text.share} onClick={share}><Share2 size={18}/></button>
           </nav>
           <div className="marshmallow-cart-dock">
-            <span aria-hidden="true" className="marshmallow-scroll-hint">{language === "es" ? "Desliza y descubre" : "Swipe to discover"}<ChevronDown size={16}/></span>
             <button type="button" aria-label={`${text.cart}: ${cartQuantity}`} onClick={() => setPanel("cart")}>
               <MarshmallowIcon kind="bag"/><span>{text.cart}</span><strong>{cartQuantity}</strong>
             </button>
