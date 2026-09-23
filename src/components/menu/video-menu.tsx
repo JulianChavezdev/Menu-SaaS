@@ -994,7 +994,7 @@ export function VideoMenu({
               <span
                 role="img"
                 aria-label={`Logo de ${restaurant.name}`}
-                className="mx-auto block h-10 w-32 bg-contain bg-center bg-no-repeat drop-shadow-[0_2px_7px_rgba(0,0,0,.35)]"
+                className="mx-auto block h-12 w-36 bg-contain bg-center bg-no-repeat drop-shadow-[0_2px_7px_rgba(0,0,0,.35)]"
                 style={{ backgroundImage: `url(${restaurant.logo_url})` }}
               />
             ) : (
@@ -2282,7 +2282,6 @@ export function VideoMenu({
       {marshmallow ? (
         <>
           <nav className="marshmallow-category-ribbon" aria-label={text.categories}>
-            <span aria-hidden="true" className="marshmallow-category-ribbon-label">{text.categories}</span>
             <div>
               {categoryGroups.map((group) => {
                 const selected = activeCategory === group.id;

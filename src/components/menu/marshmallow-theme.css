@@ -1,6 +1,6 @@
 .public-menu[data-template="marshmallow"] {color:#573e43;font-family:var(--font-cozy-sans),sans-serif;color-scheme:light}
 .public-menu[data-template="marshmallow"] .marshmallow-video-topbar {pointer-events:none;position:fixed;z-index:40;top:max(12px,env(safe-area-inset-top));left:max(12px,calc((100vw - 430px)/2 + 12px));right:max(12px,calc((100vw - 430px)/2 + 12px));display:flex;align-items:center;justify-content:space-between}
-.public-menu[data-template="marshmallow"] .marshmallow-video-topbar button {pointer-events:auto;display:grid;place-items:center;height:40px;min-width:40px;padding-inline:10px;background:#fff8f0e8;border:1px solid #d3a4b5;color:#573e43;box-shadow:0 3px 0 #d3a4b5;border-radius:15px;backdrop-filter:blur(10px)}
+.public-menu[data-template="marshmallow"] .marshmallow-video-topbar button {pointer-events:auto;display:grid;place-items:center;height:46px;min-width:46px;padding-inline:12px;background:#fff8f0e8;border:1px solid #d3a4b5;color:#573e43;box-shadow:0 3px 0 #d3a4b5;border-radius:17px;backdrop-filter:blur(10px)}
 .public-menu[data-template="marshmallow"] .marshmallow-video-topbar .marshmallow-language-toggle {display:flex;gap:4px;align-items:center;justify-content:center;font-size:12px;font-weight:800}
 .public-menu[data-template="marshmallow"] .marshmallow-wordmark {display:flex;align-items:center;gap:8px;font-weight:800;font-size:17px;letter-spacing:-.5px;line-height:1.15;text-align:center;overflow-wrap:anywhere}
 .public-menu[data-template="marshmallow"] .marshmallow-wordmark svg {flex-shrink:0}
@@ -18,14 +18,13 @@
 .public-menu[data-template="marshmallow"] [data-product-details] summary {color:#765961;font-size:12px;padding:3px 0}
 .public-menu[data-template="marshmallow"] [data-product-details] details p {color:#765961;font-size:12px;line-height:1.5}
 .public-menu[data-template="marshmallow"] [data-product-details] details span {color:#573e43}
- .public-menu[data-template="marshmallow"] .marshmallow-category-ribbon {position:fixed;z-index:40;top:calc(max(12px,env(safe-area-inset-top)) + 52px);left:max(18px,calc((100vw - 430px)/2 + 18px));right:max(68px,calc((100vw - 430px)/2 + 68px));display:flex;align-items:center;gap:6px;min-width:0}
- .public-menu[data-template="marshmallow"] .marshmallow-category-ribbon-label {flex:0 0 auto;border:1px solid #d3a4b5;border-radius:999px;background:#f4c6d6e8;color:#683349;padding:6px 8px;font-size:7px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;box-shadow:0 2px 0 #d3a4b5;backdrop-filter:blur(10px)}
+.public-menu[data-template="marshmallow"] .marshmallow-category-ribbon {position:fixed;z-index:40;top:calc(max(12px,env(safe-area-inset-top)) + 58px);left:max(18px,calc((100vw - 430px)/2 + 18px));right:max(68px,calc((100vw - 430px)/2 + 68px));display:flex;align-items:center;min-width:0}
  .public-menu[data-template="marshmallow"] .marshmallow-category-ribbon > div {display:flex;min-width:0;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;padding:2px 2px 4px;scrollbar-width:none}
  .public-menu[data-template="marshmallow"] .marshmallow-category-ribbon button {flex:0 0 auto;display:flex;align-items:center;gap:5px;border:1px solid #fff8f0b8;border-radius:999px;background:#fff8f0dc;color:#765961;padding:7px 10px;font:800 11px/1 var(--font-cozy-sans),sans-serif;box-shadow:0 2px 0 #d9cadd;backdrop-filter:blur(10px)}
 .public-menu[data-template="marshmallow"] .marshmallow-category-ribbon button i {width:6px;height:6px;border-radius:50%;background:#d3a4b5}
 .public-menu[data-template="marshmallow"] .marshmallow-category-ribbon button[aria-current="true"] {background:#8a3d56;color:#fff8f0;border-color:#8a3d56;box-shadow:0 2px 0 #683349}
 .public-menu[data-template="marshmallow"] .marshmallow-category-ribbon button[aria-current="true"] i {background:#dbe7ce}
-.public-menu[data-template="marshmallow"] .marshmallow-side-actions {position:fixed;z-index:40;right:max(18px,calc((100vw - 430px)/2 + 18px));top:calc(max(12px,env(safe-area-inset-top)) + 52px);display:flex;flex-direction:column;gap:10px}
+.public-menu[data-template="marshmallow"] .marshmallow-side-actions {position:fixed;z-index:40;right:max(18px,calc((100vw - 430px)/2 + 18px));top:calc(max(12px,env(safe-area-inset-top)) + 58px);display:flex;flex-direction:column;gap:10px}
 .public-menu[data-template="marshmallow"] .marshmallow-side-actions button {display:grid;place-items:center;width:44px;height:44px;border:1px solid #d9cadd;border-radius:50%;background:#f3e9f6;color:#684854;box-shadow:0 3px 0 #d9cadd}
 .public-menu[data-template="marshmallow"] .marshmallow-side-actions button:nth-child(2) {background:#fff8f0;border-radius:15px}
 .public-menu[data-template="marshmallow"] .marshmallow-side-actions button:nth-child(3) {background:#f7dce5}
@@ -52,17 +51,16 @@
 /* The video is the product: controls stay reachable without stealing its frame. */
 @media(max-width:480px){
   .public-menu[data-template="marshmallow"] .marshmallow-video-topbar{top:max(8px,env(safe-area-inset-top));left:10px;right:10px}
-  .public-menu[data-template="marshmallow"] .marshmallow-video-topbar button{height:34px;min-width:34px;padding-inline:9px;border-radius:12px;box-shadow:0 2px 0 #d9cadd}
-  .public-menu[data-template="marshmallow"] .marshmallow-video-topbar button svg{width:16px;height:16px}
+  .public-menu[data-template="marshmallow"] .marshmallow-video-topbar button{height:40px;min-width:40px;padding-inline:10px;border-radius:14px;box-shadow:0 2px 0 #d9cadd}
+  .public-menu[data-template="marshmallow"] .marshmallow-video-topbar button svg{width:18px;height:18px}
   .public-menu[data-template="marshmallow"] .marshmallow-wordmark{font-size:15px;gap:5px}.public-menu[data-template="marshmallow"] .marshmallow-wordmark svg{width:22px;height:22px}
   .public-menu[data-template="marshmallow"] section[data-index]{padding:70px 10px max(6px,env(safe-area-inset-bottom))}
   .public-menu[data-template="marshmallow"] [data-product-media-frame]{inset:3px 3px max(3px,env(safe-area-inset-bottom));border-radius:20px 20px 26px 20px;box-shadow:2px 2px 0 #e6d9ed}
-  .public-menu[data-template="marshmallow"] .marshmallow-category-ribbon{top:calc(max(8px,env(safe-area-inset-top)) + 42px);left:10px;right:52px;gap:4px}
-  .public-menu[data-template="marshmallow"] .marshmallow-category-ribbon-label{padding:5px 6px;font-size:6px}
+  .public-menu[data-template="marshmallow"] .marshmallow-category-ribbon{top:calc(max(8px,env(safe-area-inset-top)) + 50px);left:10px;right:52px;gap:4px}
   .public-menu[data-template="marshmallow"] .marshmallow-category-ribbon > div{gap:4px;padding-bottom:3px}
   .public-menu[data-template="marshmallow"] .marshmallow-category-ribbon button{gap:4px;padding:6px 8px;font-size:10px}
   .public-menu[data-template="marshmallow"] .marshmallow-category-ribbon button i{width:5px;height:5px}
-  .public-menu[data-template="marshmallow"] .marshmallow-side-actions{right:12px;top:calc(max(8px,env(safe-area-inset-top)) + 42px);gap:6px}
+  .public-menu[data-template="marshmallow"] .marshmallow-side-actions{right:12px;top:calc(max(8px,env(safe-area-inset-top)) + 50px);gap:6px}
   .public-menu[data-template="marshmallow"] .marshmallow-side-actions button{width:34px;height:34px;box-shadow:0 2px 0 #d9cadd}
   .public-menu[data-template="marshmallow"] .marshmallow-side-actions button svg{width:15px;height:15px}
   .public-menu[data-template="marshmallow"] [data-product-details]{padding:7px 9px 4px;border-radius:15px;max-height:104px}
