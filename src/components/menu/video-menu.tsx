@@ -1623,10 +1623,18 @@ export function VideoMenu({
                   className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-[58%] bg-gradient-to-t from-black/95 via-black/65 to-transparent"
                 />
               )}
-              <div
-                data-product-details
-                className={`relative z-10 w-full overflow-y-auto overscroll-contain pb-0.5 text-shadow-lg [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${socialHud ? "pr-14" : ""} ${noirLuxe ? "max-h-[calc(100dvh-10.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))]" : "max-h-[calc(100dvh-11rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))]"}`}
-              >
+              <div className={marshmallow ? "marshmallow-product-footer relative z-10 w-full" : "contents"}>
+                {marshmallow && (
+                  <div className="marshmallow-cart-dock">
+                    <button type="button" aria-label={`${text.cart}: ${cartQuantity}`} onClick={() => setPanel("cart")}>
+                      <MarshmallowIcon kind="bag"/><span>{text.cart}</span><strong>{cartQuantity}</strong>
+                    </button>
+                  </div>
+                )}
+                <div
+                  data-product-details
+                  className={`relative z-10 w-full overflow-y-auto overscroll-contain pb-0.5 text-shadow-lg [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${socialHud ? "pr-14" : ""} ${noirLuxe ? "max-h-[calc(100dvh-10.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))]" : "max-h-[calc(100dvh-11rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))]"}`}
+                >
                 {socialHud ? (
                   <>
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-black/45 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[.12em] text-white backdrop-blur-md">
@@ -2264,6 +2272,7 @@ export function VideoMenu({
                     )}
                   </>
                 )}
+                </div>
               </div>
             </section>
           );
@@ -2294,11 +2303,6 @@ export function VideoMenu({
             <button type="button" aria-label={text.info} title={text.info} onClick={() => setPanel("info")}><Info size={18}/></button>
             <button type="button" aria-label={text.share} title={text.share} onClick={share}><Share2 size={18}/></button>
           </nav>
-          <div className="marshmallow-cart-dock">
-            <button type="button" aria-label={`${text.cart}: ${cartQuantity}`} onClick={() => setPanel("cart")}>
-              <MarshmallowIcon kind="bag"/><span>{text.cart}</span><strong>{cartQuantity}</strong>
-            </button>
-          </div>
         </>
       ) : socialHud ? (
         <nav
